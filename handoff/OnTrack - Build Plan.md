@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie
+Oct 28, 2026 · Katie · updated Oct 28, 2026 after Phase 0
 
 ## How to read this
 
@@ -10,14 +10,29 @@ The goal of the first four phases is one thing: an app the Four Corners ops team
 
 Each phase lists what it ships, the screens it covers from the design, the backend it needs, and a done test. Screens are named as they are on the design board so you can open them side by side.
 
+## Status
+
+| Phase | State | Pull requests |
+| --- | --- | --- |
+| 0 · Foundation | Done, except the real-iPhone check | OT-1 scaffold, tokens, theme, PWA, CI · OT-2 schema, RLS, `can()`, pgTAP, seed · OT-3 component kit, app frame, auth guard, role shells, loading and error boards |
+| Kit pass | Next | Every kit component gets its full set of states (hover, active/pressed, focus, disabled, loading, error where it applies) in both themes; the `/kit` page is refined and gets a desktop layout |
+| 1 · Accounts and access | After the kit pass | |
+
+Phase 0 notes:
+
+- Production is https://ontrack.katina-sunrise.workers.dev; each branch previews at `https://<branch>-ontrack.katina-sunrise.workers.dev`.
+- The hosted Supabase project has the full schema (migrations deploy on merge) and no seed data. One admin account exists, made by hand: an `invites` row in the SQL editor, then Authentication, Add user with the same email. Phase 1's invite flow replaces this.
+- Install and dark mode were checked on Android Chrome. The iPhone part of the done test waits for a BrowserStack pass; Playwright WebKit covers it in CI until then.
+- Sign-in is a provisional email and password screen; the designed Sign in, reset and 2-step screens are Phase 1.
+
 ## Decisions
 
 The app talks to Supabase directly and Edge Functions handle only the jobs that need a secret or a server. That is the smallest backend that still keeps roles enforced in the database.
 
 | Area | Decision | Why |
 | --- | --- | --- |
-| Front end | React 18 + Vite + TypeScript, built as an installable PWA | One codebase for phone and desktop; the design is mobile first; installs from Safari and Chrome without an app store |
-| Hosting | Cloudflare Pages, with a preview URL per branch | Free tier, global CDN, no server to run; Pages is only static files, so the backend lives elsewhere |
+| Front end | React 19 + Vite + TypeScript, built as an installable PWA | One codebase for phone and desktop; the design is mobile first; installs from Safari and Chrome without an app store |
+| Hosting | Cloudflare Workers with static assets, deployed by Workers Builds: `main` is production, every other branch gets a preview URL | Free tier, global CDN, no server to run; the Worker only serves the built files with a single-page fallback, so the backend lives elsewhere. Pages was the first choice; Cloudflare now labels it legacy |
 | Database | Supabase Postgres, hosted | Relational data (restaurants, equipment, tickets, service records); row-level security enforces roles |
 | Auth | Supabase Auth: email + password, invite-only, TOTP 2-step | Invite flow and MFA built in; the design's sign-in, reset, 2-step and invite screens map onto it directly |
 | Data access | The React app reads and writes Supabase over its client library; every table has RLS policies | Fewer moving parts than an API layer; permissions live in one place and are tested as SQL |
@@ -28,7 +43,7 @@ The app talks to Supabase directly and Edge Functions handle only the jobs that 
 | UI | Tailwind with the design tokens as CSS variables, headless Radix primitives, components built to match the design | The design is custom, so a styled library would fight it; tokens give light and dark mode from day one |
 | Data layer | TanStack Query over the Supabase client; React Router | Caching, retries and optimistic updates without a store to maintain |
 | Testing | Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows | WebKit in Playwright is the stand-in for an iPhone until a real-device pass |
-| Repo and CI | One GitHub repo (`app/`, `supabase/`), GitHub Actions: typecheck, tests, Cloudflare Pages deploy, Supabase migrations on merge to main | Solo, AI-assisted build: every change goes through the same gate |
+| Repo and CI | One GitHub repo (`app/`, `supabase/`), GitHub Actions: lint, typecheck, Vitest, Playwright, pgTAP and type generation on every PR; Supabase migrations on merge to main. Cloudflare Workers Builds deploys the app itself | Solo, AI-assisted build: every change goes through the same gate |
 | Offline | Later (Phase 8). v1 caches what you have read; writes need a connection | The queued-ticket flow in the design is real work on its own |
 | Permissions | Four roles with defaults from the Roles & rights screen, overridable per person | Managers can be granted equipment edits and cost visibility by an admin; the database checks the grant, not the screen |
 
@@ -38,34 +53,38 @@ Two things stay open until the first demo: the production domain (QR labels bake
 
 ![architecture · 5 parts, 1 host](architecture.png)
 
-The phone never holds a secret: it signs in with Supabase Auth, then reads and writes tables and files under row-level security. Edge Functions run with the service key for the few jobs a phone cannot do safely (send an invite, push to other people's devices, process an import, render a label sheet, create next month's walkthroughs on a schedule). GitHub Actions deploys the app to Cloudflare Pages and the migrations and functions to Supabase on every merge.
+The phone never holds a secret: it signs in with Supabase Auth, then reads and writes tables and files under row-level security. Edge Functions run with the service key for the few jobs a phone cannot do safely (send an invite, push to other people's devices, process an import, render a label sheet, create next month's walkthroughs on a schedule). Cloudflare Workers Builds deploys the app on every push (production from `main`, a preview per branch), and GitHub Actions deploys the migrations and functions to Supabase on every merge.
+
+The app gets two public build values, the Supabase URL and the publishable key (`sb_publishable_…`). Both end up in the JavaScript every visitor downloads, so no secret key, `service_role` key or personal access token may ever go in a `VITE_` variable. Cloudflare keeps build variables per environment: Production and each branch need them set separately.
 
 ## Data model
 
-Twenty tables in five groups. Tickets are the center; equipment, service records and walkthroughs all hang off them. The nine-table model in the earlier doc grew by the walkthrough, contractor and rights tables the design added.
+Twenty-three tables in five groups, plus ten views. Tickets are the center; equipment, service records and walkthroughs all hang off them. The nine-table model in the earlier doc grew by the walkthrough, contractor and rights tables the design added.
 
 | Group | Tables | Notes |
 | --- | --- | --- |
-| Org and access | `restaurants`, `profiles`, `memberships`, `invites`, `rights`, `push_subscriptions`, `audit_log` | `restaurants` holds name, address, phone, accent color, manager. `memberships` = one row per person per restaurant with a role (manager, ops, leadership, admin); ops and leadership default to all restaurants. `rights` = the Roles & rights grid: a default row per role, plus per-person override rows (can_edit_equipment, can_see_costs, can_set_walkthrough_schedule, …) |
+| Org and access | `restaurants`, `profiles`, `memberships`, `invites`, `rights`, `push_subscriptions`, `audit_log` | `restaurants` holds name, address, phone, accent color, manager. `profiles.role` holds the role (manager, ops, leadership, admin); `memberships` is scope only, one row per restaurant or a single null row for all restaurants, which ops and leadership get by default. `rights` = the Roles & rights grid: a default row per role, plus per-person override rows. Right keys: `create_tickets`, `see_all_tickets`, `update_status`, `log_cost`, `see_costs`, `edit_equipment`, `see_contractors`, `set_walkthrough_schedule`, `invite_users`, `manage_rights` |
 | Equipment | `equipment`, `categories` | Category carries area (FOH or BOH). Equipment has brand, model, serial, installed, warranty, location note, manual file, retired_at |
 | Tickets | `tickets`, `ticket_updates`, `ticket_photos` | Ticket: restaurant, equipment (optional), category, title, description, urgency, status, assignee, source (reported or walkthrough), walkthrough_id, reopened_at. Status is an enum: open, in_progress, waiting_parts, scheduled, reopened, closed. Updates carry text, photo, internal flag, and system events (assigned, status change, closed, reopened) |
 | Service and money | `contractors`, `service_records`, `service_line_items`, `invoices` | A service record belongs to a ticket and optionally a contractor; line items are labor, parts, trip. An invoice is a file plus number, amount and status (attached, missing). Per-unit and per-contractor spend are views over service records |
 | Walkthroughs | `walkthrough_schedules`, `walkthrough_templates`, `walkthrough_items`, `walkthroughs`, `walkthrough_checks`, `inhouse_fixes`, `quarterly_tasks` | A schedule is group-wide or per restaurant (rotation of months). A walkthrough is one restaurant for one month; checks are its item results (good, in-house, ticket). In-house fixes link back to the check and can convert to a ticket. Quarterly tasks are group-wide with per-restaurant overrides and removals |
 
-**How rights work.** The JWT carries only the user id. A SQL function `can(action, restaurant_id)` reads `memberships` and `rights` and is used by every policy, so a manager with `can_edit_equipment` granted by an admin passes the same check an ops manager does. Leadership policies are select-only. The service role used by Edge Functions bypasses RLS, which is why those functions check the caller themselves before acting.
+**How rights work.** The JWT carries only the user id. A SQL function `can(action, restaurant_id)` reads `profiles.role`, `memberships` and `rights` and is used by every policy, so a manager with `edit_equipment` granted by an admin passes the same check an ops manager does. Leadership policies are select-only. The service role used by Edge Functions bypasses RLS, which is why those functions check the caller themselves before acting.
 
 **Counting and costs** (open tickets per restaurant, spend this year per unit, visits per contractor) are Postgres views, not client-side sums, so every screen shows the same numbers.
 
-The first migration should land all five groups even though phases 1 to 4 use only the first three; adding walkthrough tables later would mean reworking the ticket table's `source` and `walkthrough_id` columns.
+All five groups landed in Phase 0 (OT-2, eight migration files) even though phases 1 to 4 use only the first three; adding walkthrough tables later would have meant reworking the ticket table's `source` and `walkthrough_id` columns. Account creation is invite only in the database itself: a trigger on new auth users takes role and restaurants from a pending invite and rejects anyone without one.
 
 ## Phase 0 · Foundation
 
 An empty app that installs on a phone, switches between light and dark, deploys on every merge, and has a database whose permissions are already tested. Nothing a user would call a feature, but every later phase moves faster for it.
 
+**Status:** done in OT-1 to OT-3; the real-iPhone check waits for BrowserStack (see Status above).
+
 **Ships**
 
 - Repo with `app/` (Vite + React + TypeScript) and `supabase/` (migrations, functions, seed, tests); GitHub Actions running typecheck, Vitest, pgTAP and Playwright on Chromium and WebKit
-- Cloudflare Pages connected to the repo: production on `main`, a preview URL per pull request
+- Cloudflare Workers Builds connected to the repo: production on `main`, a preview URL per branch
 - Supabase project with the full schema from the data model, RLS on every table, the `can()` function, and pgTAP tests that sign in as each role and assert what it can and cannot read
 - Seed script with the four restaurants, their colors, sample users for each role, equipment and tickets matching the design's sample data, so every demo starts from the same state
 - Design tokens as CSS variables (colors, spacing, type, radii) with a dark set; Tailwind wired to them; the `prefers-color-scheme` default plus a manual toggle saved per device
@@ -87,14 +106,15 @@ Real people can be invited, sign in, and land in the right role, with rights an 
 - Admin: Users list with filters (all, pending, managers, ops), Invite user (name, email, role, restaurants), resend and revoke, user profile with per-person rights override, View as (read-only impersonation, logged to the audit table)
 - Admin: Roles & rights grid, editable defaults with the confirm sheet, locked admin column
 - Invite email through Resend; invite link single-use, 72-hour expiry; Set up account screen (name, password rules, confirm)
-- Sign in, password reset (request, sent, email, new password, done), expired link and signed-out screens
+- Sign in, password reset (request, sent, email, new password, done), expired link and signed-out screens. The Sign in button stays disabled until the email has a valid shape and the password has at least 12 characters (the provisional screen from Phase 0 only disables it when Supabase is not configured)
 - 2-step verification: TOTP with authenticator app (choose, scan, verify, backup codes) required for admins and offered to everyone; the SMS option waits unless the group asks for it, since it adds a Twilio cost
 - Profile (name, phone, restaurant, theme toggle, sign out) and Help & support (report a problem to a support inbox, FAQ)
-- Edge Functions: `invite-user`, `revoke-user`, `send-email`
+- Edge Functions: `invite-user`, `revoke-user`, `send-email`. They run with the service key, so each checks the caller with `can()` or `is_admin()` first. `revoke-user` sets `profiles.deactivated_at` and also bans the auth user so refresh tokens stop working
+- A `/security-review` pass before the invite and sign-in work merges, since this is the first code that holds the service key
 
 **Screens from the design:** Admin · Users, Invite user, Roles & rights, User profile, View as, Restaurants, Add restaurant; Invite email, Set up account, Sign in, Password reset 1 to 5, 2-step setup 1 to 4 and the sign-in code screen, Profile, Help & support, Error · link expired, no access, signed out
 
-**Done when:** an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `can_see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
+**Done when:** an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
 
 ## Phase 2 · Tickets, the manager loop
 
@@ -106,7 +126,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 - Create ticket in two steps: area and category grid (counts per category), then the form (title, description, photos, urgency, optional equipment picker filtered to that restaurant)
 - Ticket detail: header with status and urgency, description, equipment card, the update thread with photos, the composer with camera, system events in the timeline
 - Edit or close ticket (manager side), with the closed state read-only
-- Closed ticket: resolution, contractor and cost shown only when `can_see_costs` is granted, 30-day reopen window, the Reopen ticket sheet that sets status to Reopened and notifies Ops
+- Closed ticket: resolution, contractor and cost shown only when `see_costs` is granted, 30-day reopen window, the Reopen ticket sheet that sets status to Reopened and notifies Ops
 - Photo upload: resized to 1600 px in the browser, stored under the ticket, thumbnails in the thread
 - Empty and no-results states for the lists; the save-failed validation state on the form
 - Status icons, pills and the restaurant color square as shared components, since every later list reuses them
@@ -139,8 +159,8 @@ Every unit has a page, a QR label, and a history. This closes the loop that EcoT
 **Ships**
 
 - Ops equipment list: search, filter sheet (restaurant, area, category), category disclosures with open-ticket badges, rows with restaurant color, brand, serial and this year's spend
-- Manager equipment list: same list scoped to their restaurant, with Add equipment only when `can_edit_equipment` is granted
-- Equipment detail tabs: Details (serial, QR, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `can_see_costs`
+- Manager equipment list: same list scoped to their restaurant, with Add equipment only when `edit_equipment` is granted
+- Equipment detail tabs: Details (serial, QR, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `see_costs`
 - Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print
 - QR: each label encodes `https://<domain>/e/<id>`; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
@@ -226,18 +246,18 @@ These come after the group is using the app daily, in whatever order the feedbac
 
 One person with AI help can move fast on this stack as long as every phase has the same shape: schema and policies first, then the screens against the design, then a Playwright flow that proves the done test. Order inside a phase:
 
-1. **Migration and policies.** Write the tables, the `can()` cases and the pgTAP tests for the phase before any UI. Tests run against a local Supabase (`supabase start`), so the database is right before a screen exists
-2. **Data hooks.** One TanStack Query hook per screen's data, typed from the generated Supabase types (`supabase gen types`), with the seed data as fixtures
+1. **Migration and policies.** Write the tables, the `can()` cases and the pgTAP tests for the phase before any UI. There is no Docker on the dev machine, so the tests run in CI's Database job (`supabase db start`, `supabase test db`): push the branch and read the result. The database is right before a screen exists
+2. **Data hooks.** One TanStack Query hook per screen's data, typed from the generated Supabase types (CI builds them as the `database-types` artifact), with the seed data as fixtures
 3. **Screens against the design.** Build each screen from its board on the design canvas, in both themes, in the `/kit` page first when a new component is needed. The canvas's sample data and the seed data match on purpose, so a screen is done when it looks like its board
 4. **Flow test.** One Playwright test per phase on Chromium and WebKit, driving the done test end to end against the seeded local stack
-5. **Preview and try on a phone.** Every pull request gets a Cloudflare preview URL; open it on an iPhone before merging. A BrowserStack real-device pass before each milestone handed to the client
+5. **Preview and try on a phone.** Every branch gets a Cloudflare preview URL; open it on a phone (Android today) before merging. A BrowserStack real-iPhone pass before each milestone handed to the client
 
 **Conventions**
 
-- Small pull requests, one screen or one function each, merged to `main` only when CI is green; `main` deploys to production and applies migrations automatically
+- Small pull requests, one screen or one function each, merged to `main` only when CI is green; `main` deploys to production (Workers Builds) and applies migrations (`supabase-deploy.yml`) automatically
 - A `CLAUDE.md` in the repo holding the stack, the folder layout, the token names, the done test for the current phase and the rules from the earlier doc (16 px inputs, `100dvh`, safe areas), so each AI session starts with the same context
 - No restaurant data in the repo; the seed is fictional except restaurant names and colors
-- Secrets only in Supabase and GitHub Actions settings, never in `.env` files that get committed
+- Secrets only in Supabase and GitHub Actions settings, never in `.env` files that get committed. The Cloudflare build variables hold only the two public values
 - Each phase ends with a short written note of what changed and what the client should try, which becomes the message to the ops team
 
 **What done means for a phase:** its done test passes in CI on both engines, the screens match their boards in light and dark, RLS tests cover its tables, and it has been tried on a real phone from the preview URL.
@@ -271,6 +291,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | QR labels bake in the domain | Reprinting labels is a real cost once they are on units | Buy the domain before Phase 4; use a short path like `/e/` so labels stay small |
 | Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | Set up SPF, DKIM and DMARC on the sending domain in Phase 1, send a test to a Gmail and an Outlook address |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
+| A secret pasted into a `VITE_` build variable | It ships in the public JavaScript; on Oct 28 a Supabase personal access token went out in the OT-3 preview this way and was revoked | Only the URL and the `sb_publishable_` key go in Cloudflare; check the key's prefix when setting a new branch's variables |
 | Solo build with AI help drifts from the design | Screens that look close but not right erode trust with a team that already struggled with the canvas | Build from the boards one at a time, check both themes in `/kit`, and put the preview on a phone before merging |
 
 **Open items**
@@ -278,6 +299,6 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Production domain, so QR labels and emails have a stable base
 - [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
-- [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops
+- [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then)
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
