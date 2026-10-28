@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Link expired — OnTrack</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.seg{flex:1;min-height:36px;border:0;border-radius:9px;background:transparent;font:600 13px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.err{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px 28px 40px}
+.eicon{width:64px;height:64px;border-radius:50%;background:#F3ECD6;color:#6A500C;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.etitle{margin:0;font:700 22px 'Archivo',sans-serif;letter-spacing:-0.01em;color:#15201B}
+.ebody{margin:0;font-size:14px;line-height:1.5;color:#4D5752;max-width:290px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 15px 'Public Sans',sans-serif;cursor:pointer;width:100%;text-decoration:none}
+.btn:hover{color:#fff}
+.btn.done{background:#DCE8E3;color:#0B4537;cursor:default}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 28px 24px 0; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#12634F"></rect><path d="M8 15l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <span class="h" style="font-size: 20px; font-weight: 700">OnTrack</span>
+    </div>
+    <div role="tablist" aria-label="Preview which link" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+      <button type="button" role="tab" class="{{resetCls}}" aria-selected="{{isReset}}" onClick="{{pickReset}}">Reset link</button>
+      <button type="button" role="tab" class="{{inviteCls}}" aria-selected="{{isInvite}}" onClick="{{pickInvite}}">Invite link</button>
+    </div>
+  </div>
+  <div class="err">
+    <span class="eicon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2M9 2h6"></path></svg></span>
+    <h1 class="etitle">{{title}}</h1>
+    <p class="ebody">{{body}}</p>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; width: 100%; max-width: 260px">
+      <button type="button" class="{{btnCls}}" onClick="{{send}}">{{btnLabel}}</button>
+      <a href="Sign-In.dc.html" style="min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none">Back to sign in</a>
+    </div>
+    <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+      <p role="status" class="ebody" style="font-size: 13px; color: #0B4537">{{sentText}}</p>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { kind: 'reset', sent: false }; }
+  renderVals() {
+    var r = this.state.kind === 'reset', s = this.state.sent;
+    return {
+      isReset: r, isInvite: !r, sent: s,
+      resetCls: r ? 'seg on' : 'seg', inviteCls: r ? 'seg' : 'seg on',
+      pickReset: () => this.setState({ kind: 'reset', sent: false }),
+      pickInvite: () => this.setState({ kind: 'invite', sent: false }),
+      title: r ? 'This reset link has expired' : 'This invite has expired',
+      body: r ? 'Reset links work for 30 minutes and only once. Your password hasn\'t changed. Get a fresh link below.' : 'Invites last 7 days. Ask your IT admin to send you a new one.',
+      btnLabel: s ? (r ? 'New link sent' : 'Request sent') : (r ? 'Email me a new link' : 'Ask admin for a new invite'),
+      btnCls: s ? 'btn done' : 'btn',
+      send: () => this.setState({ sent: true }),
+      sentText: r ? 'Check maya.reyes@fourcornerstaverns.com. The new link works for 30 minutes.' : 'We let your admin know. Your new invite will come by email.'
+    };
+  }
+}
+</script>
+</body>
+</html>

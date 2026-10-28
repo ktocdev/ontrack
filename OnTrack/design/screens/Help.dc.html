@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Help and support</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.card{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.srow{width:100%;display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 14px;border:0;border-top:1px solid #DDE1DC;background:transparent;box-sizing:border-box;font-family:inherit;text-align:left;text-decoration:none;color:#15201B;cursor:pointer}
+.srow:first-child{border-top:0}
+.srow:hover{background:#F7F8F6;color:#15201B}
+.ic{flex:none;width:36px;height:36px;border-radius:10px;background:#E3EFEA;color:#12634F;display:flex;align-items:center;justify-content:center}
+.ic svg{display:block}
+.k{font-size:14px;font-weight:600;line-height:20px}
+.v{font-size:12px;color:#5A645F;line-height:16px}
+.faq{border-top:1px solid #DDE1DC}
+.faq:first-child{border-top:0}
+.fq{width:100%;display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border:0;background:#fff;font:600 14px/20px 'Public Sans',sans-serif;color:#15201B;text-align:left;cursor:pointer;box-sizing:border-box}
+.fq svg{display:block;flex:none}
+.fa{margin:0;padding:0 14px 14px;font-size:14px;line-height:1.5;color:#2E3833}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 20px 8px 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Profile.dc.html" aria-label="Back to profile" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <span class="h" style="font-size: 20px; font-weight: 700">Help &amp; support</span>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 12px">
+    <label style="flex: none; display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 0 14px; min-height: 44px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Search help articles" aria-label="Search help" style="border: 0; outline: 0; flex: 1; min-width: 0; font: 400 15px 'Public Sans', sans-serif; background: transparent; color: #15201B">
+    </label>
+
+    <span class="sec ebrow">Get in touch</span>
+    <div class="card">
+      <button type="button" class="srow" onClick="{{__openRep}}">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="k">Report a problem</span><span class="v">Something not working? Tell support.</span></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+      <a class="srow" href="mailto:support@ontrack.app">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="k">Email support</span><span class="v">Replies within 1 business day</span></span>
+      </a>
+      <a class="srow" href="tel:+10000000000">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="k">Call support</span><span class="v">Mon to Fri, 8 AM to 6 PM CT</span></span>
+      </a>
+    </div>
+    <span class="v" style="margin-top: -4px">For a broken piece of equipment, create a ticket instead. Support can't send a contractor.</span>
+
+    <span class="sec ebrow">Common questions</span>
+    <div class="card">
+      <sc-for list="{{faqs}}" as="f" hint-placeholder-count="5">
+        <div class="faq">
+          <button type="button" class="fq" aria-expanded="{{f.open}}" onClick="{{f.toggle}}">
+            <span style="flex: 1">{{f.q}}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{f.chev}}"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+          <sc-if value="{{f.open}}" hint-placeholder-val="{{false}}"><p class="fa">{{f.a}}</p></sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <span class="sec ebrow">Account</span>
+    <div class="card">
+      <a class="srow" href="Reset-Request.dc.html">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="k">Can't sign in?</span><span class="v">Reset your password</span></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <div class="srow" style="cursor: default">
+        <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1-4 4-6 8-6s7 2 8 6"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="k">Need a different role or restaurant?</span><span class="v">Your admin manages roles and restaurants</span></span>
+      </div>
+    </div>
+
+    <div style="flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 16px; font-size: 12px; color: #5A645F">
+      <span>OnTrack · Version 1.4.2</span>
+      <span><a href="#terms">Terms</a> · <a href="#privacy">Privacy</a></span>
+    </div>
+  </div>
+
+  <sc-if value="{{__repOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 30; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="rep-t" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="rep-t" style="margin: 0; font: 700 22px 'Archivo', sans-serif; letter-spacing: -0.01em">Report a problem</h2>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">Goes to OnTrack support. Your account and device info are attached.</p>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="rep-n" style="font-size: 13px; font-weight: 600; color: #2E3833">What happened?</label>
+          <textarea id="rep-n" rows="3" placeholder="What were you trying to do, and what went wrong?" style="width: 100%; box-sizing: border-box; border: 1px solid #C9CFCA; border-radius: 12px; background: #fff; padding: 12px 14px; font: 400 15px 'Public Sans', sans-serif; color: #15201B; resize: none; line-height: 1.4"></textarea>
+        </div>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; color: #2E3833; cursor: pointer"><input type="checkbox" checked="" style="width: 20px; height: 20px; margin: 0; accent-color: #12634F">Include a screenshot</label>
+        <button type="button" onClick="{{__sendRep}}" style="min-height: 52px; border-radius: 12px; border: 0; background: #12634F; color: #fff; font: 700 16px 'Public Sans', sans-serif; cursor: pointer">Send to support</button>
+        <button type="button" onClick="{{__closeRep}}" style="min-height: 48px; border-radius: 12px; border: 1px solid #C9CFCA; background: #fff; color: #15201B; font: 600 15px 'Public Sans', sans-serif; cursor: pointer">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{__repSent}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 24px; z-index: 25; display: flex; gap: 10px; align-items: center; background: #15201B; color: #fff; border-radius: 12px; padding: 12px 14px; font-size: 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m5 12 5 5 9-10"></path></svg>
+      <span style="flex: 1">Sent to support. Case #4822. We'll email you.</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { open: 0 }; }
+  renderVals() {
+    var self = this, cur = this.state.open;
+    var data = [
+      { q: 'How do I report broken equipment?', a: 'Scan the QR label on the equipment, or tap Create ticket and pick the area and category. Add a photo if you can. Your Ops Manager is notified right away.' },
+      { q: 'Who sees my tickets?', a: 'Managers at your restaurant and all Ops Managers. Leadership and admins can view tickets but not change them.' },
+      { q: 'What does each status mean?', a: 'Open: not picked up yet. In progress: an Ops Manager is on it. Waiting on parts: work is paused until parts arrive. Closed: fixed.' },
+      { q: 'The problem came back after a ticket closed', a: 'Open the closed ticket and tap Reopen ticket within 30 days. After that, create a new ticket from it so the history stays linked.' },
+      { q: 'A QR label is missing or won’t scan', a: 'Search for the equipment by name or serial number instead. Ops Managers can print a new label from the equipment’s Details tab.' },
+      { q: 'How do walkthroughs work?', a: 'Each walkthrough is a checklist for your restaurant. Mark items as you go. Anything that needs fixing becomes a ticket when you submit.' }
+    ];
+    return {
+      faqs: data.map(function (f, i) {
+        var o = cur === i;
+        return { q: f.q, a: f.a, open: o, chev: o ? 'transform: rotate(180deg)' : '',
+          toggle: function () { self.setState({ open: o ? -1 : i }); } };
+      })
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var sc=!!(self.state&&self.state.__sc); v.__hdCls='stickyhd'+(sc?' is-scrolled':''); v.__onScroll=function(e){var y=e.target.scrollTop>2; if(y!==!!(self.state&&self.state.__sc)){ if(!self.state) self.state={}; self.setState({__sc:y}); }}; return v; }; })(Component);
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var st=self.state||{}; v.__repOpen=!!st.__rep; v.__repSent=!!st.__repSent; v.__openRep=function(){ if(!self.state) self.state={}; self.setState({__rep:true,__repSent:false}); }; v.__closeRep=function(){ self.setState({__rep:false}); }; v.__sendRep=function(){ self.setState({__rep:false,__repSent:true}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

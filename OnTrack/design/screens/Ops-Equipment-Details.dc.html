@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Equipment details — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-size:14px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent}
+.tab.on{color:#15201B;border-bottom-color:#12634F}
+.badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:#FBEADF;color:#94390A}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+div.ebrow{display:flex}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kpi{min-width:0;background:#fff;border:1px solid #DDE1DC;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kpi.wide{grid-column:1/-1}
+.kpi b{overflow-wrap:anywhere}
+.kpi b{font:700 22px 'Archivo',sans-serif}
+.kpi span{font-size:12px;color:#4D5752;font-weight:600}
+.log{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid #DDE1DC;font-size:13px;text-decoration:none;color:#15201B}
+a.log:hover{background:#F7F8F6;color:#15201B}
+.fi{flex:none;color:#12634F}
+.fm{flex:none;font-size:11px;font-weight:700;color:#6A500C;background:#FBF5E3;padding:1px 6px;border-radius:5px}
+.log:first-child{border-top:0}
+
+.row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #ECEEEB;font-size:14px}
+.row:last-child{border-bottom:0}
+.k{color:#5A645F}
+.v{font-weight:600;text-align:right}
+.rname{-webkit-text-fill-color:#2E3833}
+.rname::before{content:'';display:inline-block;width:9px;height:9px;border-radius:2px;background:currentColor;margin-right:6px;vertical-align:0;box-shadow:inset 0 0 0 1px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Ops-Ticket.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; font-size: 13px; font-weight: 600; color: #5A645F"><span class="rname" style="font-weight: 700; color: #A3336D">Federale’s Logan Square</span> › BOH › Refrigeration</div>
+    <a href="Ops-Edit-Equipment.dc.html" style="min-height: 40px; padding: 0 12px; display: flex; align-items: center; text-decoration: none; font: 600 14px 'Public Sans', sans-serif; color: #12634F">Edit</a>
+  </div>
+  <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 4px">
+    <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Walk-in Cooler 1</h1>
+    <span style="font-size: 13px; color: #5A645F">Kolpak · <span class="mono">KP-7XW-220418</span> · Installed Mar 2022</span>
+  </div>
+  <nav aria-label="Equipment sections" style="display: flex; margin: 12px 20px 0; border-bottom: 1px solid #DDE1DC">
+    <a class="tab on" aria-current="page" href="Ops-Equipment-Details.dc.html">Details</a>
+    <a class="tab" href="Ops-Equipment-Tickets.dc.html">Tickets <span class="badge">1</span></a>
+    <a class="tab" href="Ops-Equipment.dc.html">Service &amp; cost</a>
+  </nav>
+  <div style="flex: 1; overflow-y: auto; padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; gap: 16px; align-items: center; background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; padding: 14px">
+      <svg width="92" height="92" viewBox="0 0 21 21" role="img" aria-label="QR code for Walk-in Cooler 1" shape-rendering="crispEdges" style="flex: none">
+        <rect width="21" height="21" fill="#fff"></rect>
+        <g fill="#15201B">
+          <path d="M0 0h7v7H0zM1 1v5h5V1zM2 2h3v3H2z" fill-rule="evenodd"></path>
+          <path d="M14 0h7v7h-7zM15 1v5h5V1zM16 2h3v3h-3z" fill-rule="evenodd"></path>
+          <path d="M0 14h7v7H0zM1 15v5h5v-5zM2 16h3v3H2z" fill-rule="evenodd"></path>
+          <rect x="8" y="0" width="1" height="2"></rect><rect x="10" y="1" width="2" height="1"></rect><rect x="9" y="3" width="1" height="3"></rect><rect x="11" y="4" width="2" height="2"></rect>
+          <rect x="8" y="8" width="3" height="1"></rect><rect x="12" y="8" width="1" height="3"></rect><rect x="0" y="8" width="2" height="1"></rect><rect x="3" y="9" width="3" height="1"></rect>
+          <rect x="1" y="11" width="1" height="2"></rect><rect x="4" y="11" width="2" height="2"></rect><rect x="8" y="10" width="2" height="2"></rect><rect x="14" y="8" width="1" height="2"></rect>
+          <rect x="16" y="9" width="3" height="1"></rect><rect x="19" y="11" width="2" height="1"></rect><rect x="15" y="11" width="2" height="2"></rect><rect x="10" y="13" width="1" height="3"></rect>
+          <rect x="8" y="14" width="1" height="2"></rect><rect x="12" y="14" width="3" height="1"></rect><rect x="14" y="16" width="2" height="2"></rect><rect x="17" y="14" width="1" height="3"></rect>
+          <rect x="19" y="15" width="2" height="2"></rect><rect x="8" y="18" width="3" height="1"></rect><rect x="12" y="17" width="1" height="4"></rect><rect x="17" y="19" width="4" height="1"></rect>
+          <rect x="9" y="20" width="2" height="1"></rect><rect x="14" y="19" width="1" height="2"></rect>
+        </g>
+      </svg>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0">
+        <span style="font-size: 12px; color: #5A645F; font-weight: 600">Serial number</span>
+        <span class="mono" style="font-size: 15px">KP-7XW-220418</span>
+        <button type="button" style="align-self: flex-start; display: flex; align-items: center; gap: 6px; min-height: 40px; border: 0; background: transparent; padding: 0; font: 600 14px 'Public Sans', sans-serif; color: #12634F">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M8 14h8v7H8z"></path></svg>
+          Print QR label
+        </button>
+      </div>
+    </div>
+    <span class="sec ebrow">Details</span>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; padding: 0 14px">
+      <div class="row"><span class="k">Name</span><span class="v">Walk-in Cooler 1</span></div>
+      <div class="row"><span class="k">Brand</span><span class="v">Kolpak</span></div>
+      <div class="row"><span class="k">Model</span><span class="v mono" style="font-size: 13px">KF7-0810-CT</span></div>
+      <div class="row"><span class="k">Restaurant</span><span class="v" style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span></div>
+      <div class="row"><span class="k">Category</span><span class="v">Back of House · Refrigeration</span></div>
+      <div class="row"><span class="k">Location</span><span class="v">Kitchen, north wall</span></div>
+      <div class="row"><span class="k">Installed</span><span class="v">Mar 2022</span></div>
+      <div class="row"><span class="k">Warranty</span><span class="v">Parts through Mar 2027</span></div>
+      <div class="row"><span class="k">Manual</span><a class="v" href="#manual" style="text-decoration: none">Kolpak-KF7.pdf</a></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

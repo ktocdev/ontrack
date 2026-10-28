@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>All in-house fixes — Walkthrough</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.list{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:12px;overflow:hidden}
+.row{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 8px 10px 16px;border-top:1px solid #DDE1DC;font-size:14px;box-sizing:border-box}
+.row:first-child{border-top:0}
+.chk{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer}
+.chk input{width:22px;height:22px;margin:0;flex:none;accent-color:#12634F}
+.where{font-size:12px;color:#5A645F}
+.del{flex:none;width:44px;height:44px;border:0;border-radius:10px;background:transparent;color:#94390A;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.del:hover{background:#FBEADF}
+.btnp{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;border:0;font:700 16px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.btns{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 15px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.scope{flex:0 1 auto;min-width:0;display:inline-flex;align-items:center;gap:2px;min-height:36px;padding:0 4px 0 12px;border-radius:999px;background:#DCE8E3;color:#0B4537;font-size:13px;font-weight:600}
+.scope button{flex:none;width:32px;height:32px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%}
+.lnk{flex:none;min-height:40px;border:0;background:transparent;padding:0;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+.done{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:#DCE8E3;color:#0B4537;white-space:nowrap}
+.past{flex:none;margin-top:4px}
+.past summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;cursor:pointer;list-style:none}
+.past summary::-webkit-details-marker{display:none}
+.past[open] .pchev{transform:rotate(180deg)}
+.past[open] summary{margin-bottom:4px}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="{{backHref}}" aria-label="{{backLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 12px; font-weight: 600; color: #4D5752">October walkthrough · Federale’s Logan Square</span>
+      <span class="h" style="font-size: 20px; font-weight: 700">In-house fixes</span>
+    </div>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <sc-if value="{{scoped}}" hint-placeholder-val="{{false}}">
+      <div style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 2px">
+        <span class="scope"><span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{scopeLabel}}</span><button type="button" onClick="{{showAll}}" aria-label="Remove filter: {{scopeLabel}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+        <button type="button" class="lnk" onClick="{{showAll}}">Show all {{allCount}}</button>
+      </div>
+    </sc-if>
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <span class="sec">In-house to fix · {{openCount}}</span>
+      <span style="font-size: 12px; color: #4D5752">Check off when fixed</span>
+    </div>
+    <sc-if value="{{hasOpen}}" hint-placeholder-val="{{true}}">
+      <div class="list">
+        <sc-for list="{{openFixes}}" as="x" hint-placeholder-count="3">
+          <div class="row">
+            <label class="chk">
+              <input type="checkbox" checked="{{x.done}}" onChange="{{x.toggle}}" aria-label="{{x.chkLabel}}">
+              <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+                <span style="{{x.textStyle}}">{{x.text}}</span>
+                <span class="where">{{x.meta}}</span>
+              </div>
+            </label>
+            <button type="button" class="del" aria-label="{{x.delLabel}}" onClick="{{x.askDelete}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></button>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{noOpen}}" hint-placeholder-val="{{false}}">
+      <div class="list" style="padding: 18px 16px; font-size: 14px; color: #4D5752; line-height: 1.45">{{emptyMsg}}</div>
+    </sc-if>
+    <sc-if value="{{hasClosed}}" hint-placeholder-val="{{true}}">
+      <details class="past">
+        <summary><span class="sec">Closed · {{closedCount}}</span><svg class="pchev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+        <div class="list">
+          <sc-for list="{{closedFixes}}" as="x" hint-placeholder-count="1">
+            <div class="row">
+              <label class="chk">
+                <input type="checkbox" checked="{{x.done}}" onChange="{{x.toggle}}" aria-label="{{x.chkLabel}}">
+                <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+                  <span style="{{x.textStyle}}">{{x.text}}</span>
+                  <span class="where">{{x.meta}}</span>
+                </div>
+              </label>
+              <button type="button" class="del" aria-label="{{x.delLabel}}" onClick="{{x.askDelete}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></button>
+            </div>
+          </sc-for>
+        </div>
+      </details>
+    </sc-if>
+    <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="display: flex; gap: 10px; align-items: center; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m5 12 5 5 9-10"></path></svg>
+        <span>{{toast}}</span>
+      </div>
+    </sc-if>
+  </div>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="del-title" aria-describedby="del-desc" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <span style="width: 48px; height: 48px; border-radius: 50%; background: #FBEADF; color: #94390A; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></span>
+        <h2 id="del-title" class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Delete this in-house fix?</h2>
+        <div id="del-desc" style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #2E3833; line-height: 1.5">
+          <span>"{{sheetText}}" will be removed from this walkthrough.</span>
+          <b style="color: #94390A">This is permanent and cannot be undone.</b>
+        </div>
+        <button type="button" class="btnp" style="background: #A33A0B; color: #fff" onClick="{{confirmDelete}}">Delete</button>
+        <button type="button" class="btns" onClick="{{cancelDelete}}">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"fromItem":{"editor":"boolean","default":true},"deleteOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      fixes: [
+        { id: 'a', text: 'Re-glue trim on pass shelf', done: true, where: 'BOH › Electrical › Feature' },
+        { id: 'b', text: 'Replace 2 bulbs over booths 4–6', done: false, where: 'FOH › Electrical › Light bulbs' },
+        { id: 'c', text: 'Tighten wobbly 2-top at table 14', done: false, where: 'FOH › Aesthetics › Surfaces and seating' },
+        { id: 'd', text: 'Clear boxes from utility closet', done: false, where: 'Q4 · Organize utility areas' },
+        { id: 'e', text: 'Replaced cracked cover plate by mop sink', done: false, where: 'BOH › Electrical › Outlets', added: 'Added today by Maya' }
+      ],
+      from: !!(p && p.fromItem), scope: p && p.fromItem ? 'BOH › Electrical › Outlets' : null,
+      sheet: p && p.deleteOpen ? 'a' : null,
+      toast: ''
+    };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var target = s.fixes.filter(function (f) { return f.id === s.sheet; })[0];
+    var mk = function (f) {
+        return {
+          text: f.text, done: f.done,
+          meta: s.scope ? (f.done ? 'Completed today' : (f.added || '')) : f.where + (f.done ? ' · Completed' : ''),
+          textStyle: 'font-weight: 600; ' + (f.done ? 'text-decoration: line-through; color: #4D5752' : ''),
+          chkLabel: 'Mark complete: ' + f.text,
+          delLabel: 'Delete in-house fix: ' + f.text,
+          toggle: function () {
+            self.setState({ fixes: s.fixes.map(function (g) { return g.id === f.id ? Object.assign({}, g, { done: !g.done }) : g; }), toast: '' });
+          },
+          askDelete: function () { self.setState({ sheet: f.id, toast: '' }); }
+        };
+      };
+    var vis = s.scope ? s.fixes.filter(function (f) { return f.where === s.scope; }) : s.fixes;
+    var open = vis.filter(function (f) { return !f.done; }), closed = vis.filter(function (f) { return f.done; });
+    return {
+      openCount: open.length, closedCount: closed.length,
+      hasOpen: open.length > 0, noOpen: open.length === 0, hasClosed: closed.length > 0,
+      emptyMsg: vis.length ? 'All fixed. Checked-off fixes are under Closed.' : (s.scope ? 'No in-house fixes on this item. You can mark it Good on the checklist.' : 'No in-house fixes in this walkthrough.'),
+      scoped: !!s.scope, scopeLabel: s.scope || '', allCount: s.fixes.length,
+      showAll: function () { self.setState({ scope: null }); },
+      backHref: s.from ? 'WT-Checklist.dc.html' : 'WT-Review.dc.html',
+      backLabel: s.from ? 'Back to Back of House checklist' : 'Back to review',
+      toast: s.toast,
+      openFixes: open.map(mk), closedFixes: closed.map(mk),
+      sheetOpen: !!target, sheetText: target ? target.text : '',
+      cancelDelete: function () { self.setState({ sheet: null }); },
+      confirmDelete: function () {
+        self.setState({ fixes: s.fixes.filter(function (g) { return g.id !== s.sheet; }), sheet: null, toast: 'In-house fix deleted.' });
+      }
+    };
+  }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+</script>
+</body>
+</html>

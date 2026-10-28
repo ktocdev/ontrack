@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Roles and rights — Admin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:700;color:#4D5752;text-align:center;padding:10px 2px;letter-spacing:.02em}
+th:first-child{text-align:left;padding-left:14px}
+td{padding:11px 2px;text-align:center;border-top:1px solid #ECEEEB}
+td:first-child{text-align:left;padding-left:14px;font-weight:500;color:#15201B}
+.y{display:inline-flex;width:22px;height:22px;border-radius:6px;background:#12634F;align-items:center;justify-content:center}
+.n{display:inline-block;width:12px;height:2px;background:#A9B3AE;vertical-align:middle}
+.s{font-size:11px;font-weight:700;color:#1B4F91}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+.help{flex:none}
+.help summary{display:inline-flex;align-items:center;gap:6px;min-height:40px;font-size:13px;font-weight:600;color:#12634F;cursor:pointer;list-style:none}
+.help summary::-webkit-details-marker{display:none}
+.help[open] .hchev{transform:rotate(180deg)}
+td.e{padding:4px 2px}
+.cellb{width:44px;height:40px;border:1px solid transparent;border-radius:10px;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.cellb:hover{background:#F3F4F1}
+.cellb.ch{border-color:#12634F;background:#E3EFEA}
+.cellb.lk{cursor:not-allowed;opacity:.55}
+.chg{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid #DDE1DC;font-size:14px}
+.chg:first-child{border-top:0}
+.mono{font:500 12px 'JetBrains Mono',monospace;color:#4D5752;white-space:nowrap}
+.btnp{min-height:52px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 16px 'Public Sans',sans-serif;cursor:pointer}
+.btnp.off{background:#DDE1DC;color:#4D5752;cursor:not-allowed}
+.btns{flex:none;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;font:600 15px 'Public Sans',sans-serif;color:#15201B;cursor:pointer}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}} ttl" style="padding: 20px 20px 12px; display: flex; flex-direction: column; gap: 8px">
+    <span style="display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em; line-height: 1.5; text-transform: uppercase; color: #4D5752">Admin<br>4C | Four Corners</span>
+    <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Roles &amp; rights</h1>
+    <p style="margin: 0; font-size: 14px; color: #4D5752; line-height: 1.45">Defaults for each role. Override for one person from their user profile.</p>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 12px">
+    <sc-if value="{{editing}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="flex: none; display: flex; gap: 10px; align-items: flex-start; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+        <span>Tap a cell to change it. See tickets switches between Own and All. Admin rights are locked.</span>
+      </div>
+    </sc-if>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; overflow: hidden">
+      <table>
+        <thead>
+          <tr><th scope="col">Right</th><th scope="col">Mgr</th><th scope="col">Ops</th><th scope="col">Lead</th><th scope="col">Admin</th></tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+            <tr><td>{{r.name}}</td>
+              <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="4">
+                <sc-if value="{{c.view}}" hint-placeholder-val="{{true}}"><td><sc-if value="{{c.isY}}" hint-placeholder-val="{{true}}"><span class="y" role="img" aria-label="Yes"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span></sc-if><sc-if value="{{c.isN}}" hint-placeholder-val="{{false}}"><span class="n" role="img" aria-label="No"></span></sc-if><sc-if value="{{c.isScope}}" hint-placeholder-val="{{false}}"><span class="s">{{c.label}}</span></sc-if></td></sc-if>
+                <sc-if value="{{c.edit}}" hint-placeholder-val="{{false}}"><td class="e"><button type="button" class="{{c.btnCls}}" aria-label="{{c.aria}}" aria-disabled="{{c.locked}}" onClick="{{c.tap}}"><sc-if value="{{c.isY}}" hint-placeholder-val="{{true}}"><span class="y"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span></sc-if><sc-if value="{{c.isN}}" hint-placeholder-val="{{false}}"><span class="n"></span></sc-if><sc-if value="{{c.isScope}}" hint-placeholder-val="{{false}}"><span class="s">{{c.label}}</span></sc-if></button></td></sc-if>
+              </sc-for>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="flex: none; display: flex; gap: 10px; align-items: center; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m5 12 5 5 9-10"></path></svg>
+        <span>{{toast}}</span>
+      </div>
+    </sc-if>
+    <details class="help">
+      <summary><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.3M12 17h.01"></path></svg>Help<svg class="hchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+      <div style="display: flex; flex-direction: column; gap: 4px; padding: 2px 0 6px; font-size: 13px; color: #2E3833; line-height: 1.45">
+        <span><b>Mgr</b> Restaurant manager</span>
+        <span><b>Ops</b> Operations manager</span>
+        <span><b>Lead</b> Leadership (read-only)</span>
+        <span><b>Own</b> Only the restaurants assigned to them</span>
+        <span><b>All</b> Every restaurant in the company</span>
+        <span style="padding-top: 6px">Changing a default updates everyone with that role, except people with a personal override for that right.</span>
+        <span>Admin rights can't be changed, so there's always someone who can manage access.</span>
+      </div>
+    </details>
+    <sc-if value="{{notEditing}}" hint-placeholder-val="{{true}}">
+      <button type="button" class="btns" onClick="{{startEdit}}">Edit defaults</button>
+    </sc-if>
+  </div>
+  <sc-if value="{{editing}}" hint-placeholder-val="{{false}}">
+    <div style="flex: none; border-top: 1px solid #DDE1DC; background: #fff; padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 8px">
+      <button type="button" class="{{saveCls}}" aria-disabled="{{noChanges}}" onClick="{{askSave}}">{{saveLabel}}</button>
+      <button type="button" class="btns" onClick="{{cancelEdit}}">Cancel</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{notEditing}}" hint-placeholder-val="{{true}}">
+  <nav class="nav" aria-label="Admin">
+    <a href="Admin-Users.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c1.9.6 3.1 2.6 3.5 5.5"></path></svg>
+      Users
+    </a>
+    <a class="on" href="Admin-Roles.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>
+      Roles &amp; rights
+    </a>
+    <a href="Admin-Tickets.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+      Tickets
+    </a>
+    <a href="Admin-Restaurants.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l7-5 7 5v12M10 21v-6h4v6"></path></svg>
+      Restaurants
+    </a>
+  </nav>
+  </sc-if>
+  <sc-if value="{{confirmOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 5; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="cf-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="cf-title" class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Update defaults for {{affected}}?</h2>
+        <div style="background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; overflow: hidden">
+          <sc-for list="{{changes}}" as="x" hint-placeholder-count="2">
+            <div class="chg"><span style="flex: 1">{{x.text}}</span><span class="mono">{{x.from}} → {{x.to}}</span></div>
+          </sc-for>
+        </div>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">People with a personal override for a changed right keep their override. Everyone affected is notified.</p>
+        <button type="button" class="btnp" onClick="{{confirmSave}}">Save defaults</button>
+        <button type="button" class="btns" onClick="{{closeConfirm}}">Keep editing</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"editing":{"editor":"boolean","default":false},"confirmOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+var ROLES = ['mgr', 'ops', 'exec', 'admin'];
+var ROLE_NAME = { mgr: 'Mgr', ops: 'Ops', exec: 'Lead' };
+var PEOPLE = { mgr: 3, ops: 1, exec: 1 };
+var BASE = [
+  { id: 'create', name: 'Create tickets', v: { mgr: 'y', ops: 'y', exec: 'n', admin: 'n' } },
+  { id: 'see', name: 'See tickets', v: { mgr: 'own', ops: 'all', exec: 'all', admin: 'all' } },
+  { id: 'status', name: 'Update status', v: { mgr: 'n', ops: 'y', exec: 'n', admin: 'n' } },
+  { id: 'log', name: 'Log cost & contractor', v: { mgr: 'n', ops: 'y', exec: 'n', admin: 'n' } },
+  { id: 'costs', name: 'See costs', v: { mgr: 'n', ops: 'y', exec: 'y', admin: 'y' } },
+  { id: 'equip', name: 'Add / edit equipment', v: { mgr: 'n', ops: 'y', exec: 'n', admin: 'n' } },
+  { id: 'vendors', name: 'See contractors & invoices', v: { mgr: 'n', ops: 'y', exec: 'y', admin: 'y' } },
+  { id: 'sched', name: 'Set walkthrough schedules', v: { mgr: 'n', ops: 'y', exec: 'n', admin: 'y' } },
+  { id: 'invite', name: 'Invite users', v: { mgr: 'n', ops: 'n', exec: 'n', admin: 'y' } },
+  { id: 'rights', name: 'Manage rights', v: { mgr: 'n', ops: 'n', exec: 'n', admin: 'y' } }
+];
+var LBL = { y: 'Yes', n: 'No', own: 'Own', all: 'All' };
+function clone(v) { var o = {}; BASE.forEach(function (r) { o[r.id] = Object.assign({}, v[r.id]); }); return o; }
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    var saved = {}; BASE.forEach(function (r) { saved[r.id] = Object.assign({}, r.v); });
+    var draft = clone(saved);
+    if (p && p.confirmOpen) { draft.costs.mgr = 'y'; draft.sched.mgr = 'y'; }
+    this.state = { saved: saved, draft: draft, editing: !!(p && (p.editing || p.confirmOpen)), confirm: !!(p && p.confirmOpen), toast: '' };
+  }
+  renderVals() {
+    var self = this, s = this.state, src = s.editing ? s.draft : s.saved;
+    var changes = [], roles = {};
+    BASE.forEach(function (r) { ROLES.forEach(function (k) { if (s.draft[r.id][k] !== s.saved[r.id][k]) { changes.push({ text: r.name + ' · ' + ROLE_NAME[k], from: LBL[s.saved[r.id][k]], to: LBL[s.draft[r.id][k]] }); roles[k] = 1; } }); });
+    var n = Object.keys(roles).reduce(function (a, k) { return a + PEOPLE[k]; }, 0);
+    var rows = BASE.map(function (r) {
+      return { name: r.name, cells: ROLES.map(function (k) {
+        var val = src[r.id][k], locked = k === 'admin', ch = s.editing && val !== s.saved[r.id][k];
+        return {
+          view: !s.editing, edit: s.editing, locked: locked,
+          isY: val === 'y', isN: val === 'n', isScope: val === 'own' || val === 'all', label: LBL[val],
+          btnCls: 'cellb' + (ch ? ' ch' : '') + (locked ? ' lk' : ''),
+          aria: r.name + ', ' + (ROLE_NAME[k] || 'Admin') + ': ' + LBL[val] + (locked ? ', locked' : ', tap to change'),
+          tap: function () {
+            if (locked) return;
+            var d = clone(s.draft), cur = d[r.id][k];
+            d[r.id][k] = cur === 'y' ? 'n' : cur === 'n' ? 'y' : cur === 'own' ? 'all' : 'own';
+            self.setState({ draft: d });
+          }
+        };
+      }) };
+    });
+    return {
+      rows: rows, editing: s.editing, notEditing: !s.editing, toast: s.toast,
+      noChanges: changes.length === 0,
+      saveCls: changes.length ? 'btnp' : 'btnp off',
+      saveLabel: changes.length ? 'Save ' + changes.length + (changes.length === 1 ? ' change' : ' changes') : 'Save changes',
+      confirmOpen: s.confirm, changes: changes,
+      affected: n + (n === 1 ? ' person' : ' people'),
+      startEdit: function () { self.setState({ editing: true, draft: clone(s.saved), toast: '' }); },
+      cancelEdit: function () { self.setState({ editing: false, draft: clone(s.saved) }); },
+      askSave: function () { if (changes.length) self.setState({ confirm: true }); },
+      closeConfirm: function () { self.setState({ confirm: false }); },
+      confirmSave: function () { self.setState({ saved: clone(s.draft), editing: false, confirm: false, toast: 'Defaults updated. ' + n + (n === 1 ? ' person was' : ' people were') + ' notified.' }); }
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var sc=!!(self.state&&self.state.__sc); v.__hdCls='stickyhd'+(sc?' is-scrolled':''); v.__onScroll=function(e){var y=e.target.scrollTop>2; if(y!==!!(self.state&&self.state.__sc)){ if(!self.state) self.state={}; self.setState({__sc:y}); }}; return v; }; })(Component);
+</script>
+</body>
+</html>

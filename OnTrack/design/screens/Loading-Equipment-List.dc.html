@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Equipment loading — Manager</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sk{display:block;background:#ECEEEB;border-radius:6px;position:relative;overflow:hidden}
+.sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.6),rgba(255,255,255,0));animation:sh 1.4s ease-in-out infinite}
+@keyframes sh{100%{transform:translateX(100%)}}
+@media (prefers-reduced-motion:reduce){.sk::after{animation:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.grp{background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.ghead{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px}
+.item{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 14px;border-top:1px solid #ECEEEB;box-sizing:border-box}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 24px 20px 12px; display: flex; flex-direction: column; gap: 14px">
+    <span style="display: flex; align-items: center; gap: 6px; font: 600 14px 'Public Sans', sans-serif; color: #15201B"><span style="width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Equipment</h1>
+      <button type="button" aria-label="Scan QR code" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #C9CFCA; background: #fff; display: flex; align-items: center; justify-content: center; color: #15201B">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"></path></svg>
+      </button>
+    </div>
+    <label style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 0 14px; min-height: 44px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Name, brand or serial number" aria-label="Search equipment" style="border: 0; outline: 0; flex: 1; font: 400 15px 'Public Sans', sans-serif; background: transparent; color: #15201B">
+    </label>
+    <div role="tablist" aria-label="Area" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+      <button type="button" role="tab" class="seg" aria-selected="false">Front of House</button>
+      <button type="button" role="tab" class="seg on" aria-selected="true">Back of House</button>
+    </div>
+  </div>
+  <div role="status" style="flex: 1; overflow: hidden; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <span class="sr">Loading equipment</span>
+    <div class="grp" aria-hidden="true">
+      <div class="ghead"><span class="sk" style="width: 108px; height: 14px"></span><span style="flex: 1"></span><span class="sk" style="width: 18px; height: 12px"></span></div>
+      <sc-for list="{{items}}" as="it" hint-placeholder-count="3">
+        <div class="item">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 7px">
+            <span class="sk" style="{{it.a}}"></span>
+            <span class="sk" style="{{it.b}}"></span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+      <div class="grp" aria-hidden="true">
+        <div class="ghead"><span class="sk" style="{{g.w}}"></span><span style="flex: 1"></span><span class="sk" style="width: 18px; height: 12px"></span></div>
+      </div>
+    </sc-for>
+  </div>
+  <nav class="nav" aria-label="Manager">
+    <a href="Create-Area.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><path d="M12 8v8M8 12h8"></path></svg>
+      Create ticket
+    </a>
+    <a href="Main.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+      Open tickets
+    </a>
+    <a class="on" href="Equipment-List.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      Equipment
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      items: [[132, 170], [104, 150], [150, 162]].map(function (p) {
+        return { a: 'width: ' + p[0] + 'px; height: 14px', b: 'width: ' + p[1] + 'px; height: 11px' };
+      }),
+      groups: [84, 96, 72, 90].map(function (w) { return { w: 'width: ' + w + 'px; height: 14px' }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

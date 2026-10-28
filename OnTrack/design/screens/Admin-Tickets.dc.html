@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tickets — Admin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.chipf{min-height:36px;padding:0 12px;border:1px solid #C9CFCA;border-radius:999px;background:#fff;font:600 13px 'Public Sans',sans-serif;color:#2E3833;white-space:nowrap}
+.chipf.on{background:#15201B;border-color:#15201B;color:#fff}
+.u{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid #DDE1DC;text-decoration:none;color:#15201B}
+a.u:hover{background:#F7F8F6;color:#15201B}
+.av{width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 13px 'Archivo',sans-serif}
+.role{flex:none;white-space:nowrap;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#ECEEEB;color:#2E3833}
+.st-pend{font-size:12px;font-weight:600;color:#6A500C}
+.st-exp{font-size:12px;font-weight:600;color:#94390A}
+.link{min-height:36px;border:0;background:transparent;font:600 13px 'Public Sans',sans-serif;color:#12634F;padding:0 4px}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+.card{background:#fff;border:1px solid #DDE1DC;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#15201B}
+.card:hover{border-color:#A9B3AE;color:#15201B}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.p-open{background:#FBEADF;color:#94390A}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.p-wait{background:#F3ECD6;color:#6A500C}
+.dot{flex:none;width:13px;height:13px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+.i-open{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3C/svg%3E")}
+.i-prog{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='black' d='M16 2a14 14 0 1 0 14 14A14.016 14.016 0 0 0 16 2m0 26a12 12 0 0 1 0-24v12l8.481 8.481A11.96 11.96 0 0 1 16 28'/%3E%3C/svg%3E")}
+.i-wait{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E")}
+.i-sched{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2.5'/%3E%3Cpath d='M8 3v4M16 3v4M8.5 13.5l2.5 2.5 4.5-4.5'/%3E%3C/svg%3E")}
+.i-reop{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20.5 3.5v5h-5'/%3E%3C/svg%3E")}
+.i-done{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='m8.3 12.2 2.5 2.5 4.9-5.2'/%3E%3C/svg%3E")}
+.urg{font-size:11px;font-weight:700;color:#fff;background:#B4400C;padding:2px 7px;border-radius:5px}
+.rest{font-size:12px;font-weight:700;color:#12634F}
+.mono{font-family:'JetBrains Mono',monospace}
+.rname{-webkit-text-fill-color:#2E3833}
+.rname::before{content:'';display:inline-block;width:9px;height:9px;border-radius:2px;background:currentColor;margin-right:6px;vertical-align:0;box-shadow:inset 0 0 0 1px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 20px 20px 12px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em; line-height: 1.5; text-transform: uppercase; color: #4D5752">
+        Admin<br>4C | Four Corners
+      </span>
+    </div>
+    <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Tickets</h1>
+    <label style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 0 14px; min-height: 44px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Search tickets, equipment or OT-" aria-label="Search tickets" style="border: 0; outline: 0; flex: 1; min-width: 0; font: 400 15px 'Public Sans', sans-serif; background: transparent; color: #15201B">
+    </label>
+    <div style="display: flex; gap: 8px; overflow: hidden">
+      <button type="button" class="chipf on">Open · 14</button>
+      <button type="button" class="chipf">Closed</button>
+      <button type="button" class="chipf">All restaurants</button>
+    </div>
+  </div>
+  <div style="flex: 1; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #4D5752"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>View only · Ops manages tickets</div>
+    <a class="card" href="Admin-Ticket.dc.html">
+      <div style="display: flex; align-items: center; gap: 8px"><span class="urg">URGENT</span><span class="rest rname" style="color: #9A6A00">Porter</span><span style="flex: 1"></span><span class="pill p-open"><span class="dot i-open"></span>Unassigned</span></div>
+      <div style="font-size: 16px; font-weight: 600">Dish machine not reaching rinse temp</div>
+      <div style="font-size: 12px; color: #5A645F"><span class="mono">OT-1044</span> · BOH · Dishwashing · 25m ago</div>
+    </a>
+    <a class="card" href="Admin-Ticket.dc.html">
+      <div style="display: flex; align-items: center; gap: 8px"><span class="urg">URGENT</span><span class="rest rname" style="color: #A3336D">Federale’s Logan Square</span><span style="flex: 1"></span><span class="pill p-prog"><span class="dot i-prog"></span>In progress</span></div>
+      <div style="font-size: 16px; font-weight: 600">Walk-in cooler not holding temp</div>
+      <div style="font-size: 12px; color: #5A645F"><span class="mono">OT-1042</span> · BOH · Refrigeration · Bert Velilla</div>
+    </a>
+    <a class="card" href="Admin-Ticket.dc.html">
+      <div style="display: flex; align-items: center; gap: 8px"><span class="rest rname" style="color: #A3336D">Federale’s Logan Square</span><span style="flex: 1"></span><span class="pill p-open"><span class="dot i-open"></span>Unassigned</span></div>
+      <div style="font-size: 16px; font-weight: 600">Combi oven showing service error</div>
+      <div style="font-size: 12px; color: #5A645F"><span class="mono">OT-1039</span> · BOH · Cooking · 3h ago</div>
+    </a>
+    <a class="card" href="Admin-Ticket.dc.html">
+      <div style="display: flex; align-items: center; gap: 8px"><span class="rest rname" style="color: #6B3FA0">Federale’s West Loop</span><span style="flex: 1"></span><span class="pill p-wait"><span class="dot i-wait"></span>Waiting on parts</span></div>
+      <div style="font-size: 16px; font-weight: 600">Host stand pendant flickering</div>
+      <div style="font-size: 12px; color: #5A645F"><span class="mono">OT-1035</span> · FOH · Lighting · Chris Novak</div>
+    </a>
+  </div>
+  <nav class="nav" aria-label="Admin">
+    <a href="Admin-Users.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c1.9.6 3.1 2.6 3.5 5.5"></path></svg>
+      Users
+    </a>
+    <a href="Admin-Roles.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>
+      Roles &amp; rights
+    </a>
+    <a class="on" href="Admin-Tickets.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+      Tickets
+    </a>
+    <a href="Admin-Restaurants.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l7-5 7 5v12M10 21v-6h4v6"></path></svg>
+      Restaurants
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

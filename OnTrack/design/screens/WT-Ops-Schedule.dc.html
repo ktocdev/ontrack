@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Walkthrough schedule — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.box{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.mrow{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 14px;border-top:1px solid #ECEEEB;box-sizing:border-box}
+.mrow:first-child{border-top:0}
+.badge{width:30px;height:30px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font:700 13px 'Archivo',sans-serif}
+.b-a{background:#E4EDF8;color:#1B4F91}
+.b-b{background:#DCE8E3;color:#0B4537}
+.b-c{background:#EDE6F6;color:#5B3A8C}
+.edit{min-height:40px;border:0;background:transparent;padding:0 4px;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+.months{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:12px 14px}
+.mo{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;border-radius:8px;font-size:11px;font-weight:600;color:#2E3833}
+.mo.a{background:#E4EDF8}
+.mo.b{background:#DCE8E3}
+.mo.c{background:#EDE6F6}
+.mo.now{outline:2px solid #15201B;outline-offset:1px}
+.lrow{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-top:1px solid #ECEEEB;text-decoration:none;color:#15201B;box-sizing:border-box}
+.lrow:first-child{border-top:0}
+.lrow:hover{background:#F7F8F6;color:#15201B}
+.rrow{width:100%;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:0;border-top:1px solid #ECEEEB;background:#fff;text-align:left;font:inherit;color:#15201B;cursor:pointer;box-sizing:border-box}
+.rrow:first-child{border-top:0}
+.rrow:hover{background:#F7F8F6}
+.val{font-size:13px;color:#4D5752;text-align:right}
+.tagc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.tg-grp{background:#ECEEEB;color:#3F4944}
+.tg-own{background:#EDE6F6;color:#5B3A8C}
+.selwrap{position:relative}
+.sel{width:100%;min-height:48px;padding:0 44px 0 14px;border:1px solid #C9CFCA;border-radius:12px;background:#fff;font:600 15px 'Public Sans',sans-serif;color:#15201B;appearance:none;-webkit-appearance:none;cursor:pointer}
+.sel:focus{outline:2px solid #12634F;outline-offset:1px}
+.caret{position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none}
+.note{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.45}
+.n-all{background:#E9F1EE;color:#0B4537}
+.n-grp{background:#ECEEEB;color:#2E3833}
+.n-own{background:#EDE6F6;color:#3E2566}
+.nbtn{align-self:flex-start;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid #C9CFCA;background:#fff;font:600 14px 'Public Sans',sans-serif;color:#15201B;cursor:pointer}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="WT-Ops-Overview.dc.html" aria-label="Back to walkthroughs" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <span style="font-size: 13px; font-weight: 600; color: #4D5752">Walkthroughs · Operations</span>
+  </div>
+  <div style="{{headStyle}}">
+    <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Walkthrough schedule</h1>
+  </div>
+  <div onScroll="{{onScroll}}" style="flex: 1; overflow-y: auto; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <label for="scope" class="sec">Schedule for</label>
+    <div class="selwrap">
+      <select id="scope" class="sel" value="{{scope}}" onChange="{{pick}}">
+        <option value="all">All restaurants</option>
+        <option value="midtown">Federale’s Logan Square</option>
+        <option value="harbor">Ranalli’s Logan Square</option>
+        <option value="salt">Porter</option>
+        <option value="east">Federale’s West Loop</option>
+      </select>
+      <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+    </div>
+    <sc-if value="{{isAll}}" hint-placeholder-val="{{true}}">
+      <div class="note n-all" aria-live="polite"><span><b>Group schedule.</b> Every restaurant uses this unless it has its own. Used by {{followers}}.</span></div>
+    </sc-if>
+    <sc-if value="{{isFollow}}" hint-placeholder-val="{{false}}">
+      <div class="note n-grp" aria-live="polite">
+        <span><b>{{rname}} follows the group schedule.</b> Changes to the group schedule apply here too.</span>
+        <button type="button" class="nbtn" onClick="{{customize}}">Give {{rname}} its own schedule</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isOwn}}" hint-placeholder-val="{{false}}">
+      <div class="note n-own" aria-live="polite">
+        <span><b>{{rname}} has its own schedule.</b> Changes to the group schedule won't affect it.</span>
+        <button type="button" class="nbtn" onClick="{{revert}}">Switch back to group schedule</button>
+      </div>
+    </sc-if>
+    <span class="sec ebrow">Rotation · {{cycle}}-month cycle</span>
+    <div class="box">
+      <sc-for list="{{rot}}" as="r" hint-placeholder-count="2">
+        <div class="mrow">
+          <span class="{{r.badge}}">{{r.code}}</span>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #5A645F">{{r.sub}}</span></div>
+          <sc-if value="{{editable}}" hint-placeholder-val="{{true}}">
+            <button type="button" class="edit" aria-label="{{r.editLabel}}">Edit</button>
+          </sc-if>
+        </div>
+      </sc-for>
+      <sc-if value="{{editable}}" hint-placeholder-val="{{true}}">
+        <div class="mrow">
+          <button type="button" class="edit" style="display: flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a month to the cycle</button>
+        </div>
+      </sc-if>
+    </div>
+    <span class="sec ebrow">2026 preview</span>
+    <div class="box">
+      <div class="months" role="list" aria-label="Months in 2026">
+        <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+          <div class="{{m.cls}}" role="listitem" aria-label="{{m.label}}"><span>{{m.name}}</span><span class="h" style="font-size: 13px">{{m.code}}</span></div>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0 14px 12px; font-size: 12px; color: #4D5752">
+        <sc-for list="{{rot}}" as="r" hint-placeholder-count="2">
+          <span><b style="{{r.legendColor}}">{{r.code}}</b> {{r.short}}</span>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{isAll}}" hint-placeholder-val="{{true}}">
+      <span class="sec ebrow">Restaurants</span>
+      <div class="box">
+        <sc-for list="{{rests}}" as="x" hint-placeholder-count="4">
+          <button type="button" class="rrow" onClick="{{x.go}}">
+            <span style="flex: 1; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><span aria-hidden="true" style="{{x.dot}}"></span>{{x.name}}</span>
+            <span class="{{x.tagCls}}">{{x.tag}}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{editable}}" hint-placeholder-val="{{true}}">
+      <span class="sec ebrow">Settings</span>
+      <div class="box">
+        <a class="lrow" href="#due"><span style="flex: 1; font-size: 14px; font-weight: 600">Due date</span><span class="val">Last day of the month</span></a>
+        <a class="lrow" href="#reminders"><span style="flex: 1; font-size: 14px; font-weight: 600">Reminders</span><span class="val">7 and 2 days before</span></a>
+        <a class="lrow" href="#checklist"><span style="flex: 1; font-size: 14px; font-weight: 600">Checklist items</span><span class="val">{{checklist}}</span></a>
+        <a class="lrow" href="WT-Ops-Tasks.dc.html"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">Quarterly location tasks</span><span style="font-size: 12px; color: #5A645F">Directions and how-to videos</span></div><span class="val">All + per restaurant</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m9 18 6-6-6-6"></path></svg></a>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scrolled":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+var RC = { 'Federale’s Logan Square': '#A3336D', 'Ranalli’s Logan Square': '#1B4F91', 'Federale’s West Loop': '#6B3FA0', 'Porter': '#9A6A00' };
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { scope: 'all', own: { harbor: true }, scrolled: !!(p && p.scrolled) }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var R = [{ id: 'midtown', name: 'Federale’s Logan Square' }, { id: 'harbor', name: 'Ranalli’s Logan Square' }, { id: 'salt', name: 'Porter' }, { id: 'east', name: 'Federale’s West Loop' }];
+    var col = { a: 'color: #1B4F91', b: 'color: #0B4537', c: 'color: #5B3A8C' };
+    var group = [
+      { code: 'A', k: 'a', name: 'Kitchen + Exterior', short: 'Kitchen + Exterior', sub: 'A closer look · 48 checks' },
+      { code: 'B', k: 'b', name: 'Back of House + Front of House', short: 'BOH + FOH', sub: 'Full walkthrough · 48 checks' }
+    ];
+    var harbor = [
+      { code: 'A', k: 'a', name: 'Kitchen + Bar', short: 'Kitchen + Bar', sub: 'A closer look · 40 checks' },
+      { code: 'B', k: 'b', name: 'Dining room + Patio', short: 'Dining + Patio', sub: 'A closer look · 36 checks' },
+      { code: 'C', k: 'c', name: 'Exterior + Storage', short: 'Exterior + Storage', sub: 'A closer look · 28 checks' }
+    ];
+    function rotFor(id) { return id === 'harbor' && s.own.harbor ? harbor : group; }
+    var scope = s.scope, isAll = scope === 'all';
+    var r = R.filter(function (x) { return x.id === scope; })[0];
+    var isOwn = !isAll && !!s.own[scope], isFollow = !isAll && !isOwn;
+    var rot = isAll ? group : rotFor(scope);
+    var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var followers = R.filter(function (x) { return !s.own[x.id]; }).map(function (x) { return x.name; });
+    var fText = followers.length === 0 ? 'no restaurants yet' : followers.length === 1 ? followers[0] : followers.slice(0, -1).join(', ') + ' and ' + followers[followers.length - 1];
+    function setOwn(v) { var o = Object.assign({}, s.own); o[scope] = v; self.setState({ own: o }); }
+    var sc = s.scrolled;
+    return {
+      headStyle: 'position: relative; z-index: 2; padding: 4px 20px 12px; background: #F3F4F1; transition: box-shadow .15s, border-color .15s; border-bottom: 1px solid ' + (sc ? '#DDE1DC; box-shadow: 0 4px 10px -4px rgba(21,32,27,.18)' : 'transparent'),
+      onScroll: function (e) { var y = e.target.scrollTop > 2; if (y !== s.scrolled) self.setState({ scrolled: y }); },
+      scope: scope, isAll: isAll, isOwn: isOwn, isFollow: isFollow,
+      editable: isAll || isOwn,
+      rname: r ? r.name : '',
+      followers: fText,
+      cycle: rot.length,
+      checklist: scope === 'harbor' && isOwn ? '6 zones · 20 items' : '7 zones · 24 items',
+      pick: function (e) { self.setState({ scope: e.target.value }); },
+      customize: function () { setOwn(true); },
+      revert: function () { setOwn(false); },
+      rot: rot.map(function (x) {
+        return { code: x.code, name: x.name, short: x.short, sub: x.sub, badge: 'badge b-' + x.k, legendColor: col[x.k], editLabel: 'Edit month ' + x.code };
+      }),
+      months: names.map(function (n, i) {
+        var x = rot[i % rot.length];
+        return {
+          name: n, code: x.code,
+          cls: 'mo ' + x.k + (i === 9 ? ' now' : ''),
+          label: n + ': ' + x.name + (i === 9 ? ', this month' : '')
+        };
+      }),
+      rests: R.map(function (x) {
+        var own = !!s.own[x.id];
+        return {
+          name: x.name, dot: 'flex: none; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: ' + RC[x.name],
+          tag: own ? 'Own · ' + rotFor(x.id).length + '-month' : 'Group',
+          tagCls: 'tagc ' + (own ? 'tg-own' : 'tg-grp'),
+          go: function () { self.setState({ scope: x.id }); }
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

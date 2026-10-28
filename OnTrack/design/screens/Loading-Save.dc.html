@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Saving service — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.money{display:flex;align-items:center;gap:10px}
+.money label{flex:1;font-size:14px;color:#2E3833}
+.money input{width:120px;text-align:right}
+.selwrap{position:relative;display:flex}
+select.field{appearance:none;-webkit-appearance:none;padding-right:38px;text-overflow:ellipsis}
+.caret{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#4D5752}
+.busy{opacity:.55;pointer-events:none}
+.spin{width:20px;height:20px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;box-sizing:border-box;animation:sp .8s linear infinite}
+@keyframes sp{100%{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 0 20px; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Log service</h1>
+      <span style="font-size: 12px; color: #4D5752">OT-1042 · Walk-in Cooler 1</span>
+    </div>
+    <span style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A9B3AE" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </span>
+  </div>
+  <fieldset disabled="" class="busy" style="flex: 1; overflow: hidden; margin: 0; border: 0; padding: 12px 20px 0; display: flex; flex-direction: column; gap: 14px; min-width: 0">
+    <div style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+      <button type="button" class="seg">In-house</button>
+      <button type="button" class="seg on">Outside contractor</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="s-co">Contractor company</label>
+      <div class="selwrap">
+        <select id="s-co" class="field"><option>Coldline Refrigeration</option></select>
+        <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <label class="lbl" for="s-tech">Technician</label>
+        <input id="s-tech" class="field" type="text" value="R. Alvarez">
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <label class="lbl" for="s-inv">Invoice #</label>
+        <input id="s-inv" class="field" type="text" value="CL-20931">
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="s-date">Service date</label>
+      <input id="s-date" class="field" type="text" value="Oct 19, 2026">
+    </div>
+    <span class="sec" style="display: block; padding-top: 16px; margin-bottom: -2px">Cost</span>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+      <div class="money"><label for="s-lab">Labor</label><input id="s-lab" class="field" type="text" value="$120.00"></div>
+      <div class="money"><label for="s-par">Parts</label><input id="s-par" class="field" type="text" value="$212.40"></div>
+      <div class="money"><label for="s-trip">Trip / call-out fee</label><input id="s-trip" class="field" type="text" value="$65.00"></div>
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid #ECEEEB; padding-top: 10px; font-weight: 700; font-size: 16px"><span>Total</span><span>$397.40</span></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="s-notes">Work notes</label>
+      <textarea id="s-notes" class="field" rows="2" style="resize: none; line-height: 1.4">Replaced failed condenser fan motor. Holding 37°F after 1 hr.</textarea>
+    </div>
+  </fieldset>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC">
+    <button type="button" aria-busy="true" aria-disabled="true" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; border-radius: 12px; border: 0; background: #12634F; color: #fff; font: 700 16px 'Public Sans', sans-serif">
+      <span class="spin" aria-hidden="true"></span>
+      <span role="status">Saving to ticket &amp; equipment…</span>
+    </button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

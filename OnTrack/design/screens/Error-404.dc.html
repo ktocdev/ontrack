@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Page not found — OnTrack</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.err{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px 28px 48px}
+.eicon{width:64px;height:64px;border-radius:50%;background:#ECEEEB;color:#4D5752;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.etitle{margin:0;font:700 22px 'Archivo',sans-serif;letter-spacing:-0.01em;color:#15201B}
+.ebody{margin:0;font-size:14px;line-height:1.5;color:#4D5752;max-width:290px}
+.code{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;background:#12634F;color:#fff;text-decoration:none;font:700 15px 'Public Sans',sans-serif}
+.btn:hover{color:#fff;background:#0B4537}
+.btn2{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 14px 'Public Sans',sans-serif;text-decoration:none}
+.btn2:hover{color:#15201B;border-color:#A9B3AE}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 20px 20px 0; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#12634F"></rect><path d="M8 15l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <span class="h" style="font-size: 17px; font-weight: 700">OnTrack</span>
+    </div>
+    <a href="Profile.dc.html" aria-label="Your profile" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #DCE8E3; font: 700 13px 'Archivo', sans-serif; color: #12634F; display: flex; align-items: center; justify-content: center; text-decoration: none">MR</a>
+  </div>
+  <div class="err">
+    <span class="code">Error 404</span>
+    <span class="eicon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"></path><path d="M9 4v14M15 6v6"></path><path d="m14 15 4 4M18 15l-4 4"></path></svg></span>
+    <h1 class="etitle">We can't find that page</h1>
+    <p class="ebody">The link may be old, or the ticket or equipment it pointed to was removed.</p>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; width: 100%; max-width: 260px">
+      <a class="btn" href="Main.dc.html">Go to open tickets</a>
+      <a class="btn2" href="Equipment-List.dc.html">Search equipment</a>
+    </div>
+  </div>
+  <nav class="nav" aria-label="Manager">
+    <a href="Create-Area.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><path d="M12 8v8M8 12h8"></path></svg>
+      Create ticket
+    </a>
+    <a href="Main.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+      Open tickets
+    </a>
+    <a href="Equipment-List.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      Equipment
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

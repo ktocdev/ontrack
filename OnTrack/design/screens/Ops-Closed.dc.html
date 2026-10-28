@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Closed tickets — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-size:14px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent}
+.tab.on{color:#15201B;border-bottom-color:#12634F}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid #ECEEEB;text-decoration:none;color:#15201B}
+.row:first-child{border-top:0}
+.row:hover{background:#F7F8F6;color:#15201B}
+.rest{font-size:12px;font-weight:700;color:#12634F}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+.rp-menu{position:absolute;top:48px;left:-6px;z-index:20;width:290px;background:#fff;border:1px solid #DDE1DC;border-radius:14px;box-shadow:0 12px 28px -8px rgba(21,32,27,.28);padding:6px;box-sizing:border-box;display:flex;flex-direction:column}
+.rp-hd{padding:8px 10px 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.rp-opt{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:0;border-radius:10px;background:transparent;font:500 15px 'Public Sans',sans-serif;color:#15201B;text-align:left;cursor:pointer}
+.rp-opt:hover{background:#F3F4F1}
+.rp-scrim{position:fixed;inset:0;z-index:19;background:transparent}
+.rname{-webkit-text-fill-color:#2E3833}
+.rname::before{content:'';display:inline-block;width:9px;height:9px;border-radius:2px;background:currentColor;margin-right:6px;vertical-align:0;box-shadow:inset 0 0 0 1px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 20px 20px 0; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="position: relative">
+        <button type="button" aria-haspopup="listbox" aria-expanded="{{__rpOpen}}" onClick="{{__rpToggle}}" style="display: flex; align-items: center; gap: 6px; min-height: 44px; border: 0; background: transparent; padding: 0; font: 600 14px 'Public Sans', sans-serif; color: #15201B">
+        <span aria-hidden="true" style="flex: none; display: grid; grid-template-columns: repeat(2, 5px); gap: 1px; width: 11px; height: 11px"><span style="border-radius: 1.5px; background: #A3336D"></span><span style="border-radius: 1.5px; background: #1B4F91"></span><span style="border-radius: 1.5px; background: #6B3FA0"></span><span style="border-radius: 1.5px; background: #9A6A00"></span></span>
+        All restaurants (4)
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{__rpChev}}"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
+        <sc-if value="{{__rpOpen}}" hint-placeholder-val="{{false}}">
+          <div class="rp-scrim" onClick="{{__rpClose}}"></div>
+          <div class="rp-menu" role="listbox" aria-label="Restaurant">
+            <span class="rp-hd">Show tickets for</span>
+            <button type="button" class="rp-opt" role="option" aria-selected="true" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; display: grid; grid-template-columns: repeat(2, 5px); gap: 1px; width: 11px; height: 11px; margin: 0 0.5px"><span style="border-radius: 1.5px; background: #A3336D"></span><span style="border-radius: 1.5px; background: #1B4F91"></span><span style="border-radius: 1.5px; background: #6B3FA0"></span><span style="border-radius: 1.5px; background: #9A6A00"></span></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 700">All restaurants</span><span style="font-size: 12px; font-weight: 500; color: #5A645F">4 restaurants</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #1B4F91"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Ranalli’s Logan Square</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Federale’s Logan Square</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #6B3FA0"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Federale’s West Loop</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #9A6A00"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Porter</span></span></button>
+          </div>
+        </sc-if>
+      </div>
+      <a href="Profile.dc.html" aria-label="Your profile" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #E4EDF8; font: 700 13px 'Archivo', sans-serif; color: #1B4F91; display: flex; align-items: center; justify-content: center; text-decoration: none">BV</a>
+    </div>
+    <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Dashboard</h1>
+    <nav aria-label="Ticket status" style="display: flex; border-bottom: 1px solid #DDE1DC">
+      <a class="tab" href="Ops-Dashboard.dc.html">Open · 14</a>
+      <a class="tab on" href="Ops-Closed.dc.html" aria-current="page">Closed</a>
+    </nav>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; gap: 10px; align-items: flex-start; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #0B4537">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+      <span>Closed tickets also appear on each piece of equipment, with their costs.</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; margin-bottom: -2px">
+      <span class="sec">October · 10 closed</span><span style="font-size: 13px; font-weight: 700">$2,663.60</span>
+    </div>
+    <div style="background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; overflow: hidden">
+      <a class="row" href="Ops-Closed-Ticket.dc.html" style="background: #FBF5E3">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 15px; font-weight: 600">Door gasket torn</span><span style="font-size: 12px; color: #5A645F"><span class="rest rname" style="color: #A3336D">Federale’s Logan Square</span> · <span class="mono">OT-0988</span> · Oct 14</span><span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #6A500C; background: #F3ECD6; padding: 2px 7px; border-radius: 5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>Reopened</span></div>
+        <span style="font-weight: 700; font-size: 14px">$245.00</span>
+      </a>
+      <a class="row" href="Ops-Closed-Ticket.dc.html">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 600">Ice machine scale buildup</span><span style="font-size: 12px; color: #5A645F"><span class="rest rname" style="color: #6B3FA0">Federale’s West Loop</span> · <span class="mono">OT-1036</span> · Oct 17</span></div>
+        <span style="font-weight: 700; font-size: 14px">$310.00</span>
+      </a>
+      <a class="row" href="Ops-Closed-Ticket.dc.html">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 600">Booth 12 upholstery torn</span><span style="font-size: 12px; color: #5A645F"><span class="rest rname" style="color: #A3336D">Federale’s Logan Square</span> · <span class="mono">OT-1028</span> · Oct 15</span></div>
+        <span style="font-weight: 700; font-size: 14px">$420.00</span>
+      </a>
+      <a class="row" href="Ops-Closed-Ticket.dc.html">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 600">Hood filter replacement</span><span style="font-size: 12px; color: #5A645F"><span class="rest rname" style="color: #9A6A00">Porter</span> · <span class="mono">OT-1022</span> · Oct 11</span></div>
+        <span style="font-weight: 700; font-size: 14px">$186.60</span>
+      </a>
+    </div>
+    <button type="button" style="min-height: 44px; border: 0; background: transparent; font: 600 14px 'Public Sans', sans-serif; color: #12634F">Show 6 more from October</button>
+  </div>
+  <nav class="nav" aria-label="Operations">
+    <a class="on" href="Ops-Dashboard.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+      Dashboard
+    </a>
+    <a href="WT-Ops-Overview.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"></path></svg>
+      Walkthroughs
+    </a>
+    <a href="Ops-Equipment-List.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      Equipment
+    </a>
+    <a href="Ops-Contractors.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"></path></svg>
+      Contractors
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var o=!!(self.state&&self.state.__rp); v.__rpOpen=o; v.__rpChev=o?'transform: rotate(180deg)':''; v.__rpToggle=function(){ if(!self.state) self.state={}; self.setState({__rp:!(self.state&&self.state.__rp)}); }; v.__rpClose=function(){ if(!self.state) self.state={}; self.setState({__rp:false}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

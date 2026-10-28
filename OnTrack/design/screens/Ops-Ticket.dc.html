@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ticket detail — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.sel{display:flex;flex-direction:column;gap:2px;flex:1;min-height:52px;padding:8px 12px;border:1px solid #C9CFCA;border-radius:12px;background:#fff;text-align:left;font-family:'Public Sans',sans-serif;box-sizing:border-box;cursor:pointer;width:100%}
+.sel .sl{font-size:11px;font-weight:700;color:#4D5752;letter-spacing:.04em;text-transform:uppercase}
+.sel .sv{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:14px;font-weight:600;color:#15201B}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.urg{font-size:11px;font-weight:700;color:#fff;background:#B4400C;padding:2px 7px;border-radius:5px}
+.pill{white-space:nowrap}
+.p-open,.p-prog,.p-wait,.p-closed{color:inherit}
+.menu{position:absolute;top:58px;left:0;z-index:20;width:240px;background:#fff;border:1px solid #DDE1DC;border-radius:14px;box-shadow:0 12px 28px -8px rgba(21,32,27,.28);padding:6px;box-sizing:border-box;display:flex;flex-direction:column}
+.opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border:0;border-radius:10px;background:transparent;font:500 15px 'Public Sans',sans-serif;color:#15201B;text-align:left;cursor:pointer}
+.opt:hover{background:#F3F4F1}
+.opt.close{color:#15201B;font-weight:700;border-top:1px solid #DDE1DC;border-radius:0 0 10px 10px;margin-top:4px;padding-top:10px}
+.scrim{position:fixed;inset:0;z-index:19}
+.feed{display:flex;flex-direction:column}
+.ev{display:flex;align-items:center;gap:8px;padding:8px 2px;font-size:12px;color:#5A645F}
+.ev i{flex:none;width:6px;height:6px;border-radius:50%;background:#A9B3AE;margin:0 9px}
+.msg{display:flex;gap:10px;padding:8px 0}
+.av{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 11px 'Archivo',sans-serif}
+.bub{flex:1;min-width:0;background:#fff;border:1px solid #DDE1DC;border-radius:4px 14px 14px 14px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.bub.me{background:#E3EFEA;border-color:#C5DCD2}
+.bub.int{background:#FBF5E3;border-color:#E6D7A8}
+.who{display:flex;flex-wrap:wrap;align-items:center;column-gap:6px;row-gap:2px;font-size:12px;font-weight:700;color:#2E3833}
+.who .t{font-weight:500;color:#5A645F}
+.itag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6A500C;background:#F3ECD6;padding:1px 6px;border-radius:5px}
+.txt{font-size:14px;line-height:1.45;color:#15201B;overflow-wrap:anywhere}
+.ph{width:120px;height:88px;border-radius:10px;background:#E5E8E3;display:flex;align-items:center;justify-content:center;color:#5A645F;margin-top:2px}
+.comp{flex:none;border-top:1px solid #DDE1DC;background:#fff;padding:8px 12px 24px;display:flex;flex-direction:column;gap:6px}
+.vis{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid #C9CFCA;background:#fff;font:600 12px 'Public Sans',sans-serif;color:#2E3833;cursor:pointer}
+.vis.int{border-color:#E6D7A8;background:#FBF5E3;color:#6A500C}
+.crow{display:flex;align-items:flex-end;gap:8px}
+.cin{flex:1;min-width:0;min-height:44px;max-height:120px;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:22px;background:#F7F8F6;padding:11px 16px;font:400 15px 'Public Sans',sans-serif;color:#15201B;resize:none;line-height:1.4}
+.ibtn{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:transparent;display:flex;align-items:center;justify-content:center;color:#4D5752;cursor:pointer}
+.send{flex:none;width:44px;height:44px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.send.on{background:#12634F;color:#fff}
+.send.off{background:#DDE1DC;color:#4D5752;cursor:not-allowed}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 12px 8px 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Ops-Dashboard.dc.html" aria-label="Back to dashboard" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <span class="mono" style="font-size: 13px; color: #4D5752">OT-1042</span>
+    <span style="flex: 1"></span>
+    <span class="urg" style="margin-right: 8px">URGENT</span>
+  </div>
+  <div id="ops-feed" onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 class="h" style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2">Walk-in cooler not holding temp</h1>
+      <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 4px; padding-bottom: 10px; font-size: 13px">
+        <div style="display: flex; gap: 8px"><span style="flex: none; width: 68px; color: #5A645F">Location</span><span style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: #2E3833"><span aria-hidden="true" style="flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span></div>
+        <div style="display: flex; gap: 8px"><span style="flex: none; width: 68px; color: #5A645F">Reporter</span><span style="font-weight: 600; color: #2E3833">Maya Reyes</span></div>
+        <div style="display: flex; gap: 8px"><span style="flex: none; width: 68px; color: #5A645F">Source</span><a href="WT-Ops-Restaurant.dc.html" style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 12l2 2 4-4"></path></svg>From October walkthrough</a></div>
+        <div style="display: flex; gap: 8px"><span style="flex: none; width: 68px; color: #5A645F">Date</span><span style="font-weight: 600; color: #2E3833">Oct 19, 2026 - 9:12 AM</span></div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px">
+      <div style="position: relative; flex: 1">
+        <button type="button" class="sel" aria-haspopup="listbox" aria-expanded="{{menuOpen}}" onClick="{{toggleMenu}}"><span class="sl">Status</span><span class="sv"><span class="{{statusCls}}">{{status}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+        <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+          <div class="scrim" onClick="{{closeMenu}}"></div>
+          <div class="menu" role="listbox" aria-label="Status">
+            <sc-for list="{{statuses}}" as="o" hint-placeholder-count="4">
+              <button type="button" class="opt" role="option" aria-selected="{{o.on}}" onClick="{{o.pick}}"><span style="flex: 1"><span class="{{o.cls}}">{{o.label}}</span></span><sc-if value="{{o.on}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></sc-if></button>
+            </sc-for>
+            <button type="button" class="opt close" onClick="{{closeTicket}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Close ticket</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position: relative; flex: 1">
+        <button type="button" class="sel" aria-haspopup="listbox" aria-expanded="{{aMenuOpen}}" onClick="{{toggleAMenu}}"><span class="sl">Assigned</span><span class="sv" style="{{assignedStyle}}">{{assignedLabel}}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+        <sc-if value="{{aMenuOpen}}" hint-placeholder-val="{{false}}">
+          <div class="scrim" onClick="{{closeMenu}}"></div>
+          <div class="menu" role="listbox" aria-label="Assigned to" style="left: auto; right: 0">
+            <sc-for list="{{people}}" as="o" hint-placeholder-count="3">
+              <button type="button" class="opt" role="option" aria-selected="{{o.on}}" onClick="{{o.pick}}"><span style="flex: 1">{{o.label}}</span><sc-if value="{{o.on}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></sc-if></button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <sc-if value="{{showTip}}" hint-placeholder-val="{{false}}">
+      <div role="note" style="flex: none; display: flex; gap: 10px; align-items: flex-start; background: #E4EDF8; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #133B6D">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v5h1"></path></svg>
+        <span>Nobody has this yet. Setting it to <b>In progress</b> assigns it to you.</span>
+      </div>
+    </sc-if>
+    <span class="sec ebrow">Description</span>
+    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #2E3833">Reading 46°F at open, should be 38°F. Compressor running constantly. Moved proteins to reach-ins.</p>
+    <span class="sec ebrow">Equipment</span>
+    <a href="Ops-Equipment.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; text-decoration: none; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 15px; font-weight: 600">Walk-in Cooler 1</span>
+        <span style="font-size: 12px; color: #5A645F">Kolpak · <span class="mono">KP-7XW-220418</span> · 4 past tickets</span>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+    </a>
+    <div class="ebrow" style="display: flex; justify-content: space-between; align-items: center">
+      <span class="sec">Service &amp; cost</span>
+      <a href="Ops-Log-Service.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none; min-height: 36px; display: flex; align-items: center">+ Log service</a>
+    </div>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; overflow: hidden">
+      <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between"><span style="font-size: 15px; font-weight: 600">Coldline Refrigeration</span><span style="font-size: 15px; font-weight: 700">$185.00</span></div>
+        <span style="font-size: 12px; color: #5A645F">Contractor · Diagnostic visit · Today 2–4 PM</span>
+      </div>
+      <div style="padding: 10px 14px; border-top: 1px solid #DDE1DC; display: flex; justify-content: space-between; font-size: 13px; background: #F7F8F6">
+        <span style="color: #4D5752; font-weight: 600">Ticket total so far</span><span style="font-weight: 700">$185.00</span>
+      </div>
+    </div>
+    <span class="sec ebrow">Updates · {{count}}</span>
+    <div class="feed" role="log" aria-label="Ticket updates">
+      <sc-for list="{{items}}" as="x" hint-placeholder-count="7">
+        <sc-if value="{{x.isEvent}}" hint-placeholder-val="{{false}}">
+          <div class="ev"><i></i><span>{{x.text}} · {{x.when}}</span></div>
+        </sc-if>
+        <sc-if value="{{x.isMsg}}" hint-placeholder-val="{{true}}">
+          <div class="msg">
+            <span class="av" style="{{x.avStyle}}" aria-hidden="true">{{x.ini}}</span>
+            <div class="{{x.bubCls}}">
+              <span class="who">{{x.who}} <span class="t">· {{x.when}}</span><sc-if value="{{x.internal}}" hint-placeholder-val="{{false}}"><span class="itag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Ops only</span></sc-if></span>
+              <span class="txt">{{x.text}}</span>
+              <sc-if value="{{x.photo}}" hint-placeholder-val="{{false}}">
+                <span class="ph" role="img" aria-label="{{x.photoAlt}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"></rect><circle cx="9" cy="10" r="2"></circle><path d="m21 16-5-5-9 9"></path></svg></span>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+  </div>
+  <div class="comp">
+    <button type="button" class="{{visCls}}" aria-pressed="{{internal}}" onClick="{{toggleVis}}">
+      <sc-if value="{{public}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></sc-if>
+      <sc-if value="{{internal}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></sc-if>
+      {{visLabel}}
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+    </button>
+    <div class="crow">
+      <button type="button" class="ibtn" aria-label="Add photo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+      <textarea class="cin" rows="1" aria-label="{{inputLabel}}" placeholder="{{placeholder}}" value="{{draft}}" onInput="{{onDraft}}"></textarea>
+      <button type="button" class="{{sendCls}}" aria-label="Post update" aria-disabled="{{empty}}" onClick="{{send}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"unassigned":{"editor":"boolean","default":false},"statusMenuOpen":{"editor":"boolean","default":false},"internalNote":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+var OPS = 'background: #E4EDF8; color: #1B4F91', MGR = 'background: #DCE8E3; color: #12634F';
+var STATUSES = ['Open', 'In progress', 'Waiting on parts', 'Scheduled'];
+var PILL = { 'Open': 'p-open', 'In progress': 'p-prog', 'Waiting on parts': 'p-wait', 'Scheduled': 'p-prog', 'Closed': 'p-closed' };
+var PEOPLE = [{ id: null, label: 'Unassigned' }, { id: 'me', label: 'Bert Velilla (you)' }, { id: 'chris', label: 'Chris Novak' }];
+var NAME = { me: 'Bert Velilla', chris: 'Chris Novak' };
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      status: 'In progress', assigned: 'me', menu: !!(p && p.statusMenuOpen), aMenu: false, internal: !!(p && p.internalNote), draft: '',
+      items: [
+        { ev: true, text: 'Opened by Maya Reyes', when: 'Oct 19, 9:12 AM' },
+        { ev: true, text: 'You assigned yourself · In progress', when: '9:40 AM' },
+        { who: 'You', ini: 'BV', me: true, when: '1h ago', text: 'Refrigeration tech booked for today 2–4 PM. Keep the door closed as much as possible.' },
+        { who: 'You', ini: 'BV', me: true, internal: true, when: '50m ago', text: 'Coldline quoted $185 for the diagnostic. If it is the compressor relay, the part is about $240 more.' },
+        { who: 'Maya Reyes, Federale’s Logan Square', ini: 'MR', when: '45m ago', text: 'Thanks. Lunch rush ends at 2, so that window works. Proteins are holding at 36°F in the reach-ins.', photo: true, photoAlt: 'Photo: thermometer in reach-in cooler reading 36°F' },
+        { who: 'You', ini: 'BV', me: true, when: '30m ago', text: 'Great. The tech will text you about 30 minutes before they arrive.' }
+      ]
+    };
+    if (p && p.unassigned) {
+      this.state.status = 'Open'; this.state.assigned = null;
+      this.state.items = [{ ev: true, text: 'Opened by Maya Reyes · all Ops managers notified', when: '25m ago' }];
+    }
+  }
+  renderVals() {
+    var self = this, s = this.state, d = (s.draft || '').trim();
+    return {
+      status: s.status, statusCls: 'pill ' + (PILL[s.status] || 'p-closed'), menuOpen: s.menu,
+      toggleMenu: function () { self.setState({ menu: !s.menu, aMenu: false }); },
+      toggleAMenu: function () { self.setState({ aMenu: !s.aMenu, menu: false }); },
+      closeMenu: function () { self.setState({ menu: false, aMenu: false }); },
+      aMenuOpen: s.aMenu,
+      assignedLabel: s.assigned ? NAME[s.assigned] : 'Unassigned',
+      assignedStyle: s.assigned ? '' : 'color: #94390A',
+      showTip: !s.assigned && s.status === 'Open',
+      people: PEOPLE.map(function (o) {
+        return { label: o.label, on: o.id === s.assigned, pick: function () {
+          if (o.id === s.assigned) { self.setState({ aMenu: false }); return; }
+          var t = o.id === 'me' ? 'You took this ticket' : (o.id ? 'You assigned ' + NAME[o.id] : 'You unassigned this ticket');
+          self.setState({ assigned: o.id, aMenu: false, items: s.items.concat([{ ev: true, text: t, when: 'Just now' }]) });
+        } };
+      }),
+      statuses: STATUSES.map(function (l) {
+        return { label: l, cls: 'pill ' + PILL[l], on: l === s.status, pick: function () {
+          if (l === s.status) { self.setState({ menu: false }); return; }
+          var auto = l === 'In progress' && !s.assigned;
+          var t = auto ? 'You assigned yourself · In progress' : 'You changed status to ' + l;
+          self.setState({ status: l, menu: false, assigned: auto ? 'me' : s.assigned, items: s.items.concat([{ ev: true, text: t, when: 'Just now' }]) });
+        } };
+      }),
+      closeTicket: function () { self.setState({ status: 'Closed', menu: false, items: s.items.concat([{ ev: true, text: 'You closed this ticket', when: 'Just now' }]) }); },
+      count: s.items.filter(function (i) { return !i.ev; }).length,
+      items: s.items.map(function (i) {
+        return {
+          isEvent: !!i.ev, isMsg: !i.ev, text: i.text, when: i.when, who: i.who, ini: i.ini,
+          internal: !!i.internal, photo: !!i.photo, photoAlt: i.photoAlt || '',
+          avStyle: i.me ? OPS : MGR,
+          bubCls: i.internal ? 'bub int' : (i.me ? 'bub me' : 'bub')
+        };
+      }),
+      internal: s.internal, public: !s.internal,
+      visCls: s.internal ? 'vis int' : 'vis',
+      visLabel: s.internal ? 'Internal note · Ops only' : 'Visible to restaurant',
+      toggleVis: function () { self.setState({ internal: !s.internal }); },
+      placeholder: s.internal ? 'Write an internal note…' : 'Write an update…',
+      inputLabel: s.internal ? 'Write an internal note, only Ops can see it' : 'Write an update the restaurant can see',
+      draft: s.draft, empty: !d, sendCls: d ? 'send on' : 'send off',
+      onDraft: function (e) { self.setState({ draft: e.target.value }); },
+      send: function () {
+        if (!d) return;
+        self.setState({ draft: '', items: s.items.concat([{ who: 'You', ini: 'BV', me: true, internal: s.internal, when: 'Just now', text: d }]) });
+        setTimeout(function () { var el = document.getElementById('ops-feed'); if (el) el.scrollTop = el.scrollHeight; }, 30);
+      }
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var sc=!!(self.state&&self.state.__sc); v.__hdCls='stickyhd'+(sc?' is-scrolled':''); v.__onScroll=function(e){var y=e.target.scrollTop>2; if(y!==!!(self.state&&self.state.__sc)){ if(!self.state) self.state={}; self.setState({__sc:y}); }}; return v; }; })(Component);
+</script>
+</body>
+</html>

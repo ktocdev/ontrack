@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quarterly tasks — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.box{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.trow{display:flex;align-items:flex-start;gap:10px;padding:12px 8px 12px 14px;border-top:1px solid #DDE1DC}
+.trow:first-child{border-top:0}
+.tname{font-size:15px;font-weight:600;line-height:1.3}
+.tmeta{font-size:12px;color:#5A645F}
+.tagc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.tg-grp{background:#ECEEEB;color:#3F4944}
+.tg-chg{background:#E4EDF8;color:#1B4F91}
+.tg-own{background:#EDE6F6;color:#5B3A8C}
+.act{min-height:40px;border:0;background:transparent;padding:0 8px;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer;white-space:nowrap}
+.act.rm{color:#94390A}
+.selwrap{position:relative}
+.sel{width:100%;min-height:48px;padding:0 44px 0 14px;border:1px solid #C9CFCA;border-radius:12px;background:#fff;font:600 15px 'Public Sans',sans-serif;color:#15201B;appearance:none;-webkit-appearance:none;cursor:pointer}
+.sel:focus{outline:2px solid #12634F;outline-offset:1px}
+.caret{position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none}
+.qseg{display:flex;gap:4px;background:#E5E8E3;border-radius:11px;padding:3px}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.note{padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.45}
+.n-all{background:#E9F1EE;color:#0B4537}
+.n-one{background:#ECEEEB;color:#2E3833}
+.addb{display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border-radius:12px;border:1px dashed #A9B3AE;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer;width:100%}
+.rrow{width:100%;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:0;border-top:1px solid #DDE1DC;background:#fff;text-align:left;font:inherit;color:#15201B;cursor:pointer;box-sizing:border-box}
+.rrow:first-child{border-top:0}
+.rrow:hover{background:#F7F8F6}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.btnp{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 16px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.btns{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 15px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.lnk{align-self:flex-start;min-height:40px;border:0;background:transparent;padding:0;font:600 14px 'Public Sans',sans-serif;cursor:pointer}
+.past{flex:none}
+.past summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;cursor:pointer;list-style:none}
+.past summary::-webkit-details-marker{display:none}
+.past[open] .pchev{transform:rotate(180deg)}
+.past[open] summary{margin-bottom:4px}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="WT-Ops-Schedule.dc.html" aria-label="Back to walkthrough schedule" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 12px; font-weight: 600; color: #4D5752">Walkthroughs · Operations</span>
+      <span class="h" style="font-size: 20px; font-weight: 700">Quarterly tasks</span>
+    </div>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 6px 20px 20px; display: flex; flex-direction: column; gap: 10px">
+    <label for="tscope" class="sec">Tasks for</label>
+    <div class="selwrap">
+      <select id="tscope" class="sel" value="{{scope}}" onChange="{{pickScope}}">
+        <option value="all">All restaurants</option>
+        <option value="midtown">Federale’s Logan Square</option>
+        <option value="harbor">Ranalli’s Logan Square</option>
+        <option value="salt">Porter</option>
+        <option value="east">Federale’s West Loop</option>
+      </select>
+      <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+    </div>
+    <div class="qseg" role="group" aria-label="Quarter">
+      <sc-for list="{{quarters}}" as="q" hint-placeholder-count="4">
+        <button type="button" class="{{q.cls}}" aria-pressed="{{q.on}}" onClick="{{q.pick}}">{{q.label}}</button>
+      </sc-for>
+    </div>
+    <sc-if value="{{isAll}}" hint-placeholder-val="{{true}}">
+      <div class="note n-all" aria-live="polite"><b>Every restaurant gets these.</b> Pick a restaurant above to remove or change a task for just that location, or to add its own.</div>
+    </sc-if>
+    <sc-if value="{{isOne}}" hint-placeholder-val="{{false}}">
+      <div class="note n-one" aria-live="polite"><b>{{rname}}.</b> Changes here only apply to {{rname}}. Tasks marked "All restaurants" come from the group list.</div>
+    </sc-if>
+    <span class="sec ebrow">{{qLabel}} tasks · {{count}}</span>
+    <sc-if value="{{hasTasks}}" hint-placeholder-val="{{true}}">
+      <div class="box">
+        <sc-for list="{{tasks}}" as="t" hint-placeholder-count="2">
+          <div class="trow">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0">
+              <span class="tname">{{t.name}}</span>
+              <span class="tmeta">{{t.meta}}</span>
+              <sc-if value="{{t.showTag}}" hint-placeholder-val="{{false}}"><span class="{{t.tagCls}}" style="align-self: flex-start">{{t.tag}}</span></sc-if>
+            </div>
+            <button type="button" class="act" aria-label="{{t.editLabel}}" onClick="{{t.edit}}">Edit</button>
+            <sc-if value="{{t.canRemove}}" hint-placeholder-val="{{false}}"><button type="button" class="act rm" aria-label="{{t.removeLabel}}" onClick="{{t.remove}}">Remove</button></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{noTasks}}" hint-placeholder-val="{{false}}">
+      <div class="box" style="padding: 16px 14px; font-size: 14px; color: #4D5752; line-height: 1.45">No tasks for {{qLabel}} yet.</div>
+    </sc-if>
+    <button type="button" class="addb" onClick="{{openAdd}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{addLabel}}</button>
+    <sc-if value="{{hasRemoved}}" hint-placeholder-val="{{false}}">
+      <details class="past">
+        <summary><span class="sec">Removed for {{rname}} · {{removedCount}}</span><svg class="pchev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+        <div class="box">
+          <sc-for list="{{removed}}" as="t" hint-placeholder-count="1">
+            <div class="trow" style="align-items: center">
+              <span class="tname" style="flex: 1; color: #4D5752">{{t.name}}</span>
+              <button type="button" class="act" aria-label="{{t.restoreLabel}}" onClick="{{t.restore}}">Restore</button>
+            </div>
+          </sc-for>
+        </div>
+      </details>
+    </sc-if>
+    <sc-if value="{{isAll}}" hint-placeholder-val="{{true}}">
+      <span class="sec ebrow">Restaurants</span>
+      <div class="box">
+        <sc-for list="{{rests}}" as="x" hint-placeholder-count="4">
+          <button type="button" class="rrow" onClick="{{x.go}}">
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><span aria-hidden="true" style="{{x.dot}}"></span>{{x.name}}</span><span class="tmeta">{{x.summary}}</span></span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="tk-title" style="width: 100%; max-height: 92%; overflow-y: auto; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <h2 id="tk-title" class="h" style="margin: 0; font-size: 21px; font-weight: 700">{{sheetTitle}}</h2>
+          <button type="button" onClick="{{closeSheet}}" aria-label="Cancel" style="width: 44px; height: 44px; margin-right: -10px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #15201B; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </div>
+        <sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
+          <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">{{confirmText}}</p>
+          <b style="font-size: 14px; color: #94390A">This is permanent and cannot be undone.</b>
+          <button type="button" class="btnp" style="background: #A33A0B" onClick="{{confirmDelete}}">Delete</button>
+          <button type="button" class="btns" onClick="{{cancelConfirm}}">Cancel</button>
+        </sc-if>
+        <sc-if value="{{editing}}" hint-placeholder-val="{{true}}">
+          <span style="font-size: 13px; color: #4D5752">{{sheetScope}}</span>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <label class="lbl" for="tk-name">Task name</label>
+            <input id="tk-name" class="field" type="text" value="{{fName}}" onChange="{{onName}}" placeholder="e.g. Clean HVAC registers">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <label class="lbl" for="tk-dir">Directions</label>
+            <textarea id="tk-dir" class="field" rows="4" style="resize: none; line-height: 1.45" value="{{fDir}}" onChange="{{onDir}}" placeholder="What should the manager do, and when should they submit a ticket?"></textarea>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <label class="lbl" for="tk-video">How-to video link <span style="font-weight: 500; color: #5A645F">(optional)</span></label>
+            <input id="tk-video" class="field" type="url" value="{{fVideo}}" onChange="{{onVideo}}" placeholder="https://youtube.com/…">
+          </div>
+          <button type="button" class="btnp" onClick="{{save}}">{{saveLabel}}</button>
+          <sc-if value="{{canReset}}" hint-placeholder-val="{{false}}">
+            <button type="button" class="lnk" style="color: #12634F" onClick="{{resetTask}}">Use the all-restaurants version instead</button>
+          </sc-if>
+          <sc-if value="{{canDelete}}" hint-placeholder-val="{{false}}">
+            <button type="button" class="lnk" style="color: #94390A" onClick="{{askDelete}}">{{deleteLabel}}</button>
+          </sc-if>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var RC = { 'Federale’s Logan Square': '#A3336D', 'Ranalli’s Logan Square': '#1B4F91', 'Federale’s West Loop': '#6B3FA0', 'Porter': '#9A6A00' };
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.R = [{ id: 'midtown', name: 'Federale’s Logan Square' }, { id: 'harbor', name: 'Ranalli’s Logan Square' }, { id: 'salt', name: 'Porter' }, { id: 'east', name: 'Federale’s West Loop' }];
+    this.state = {
+      scope: 'all', q: 'Q4', next: 20,
+      group: [
+        { id: 'g1', q: 'Q1', name: 'E-light / Exit sign battery check', video: 'https://youtube.com/watch?v=emergency-light-test',
+          dir: 'Press and hold the "TEST" button on the outside of the light fixture housing. Lights should blink off then on as they draw from the internal battery. Submit a ticket if pressing the "TEST" button turns off the light.' },
+        { id: 'g2', q: 'Q1', name: 'Water floor drains', video: '', dir: 'Pour a gallon of water down each floor drain to keep the trap from drying out. Submit a ticket if a drain is slow or smells.' },
+        { id: 'g3', q: 'Q1', name: 'Restroom fans', video: '', dir: 'Turn on each restroom exhaust fan and hold a tissue up to it. It should pull the tissue. Submit a ticket if it doesn\'t.' },
+        { id: 'g4', q: 'Q2', name: 'City certifications / safety tags', video: '', dir: 'Check that fire extinguisher, hood suppression and elevator tags are current and posted. Submit a ticket for anything expiring within 30 days.' },
+        { id: 'g5', q: 'Q3', name: 'Clean HVAC registers', video: '', dir: 'Wipe down every supply and return register. Submit a ticket if any are bent, loose or blowing warm air.' },
+        { id: 'g6', q: 'Q3', name: 'Patio heater test', video: '', dir: 'Light each patio heater and let it run 5 minutes. Submit a ticket if one won\'t light or shuts off.' },
+        { id: 'g7', q: 'Q4', name: 'Organize utility areas', video: 'https://youtube.com/watch?v=utility-areas',
+          dir: 'Clear at least 3 feet in front of the electrical panel and the water heater. Move chemicals off the floor and away from food storage, and toss empty boxes and broken equipment. Submit a ticket if the water heater shows rust or leaks at the base, or if the panel door doesn\'t close.' }
+      ],
+      over: {
+        midtown: { removed: [], edited: {}, added: [
+          { id: 'm1', q: 'Q4', name: 'Degrease BOH floors', video: '', dir: 'Block off one section at a time. Apply degreaser per the label, let it sit 5 minutes, then scrub with a deck brush, focusing on grout and under equipment edges. Squeegee to the floor drain and rinse with clean water. Submit a ticket if a drain is slow or backs up.' }
+        ] },
+        harbor: { removed: ['g6'], edited: { g7: { name: 'Organize utility areas', video: 'https://youtube.com/watch?v=utility-areas', dir: 'Clear at least 3 feet in front of the electrical panel, the water heater and the dock door. Move chemicals off the floor and away from food storage. Submit a ticket if the water heater shows rust or leaks.' } }, added: [] },
+        salt: { removed: [], edited: {}, added: [] },
+        east: { removed: [], edited: {}, added: [] }
+      },
+      sheet: null, f: { name: '', dir: '', video: '' }, confirming: false
+    };
+  }
+  renderVals() {
+    var self = this, s = this.state, R = this.R;
+    function set(o) { self.setState(o); }
+    function clone(o) { return JSON.parse(JSON.stringify(o)); }
+    var isAll = s.scope === 'all', r = R.filter(function (x) { return x.id === s.scope; })[0];
+    var ov = isAll ? null : s.over[s.scope];
+    function metaOf(t) { return t.video ? 'Directions · video' : 'Directions'; }
+    function openSheet(kind, t) {
+      set({ sheet: { kind: kind, id: t ? t.id : null }, f: { name: t ? t.name : '', dir: t ? t.dir : '', video: t ? t.video : '' }, confirming: false });
+    }
+    var rows = [];
+    s.group.filter(function (g) { return g.q === s.q; }).forEach(function (g) {
+      if (isAll) {
+        rows.push({ name: g.name, meta: metaOf(g), showTag: false, tag: '', tagCls: '', canRemove: false,
+          edit: function () { openSheet('group', g); } });
+        return;
+      }
+      if (ov.removed.indexOf(g.id) >= 0) return;
+      var e = ov.edited[g.id], t = e ? Object.assign({ id: g.id }, e) : g;
+      rows.push({ name: t.name, meta: metaOf(t), showTag: true,
+        tag: e ? 'Changed for ' + r.name : 'All restaurants', tagCls: 'tagc ' + (e ? 'tg-chg' : 'tg-grp'),
+        canRemove: true,
+        edit: function () { openSheet('inherited', t); },
+        remove: function () { var o = clone(s.over); o[s.scope].removed.push(g.id); set({ over: o }); } });
+    });
+    if (!isAll) ov.added.filter(function (a) { return a.q === s.q; }).forEach(function (a) {
+      rows.push({ name: a.name, meta: metaOf(a), showTag: true, tag: 'Only ' + r.name, tagCls: 'tagc tg-own', canRemove: false,
+        edit: function () { openSheet('own', a); } });
+    });
+    rows.forEach(function (x) { x.editLabel = 'Edit ' + x.name; x.removeLabel = 'Remove ' + x.name + ' for ' + (r ? r.name : ''); });
+    var removed = isAll ? [] : s.group.filter(function (g) { return g.q === s.q && ov.removed.indexOf(g.id) >= 0; }).map(function (g) {
+      return { name: g.name, restoreLabel: 'Restore ' + g.name,
+        restore: function () { var o = clone(s.over); o[s.scope].removed = o[s.scope].removed.filter(function (id) { return id !== g.id; }); set({ over: o }); } };
+    });
+    var sh = s.sheet, kind = sh ? sh.kind : '';
+    function save() {
+      var f = s.f, name = (f.name || '').trim() || 'Untitled task';
+      var data = { name: name, dir: f.dir || '', video: f.video || '' };
+      if (kind === 'group') { set({ group: s.group.map(function (g) { return g.id === sh.id ? Object.assign({}, g, data) : g; }), sheet: null }); }
+      else if (kind === 'addGroup') { set({ group: s.group.concat([Object.assign({ id: 'g' + s.next, q: s.q }, data)]), next: s.next + 1, sheet: null }); }
+      else {
+        var o = clone(s.over), rv = o[s.scope];
+        if (kind === 'inherited') rv.edited[sh.id] = data;
+        else if (kind === 'own') rv.added = rv.added.map(function (a) { return a.id === sh.id ? Object.assign({}, a, data) : a; });
+        else if (kind === 'addOwn') rv.added.push(Object.assign({ id: 'a' + s.next, q: s.q }, data));
+        set({ over: o, sheet: null, next: s.next + 1 });
+      }
+    }
+    var titles = { group: 'Edit task', addGroup: 'Add task', inherited: 'Edit task', own: 'Edit task', addOwn: 'Add task' };
+    return {
+      scope: s.scope, isAll: isAll, isOne: !isAll, rname: r ? r.name : '',
+      pickScope: function (e) { set({ scope: e.target.value }); },
+      quarters: ['Q1', 'Q2', 'Q3', 'Q4'].map(function (q) { return { label: q, on: q === s.q, cls: q === s.q ? 'seg on' : 'seg', pick: function () { set({ q: q }); } }; }),
+      qLabel: s.q, count: rows.length, hasTasks: rows.length > 0, noTasks: rows.length === 0, tasks: rows,
+      addLabel: isAll ? 'Add ' + s.q + ' task for all restaurants' : 'Add ' + s.q + ' task for ' + r.name,
+      openAdd: function () { openSheet(isAll ? 'addGroup' : 'addOwn', null); },
+      removed: removed, removedCount: removed.length, hasRemoved: removed.length > 0,
+      rests: R.map(function (x) {
+        var o = s.over[x.id], bits = [];
+        if (o.added.length) bits.push(o.added.length + ' added');
+        if (Object.keys(o.edited).length) bits.push(Object.keys(o.edited).length + ' changed');
+        if (o.removed.length) bits.push(o.removed.length + ' removed');
+        return { dot: 'flex: none; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: ' + RC[x.name], name: x.name, summary: bits.length ? bits.join(' · ') : 'Uses the all-restaurants list', go: function () { set({ scope: x.id }); } };
+      }),
+      sheetOpen: !!sh, sheetTitle: s.confirming ? 'Delete this task?' : (titles[kind] || ''),
+      editing: !!sh && !s.confirming, confirming: !!sh && s.confirming,
+      sheetScope: (kind === 'group' || kind === 'addGroup') ? s.q + ' · All restaurants' : s.q + ' · ' + (r ? r.name + ' only' : ''),
+      fName: s.f.name, fDir: s.f.dir, fVideo: s.f.video,
+      onName: function (e) { set({ f: Object.assign({}, s.f, { name: e.target.value }) }); },
+      onDir: function (e) { set({ f: Object.assign({}, s.f, { dir: e.target.value }) }); },
+      onVideo: function (e) { set({ f: Object.assign({}, s.f, { video: e.target.value }) }); },
+      saveLabel: (kind === 'addGroup' || kind === 'addOwn') ? 'Add task' : 'Save changes',
+      save: save,
+      closeSheet: function () { set({ sheet: null, confirming: false }); },
+      canReset: kind === 'inherited' && !!(ov && ov.edited[sh && sh.id]),
+      resetTask: function () { var o = clone(s.over); delete o[s.scope].edited[sh.id]; set({ over: o, sheet: null }); },
+      canDelete: kind === 'group' || kind === 'own',
+      deleteLabel: kind === 'group' ? 'Delete for all restaurants' : 'Delete task',
+      askDelete: function () { set({ confirming: true }); },
+      cancelConfirm: function () { set({ confirming: false }); },
+      confirmText: kind === 'group' ? '"' + s.f.name + '" will be removed from every restaurant.' : '"' + s.f.name + '" will be removed from ' + (r ? r.name : '') + '.',
+      confirmDelete: function () {
+        if (kind === 'group') {
+          var o = clone(s.over);
+          Object.keys(o).forEach(function (k) { o[k].removed = o[k].removed.filter(function (id) { return id !== sh.id; }); delete o[k].edited[sh.id]; });
+          set({ group: s.group.filter(function (g) { return g.id !== sh.id; }), over: o, sheet: null, confirming: false });
+        } else {
+          var o2 = clone(s.over); o2[s.scope].added = o2[s.scope].added.filter(function (a) { return a.id !== sh.id; });
+          set({ over: o2, sheet: null, confirming: false });
+        }
+      }
+    };
+  }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+</script>
+</body>
+</html>

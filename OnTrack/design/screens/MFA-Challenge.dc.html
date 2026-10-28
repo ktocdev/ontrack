@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign in — 2-step verification</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.code{width:100%;box-sizing:border-box;min-height:64px;border:1.5px solid #12634F;border-radius:14px;background:#fff;padding:0 16px;text-align:center;font:500 26px 'JetBrains Mono',monospace;color:#15201B}
+.chk{display:flex;align-items:flex-start;gap:10px;min-height:44px;font-size:14px;line-height:1.4;color:#2E3833;cursor:pointer}
+.chk input{width:20px;height:20px;margin:0;flex:none;accent-color:#12634F}
+.link{align-self:center;min-height:44px;border:0;background:transparent;padding:0 8px;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Sign-In.dc.html" aria-label="Back to sign in" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#12634F"></rect><path d="M8 15l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    <span class="h" style="font-size: 17px; font-weight: 700; margin-left: 4px">OnTrack</span>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 28px 24px 0; display: flex; flex-direction: column; gap: 18px">
+    <span style="width: 56px; height: 56px; border-radius: 50%; background: #DCE8E3; color: #12634F; display: flex; align-items: center; justify-content: center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>
+    </span>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">{{title}}</h1>
+      <p style="margin: 0; font-size: 15px; color: #4D5752; line-height: 1.5">{{body}}</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="c-code" style="font-size: 13px; font-weight: 600; color: #2E3833">{{label}}</label>
+      <input id="c-code" class="code" type="text" inputmode="{{mode}}" autocomplete="one-time-code" placeholder="{{ph}}" style="{{codeStyle}}">
+    </div>
+    <label class="chk"><input type="checkbox" checked=""><span>Don't ask again on this phone for 30 days</span></label>
+    <a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Verify</a>
+    <button type="button" class="link" onClick="{{toggle}}">{{switchLabel}}</button>
+    <div style="flex: 1"></div>
+    <p style="margin: 0 0 28px; font-size: 13px; line-height: 1.5; color: #4D5752; text-align: center">Lost your phone and your backup codes? Your IT admin can reset 2-step verification for you.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { backup: false }; }
+  renderVals() {
+    var b = this.state.backup;
+    return {
+      title: b ? 'Use a backup code' : 'Enter your code',
+      body: b ? 'Enter one of the 8 backup codes you saved when you set up 2-step verification. Each one works once.' : 'Open your authenticator app and enter the 6-digit code for OnTrack.',
+      label: b ? 'Backup code' : 'Verification code',
+      mode: b ? 'text' : 'numeric',
+      ph: b ? 'XXXX-XXXX' : '······',
+      codeStyle: b ? 'letter-spacing: .12em' : 'letter-spacing: .45em',
+      switchLabel: b ? 'Use authenticator app instead' : 'Use a backup code instead',
+      toggle: () => this.setState({ backup: !b })
+    };
+  }
+}
+</script>
+</body>
+</html>

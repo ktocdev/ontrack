@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Closed ticket — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.card{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.p-closed{background:#ECEEEB;color:#3F4944}
+.p-wait{background:#F3ECD6;color:#6A500C}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.dot{flex:none;width:13px;height:13px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+.i-open{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3C/svg%3E")}
+.i-prog{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='black' d='M16 2a14 14 0 1 0 14 14A14.016 14.016 0 0 0 16 2m0 26a12 12 0 0 1 0-24v12l8.481 8.481A11.96 11.96 0 0 1 16 28'/%3E%3C/svg%3E")}
+.i-wait{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E")}
+.i-sched{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2.5'/%3E%3Cpath d='M8 3v4M16 3v4M8.5 13.5l2.5 2.5 4.5-4.5'/%3E%3C/svg%3E")}
+.i-reop{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20.5 3.5v5h-5'/%3E%3C/svg%3E")}
+.i-done{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='m8.3 12.2 2.5 2.5 4.9-5.2'/%3E%3C/svg%3E")}
+.rest{font-size:12px;font-weight:700;color:#12634F}
+.kv{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid #DDE1DC;font-size:14px}
+.kv:first-child{border-top:0}
+.kv .k{color:#5A645F;font-size:13px;flex:none}
+.kv .v{font-weight:600;text-align:right;min-width:0;overflow-wrap:anywhere}
+.tl{display:flex;gap:12px;padding:12px 14px;border-top:1px solid #DDE1DC}
+.tl:first-child{border-top:0}
+.tdot{flex:none;width:10px;height:10px;border-radius:50%;margin-top:5px;background:#A9B3AE}
+.flag{flex:none;background:#FBF5E3;border:1px solid #E6D7A8;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ph{width:110px;height:80px;border-radius:10px;background:#EDE4C6;display:flex;align-items:center;justify-content:center;color:#6A500C}
+.btnp{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 16px 'Public Sans',sans-serif;cursor:pointer;width:100%;text-decoration:none}
+.btnp:hover{color:#fff;background:#0B4537}
+.btnp.off{background:#DDE1DC;color:#4D5752;cursor:not-allowed}
+.btns{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 15px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.lbl{font-size:13px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:12px;background:#fff;padding:12px 14px;font:400 15px 'Public Sans',sans-serif;color:#15201B;resize:none;line-height:1.4}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.rname{-webkit-text-fill-color:#2E3833}
+.rname::before{content:'';display:inline-block;width:9px;height:9px;border-radius:2px;background:currentColor;margin-right:6px;vertical-align:0;box-shadow:inset 0 0 0 1px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 12px 8px 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Ops-Closed.dc.html" aria-label="Back to closed tickets" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <span class="mono" style="font-size: 13px; color: #4D5752">OT-0988</span>
+    <span style="flex: 1"></span>
+    <span class="{{pillCls}}" style="margin-right: 8px"><span class="{{dotCls}}"></span>{{pillLabel}}</span>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 12px">
+    <sc-if value="{{reopened}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="flex: none; display: flex; gap: 10px; align-items: flex-start; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="m5 12 5 5 9-10"></path></svg>
+        <span><b>Work started and assigned to you.</b> It’s In progress on your dashboard. Maya was notified.</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{replied}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="flex: none; display: flex; gap: 10px; align-items: flex-start; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="m5 12 5 5 9-10"></path></svg>
+        <span><b>Closed again.</b> Your reply was sent to Maya.</span>
+      </div>
+    </sc-if>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 class="h" style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2">Door gasket torn</h1>
+      <span style="font-size: 13px; color: #4D5752"><span class="rest rname" style="color: #A3336D">Federale’s Logan Square</span> · Walk-in Cooler 1 · Closed Oct 14</span>
+    </div>
+
+    <sc-if value="{{showFlag}}" hint-placeholder-val="{{true}}">
+      <div class="flag" role="region" aria-label="Reopened">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #6A500C">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+          Reopened
+        </span>
+        <span style="font-size: 15px; line-height: 1.45">"The gasket is torn again near the bottom hinge. Frost is back on the threshold."</span>
+        <span class="ph" role="img" aria-label="Photo: torn gasket near the bottom hinge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"></rect><circle cx="9" cy="10" r="2"></circle><path d="m21 16-5-5-9 9"></path></svg></span>
+        <span style="font-size: 12px; color: #6A500C">Maya Reyes, Federale’s Logan Square · 20m ago · 9 days after closing</span>
+      </div>
+    </sc-if>
+
+    <span class="sec ebrow">Resolution</span>
+    <div class="card">
+      <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; background: #F7F8F6">
+        <span style="font-size: 12px; font-weight: 700; color: #4D5752">Your closing comment</span>
+        <span style="font-size: 14px; line-height: 1.45">Replaced the full door gasket. Checked the seal with the door closed overnight, holding at 37°F.</span>
+      </div>
+      <div class="kv"><span class="k">Contractor</span><span class="v">Coldline Refrigeration</span></div>
+      <div class="kv"><span class="k">Cost</span><span class="v mono">$245.00</span></div>
+    </div>
+
+    <span class="sec ebrow">Timeline</span>
+    <div class="card">
+      <div class="tl"><span class="tdot"></span><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">Opened</span><span style="font-size: 12px; color: #5A645F">Maya Reyes · Oct 10, 9:12 AM</span></div></div>
+      <div class="tl"><span class="tdot"></span><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">You assigned yourself · In progress</span><span style="font-size: 12px; color: #5A645F">Oct 10, 9:40 AM</span></div></div>
+      <div class="tl"><span class="tdot" style="background: #12634F"></span><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">You closed this ticket</span><span style="font-size: 12px; color: #5A645F">Oct 14, 4:05 PM</span></div></div>
+      <sc-if value="{{showFlag}}" hint-placeholder-val="{{true}}">
+        <div class="tl"><span class="tdot" style="background: #B8941F"></span><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">Maya reopened this ticket</span><span style="font-size: 12px; color: #5A645F">Today, 12:40 PM</span></div></div>
+      </sc-if>
+      <sc-if value="{{reopened}}" hint-placeholder-val="{{false}}">
+        <div class="tl"><span class="tdot" style="background: #1B4F91"></span><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">You started work · In progress</span><span style="font-size: 14px; line-height: 1.4; color: #2E3833">{{reason}}</span><span style="font-size: 12px; color: #5A645F">Just now</span></div></div>
+      </sc-if>
+    </div>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC; display: flex; flex-direction: column; gap: 8px">
+    <sc-if value="{{actions}}" hint-placeholder-val="{{true}}">
+      <button type="button" class="btnp" onClick="{{openReopen}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+        Start work
+      </button>
+      <button type="button" class="btns" onClick="{{openReply}}">Close again</button>
+    </sc-if>
+    <sc-if value="{{reopened}}" hint-placeholder-val="{{false}}">
+      <a class="btnp" href="Ops-Ticket.dc.html">Go to ticket</a>
+    </sc-if>
+    <sc-if value="{{replied}}" hint-placeholder-val="{{false}}">
+      <button type="button" class="btns" onClick="{{openReopen}}">Start work anyway</button>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{reopenOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 5; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="ro-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="ro-title" class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Start work on <span class="mono" style="font-size: 19px">OT-0988</span>?</h2>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">It moves to In progress and is assigned to you. Maya is notified, and the past cost stays on this ticket.</p>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label class="lbl" for="ro-reason">Note for the ticket</label>
+          <textarea id="ro-reason" class="field" rows="3" value="{{reason}}" onInput="{{onReason}}"></textarea>
+          <span style="font-size: 12px; color: #5A645F">Added to the ticket’s timeline. Maya can see it.</span>
+        </div>
+        <button type="button" class="{{reopenCls}}" aria-disabled="{{noReason}}" onClick="{{confirmReopen}}">Start work</button>
+        <button type="button" class="btns" onClick="{{closeSheets}}">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{replyOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 5; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="rp-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="rp-title" class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Close again</h2>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">Use this if it’s a different problem, or the original fix is fine. Maya gets your reply and the ticket goes back to Closed.</p>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label class="lbl" for="rp-msg">Message</label>
+          <textarea id="rp-msg" class="field" rows="4" value="{{reply}}" onInput="{{onReply}}"></textarea>
+        </div>
+        <button type="button" class="{{replyCls}}" aria-disabled="{{noReply}}" onClick="{{sendReply}}">Send and close</button>
+        <button type="button" class="btns" onClick="{{closeSheets}}">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"reopenSheetOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+function __dot(l){return 'dot i-'+(l==='Open'||l==='Unassigned'?'open':l==='In progress'?'prog':l.indexOf('Waiting')===0?'wait':l.indexOf('Scheduled')===0?'sched':l==='Reopened'?'reop':'done');}
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      mode: 'flagged', sheet: p && p.reopenSheetOpen ? 'reopen' : null,
+      reason: 'Gasket torn again near the bottom hinge, 9 days after the replacement. Checking whether it’s a fit problem with Coldline.',
+      reply: 'Thanks, Maya. That hinge area looks like a different issue from the original tear. Can you create a new ticket for it so we can track it separately?'
+    };
+  }
+  renderVals() {
+    var self = this, s = this.state, r = (s.reason || '').trim(), m = (s.reply || '').trim();
+    var reopened = s.mode === 'reopened';
+    return {
+      reopened: reopened, replied: s.mode === 'replied', actions: s.mode === 'flagged',
+      showFlag: true,
+      pillCls: reopened ? 'pill p-prog' : s.mode === 'replied' ? 'pill p-closed' : 'pill p-wait', pillLabel: reopened ? 'In progress' : s.mode === 'replied' ? 'Closed' : 'Reopened', dotCls: __dot(reopened ? 'In progress' : s.mode === 'replied' ? 'Closed' : 'Reopened'),
+      reopenOpen: s.sheet === 'reopen', replyOpen: s.sheet === 'reply',
+      reason: s.reason, noReason: !r, reopenCls: r ? 'btnp' : 'btnp off',
+      reply: s.reply, noReply: !m, replyCls: m ? 'btnp' : 'btnp off',
+      onReason: function (e) { self.setState({ reason: e.target.value }); },
+      onReply: function (e) { self.setState({ reply: e.target.value }); },
+      openReopen: function () { self.setState({ sheet: 'reopen' }); },
+      openReply: function () { self.setState({ sheet: 'reply' }); },
+      closeSheets: function () { self.setState({ sheet: null }); },
+      confirmReopen: function () { if (r) self.setState({ sheet: null, mode: 'reopened' }); },
+      sendReply: function () { if (m) self.setState({ sheet: null, mode: 'replied' }); }
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var sc=!!(self.state&&self.state.__sc); v.__hdCls='stickyhd'+(sc?' is-scrolled':''); v.__onScroll=function(e){var y=e.target.scrollTop>2; if(y!==!!(self.state&&self.state.__sc)){ if(!self.state) self.state={}; self.setState({__sc:y}); }}; return v; }; })(Component);
+</script>
+</body>
+</html>

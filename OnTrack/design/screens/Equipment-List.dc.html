@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Equipment — Manager</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.grp{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.ghead{width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border:0;background:#fff;font:600 15px/20px 'Public Sans',sans-serif;color:#15201B;cursor:pointer;text-align:left}
+.ghead svg{display:block;flex:none}
+.item{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 14px;border-top:1px solid #ECEEEB;text-decoration:none;color:#15201B;box-sizing:border-box}
+.item:hover{background:#F7F8F6;color:#15201B}
+.badge{display:inline-block;font-size:11px;font-weight:700;line-height:15px;padding:4px 8px;border-radius:999px;background:#FBEADF;color:#94390A;white-space:nowrap}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 24px 20px 12px; display: flex; flex-direction: column; gap: 14px">
+    <span style="display: flex; align-items: center; gap: 6px; font: 600 14px 'Public Sans', sans-serif; color: #15201B"><span style="width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Equipment</h1>
+      <button type="button" aria-label="Scan QR code" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #C9CFCA; background: #fff; display: flex; align-items: center; justify-content: center; color: #15201B">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"></path></svg>
+      </button>
+    </div>
+    <label style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 0 14px; min-height: 44px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Name, brand or serial number" aria-label="Search equipment" style="border: 0; outline: 0; flex: 1; font: 400 15px 'Public Sans', sans-serif; background: transparent; color: #15201B">
+    </label>
+    <div role="tablist" aria-label="Area" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+      <button type="button" role="tab" class="seg" aria-selected="false">Front of House</button>
+      <button type="button" role="tab" class="seg on" aria-selected="true">Back of House</button>
+    </div>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="5">
+      <div class="grp">
+        <button type="button" class="ghead" aria-expanded="{{g.open}}" onClick="{{g.toggle}}">
+          <span style="flex: 1">{{g.name}}</span>
+          <sc-if value="{{g.hasOpen}}" hint-placeholder-val="{{false}}"><span class="badge">{{g.openCount}} open</span></sc-if>
+          <span style="min-width: 18px; text-align: right; font-size: 13px; color: #5A645F; font-weight: 500">{{g.count}}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{g.chev}}"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        <sc-if value="{{g.open}}" hint-placeholder-val="{{false}}">
+          <sc-for list="{{g.items}}" as="it" hint-placeholder-count="4">
+            <a class="item" href="Equipment-Detail.dc.html">
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+                <span style="font-size: 15px; font-weight: 600">{{it.name}}</span>
+                <span style="font-size: 12px; color: #5A645F">{{it.brand}} · <span class="mono">{{it.sn}}</span></span>
+              </div>
+              <sc-if value="{{it.open}}" hint-placeholder-val="{{false}}"><span class="badge">1 open</span></sc-if>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </a>
+          </sc-for>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <nav class="nav" aria-label="Manager">
+    <a href="Create-Area.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><path d="M12 8v8M8 12h8"></path></svg>
+      Create ticket
+    </a>
+    <a href="Main.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+      Open tickets
+    </a>
+    <a href="WT-Home.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"></path></svg>
+      Walkthrough
+    </a>
+    <a class="on" href="Equipment-List.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      Equipment
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { open: 'Refrigeration' }; }
+  renderVals() {
+    var self = this, cur = this.state.open;
+    var data = [
+      { name: 'Cooking', count: 14, openCount: 1, items: [
+        { name: 'Combi Oven', brand: 'Rational', sn: 'E11SH22091834', open: true },
+        { name: '6-Burner Range', brand: 'Vulcan', sn: 'VC-36S-118204', open: false },
+        { name: 'Fryer Bank (2)', brand: 'Frymaster', sn: 'FM-1814-40027', open: false } ] },
+      { name: 'Refrigeration', count: 9, openCount: 1, items: [
+        { name: 'Walk-in Cooler 1', brand: 'Kolpak', sn: 'KP-7XW-220418', open: true },
+        { name: 'Walk-in Freezer', brand: 'Kolpak', sn: 'KP-9FZ-190233', open: false },
+        { name: 'Reach-in Cooler · Line', brand: 'True', sn: 'TR-49RR-55120', open: false },
+        { name: 'Prep Table Cooler', brand: 'True', sn: 'TR-PT27-80911', open: false } ] },
+      { name: 'Plumbing', count: 8, openCount: 0, items: [] },
+      { name: 'Electrical', count: 10, openCount: 0, items: [] },
+      { name: 'Lighting', count: 15, openCount: 0, items: [] },
+      { name: 'Dishwashing', count: 3, openCount: 0, items: [] }
+    ];
+    return {
+      groups: data.map(function (g) {
+        var o = cur === g.name;
+        return Object.assign({}, g, {
+          open: o, hasOpen: g.openCount > 0,
+          chev: o ? 'transform: rotate(180deg)' : '',
+          toggle: function () { self.setState({ open: o ? null : g.name }); }
+        });
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

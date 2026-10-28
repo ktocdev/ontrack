@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Finding equipment — QR scan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.spin{width:48px;height:48px;border-radius:50%;border:4px solid #DCE8E3;border-top-color:#12634F;box-sizing:border-box;animation:sp .8s linear infinite}
+@keyframes sp{100%{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+.btn2{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 14px 'Public Sans',sans-serif;text-decoration:none}
+.btn2:hover{color:#15201B;border-color:#A9B3AE}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 0; display: flex; justify-content: flex-end">
+    <a href="Create-Area.dc.html" aria-label="Cancel scan" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+  </div>
+  <div role="status" aria-live="polite" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 32px 120px; text-align: center">
+    <span class="spin" aria-hidden="true"></span>
+    <h1 class="h" style="margin: 6px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Finding equipment…</h1>
+    <p style="margin: 0; font-size: 14px; color: #4D5752; line-height: 1.5">QR code read: <span class="mono" style="color: #15201B">EQ-0148</span></p>
+    <a class="btn2" href="Create-Area.dc.html" style="margin-top: 8px">Cancel</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

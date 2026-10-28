@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Walkthroughs — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.r{display:flex;flex-direction:column;gap:7px;padding:12px 14px;border-top:1px solid #ECEEEB;text-decoration:none;color:#15201B}
+.r:first-child{border-top:0}
+.r:hover{background:#F7F8F6;color:#15201B}
+.bar{height:6px;border-radius:3px;background:#E5E8E3;overflow:hidden}
+.bar span{display:block;height:100%;background:#12634F}
+.pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.p-done{background:#DCE8E3;color:#0B4537}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.p-none{background:#FBEADF;color:#94390A}
+.chip{font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px}
+.c-tk{background:#FBEADF;color:#94390A}
+.c-in{background:#F3ECD6;color:#6A500C}
+.hist{width:100%;border-collapse:collapse;font-size:12px}
+.hist th{font-weight:600;color:#4D5752;padding:6px 0;text-align:center}
+.hist th:first-child,.hist td:first-child{text-align:left;padding-left:14px;font-weight:600;color:#15201B;white-space:nowrap}
+.hist td{padding:5px 0;text-align:center;border-top:1px solid #ECEEEB}
+.sq{display:inline-block;width:20px;height:20px;border-radius:5px;vertical-align:middle}
+.s-on{background:#12634F}
+.s-late{background:#C9A227}
+.s-miss{background:#fff;border:2px solid #A9B3AE;box-sizing:border-box}
+.s-now{background:repeating-linear-gradient(45deg,#DCE8E3 0 4px,#fff 4px 8px);border:1.5px solid #12634F;box-sizing:border-box}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 4px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+.past{flex:none}
+.past summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;cursor:pointer;list-style:none}
+.past summary::-webkit-details-marker{display:none}
+.past[open] .pchev{transform:rotate(180deg)}
+.past[open] summary{margin-bottom:4px}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+.rp-menu{position:absolute;top:48px;left:-6px;z-index:20;width:290px;background:#fff;border:1px solid #DDE1DC;border-radius:14px;box-shadow:0 12px 28px -8px rgba(21,32,27,.28);padding:6px;box-sizing:border-box;display:flex;flex-direction:column}
+.rp-hd{padding:8px 10px 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.rp-opt{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:0;border-radius:10px;background:transparent;font:500 15px 'Public Sans',sans-serif;color:#15201B;text-align:left;cursor:pointer}
+.rp-opt:hover{background:#F3F4F1}
+.rp-scrim{position:fixed;inset:0;z-index:19;background:transparent}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 20px 20px 10px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="position: relative">
+        <button type="button" aria-haspopup="listbox" aria-expanded="{{__rpOpen}}" onClick="{{__rpToggle}}" style="display: flex; align-items: center; gap: 6px; min-height: 44px; border: 0; background: transparent; padding: 0; font: 600 14px 'Public Sans', sans-serif; color: #15201B">
+        <span aria-hidden="true" style="flex: none; display: grid; grid-template-columns: repeat(2, 5px); gap: 1px; width: 11px; height: 11px"><span style="border-radius: 1.5px; background: #A3336D"></span><span style="border-radius: 1.5px; background: #1B4F91"></span><span style="border-radius: 1.5px; background: #6B3FA0"></span><span style="border-radius: 1.5px; background: #9A6A00"></span></span>
+        All restaurants (4)
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{__rpChev}}"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
+        <sc-if value="{{__rpOpen}}" hint-placeholder-val="{{false}}">
+          <div class="rp-scrim" onClick="{{__rpClose}}"></div>
+          <div class="rp-menu" role="listbox" aria-label="Restaurant">
+            <span class="rp-hd">Show walkthroughs for</span>
+            <button type="button" class="rp-opt" role="option" aria-selected="true" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; display: grid; grid-template-columns: repeat(2, 5px); gap: 1px; width: 11px; height: 11px; margin: 0 0.5px"><span style="border-radius: 1.5px; background: #A3336D"></span><span style="border-radius: 1.5px; background: #1B4F91"></span><span style="border-radius: 1.5px; background: #6B3FA0"></span><span style="border-radius: 1.5px; background: #9A6A00"></span></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 700">All restaurants</span><span style="font-size: 12px; font-weight: 500; color: #5A645F">4 restaurants</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #1B4F91"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Ranalli’s Logan Square</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Federale’s Logan Square</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #6B3FA0"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Federale’s West Loop</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #9A6A00"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Porter</span></span></button>
+          </div>
+        </sc-if>
+      </div>
+      <a href="Profile.dc.html" aria-label="Your profile" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #E4EDF8; font: 700 13px 'Archivo', sans-serif; color: #1B4F91; display: flex; align-items: center; justify-content: center; text-decoration: none">BV</a>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+      <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Walkthroughs</h1>
+      <a href="WT-Ops-Schedule.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid #C9CFCA; background: #fff; color: #15201B; text-decoration: none; font-size: 14px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Schedule</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 4px">
+      <button type="button" aria-label="Previous month" style="width: 40px; height: 40px; border: 0; background: transparent; color: #15201B; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px">
+        <span style="font-size: 15px; font-weight: 700">October 2026</span>
+        <span style="font-size: 12px; color: #4D5752">Full · BOH + FOH · due Oct 31</span>
+      </div>
+      <button type="button" aria-label="Next month" disabled="" style="width: 40px; height: 40px; border: 0; background: transparent; color: #A9B3AE"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+    </div>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 2px 6px">
+      <span style="font-size: 14px"><b>1 of 4</b> submitted · 10 days left</span>
+    </div>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; overflow: hidden">
+      <a class="r" href="WT-Ops-Restaurant.dc.html">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span aria-hidden="true" style="flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #9A6A00"></span>Porter</span><span class="pill p-none">Not started</span></div>
+        <div class="bar"><span style="width: 0%"></span></div>
+        <span style="font-size: 12px; color: #5A645F">0 of 50</span>
+      </a>
+      <a class="r" href="WT-Ops-Restaurant.dc.html">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span aria-hidden="true" style="flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #6B3FA0"></span>Federale’s West Loop</span><span class="pill p-prog">In progress</span></div>
+        <div class="bar"><span style="width: 12%"></span></div>
+        <span style="font-size: 12px; color: #5A645F">6 of 50</span>
+      </a>
+      <a class="r" href="WT-Ops-Restaurant.dc.html">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span aria-hidden="true" style="flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span><span class="pill p-prog">In progress</span></div>
+        <div class="bar"><span style="width: 40%"></span></div>
+        <span style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #5A645F">20 of 50 <span class="chip c-tk">2 tickets</span><span class="chip c-in">1 in-house</span></span>
+      </a>
+      <a class="r" href="WT-Ops-Restaurant.dc.html">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span aria-hidden="true" style="flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #1B4F91"></span>Ranalli’s Logan Square</span><span class="pill p-done">Submitted Oct 18</span></div>
+        <div class="bar"><span style="width: 100%"></span></div>
+        <span style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #5A645F">50 of 50 <span class="chip c-tk">2 tickets</span><span class="chip c-in">3 in-house</span></span>
+      </a>
+    </div>
+    <details class="past">
+      <summary><span class="sec">Last 6 months</span><svg class="pchev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+      <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; overflow: hidden; padding-right: 8px">
+        <table class="hist">
+          <thead><tr><th scope="col"><span class="sr" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Restaurant</span></th><th scope="col">May</th><th scope="col">Jun</th><th scope="col">Jul</th><th scope="col">Aug</th><th scope="col">Sep</th><th scope="col">Oct</th></tr></thead>
+          <tbody>
+            <tr><td><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="flex: none; display: inline-block; width: 8px; height: 8px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-miss" role="img" aria-label="Missed"></span></td><td><span class="sq s-miss" role="img" aria-label="Missed"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-now" role="img" aria-label="In progress"></span></td></tr>
+            <tr><td><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="flex: none; display: inline-block; width: 8px; height: 8px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #6B3FA0"></span>Federale’s West Loop</span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-late" role="img" aria-label="Late"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-now" role="img" aria-label="In progress"></span></td></tr>
+            <tr><td><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="flex: none; display: inline-block; width: 8px; height: 8px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #9A6A00"></span>Porter</span></td><td><span class="sq s-late" role="img" aria-label="Late"></span></td><td><span class="sq s-miss" role="img" aria-label="Missed"></span></td><td><span class="sq s-late" role="img" aria-label="Late"></span></td><td><span class="sq s-miss" role="img" aria-label="Missed"></span></td><td><span class="sq s-late" role="img" aria-label="Late"></span></td><td><span class="sq s-miss" role="img" aria-label="Not started"></span></td></tr>
+            <tr><td><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="flex: none; display: inline-block; width: 8px; height: 8px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #1B4F91"></span>Ranalli’s Logan Square</span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="On time"></span></td><td><span class="sq s-on" role="img" aria-label="Submitted"></span></td></tr>
+          </tbody>
+        </table>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; padding: 8px 14px 12px; font-size: 11px; color: #4D5752; border-top: 1px solid #ECEEEB">
+          <span style="display: flex; align-items: center; gap: 4px"><span class="sq s-on" style="width: 12px; height: 12px"></span>On time</span>
+          <span style="display: flex; align-items: center; gap: 4px"><span class="sq s-late" style="width: 12px; height: 12px"></span>Late</span>
+          <span style="display: flex; align-items: center; gap: 4px"><span class="sq s-miss" style="width: 12px; height: 12px"></span>Missed</span>
+          <span style="display: flex; align-items: center; gap: 4px"><span class="sq s-now" style="width: 12px; height: 12px"></span>In progress</span>
+        </div>
+      </div>
+    </details>
+  </div>
+  <nav class="nav" aria-label="Operations">
+    <a href="Ops-Dashboard.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+      Dashboard
+    </a>
+    <a class="on" href="WT-Ops-Overview.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"></path></svg>
+      Walkthroughs
+    </a>
+    <a href="Ops-Equipment.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      Equipment
+    </a>
+    <a href="Ops-Contractors.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"></path></svg>
+      Contractors
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd ttl' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var o=!!(self.state&&self.state.__rp); v.__rpOpen=o; v.__rpChev=o?'transform: rotate(180deg)':''; v.__rpToggle=function(){ if(!self.state) self.state={}; self.setState({__rp:!(self.state&&self.state.__rp)}); }; v.__rpClose=function(){ if(!self.state) self.state={}; self.setState({__rp:false}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

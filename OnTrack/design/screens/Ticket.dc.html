@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ticket — Manager</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.dot{flex:none;width:13px;height:13px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+.i-open{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3C/svg%3E")}
+.i-prog{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='black' d='M16 2a14 14 0 1 0 14 14A14.016 14.016 0 0 0 16 2m0 26a12 12 0 0 1 0-24v12l8.481 8.481A11.96 11.96 0 0 1 16 28'/%3E%3C/svg%3E")}
+.i-wait{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E")}
+.i-sched{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2.5'/%3E%3Cpath d='M8 3v4M16 3v4M8.5 13.5l2.5 2.5 4.5-4.5'/%3E%3C/svg%3E")}
+.i-reop{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20.5 3.5v5h-5'/%3E%3C/svg%3E")}
+.i-done{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='m8.3 12.2 2.5 2.5 4.9-5.2'/%3E%3C/svg%3E")}
+.urg{font-size:11px;font-weight:700;color:#fff;background:#B4400C;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.03em}
+.eq{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fff;border:1px solid #DDE1DC;border-radius:12px;text-decoration:none;color:#15201B}
+.eq:hover{border-color:#A9B3AE;color:#15201B}
+.feed{display:flex;flex-direction:column}
+.ev{display:flex;align-items:center;gap:8px;padding:8px 2px;font-size:12px;color:#5A645F}
+.ev i{flex:none;width:6px;height:6px;border-radius:50%;background:#A9B3AE;margin:0 9px}
+.msg{display:flex;gap:10px;padding:8px 0}
+.av{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 11px 'Archivo',sans-serif}
+.bub{flex:1;min-width:0;background:#fff;border:1px solid #DDE1DC;border-radius:4px 14px 14px 14px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.bub.me{background:#E3EFEA;border-color:#C5DCD2}
+.who{font-size:12px;font-weight:700;color:#2E3833}
+.who span{font-weight:500;color:#5A645F}
+.ph{width:120px;height:88px;border-radius:10px;background:#D2E3DB;display:flex;align-items:center;justify-content:center;color:#3F5A4E;margin-top:2px}
+.txt{font-size:14px;line-height:1.45;color:#15201B;overflow-wrap:anywhere}
+.comp{flex:none;border-top:1px solid #DDE1DC;background:#fff;padding:10px 12px 24px;display:flex;align-items:flex-end;gap:8px}
+.cin{flex:1;min-width:0;min-height:44px;max-height:120px;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:22px;background:#F7F8F6;padding:11px 16px;font:400 15px 'Public Sans',sans-serif;color:#15201B;resize:none;line-height:1.4}
+.ibtn{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:transparent;display:flex;align-items:center;justify-content:center;color:#4D5752;cursor:pointer}
+.send{flex:none;width:44px;height:44px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.send.on{background:#12634F;color:#fff}
+.send.off{background:#DDE1DC;color:#4D5752;cursor:not-allowed}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 12px 8px 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Main.dc.html" aria-label="Back to open tickets" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0">
+      <span class="mono" style="font-size: 13px; color: #4D5752">OT-1042</span>
+      <span class="pill p-prog"><span class="dot i-prog"></span>In progress</span>
+    </div>
+    <a href="Edit-Ticket.dc.html" style="display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; font-size: 15px; font-weight: 600; text-decoration: none">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+      Edit
+    </a>
+  </div>
+  <div id="feed-scroll" onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span class="urg" style="align-self: flex-start">Urgent</span>
+      <h1 class="h" style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2">Walk-in cooler not holding temp</h1>
+      <span style="font-size: 13px; color: #5A645F; line-height: 1.4"><span style="font-weight: 700; color: #2E3833"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span> › BOH › Refrigeration</span>
+    </div>
+    <span class="sec ebrow">Description</span>
+    <p style="margin: 0; font-size: 15px; line-height: 1.5; color: #2E3833">Reading 46°F at open, should be 38°F. Compressor running constantly. Moved proteins to reach-ins.</p>
+    <span class="sec ebrow">Equipment</span>
+    <a class="eq" href="Equipment-Detail.dc.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+        <span style="font-size: 15px; font-weight: 600">Walk-in Cooler 1</span>
+        <span style="font-size: 12px; color: #5A645F">Kolpak · <span class="mono">KP-7XW-220418</span></span>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+    </a>
+
+    <span class="sec ebrow">Updates · {{count}}</span>
+    <div class="feed" role="log" aria-label="Ticket updates">
+      <sc-for list="{{items}}" as="x" hint-placeholder-count="6">
+        <sc-if value="{{x.isEvent}}" hint-placeholder-val="{{false}}">
+          <div class="ev"><i></i><span>{{x.text}} · {{x.when}}</span></div>
+        </sc-if>
+        <sc-if value="{{x.isMsg}}" hint-placeholder-val="{{true}}">
+          <div class="msg">
+            <span class="av" style="{{x.avStyle}}" aria-hidden="true">{{x.ini}}</span>
+            <div class="{{x.bubCls}}">
+              <span class="who">{{x.who}} <span>· {{x.when}}</span></span>
+              <span class="txt">{{x.text}}</span>
+              <sc-if value="{{x.photo}}" hint-placeholder-val="{{false}}">
+                <span class="ph" role="img" aria-label="Photo: thermometer in reach-in cooler reading 36°F"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"></rect><circle cx="9" cy="10" r="2"></circle><path d="m21 16-5-5-9 9"></path></svg></span>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+  </div>
+  <div class="comp">
+    <button type="button" class="ibtn" aria-label="Add photo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+    <textarea class="cin" rows="1" aria-label="Write an update for Ops" placeholder="Write an update…" value="{{draft}}" onInput="{{onDraft}}"></textarea>
+    <button type="button" class="{{sendCls}}" aria-label="Post update" aria-disabled="{{empty}}" onClick="{{send}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var OPS = 'background: #E4EDF8; color: #1B4F91', ME = 'background: #DCE8E3; color: #12634F';
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      draft: '',
+      items: [
+        { ev: true, text: 'Opened by you', when: 'Oct 19, 2026, 9:12 AM' },
+        { ev: true, text: 'Bert Velilla assigned · status In progress', when: '9:40 AM' },
+        { who: 'Bert Velilla, Ops', ini: 'BV', ops: true, when: '1h ago', text: 'Refrigeration tech booked for today 2–4 PM. Keep the door closed as much as possible.' },
+        { who: 'You', ini: 'MR', when: '45m ago', text: 'Thanks. Lunch rush ends at 2, so that window works. Proteins are holding at 36°F in the reach-ins.', photo: true },
+        { who: 'Bert Velilla, Ops', ini: 'BV', ops: true, when: '30m ago', text: 'Great. The tech will text you about 30 minutes before they arrive.' }
+      ]
+    };
+  }
+  renderVals() {
+    var self = this, s = this.state, d = (s.draft || '').trim();
+    var msgs = s.items.filter(function (i) { return !i.ev; }).length;
+    return {
+      count: msgs,
+      items: s.items.map(function (i) {
+        return {
+          isEvent: !!i.ev, isMsg: !i.ev, text: i.text, when: i.when, who: i.who, ini: i.ini,
+          avStyle: i.ops ? OPS : ME, bubCls: i.ops ? 'bub' : 'bub me', photo: !!i.photo
+        };
+      }),
+      draft: s.draft, empty: !d,
+      sendCls: d ? 'send on' : 'send off',
+      onDraft: function (e) { self.setState({ draft: e.target.value }); },
+      send: function () {
+        if (!d) return;
+        self.setState({ draft: '', items: s.items.concat([{ who: 'You', ini: 'MR', when: 'Just now', text: d }]) });
+        setTimeout(function () { var el = document.getElementById('feed-scroll'); if (el) el.scrollTop = el.scrollHeight; }, 30);
+      }
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var sc=!!(self.state&&self.state.__sc); v.__hdCls='stickyhd'+(sc?' is-scrolled':''); v.__onScroll=function(e){var y=e.target.scrollTop>2; if(y!==!!(self.state&&self.state.__sc)){ if(!self.state) self.state={}; self.setState({__sc:y}); }}; return v; }; })(Component);
+</script>
+</body>
+</html>

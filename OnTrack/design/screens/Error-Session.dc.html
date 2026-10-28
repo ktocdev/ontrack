@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Signed out — OnTrack</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.lbl{font-size:13px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:12px;background:#fff;padding:12px 14px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:48px}
+.ghost{height:14px;border-radius:6px;background:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div aria-hidden="true" style="padding: 24px 20px; display: flex; flex-direction: column; gap: 14px">
+    <span style="font-size: 13px; font-weight: 600; color: #5A645F">Back of House › Refrigeration</span>
+    <span class="h" style="font-size: 26px; font-weight: 700">New ticket</span>
+    <div style="background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 14px; font-size: 15px">Walk-in Cooler 1</div>
+    <div style="background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 14px; font-size: 15px; line-height: 1.45; min-height: 90px">Door won't seal at the bottom corner, frost building on the gasket.</div>
+    <div class="ghost" style="width: 60%"></div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+    <div role="dialog" aria-modal="true" aria-labelledby="ss-title" style="width: 100%; background: #fff; border-radius: 22px 22px 0 0; padding: 10px 24px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+      <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #DDE1DC"></span>
+      <span style="width: 48px; height: 48px; border-radius: 50%; background: #F3ECD6; color: #6A500C; display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+      </span>
+      <h2 id="ss-title" class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">You've been signed out</h2>
+      <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">For security, OnTrack signs you out after 12 hours. <b>Your ticket draft is saved</b> and will be here when you sign back in.</p>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label class="lbl" for="ss-email">Work email</label>
+        <input id="ss-email" class="field" type="email" value="maya.reyes@fourcornerstaverns.com" readonly="" style="background: #ECEEEB; color: #3F4944">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label class="lbl" for="ss-pw">Password</label>
+        <input id="ss-pw" class="field" type="password" autocomplete="current-password">
+      </div>
+      <a href="MFA-Challenge.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Sign in and continue</a>
+      <div style="display: flex; justify-content: space-between">
+        <a href="Reset-Request.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none">Forgot password?</a>
+        <a href="Sign-In.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none">Not Maya?</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

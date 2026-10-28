@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Save failed — Log service</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.field.bad{border:2px solid #A33A0B;padding:9px 11px}
+.ferr{display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:1.4;font-weight:600;color:#94390A}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.money{display:flex;align-items:center;gap:10px}
+.money label{flex:1;font-size:14px;color:#2E3833}
+.money input{width:120px;text-align:right}
+.selwrap{position:relative;display:flex}
+select.field{appearance:none;-webkit-appearance:none;padding-right:38px;text-overflow:ellipsis}
+.caret{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#4D5752}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 0 20px; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Log service</h1>
+      <span style="font-size: 12px; color: #4D5752">OT-1042 · Walk-in Cooler 1</span>
+    </div>
+    <a href="Ops-Ticket.dc.html" aria-label="Close" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+  </div>
+  <div style="flex: 1; overflow-y: auto; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+    <div role="alert" style="display: flex; gap: 10px; align-items: flex-start; background: #FBEADF; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #6B2907">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16h.01"></path></svg>
+      <span><b>Couldn't save yet.</b> Fix the invoice number below. Everything else you entered is still here.</span>
+    </div>
+    <div role="tablist" aria-label="Who did the work" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+      <button type="button" role="tab" aria-selected="false" class="seg">In-house</button>
+      <button type="button" role="tab" aria-selected="true" class="seg on">Outside contractor</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="f-co">Contractor company</label>
+      <div class="selwrap">
+        <select id="f-co" class="field"><option>Coldline Refrigeration</option></select>
+        <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: flex-start">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <label class="lbl" for="f-tech">Technician</label>
+        <input id="f-tech" class="field" type="text" value="Rosa Alvarez">
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0">
+        <label class="lbl" for="f-inv">Invoice #</label>
+        <input id="f-inv" class="field bad" type="text" value="CL-19877" aria-invalid="true" aria-describedby="f-inv-err">
+      </div>
+    </div>
+    <div id="f-inv-err" class="ferr" style="margin-top: -8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16h.01"></path></svg>
+      <span>CL-19877 is already logged on OT-0988 (Aug 12). Check the number on this visit's invoice.</span>
+    </div>
+    <button type="button" onClick="{{__openRep}}" style="align-self: flex-start; margin-top: -10px; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; border: 0; background: transparent; padding: 0; font: 600 13px 'Public Sans', sans-serif; color: #12634F; cursor: pointer">Think this is wrong? Report a problem</button>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="f-date">Service date</label>
+      <input id="f-date" class="field" type="text" value="Oct 19, 2026">
+    </div>
+    <span class="sec" style="display: block; padding-top: 16px; margin-bottom: -2px">Cost</span>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+      <div class="money"><label for="f-lab">Labor</label><input id="f-lab" class="field" type="text" value="$120.00"></div>
+      <div class="money"><label for="f-par">Parts</label><input id="f-par" class="field" type="text" value="$212.40"></div>
+      <div class="money"><label for="f-trip">Trip / call-out fee</label><input id="f-trip" class="field" type="text" value="$65.00"></div>
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid #ECEEEB; padding-top: 10px; font-weight: 700; font-size: 16px"><span>Total</span><span>$397.40</span></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="l-notes">Work notes</label>
+      <textarea id="l-notes" class="field" rows="2" style="resize: none; line-height: 1.4">Replaced failed condenser fan motor. Holding 37°F after 1 hr.</textarea>
+    </div>
+    <button type="button" style="align-self: flex-start; display: flex; align-items: center; gap: 6px; min-height: 40px; border: 0; background: transparent; padding: 0; font: 600 14px 'Public Sans', sans-serif; color: #12634F">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5 12.6 21a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"></path></svg>
+      Attach invoice
+    </button>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC">
+    <a href="Ops-Ticket.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Save to ticket &amp; equipment</a>
+  </div>
+  <sc-if value="{{__repOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 30; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="rep-t" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="rep-t" style="margin: 0; font: 700 22px 'Archivo', sans-serif; letter-spacing: -0.01em">Report a problem</h2>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">Goes to OnTrack support. The error, this form and your device info are attached.</p>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="rep-n" style="font-size: 13px; font-weight: 600; color: #2E3833">What happened?</label>
+          <textarea id="rep-n" rows="3" placeholder="What were you trying to do, and what went wrong?" style="width: 100%; box-sizing: border-box; border: 1px solid #C9CFCA; border-radius: 12px; background: #fff; padding: 12px 14px; font: 400 15px 'Public Sans', sans-serif; color: #15201B; resize: none; line-height: 1.4">The invoice number on this visit really is CL-19877, but it says it's already used on OT-0988.</textarea>
+        </div>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; color: #2E3833; cursor: pointer"><input type="checkbox" checked="" style="width: 20px; height: 20px; margin: 0; accent-color: #12634F">Include a screenshot</label>
+        <button type="button" onClick="{{__sendRep}}" style="min-height: 52px; border-radius: 12px; border: 0; background: #12634F; color: #fff; font: 700 16px 'Public Sans', sans-serif; cursor: pointer">Send to support</button>
+        <button type="button" onClick="{{__closeRep}}" style="min-height: 48px; border-radius: 12px; border: 1px solid #C9CFCA; background: #fff; color: #15201B; font: 600 15px 'Public Sans', sans-serif; cursor: pointer">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{__repSent}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 104px; z-index: 25; display: flex; gap: 10px; align-items: center; background: #15201B; color: #fff; border-radius: 12px; padding: 12px 14px; font-size: 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m5 12 5 5 9-10"></path></svg>
+      <span style="flex: 1">Sent to support. Case #4822. We'll email you.</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var st=self.state||{}; v.__repOpen=!!st.__rep; v.__repSent=!!st.__repSent; v.__openRep=function(){ if(!self.state) self.state={}; self.setState({__rep:true,__repSent:false}); }; v.__closeRep=function(){ self.setState({__rep:false}); }; v.__sendRep=function(){ self.setState({__rep:false,__repSent:true}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

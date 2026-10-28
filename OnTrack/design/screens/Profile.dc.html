@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.card{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.lbl{font-size:13px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;min-height:48px;border:1px solid #C9CFCA;border-radius:12px;background:#fff;padding:12px 14px;font:400 15px 'Public Sans',sans-serif;color:#15201B}
+.srow{display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 14px;border-top:1px solid #DDE1DC;box-sizing:border-box}
+.srow:first-child{border-top:0}
+.k{font-size:14px;font-weight:600}
+.v{font-size:12px;color:#5A645F}
+.lnk{min-height:40px;border:0;background:transparent;padding:0 4px;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer;white-space:nowrap}
+.role{flex:none;white-space:nowrap;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#ECEEEB;color:#2E3833}
+.av{width:88px;height:88px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 28px 'Archivo',sans-serif;overflow:hidden}
+.btnp{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 16px 'Public Sans',sans-serif;cursor:pointer;width:100%;text-decoration:none}
+.btns{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 15px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 20px 8px 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Ops-Dashboard.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <span class="h" style="font-size: 20px; font-weight: 700">Profile</span>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 20px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px">
+      <sc-if value="{{hasPhoto}}" hint-placeholder-val="{{false}}">
+        <span class="av" role="img" aria-label="Your profile photo" style="background: linear-gradient(160deg,#9DB8D6 0%,#5C7FA6 100%)">
+          <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="36" r="16" fill="#F3E3D3"></circle><path d="M14 88c3-20 15-30 30-30s27 10 30 30z" fill="#2E3A4C"></path><path d="M28 34c0-12 7-20 16-20s16 8 16 18c-4-5-10-7-16-7s-12 3-16 9z" fill="#3B2A22"></path></svg>
+        </span>
+      </sc-if>
+      <sc-if value="{{noPhoto}}" hint-placeholder-val="{{true}}">
+        <span class="av" aria-hidden="true" style="background: #E4EDF8; color: #1B4F91">BV</span>
+      </sc-if>
+      <div style="display: flex; gap: 4px">
+        <button type="button" class="lnk" onClick="{{upload}}">{{uploadLabel}}</button>
+        <sc-if value="{{hasPhoto}}" hint-placeholder-val="{{false}}"><button type="button" class="lnk" style="color: #94390A" onClick="{{removePhoto}}">Remove</button></sc-if>
+      </div>
+      <span class="v" style="margin-top: -6px">Optional · JPG or PNG</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label class="lbl" for="p-name">Name</label>
+      <input id="p-name" class="field" type="text" value="Bert Velilla" autocomplete="name">
+    </div>
+    <div class="card">
+      <div class="srow">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span class="v">Email</span><span class="k" style="overflow-wrap: anywhere">bert.velilla@fourcornerstaverns.com</span></div>
+      </div>
+      <div class="srow">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span class="v">Role</span><span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span class="k">All restaurants</span><span class="role">Ops Manager</span></span></div>
+      </div>
+    </div>
+    <span class="v" style="margin-top: -4px">Your email, role and restaurants are managed by your admin.</span>
+
+    <span class="sec ebrow">Sign-in &amp; security</span>
+    <div class="card">
+      <div class="srow">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px"><span class="k">Password</span><span class="v">{{pwMeta}}</span></div>
+        <button type="button" class="lnk" onClick="{{openPw}}">Change</button>
+      </div>
+      <div class="srow">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+          <span class="k">2-step verification</span>
+          <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: #12634F"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>On · Authenticator app</span>
+        </div>
+        <a class="lnk" href="MFA-Backup.dc.html" style="display: flex; align-items: center; text-decoration: none">Backup codes</a>
+      </div>
+    </div>
+    <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="flex: none; display: flex; gap: 10px; align-items: center; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m5 12 5 5 9-10"></path></svg>
+        <span>{{toast}}</span>
+      </div>
+    </sc-if>
+    <span class="sec ebrow">Help &amp; support</span>
+    <div class="card">
+      <a class="srow" href="Help.dc.html" style="text-decoration: none; color: #15201B">
+        <span style="flex: none; width: 36px; height: 36px; border-radius: 10px; background: #E3EFEA; color: #12634F; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 3px"><span class="k">Help center</span><span class="v">Common questions and ways to reach support</span></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <button type="button" class="srow" onClick="{{__openRep}}" style="width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer; color: #15201B">
+        <span style="flex: none; width: 36px; height: 36px; border-radius: 10px; background: #E3EFEA; color: #12634F; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 3px"><span class="k">Report a problem</span><span class="v">Something not working? Tell support.</span></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+    </div>
+    <div style="padding-top: 12px">
+      <a class="btns" href="Sign-In.dc.html" style="text-decoration: none; color: #94390A">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3"></path></svg>
+        Sign out
+      </a>
+    </div>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC">
+    <button type="button" class="btnp" onClick="{{save}}">Save changes</button>
+  </div>
+
+  <sc-if value="{{pwOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 5; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="pw-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="pw-title" class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Change password</h2>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label class="lbl" for="pw-cur">Current password</label>
+          <input id="pw-cur" class="field" type="password" value="oldpassword1" autocomplete="current-password">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label class="lbl" for="pw-new">New password</label>
+          <input id="pw-new" class="field" type="password" value="newpassword12" autocomplete="new-password" aria-describedby="pw-hint">
+          <span id="pw-hint" class="v">At least 12 characters.</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label class="lbl" for="pw-conf">Confirm new password</label>
+          <input id="pw-conf" class="field" type="password" value="newpassword12" autocomplete="new-password">
+        </div>
+        <button type="button" class="btnp" onClick="{{savePw}}">Update password</button>
+        <button type="button" class="btns" onClick="{{closePw}}">Cancel</button>
+        <a href="Reset-Request.dc.html" style="align-self: center; font-size: 14px; font-weight: 600; min-height: 32px; display: flex; align-items: center">Forgot your current password?</a>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{__repOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 30; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="rep-t" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <h2 id="rep-t" style="margin: 0; font: 700 22px 'Archivo', sans-serif; letter-spacing: -0.01em">Report a problem</h2>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">Goes to OnTrack support. Your account and device info are attached.</p>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="rep-n" style="font-size: 13px; font-weight: 600; color: #2E3833">What happened?</label>
+          <textarea id="rep-n" rows="3" placeholder="What were you trying to do, and what went wrong?" style="width: 100%; box-sizing: border-box; border: 1px solid #C9CFCA; border-radius: 12px; background: #fff; padding: 12px 14px; font: 400 15px 'Public Sans', sans-serif; color: #15201B; resize: none; line-height: 1.4"></textarea>
+        </div>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; color: #2E3833; cursor: pointer"><input type="checkbox" checked="" style="width: 20px; height: 20px; margin: 0; accent-color: #12634F">Include a screenshot</label>
+        <button type="button" onClick="{{__sendRep}}" style="min-height: 52px; border-radius: 12px; border: 0; background: #12634F; color: #fff; font: 700 16px 'Public Sans', sans-serif; cursor: pointer">Send to support</button>
+        <button type="button" onClick="{{__closeRep}}" style="min-height: 48px; border-radius: 12px; border: 1px solid #C9CFCA; background: #fff; color: #15201B; font: 600 15px 'Public Sans', sans-serif; cursor: pointer">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{__repSent}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 104px; z-index: 25; display: flex; gap: 10px; align-items: center; background: #15201B; color: #fff; border-radius: 12px; padding: 12px 14px; font-size: 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m5 12 5 5 9-10"></path></svg>
+      <span style="flex: 1">Sent to support. Case #4822. We'll email you.</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"reportOpen":{"editor":"boolean","default":false},"withPhoto":{"editor":"boolean","default":false},"passwordSheetOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { __rep: !!(p && p.reportOpen), photo: !!(p && p.withPhoto), pw: !!(p && p.passwordSheetOpen), changed: false, toast: '' };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    return {
+      hasPhoto: s.photo, noPhoto: !s.photo,
+      uploadLabel: s.photo ? 'Change photo' : 'Upload photo',
+      upload: function () { self.setState({ photo: true, toast: '' }); },
+      removePhoto: function () { self.setState({ photo: false, toast: '' }); },
+      pwOpen: s.pw,
+      pwMeta: s.changed ? 'Changed just now' : 'Last changed Aug 2, 2026',
+      openPw: function () { self.setState({ pw: true, toast: '' }); },
+      closePw: function () { self.setState({ pw: false }); },
+      savePw: function () { self.setState({ pw: false, changed: true, toast: 'Password updated. Other devices were signed out.' }); },
+      save: function () { self.setState({ toast: 'Profile saved.' }); },
+      toast: s.toast
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var sc=!!(self.state&&self.state.__sc); v.__hdCls='stickyhd'+(sc?' is-scrolled':''); v.__onScroll=function(e){var y=e.target.scrollTop>2; if(y!==!!(self.state&&self.state.__sc)){ if(!self.state) self.state={}; self.setState({__sc:y}); }}; return v; }; })(Component);
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var st=self.state||{}; v.__repOpen=!!st.__rep; v.__repSent=!!st.__repSent; v.__openRep=function(){ if(!self.state) self.state={}; self.setState({__rep:true,__repSent:false}); }; v.__closeRep=function(){ self.setState({__rep:false}); }; v.__sendRep=function(){ self.setState({__rep:false,__repSent:true}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

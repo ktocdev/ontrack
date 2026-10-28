@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Review walkthrough — Manager</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+div.ebrow{display:flex}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tile{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tile b{font:700 22px 'Archivo',sans-serif}
+.tile span{font-size:12px;font-weight:600}
+.tlink{text-decoration:none;border:1px solid #B8941F}
+.tlink:hover{color:#4A3808;background:#EDE2C4 !important}
+.tlink.tk{border-color:#C2551A}
+.tlink.tk:hover{color:#6B2907;background:#F6D5C2 !important}
+.list{flex:none;background:#fff;border:1px solid #C9CFCA;border-radius:12px;overflow:hidden}
+.row{display:flex;align-items:center;gap:10px;min-height:52px;padding:12px 16px;border-top:1px solid #DDE1DC;font-size:14px;box-sizing:border-box;text-decoration:none;color:#15201B}
+.row:first-child{border-top:0}
+.chk{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer}
+.chk input{width:20px;height:20px;margin:0;flex:none;accent-color:#12634F}
+.where{font-size:12px;color:#5A645F}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.p-open{background:#FBEADF;color:#94390A}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+.dot{flex:none;width:13px;height:13px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+.i-open{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3C/svg%3E")}
+.i-prog{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='black' d='M16 2a14 14 0 1 0 14 14A14.016 14.016 0 0 0 16 2m0 26a12 12 0 0 1 0-24v12l8.481 8.481A11.96 11.96 0 0 1 16 28'/%3E%3C/svg%3E")}
+.i-wait{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E")}
+.i-sched{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2.5'/%3E%3Cpath d='M8 3v4M16 3v4M8.5 13.5l2.5 2.5 4.5-4.5'/%3E%3C/svg%3E")}
+.i-reop{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20.5 3.5v5h-5'/%3E%3C/svg%3E")}
+.i-done{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='m8.3 12.2 2.5 2.5 4.9-5.2'/%3E%3C/svg%3E")}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="WT-Home.dc.html" aria-label="Back to walkthrough" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 12px; font-weight: 600; color: #4D5752">October walkthrough · Federale’s Logan Square</span>
+      <span class="h" style="font-size: 20px; font-weight: 700">Review &amp; submit</span>
+    </div>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #12634F">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+      All 50 checks done, 6 days early
+    </div>
+    <div class="tiles">
+      <div class="tile" style="background: #DCE8E3; color: #0B4537"><b>41</b><span>Good</span></div>
+      <a class="tile tlink" href="WT-Fix-All.dc.html" aria-label="4 in-house fixes, view and manage all" style="background: #F3ECD6; color: #4A3808"><b>4</b><span style="display: flex; align-items: center; justify-content: space-between">In-house<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></a>
+      <a class="tile tlink tk" href="WT-Tickets-All.dc.html" aria-label="5 tickets, view and edit all" style="background: #FBEADF; color: #6B2907"><b>5</b><span style="display: flex; align-items: center; justify-content: space-between">Tickets<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></a>
+    </div>
+    <span class="sec ebrow">Tickets created · 5</span>
+    <div class="list">
+      <a class="row" href="Edit-Ticket.dc.html"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Outlets</span><span class="where"><span class="mono">OT-1051</span> · BOH › Electrical</span></div><span class="pill p-prog"><span class="dot i-prog"></span>In progress</span></a>
+      <a class="row" href="Edit-Ticket.dc.html"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Fixtures</span><span class="where"><span class="mono">OT-1052</span> · BOH › Plumbing</span></div><span class="pill p-open"><span class="dot i-open"></span>Open</span></a>
+      <a class="row" href="Edit-Ticket.dc.html"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Paint</span><span class="where"><span class="mono">OT-1055</span> · FOH › Aesthetics</span></div><span class="pill p-open"><span class="dot i-open"></span>Open</span></a>
+      <a class="row" href="Edit-Ticket.dc.html"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Window and doors</span><span class="where"><span class="mono">OT-1056</span> · FOH › Envelope</span></div><span class="pill p-open"><span class="dot i-open"></span>Open</span></a>
+      <a class="row" href="Edit-Ticket.dc.html"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Degrease BOH floors</span><span class="where"><span class="mono">OT-1057</span> · Q4 tasks</span></div><span class="pill p-open"><span class="dot i-open"></span>Open</span></a>
+    </div>
+    <div class="ebrow" style="display: flex; justify-content: space-between; align-items: baseline">
+      <span class="sec">In-house to fix · 4</span>
+      <span style="font-size: 12px; color: #4D5752">Check off when fixed</span>
+    </div>
+    <div class="list">
+      <div class="row"><label class="chk"><input type="checkbox" checked=""><div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600; text-decoration: line-through; color: #4D5752">Re-glue trim on pass shelf</span><span class="where">BOH › Electrical › Feature</span></div></label></div>
+      <div class="row"><label class="chk"><input type="checkbox"><div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Replace 2 bulbs over booths 4–6</span><span class="where">FOH › Electrical › Light bulbs</span></div></label></div>
+      <div class="row"><label class="chk"><input type="checkbox"><div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Tighten wobbly 2-top at table 14</span><span class="where">FOH › Aesthetics › Surfaces and seating</span></div></label></div>
+      <div class="row"><label class="chk"><input type="checkbox"><div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600">Clear boxes from utility closet</span><span class="where">Q4 · Organize utility areas</span></div></label></div>
+    </div>
+    <div class="ebrow" style="display: flex; flex-direction: column; gap: 6px">
+      <label for="rv-note" style="font-size: 12px; font-weight: 600; color: #2E3833">Note for Ops <span style="font-weight: 500; color: #5A645F">(optional)</span></label>
+      <textarea id="rv-note" rows="2" style="width: 100%; box-sizing: border-box; border: 1px solid #C9CFCA; border-radius: 10px; background: #fff; padding: 10px 12px; font: 400 14px 'Public Sans', sans-serif; color: #15201B; resize: none" placeholder="Anything they should know?"></textarea>
+    </div>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC; display: flex; flex-direction: column; gap: 6px">
+    <a href="WT-Home.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Submit walkthrough</a>
+    <span style="font-size: 12px; color: #4D5752; text-align: center">Ops and leadership see it as soon as you submit.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+</script>
+</body>
+</html>

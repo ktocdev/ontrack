@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quarterly location tasks — Walkthrough</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-size:14px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent}
+.tab.on{color:#15201B;border-bottom-color:#12634F}
+.task{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.thead{width:100%;display:flex;align-items:center;gap:10px;min-height:60px;padding:8px 14px;border:0;background:#fff;text-align:left;cursor:pointer;font:inherit;color:#15201B}
+.sub{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.dir{margin:0;font-size:14px;line-height:1.55;color:#2E3833}
+.opts{display:flex;gap:4px}
+.opt{flex:1;min-height:44px;border:1px solid #C9CFCA;border-radius:10px;background:#fff;font:600 13px 'Public Sans',sans-serif;color:#2E3833;cursor:pointer}
+.opt.g{background:#D4F0DE;border:1.5px solid #2E8B57;color:#0E4A2B}
+.opt.i{background:#F3ECD6;border:1.5px solid #B8941F;color:#4A3808}
+.opt.t{background:#FBE3D6;border:1.5px solid #C2551A;color:#7A2E06}
+.opt.off{background:#F3F4F1;border-color:#DDE1DC;color:#8A938E;cursor:not-allowed}
+.st{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st-0{background:#ECEEEB;color:#3F4944}
+.st-g{background:#DCE8E3;color:#0B4537}
+.st-x{background:#FBEADF;color:#94390A}
+.elist{display:flex;flex-direction:column;gap:10px;margin-top:4px;padding:12px 14px;border-radius:10px;background:#F7F8F6;border:1px solid #DDE1DC}
+.elist > * + *{border-top:1px solid #DDE1DC;padding-top:10px}
+.entry{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.45;color:#2E3833;text-decoration:none;min-height:28px}
+.entry:hover{color:#15201B}
+.entry:hover > span:last-of-type{text-decoration:underline}
+.etag{flex:none;font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;white-space:nowrap}
+.e-i{background:#F3ECD6;color:#4A3808}
+.e-t{background:#FBEADF;color:#94390A}
+.tstack{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.e-urg{background:#B4400C;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+.mini{flex:none;min-width:44px;min-height:40px;padding:0 10px;border:0;border-radius:9px;background:#12634F;color:#fff;font:600 13px 'Public Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mini.x{background:transparent;color:#4D5752;padding:0}
+.note{width:100%;box-sizing:border-box;min-height:40px;border:1px solid #C9CFCA;border-radius:9px;padding:8px 10px;font:400 13px 'Public Sans',sans-serif;color:#15201B;background:#FAFAF8}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.ghost{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:1px dashed #A9B3AE;border-radius:10px;background:transparent;font:600 13px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="WT-Home.dc.html" aria-label="Back to walkthrough" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 12px; font-weight: 600; color: #4D5752">October walkthrough · Federale’s Logan Square</span>
+      <span class="h" style="font-size: 20px; font-weight: 700">Q4 location tasks</span>
+    </div>
+    <span style="font-size: 13px; font-weight: 700" aria-live="polite">{{done}}/2</span>
+  </div>
+  <nav class="{{__hdCls}}" aria-label="Walkthrough parts" style="display: flex; margin: 10px 20px 0; border-bottom: 1px solid #DDE1DC">
+    <a class="tab" href="WT-Checklist.dc.html">BOH</a>
+    <a class="tab" href="#foh">FOH</a>
+    <a class="tab on" href="WT-Quarterly.dc.html" aria-current="page">Q4 tasks</a>
+  </nav>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 12px 20px 20px; display: flex; flex-direction: column; gap: 10px">
+    <p style="margin: 0; font-size: 13px; color: #4D5752; line-height: 1.45; text-align: center">Due Dec 31</p>
+    <sc-for list="{{tasks}}" as="t" hint-placeholder-count="2">
+      <div class="task">
+        <button type="button" class="thead" aria-expanded="{{t.open}}" onClick="{{t.toggle}}">
+          <span style="flex: 1; font-size: 15px; font-weight: 600">{{t.name}}</span>
+          <span class="{{t.stCls}}">{{t.stLabel}}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{t.chev}}"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        <sc-if value="{{t.open}}" hint-placeholder-val="{{true}}">
+          <div style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid #DDE1DC">
+            <span class="sub">Directions</span>
+            <p class="dir">{{t.dir}}</p>
+            <sc-if value="{{t.hasVideo}}" hint-placeholder-val="{{true}}">
+              <a href="#video" aria-label="{{t.videoLabel}}" style="position: relative; display: flex; align-items: flex-end; height: 150px; border-radius: 12px; background: #2E3833; color: #fff; text-decoration: none; overflow: hidden">
+                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#15201B" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                </span>
+                <span style="display: flex; justify-content: space-between; width: 100%; padding: 10px 12px; font-size: 13px; font-weight: 600; background: linear-gradient(transparent, rgba(0,0,0,.55))"><span>How-to video</span><span>{{t.videoLen}}</span></span>
+              </a>
+            </sc-if>
+            <span class="sub" style="padding-top: 2px">Result</span>
+            <div class="opts" role="group" aria-label="{{t.groupLabel}}">
+              <sc-if value="{{t.showGood}}" hint-placeholder-val="{{true}}"><button type="button" class="{{t.gCls}}" aria-pressed="{{t.isG}}" onClick="{{t.pickG}}">Good</button></sc-if>
+              <button type="button" class="{{t.iCls}}" aria-label="{{t.iLabel}}" onClick="{{t.pickI}}">In-house</button>
+              <button type="button" class="{{t.tCls}}" aria-label="{{t.tLabel}}" onClick="{{t.pickT}}">Ticket</button>
+            </div>
+            <sc-if value="{{t.showList}}" hint-placeholder-val="{{false}}">
+              <div class="elist">
+                <sc-for list="{{t.entries}}" as="e" hint-placeholder-count="1">
+                  <a class="entry" href="{{e.href}}">
+                    <sc-if value="{{e.isFix}}" hint-placeholder-val="{{true}}"><span class="etag e-i">In-house</span></sc-if>
+                    <sc-if value="{{e.isTk}}" hint-placeholder-val="{{false}}"><span class="tstack"><span class="etag e-t mono">{{e.id}}</span><sc-if value="{{e.urgent}}" hint-placeholder-val="{{false}}"><span class="etag e-urg">Urgent</span></sc-if></span></sc-if>
+                    <span style="flex: 1; min-width: 0">{{e.text}}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; align-self: center"><path d="m9 18 6-6-6-6"></path></svg>
+                  </a>
+                </sc-for>
+                <sc-if value="{{t.drafting}}" hint-placeholder-val="{{false}}">
+                  <div style="display: flex; gap: 6px; align-items: center">
+                    <input class="note" type="text" placeholder="What will your team fix?" aria-label="{{t.noteLabel}}" value="{{draftText}}" onChange="{{onDraft}}" style="flex: 1; min-width: 0">
+                    <button type="button" class="mini" onClick="{{t.saveFix}}">Add</button>
+                    <button type="button" class="mini x" onClick="{{t.cancelFix}}" aria-label="Cancel in-house fix"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="qt-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <h2 id="qt-title" class="h" style="margin: 0; font-size: 21px; font-weight: 700">{{sheetTitle}}</h2>
+          <button type="button" onClick="{{closeSheet}}" aria-label="Cancel" style="width: 44px; height: 44px; margin-right: -10px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #15201B; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; font-weight: 600; color: #2E3833">
+          <span style="padding: 4px 9px; border-radius: 999px; background: #E5E8E3">Q4 tasks</span>
+          <span style="padding: 4px 9px; border-radius: 999px; background: #E5E8E3">{{sheetTask}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label class="lbl" for="qt-desc">What's wrong?</label>
+          <textarea id="qt-desc" class="field" rows="3" style="resize: none; line-height: 1.4" placeholder="e.g. Water heater is leaking at the base" value="{{desc}}" onChange="{{onDesc}}"></textarea>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span class="lbl">Equipment <span style="font-weight: 500; color: #5A645F">(optional)</span></span>
+          <div style="display: flex; gap: 8px">
+            <button type="button" class="ghost"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"></path></svg>Scan QR</button>
+            <button type="button" class="ghost"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Add photo</button>
+          </div>
+        </div>
+        <div role="radiogroup" aria-label="Urgency" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+          <button type="button" role="radio" class="{{normCls}}" aria-checked="{{isNorm}}" onClick="{{pickNorm}}">Normal</button>
+          <button type="button" role="radio" class="{{urgCls}}" aria-checked="{{isUrg}}" onClick="{{pickUrg}}">Urgent</button>
+        </div>
+        <button type="button" onClick="{{createTicket}}" style="min-height: 52px; border-radius: 12px; border: 0; background: #12634F; color: #fff; font: 700 16px 'Public Sans', sans-serif; cursor: pointer">Create ticket</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.data = [
+      { k: 'util', name: 'Organize utility areas', video: '2:40',
+        dir: 'Clear at least 3 feet in front of the electrical panel and the water heater. Move chemicals off the floor and away from food storage, and toss empty boxes and broken equipment. Submit a ticket if the water heater shows rust or leaks at the base, or if the panel door doesn\'t close.' },
+      { k: 'floor', name: 'Degrease BOH floors', video: '',
+        dir: 'Block off one section at a time. Apply degreaser per the label, let it sit 5 minutes, then scrub with a deck brush, focusing on grout and under equipment edges. Squeegee to the floor drain and rinse with clean water. Submit a ticket if a drain is slow or backs up.' }
+    ];
+    this.state = { good: {}, fixes: {}, tickets: {}, draft: null, draftText: '', open: { util: true }, sheet: null, desc: '', urgent: false, next: 1052 };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    function set(o) { self.setState(o); }
+    var done = 0;
+    var tasks = this.data.map(function (d) {
+      var k = d.k, fx = s.fixes[k] || [], tk = s.tickets[k] || [], issues = fx.length + tk.length;
+      var g = !!s.good[k], drafting = s.draft === k, isDone = g || issues > 0;
+      if (isDone) done++;
+      var entries = fx.map(function (t) { return { href: 'WT-Fix.dc.html', isFix: true, isTk: false, urgent: false, id: '', text: t }; })
+        .concat(tk.map(function (t) { return { href: 'WT-Edit-Ticket.dc.html', isFix: false, isTk: true, urgent: !!t.urgent, id: t.id, text: t.title }; }));
+      var open = !!s.open[k];
+      return {
+        name: d.name, dir: d.dir, hasVideo: !!d.video, videoLen: d.video,
+        videoLabel: 'Play how-to video, ' + d.name + ', ' + d.video,
+        open: open, chev: open ? 'transform: rotate(180deg)' : '',
+        toggle: function () { var o = Object.assign({}, s.open); o[k] = !open; set({ open: o }); },
+        stCls: 'st ' + (issues ? 'st-x' : g ? 'st-g' : 'st-0'),
+        stLabel: issues ? issues + (issues === 1 ? ' issue' : ' issues') : g ? 'Done' : 'To do',
+        groupLabel: 'Result for ' + d.name,
+        showGood: !issues, gCls: g ? 'opt g' : 'opt', isG: g, gDisabled: issues > 0,
+        iCls: fx.length ? 'opt i' : 'opt', tCls: tk.length ? 'opt t' : 'opt',
+        iLabel: fx.length ? 'Add another in-house fix' : 'In-house', tLabel: tk.length ? 'Add another ticket' : 'Ticket',
+        pickG: function () { if (issues) return; var gg = Object.assign({}, s.good); gg[k] = !g; set({ good: gg }); },
+        pickI: function () { set({ draft: k, draftText: '' }); },
+        pickT: function () { set({ sheet: k, desc: '', urgent: false }); },
+        showList: issues > 0 || drafting, entries: entries, drafting: drafting,
+        noteLabel: 'In-house fix for ' + d.name,
+        saveFix: function () {
+          var t = (s.draftText || '').trim() || 'In-house fix';
+          var f = Object.assign({}, s.fixes); f[k] = fx.concat([t]);
+          var gg = Object.assign({}, s.good); delete gg[k];
+          set({ fixes: f, good: gg, draft: null, draftText: '' });
+        },
+        cancelFix: function () { set({ draft: null }); }
+      };
+    });
+    var sd = this.data.filter(function (d) { return d.k === s.sheet; })[0];
+    var hasTk = !!(s.sheet && (s.tickets[s.sheet] || []).length);
+    return {
+      tasks: tasks, done: done,
+      draftText: s.draftText, onDraft: function (e) { set({ draftText: e.target.value }); },
+      sheetOpen: !!s.sheet, sheetTask: sd ? sd.name : '',
+      sheetTitle: hasTk ? 'Add another ticket' : 'Create ticket',
+      desc: s.desc, onDesc: function (e) { set({ desc: e.target.value }); },
+      normCls: s.urgent ? 'seg' : 'seg on', urgCls: s.urgent ? 'seg on' : 'seg', isNorm: !s.urgent, isUrg: s.urgent,
+      pickNorm: function () { set({ urgent: false }); }, pickUrg: function () { set({ urgent: true }); },
+      closeSheet: function () { set({ sheet: null }); },
+      createTicket: function () {
+        var k = s.sheet, t = Object.assign({}, s.tickets), gg = Object.assign({}, s.good);
+        t[k] = (t[k] || []).concat([{ id: 'OT-' + s.next, title: (s.desc || '').trim() || sd.name , urgent: !!s.urgent }]);
+        delete gg[k];
+        set({ tickets: t, good: gg, sheet: null, desc: '', next: s.next + 1 });
+      }
+    };
+  }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+</script>
+</body>
+</html>

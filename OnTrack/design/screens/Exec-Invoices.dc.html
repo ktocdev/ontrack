@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Invoices — Leadership</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.chipf{flex:none;min-height:36px;padding:0 12px;border:1px solid #C9CFCA;border-radius:999px;background:#fff;font:600 13px 'Public Sans',sans-serif;color:#2E3833;white-space:nowrap;cursor:pointer}
+.chipf.on{background:#15201B;border-color:#15201B;color:#fff}
+.card{background:#fff;border:1px solid #DDE1DC;border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.trade{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#ECEEEB;color:#2E3833}
+.pref{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#12634F}
+.warn{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#FBEADF;color:#94390A}
+.call{flex:none;width:44px;height:44px;border-radius:10px;background:#E3EFEA;display:flex;align-items:center;justify-content:center;color:#12634F}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+.rp-menu{position:absolute;top:48px;left:-6px;z-index:20;width:290px;background:#fff;border:1px solid #DDE1DC;border-radius:14px;box-shadow:0 12px 28px -8px rgba(21,32,27,.28);padding:6px;box-sizing:border-box;display:flex;flex-direction:column}
+.rp-hd{padding:8px 10px 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.rp-opt{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:0;border-radius:10px;background:transparent;font:500 15px 'Public Sans',sans-serif;color:#15201B;text-align:left;cursor:pointer}
+.rp-opt:hover{background:#F3F4F1}
+.rp-scrim{position:fixed;inset:0;z-index:19;background:transparent}
+.ctab{flex:1;display:flex;align-items:center;justify-content:center;min-height:44px;font-size:15px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ctab.on{color:#15201B;border-bottom-color:#12634F}
+.ctab:hover{color:#15201B}
+.tool{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #C9CFCA;border-radius:999px;background:#fff;font:600 13px 'Public Sans',sans-serif;color:#2E3833;white-space:nowrap;cursor:pointer}
+.tool.on{background:#15201B;border-color:#15201B;color:#fff}
+.irow{display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 14px;border-top:1px solid #DDE1DC;box-sizing:border-box;text-decoration:none;color:#15201B}
+.irow:first-child{border-top:0}
+.irow:hover{background:#F7F8F6;color:#15201B}
+.fic{flex:none;width:34px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.fic.ok{background:#E3EFEA;color:#12634F}
+.fic.miss{background:#FBF5E3;color:#6A500C;border:1px dashed #D9C27A;box-sizing:border-box}
+.mtag{font-size:11px;font-weight:700;color:#6A500C}
+.mono{font-family:'JetBrains Mono',monospace}
+.seg{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 4px;border-radius:9px;font:600 13px 'Public Sans',sans-serif;color:#4D5752;text-decoration:none;white-space:nowrap}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.rname{-webkit-text-fill-color:#2E3833}
+.rname::before{content:'';display:inline-block;width:9px;height:9px;border-radius:2px;background:currentColor;margin-right:6px;vertical-align:0;box-shadow:inset 0 0 0 1px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; background: #15201B; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .04em">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    READ-ONLY VIEW
+  </div>
+  <div style="padding: 18px 20px 12px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="font-size: 13px; font-weight: 600; color: #4D5752">4C | Four Corners</span>
+      <a href="Profile.dc.html" aria-label="Your profile" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #ECEEEB; font: 700 13px 'Archivo', sans-serif; color: #2E3833; display: flex; align-items: center; justify-content: center; text-decoration: none">LC</a>
+    </div>
+    <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Contractors</h1>
+    <nav aria-label="Contractors sections" style="display: flex; border-bottom: 1px solid #DDE1DC; margin-top: -2px">
+      <a class="ctab" href="Exec-Contractors.dc.html">Directory</a>
+      <a class="ctab on" href="Exec-Invoices.dc.html" aria-current="page">Invoices</a>
+    </nav>
+    <label style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 0 14px; min-height: 44px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Contractor, equipment, OT- or invoice #" aria-label="Search invoices" value="{{q}}" onInput="{{onQ}}" style="border: 0; outline: 0; flex: 1; min-width: 0; font: 400 15px 'Public Sans', sans-serif; background: transparent; color: #15201B">
+    </label>
+    <div style="display: flex; gap: 8px; overflow: hidden">
+      <button type="button" class="tool">October 2026<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <button type="button" class="{{missCls}}" aria-pressed="{{missOnly}}" onClick="{{toggleMiss}}">Missing · {{missCount}}</button>
+      <button type="button" class="tool" onClick="{{cycleSort}}" aria-label="{{sortAria}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"></path></svg>{{sortLabel}}</button>
+    </div>
+  </div>
+  <div style="flex: 1; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: #4D5752">
+      <span>{{countLabel}}</span><span class="mono" style="font-size: 14px; font-weight: 500; color: #15201B">{{total}}</span>
+    </div>
+    <sc-if value="{{hasRows}}" hint-placeholder-val="{{true}}">
+      <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; overflow: hidden">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+          <a class="irow" href="Exec-Service-Record.dc.html" aria-label="{{r.aria}}">
+            <span class="{{r.ficCls}}" aria-hidden="true">
+              <sc-if value="{{r.has}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg></sc-if>
+              <sc-if value="{{r.miss}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></sc-if>
+            </span>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 600">{{r.who}}</span>
+              <span class="rname" style="font-size: 12px; font-weight: 700; {{r.restStyle}}">{{r.rest}}</span>
+              <span style="font-size: 12px; color: #5A645F">{{r.eq}}</span>
+              <span class="mono" style="font-size: 12px; color: #5A645F">{{r.tk}}</span>
+              <span style="font-size: 12px; color: #5A645F">{{r.date}} · {{r.invLabel}}</span>
+            </div>
+            <span class="mono" style="font-size: 14px; font-weight: 500">{{r.amt}}</span>
+          </a>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{noRows}}" hint-placeholder-val="{{false}}">
+      <div style="padding: 32px 12px; text-align: center; font-size: 14px; color: #4D5752; line-height: 1.5">No invoices match.<br><button type="button" onClick="{{clear}}" style="margin-top: 6px; min-height: 40px; border: 0; background: transparent; font: 600 14px 'Public Sans', sans-serif; color: #12634F; cursor: pointer">Clear search and filters</button></div>
+    </sc-if>
+  </div>
+  <nav class="nav" aria-label="Leadership">
+    <a href="Exec-Overview.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+      Overview
+    </a>
+    <a href="Exec-Restaurant.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"></path><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path><path d="M5 12v8h14v-8M10 20v-5h4v5"></path></svg>
+      Restaurants
+    </a>
+    <a href="WT-Exec.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"></path></svg>
+      Walkthroughs
+    </a>
+    <a class="on" href="Exec-Contractors.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"></path></svg>
+      Contractors
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"missingOnly":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+var INV = [
+  { who: 'Coldline Refrigeration', eq: 'Walk-in Cooler 1', rest: 'Federale’s Logan Square', d: 19, tk: 'OT-1042', inv: 'INV-58213', amt: 397.40 },
+  { who: 'Coldline Refrigeration', eq: 'Ice machine', rest: 'Federale’s West Loop', d: 17, tk: 'OT-1036', inv: 'INV-58190', amt: 310.00 },
+  { who: 'Coldline Refrigeration', eq: 'Walk-in Cooler 1', rest: 'Federale’s Logan Square', d: 14, tk: 'OT-0988', inv: 'INV-58102', amt: 245.00 },
+  { who: 'Hobart Service', eq: 'Dish machine', rest: 'Porter', d: 11, tk: 'OT-1023', inv: 'H-20931', amt: 640.00 },
+  { who: 'Northstar HVAC', eq: 'Hood filters', rest: 'Porter', d: 11, tk: 'OT-1022', inv: 'NS-4410', amt: 186.60 },
+  { who: 'Brightway Electric', eq: 'Host stand pendant', rest: 'Federale’s West Loop', d: 8, tk: 'OT-1035', inv: 'BE-1177', amt: 212.00 },
+  { who: 'Pipeworks Plumbing', eq: 'Restroom faucet', rest: 'Ranalli’s Logan Square', d: 6, tk: 'OT-1019', inv: '', amt: 165.00 },
+  { who: 'Booth Doctor Upholstery', eq: 'Booth 12', rest: 'Federale’s Logan Square', d: 15, tk: 'OT-1028', inv: '', amt: 420.00 }
+];
+var SORTS = [{ v: 'new', l: 'Newest' }, { v: 'old', l: 'Oldest' }, { v: 'amt', l: 'Amount' }];
+function money(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { q: '', miss: !!(p && p.missingOnly), sort: 0 }; }
+  renderVals() {
+    var self = this, s = this.state, q = (s.q || '').trim().toLowerCase();
+    var list = INV.filter(function (r) {
+      if (s.miss && r.inv) return false;
+      if (!q) return true;
+      return [r.who, r.eq, r.rest, r.tk, r.inv].join(' ').toLowerCase().indexOf(q) >= 0;
+    });
+    var sv = SORTS[s.sort].v;
+    list.sort(function (a, b) { return sv === 'amt' ? b.amt - a.amt : (sv === 'old' ? a.d - b.d : b.d - a.d); });
+    var sum = list.reduce(function (t, r) { return t + r.amt; }, 0);
+    var missing = INV.filter(function (r) { return !r.inv; }).length;
+    return {
+      q: s.q, onQ: function (e) { self.setState({ q: e.target.value }); },
+      missOnly: s.miss, missCls: s.miss ? 'tool on' : 'tool', missCount: missing,
+      toggleMiss: function () { self.setState({ miss: !s.miss }); },
+      sortLabel: SORTS[s.sort].l, sortAria: 'Sort: ' + SORTS[s.sort].l + '. Tap to change.',
+      cycleSort: function () { self.setState({ sort: (s.sort + 1) % SORTS.length }); },
+      countLabel: list.length + (list.length === 1 ? ' invoice' : ' invoices') + (q || s.miss ? ' match' : ''),
+      total: money(sum),
+      hasRows: list.length > 0, noRows: list.length === 0,
+      clear: function () { self.setState({ q: '', miss: false }); },
+      rows: list.map(function (r) {
+        return {
+          who: r.who, eq: r.eq, rest: r.rest, restStyle: 'color: ' + ({ 'Federale’s Logan Square': '#A3336D', 'Ranalli’s Logan Square': '#1B4F91', 'Federale’s West Loop': '#6B3FA0', 'Porter': '#9A6A00' })[r.rest], tk: r.tk, date: 'Oct ' + r.d + ', 2026', amt: money(r.amt),
+          has: !!r.inv, miss: !r.inv, ficCls: r.inv ? 'fic ok' : 'fic miss',
+          invLabel: r.inv ? r.inv : 'Missing invoice',
+          aria: r.who + ', ' + r.eq + ', ' + money(r.amt) + (r.inv ? '' : ', missing invoice')
+        };
+      })
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var o=!!(self.state&&self.state.__rp); v.__rpOpen=o; v.__rpChev=o?'transform: rotate(180deg)':''; v.__rpToggle=function(){ if(!self.state) self.state={}; self.setState({__rp:!(self.state&&self.state.__rp)}); }; v.__rpClose=function(){ if(!self.state) self.state={}; self.setState({__rp:false}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

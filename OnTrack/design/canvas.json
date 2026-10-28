@@ -1,0 +1,1119 @@
+{
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "WT-Home.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: this month",
+   "w": 390,
+   "x": 0,
+   "y": 14068
+  },
+  "WT-Checklist.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: checklist (BOH)",
+   "w": 390,
+   "x": 470,
+   "y": 14068
+  },
+  "WT-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: quick ticket sheet",
+   "w": 390,
+   "x": 940,
+   "y": 14068
+  },
+  "WT-Quarterly.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: quarterly task",
+   "w": 390,
+   "x": 1410,
+   "y": 14068
+  },
+  "WT-Review.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: review & submit",
+   "w": 390,
+   "x": 2350,
+   "y": 14068
+  },
+  "WT-Ops-Overview.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Ops: all restaurants",
+   "w": 390,
+   "x": 0,
+   "y": 15288
+  },
+  "WT-Ops-Restaurant.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Ops: one restaurant",
+   "w": 390,
+   "x": 470,
+   "y": 15288
+  },
+  "WT-Exec.dc.html": {
+   "h": 844,
+   "title": "Walkthrough · Leadership (read-only)",
+   "w": 390,
+   "x": 0,
+   "y": 16508
+  },
+  "Error-404.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · Page not found (404)",
+   "w": 390,
+   "x": 0,
+   "y": 12848
+  },
+  "Error-QR-Unknown.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · QR code not recognized",
+   "w": 390,
+   "x": 470,
+   "y": 12848
+  },
+  "Error-No-Access.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · No access (403)",
+   "w": 390,
+   "x": 940,
+   "y": 12848
+  },
+  "Error-Expired-Link.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · Link expired",
+   "w": 390,
+   "x": 1410,
+   "y": 12848
+  },
+  "Error-Session.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · Signed out (session expired)",
+   "w": 390,
+   "x": 1880,
+   "y": 12848
+  },
+  "Error-Offline.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · Offline (cached + queued)",
+   "w": 390,
+   "x": 2350,
+   "y": 12848
+  },
+  "Error-Save-Failed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · Validation on save (form kept)",
+   "w": 390,
+   "x": 2820,
+   "y": 12848
+  },
+  "Error-Server.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Error · Something went wrong (500)",
+   "w": 390,
+   "x": 3290,
+   "y": 12848
+  },
+  "MFA-SMS.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "2-step setup · 2 Text message (alt)",
+   "w": 390,
+   "x": 2350,
+   "y": 11628
+  },
+  "Reset-Request.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Password reset · 1 Enter email",
+   "w": 390,
+   "x": 0,
+   "y": 10664
+  },
+  "Reset-Sent.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Password reset · 2 Check your email",
+   "w": 390,
+   "x": 470,
+   "y": 10664
+  },
+  "Reset-Email.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Password reset · 3 Reset email",
+   "w": 390,
+   "x": 940,
+   "y": 10664
+  },
+  "Reset-New.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Password reset · 4 New password",
+   "w": 390,
+   "x": 1410,
+   "y": 10664
+  },
+  "Reset-Done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Password reset · 5 Done",
+   "w": 390,
+   "x": 1880,
+   "y": 10664
+  },
+  "MFA-Choose.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "2-step setup · 1 Choose method",
+   "w": 390,
+   "x": 0,
+   "y": 11628
+  },
+  "MFA-Scan.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "2-step setup · 2 Scan with app",
+   "w": 390,
+   "x": 470,
+   "y": 11628
+  },
+  "MFA-Verify.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "2-step setup · 3 Enter code",
+   "w": 390,
+   "x": 940,
+   "y": 11628
+  },
+  "MFA-Backup.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "2-step setup · 4 Backup codes",
+   "w": 390,
+   "x": 1410,
+   "y": 11628
+  },
+  "MFA-Challenge.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Sign in · 2-step code",
+   "w": 390,
+   "x": 1880,
+   "y": 11628
+  },
+  "Loading-Ops-Dashboard.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Loading · Card feed skeleton (Ops dashboard)",
+   "w": 390,
+   "x": 0,
+   "y": 5332
+  },
+  "Loading-Equipment-List.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Loading · Grouped list skeleton (Equipment)",
+   "w": 390,
+   "x": 2820,
+   "y": 2184
+  },
+  "Loading-Equipment-Detail.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Loading · Detail skeleton (Equipment details)",
+   "w": 390,
+   "x": 4230,
+   "y": 2184
+  },
+  "Loading-Admin-Users.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Loading · People list skeleton (Admin users)",
+   "w": 390,
+   "x": 0,
+   "y": 964
+  },
+  "Loading-Exec-Overview.dc.html": {
+   "h": 844,
+   "title": "Loading · Metrics skeleton (Leadership overview)",
+   "w": 390,
+   "x": 0,
+   "y": 8480
+  },
+  "Loading-Scan.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Loading · Centered spinner (QR scan lookup)",
+   "w": 390,
+   "x": 3760,
+   "y": 2184
+  },
+  "Loading-Invite.dc.html": {
+   "h": 844,
+   "title": "Loading · Centered spinner (checking invite link)",
+   "w": 390,
+   "x": 1880,
+   "y": 0
+  },
+  "Loading-Save.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Loading · Inline button spinner (saving service)",
+   "w": 390,
+   "x": 1410,
+   "y": 6296
+  },
+  "Empty-Exec-Overview.dc.html": {
+   "h": 844,
+   "title": "Empty · Leadership overview (no activity)",
+   "w": 390,
+   "x": 470,
+   "y": 9444
+  },
+  "Empty-Exec-Restaurant.dc.html": {
+   "h": 844,
+   "title": "Empty · Leadership restaurant (no open tickets)",
+   "w": 390,
+   "x": 940,
+   "y": 9444
+  },
+  "Empty-Search-Tickets.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "No results · Manager ticket search",
+   "w": 390,
+   "x": 470,
+   "y": 3148
+  },
+  "Empty-Search-Equipment.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "No results · Equipment search",
+   "w": 390,
+   "x": 3290,
+   "y": 4112
+  },
+  "Empty-Search-Contractors.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "No results · Contractor search",
+   "w": 390,
+   "x": 5170,
+   "y": 7260
+  },
+  "Empty-Manager-Tickets.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Manager open tickets",
+   "w": 390,
+   "x": 0,
+   "y": 2184
+  },
+  "Empty-Manager-Equipment.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Manager equipment",
+   "w": 390,
+   "x": 3290,
+   "y": 3148
+  },
+  "Empty-Equipment-Tickets.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Equipment tickets tab",
+   "w": 390,
+   "x": 5170,
+   "y": 3148
+  },
+  "Empty-Ops-Dashboard.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Ops dashboard (all clear)",
+   "w": 390,
+   "x": 470,
+   "y": 6296
+  },
+  "Empty-Ops-Closed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Ops closed tab",
+   "w": 390,
+   "x": 4230,
+   "y": 6296
+  },
+  "Empty-Ops-Service.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · New equipment, no service yet",
+   "w": 390,
+   "x": 3290,
+   "y": 6296
+  },
+  "Empty-Ops-Contractors.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Contractor directory",
+   "w": 390,
+   "x": 5170,
+   "y": 6296
+  },
+  "Empty-Admin-Users.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Empty · Admin users (just you)",
+   "w": 390,
+   "x": 0,
+   "y": 0
+  },
+  "Account-Setup.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Set up account",
+   "w": 390,
+   "x": 2350,
+   "y": 0
+  },
+  "Admin-Invite.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Admin · Invite user",
+   "w": 390,
+   "x": 940,
+   "y": 0
+  },
+  "Admin-Roles.dc.html": {
+   "h": 844,
+   "title": "Admin · Roles & rights",
+   "w": 390,
+   "x": 470,
+   "y": 0
+  },
+  "Admin-User-Override.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Admin · User profile (role, rights, security)",
+   "w": 390,
+   "x": 940,
+   "y": 964
+  },
+  "Admin-Users.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Admin · Users",
+   "w": 390,
+   "x": 470,
+   "y": 964
+  },
+  "Create-Area.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Create ticket: area",
+   "w": 390,
+   "x": 1880,
+   "y": 2184
+  },
+  "Create-Form.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Create ticket: form",
+   "w": 390,
+   "x": 2350,
+   "y": 2184
+  },
+  "Equipment-Detail.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Equipment · Details tab",
+   "w": 390,
+   "x": 4700,
+   "y": 2184
+  },
+  "Equipment-List.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Equipment",
+   "w": 390,
+   "x": 3290,
+   "y": 2184
+  },
+  "Equipment-Tickets.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Equipment · Tickets tab",
+   "w": 390,
+   "x": 5170,
+   "y": 2184
+  },
+  "Exec-Overview.dc.html": {
+   "h": 844,
+   "title": "Leadership · Read-only overview",
+   "w": 390,
+   "x": 470,
+   "y": 8480
+  },
+  "Exec-Restaurant.dc.html": {
+   "h": 844,
+   "title": "Leadership · Restaurant view (read-only)",
+   "w": 390,
+   "x": 940,
+   "y": 8480
+  },
+  "Invite-Email.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Invite email",
+   "w": 390,
+   "x": 1410,
+   "y": 0
+  },
+  "Main.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Open tickets",
+   "w": 390,
+   "x": 470,
+   "y": 2184
+  },
+  "Ops-Add-Equipment.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Add equipment",
+   "w": 390,
+   "x": 1880,
+   "y": 6296
+  },
+  "Ops-Closed.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Closed tab",
+   "w": 390,
+   "x": 4230,
+   "y": 5332
+  },
+  "Ops-Contractors.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Contractor directory",
+   "w": 390,
+   "x": 5170,
+   "y": 5332
+  },
+  "Ops-Dashboard.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Dashboard (open)",
+   "w": 390,
+   "x": 470,
+   "y": 5332
+  },
+  "Ops-Equipment-QR.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Equipment added + QR label",
+   "w": 390,
+   "x": 2350,
+   "y": 6296
+  },
+  "Ops-Equipment.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Equipment service history",
+   "w": 390,
+   "x": 3290,
+   "y": 5332
+  },
+  "Ops-Log-Service.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Log service & cost",
+   "w": 390,
+   "x": 1410,
+   "y": 5332
+  },
+  "Ops-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Ticket detail",
+   "w": 390,
+   "x": 940,
+   "y": 5332
+  },
+  "Sign-In.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Sign in",
+   "w": 390,
+   "x": 2820,
+   "y": 0
+  },
+  "WT-Ops-Schedule.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Ops: schedule",
+   "w": 390,
+   "x": 940,
+   "y": 15288
+  },
+  "WT-Home-Done.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: all done, ready to submit",
+   "w": 390,
+   "x": 1880,
+   "y": 14068
+  },
+  "WT-Review-Partial.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: submit before finished (warning)",
+   "w": 390,
+   "x": 2820,
+   "y": 14068
+  },
+  "WT-Fix.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: in-house fixes (opened from an item, filtered)",
+   "w": 390,
+   "x": 3290,
+   "y": 14068
+  },
+  "WT-Edit-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: edit / close ticket",
+   "w": 390,
+   "x": 3760,
+   "y": 14068
+  },
+  "Edit-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Edit / close ticket",
+   "w": 390,
+   "x": 1410,
+   "y": 2184
+  },
+  "WT-Fix-All.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: in-house fixes (opened from review, all)",
+   "w": 390,
+   "x": 4230,
+   "y": 14068
+  },
+  "WT-Tickets-All.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Manager: all tickets (from review)",
+   "w": 390,
+   "x": 4700,
+   "y": 14068
+  },
+  "WT-Ops-Tasks.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Walkthrough · Ops: quarterly tasks (all + per restaurant)",
+   "w": 390,
+   "x": 1410,
+   "y": 15288
+  },
+  "Main-InHouse.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Open in-house tasks",
+   "w": 390,
+   "x": 6110,
+   "y": 2184
+  },
+  "Closed-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Closed ticket (reopen if the problem is back)",
+   "w": 390,
+   "x": 5640,
+   "y": 2184
+  },
+  "Profile.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Profile · Your account (any role)",
+   "w": 390,
+   "x": 2350,
+   "y": 10664
+  },
+  "Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Manager · Open ticket (updates & replies)",
+   "w": 390,
+   "x": 940,
+   "y": 2184
+  },
+  "Ops-Closed-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Reopened ticket (start work / close again)",
+   "w": 390,
+   "x": 4700,
+   "y": 5332
+  },
+  "Service-Record.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Service record (invoice)",
+   "w": 390,
+   "x": 3760,
+   "y": 5332
+  },
+  "Ops-Invoices.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Invoices (search, sort, missing)",
+   "w": 390,
+   "x": 5640,
+   "y": 5332
+  },
+  "Exec-Contractors.dc.html": {
+   "h": 844,
+   "title": "Leadership · Contractors: directory (read-only)",
+   "w": 390,
+   "x": 1880,
+   "y": 8480,
+   "is_interactive": true
+  },
+  "Exec-Invoices.dc.html": {
+   "h": 844,
+   "title": "Leadership · Contractors: invoices (read-only)",
+   "w": 390,
+   "x": 2350,
+   "y": 8480,
+   "is_interactive": true
+  },
+  "Exec-Service-Record.dc.html": {
+   "h": 844,
+   "title": "Leadership · Service record (read-only)",
+   "w": 390,
+   "x": 2820,
+   "y": 8480,
+   "is_interactive": true
+  },
+  "Admin-Tickets.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Admin · Tickets (read-only)",
+   "w": 390,
+   "x": 1880,
+   "y": 964
+  },
+  "Admin-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Admin · Ticket detail (read-only)",
+   "w": 390,
+   "x": 2350,
+   "y": 964
+  },
+  "Exec-Ticket.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Leadership · Ticket detail (read-only)",
+   "w": 390,
+   "x": 1410,
+   "y": 8480
+  },
+  "View-As.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Admin · View as Maya (read-only)",
+   "w": 390,
+   "x": 1410,
+   "y": 964
+  },
+  "Ops-Equipment-Details.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Equipment details",
+   "w": 390,
+   "x": 2350,
+   "y": 5332
+  },
+  "Ops-Equipment-Tickets.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Equipment tickets",
+   "w": 390,
+   "x": 2820,
+   "y": 5332
+  },
+  "Ops-Equipment-List.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Equipment list",
+   "w": 390,
+   "x": 1880,
+   "y": 5332
+  },
+  "Help.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Profile · Help & support (any role)",
+   "w": 390,
+   "x": 2820,
+   "y": 10664
+  },
+  "Ops-Edit-Equipment.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Edit equipment",
+   "w": 390,
+   "x": 1880,
+   "y": 7260
+  },
+  "Ops-Edit-Service.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Edit service record",
+   "w": 390,
+   "x": 3760,
+   "y": 6296
+  },
+  "Ops-Add-Contractor.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Add contractor",
+   "w": 390,
+   "x": 5640,
+   "y": 6296
+  },
+  "Ops-Contractor.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Contractor detail",
+   "w": 390,
+   "x": 6110,
+   "y": 5332
+  },
+  "Ops-Edit-Contractor.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Ops · Edit contractor",
+   "w": 390,
+   "x": 6110,
+   "y": 6296
+  },
+  "Exec-Contractor.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Leadership · Contractor detail (read-only)",
+   "w": 390,
+   "x": 3290,
+   "y": 8480
+  },
+  "WT-Ops-Fix.dc.html": {
+   "x": 1880,
+   "y": 15288,
+   "w": 390,
+   "h": 844,
+   "title": "Walkthrough · Ops: in-house fixes (read-only, convert to ticket)",
+   "is_interactive": true
+  },
+  "Admin-Restaurants.dc.html": {
+   "x": 2820,
+   "y": 964,
+   "w": 390,
+   "h": 844,
+   "title": "Admin · Restaurants",
+   "is_interactive": true
+  },
+  "Admin-Add-Restaurant.dc.html": {
+   "x": 3290,
+   "y": 964,
+   "w": 390,
+   "h": 844,
+   "title": "Admin · Add restaurant",
+   "is_interactive": true
+  },
+  "Import-Equipment-Start.dc.html": {
+   "x": 2350,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import equipment · 1 Choose file",
+   "is_interactive": true
+  },
+  "Import-Contractors-Start.dc.html": {
+   "x": 5640,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import contractors · 1 Choose file",
+   "is_interactive": true
+  },
+  "Import-Equipment-Map.dc.html": {
+   "x": 2820,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import equipment · 2 Match columns",
+   "is_interactive": true
+  },
+  "Import-Contractors-Map.dc.html": {
+   "x": 6110,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import contractors · 2 Match columns",
+   "is_interactive": true
+  },
+  "Import-Equipment-Review.dc.html": {
+   "x": 3290,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import equipment · 3 Review rows",
+   "is_interactive": true
+  },
+  "Import-Contractors-Review.dc.html": {
+   "x": 6580,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import contractors · 3 Review rows",
+   "is_interactive": true
+  },
+  "Import-Equipment-Done.dc.html": {
+   "x": 3760,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import equipment · 4 Done",
+   "is_interactive": true
+  },
+  "Import-Contractors-Done.dc.html": {
+   "x": 7050,
+   "y": 7260,
+   "w": 390,
+   "h": 844,
+   "title": "Ops · Import contractors · 4 Done",
+   "is_interactive": true
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-10-19T15:00:00Z",
+  "v": 1
+ },
+ "designSystems": [],
+ "launch": {
+  "view": "canvas"
+ },
+ "notes": {
+  "t_wt": {
+   "kind": "title1",
+   "maxW": 5090,
+   "text": "7 · Monthly walkthrough: Restaurant manager",
+   "w": 240,
+   "x": 0,
+   "y": 13788
+  },
+  "t_errors": {
+   "kind": "title1",
+   "maxW": 3680,
+   "text": "6 · Errors",
+   "w": 240,
+   "x": 0,
+   "y": 12568
+  },
+  "t_auth": {
+   "kind": "title1",
+   "maxW": 3210,
+   "text": "5 · Account, password & 2-step verification (any role)",
+   "w": 240,
+   "x": 0,
+   "y": 10384
+  },
+  "t_exec": {
+   "kind": "title1",
+   "maxW": 3680,
+   "text": "4 · Leadership (read-only)",
+   "w": 240,
+   "x": 0,
+   "y": 8200
+  },
+  "t_manager": {
+   "kind": "title1",
+   "maxW": 6500,
+   "text": "2 · Restaurant manager",
+   "w": 240,
+   "x": 0,
+   "y": 1904
+  },
+  "t_onboard": {
+   "kind": "title1",
+   "maxW": 3680,
+   "text": "1 · Admin / IT — invite & onboarding",
+   "w": 240,
+   "x": 0,
+   "y": -280
+  },
+  "t_ops": {
+   "kind": "title1",
+   "maxW": 7440,
+   "text": "3 · Operations manager",
+   "w": 240,
+   "x": 0,
+   "y": 5052
+  },
+  "t_wt_ops": {
+   "kind": "title1",
+   "maxW": 2270,
+   "text": "8 · Monthly walkthrough: Operations manager",
+   "w": 240,
+   "x": 0,
+   "y": 15008
+  },
+  "t_wt_exec": {
+   "kind": "title1",
+   "maxW": 2270,
+   "text": "9 · Monthly walkthrough: Leadership (read-only)",
+   "w": 240,
+   "x": 0,
+   "y": 16228
+  }
+ },
+ "order": [
+  "Empty-Admin-Users.dc.html",
+  "Loading-Admin-Users.dc.html",
+  "Admin-Roles.dc.html",
+  "Admin-Users.dc.html",
+  "Admin-Invite.dc.html",
+  "Admin-User-Override.dc.html",
+  "View-As.dc.html",
+  "Admin-Tickets.dc.html",
+  "Admin-Ticket.dc.html",
+  "Invite-Email.dc.html",
+  "Loading-Invite.dc.html",
+  "Account-Setup.dc.html",
+  "Sign-In.dc.html",
+  "Empty-Manager-Tickets.dc.html",
+  "Main.dc.html",
+  "Empty-Search-Tickets.dc.html",
+  "Ticket.dc.html",
+  "Edit-Ticket.dc.html",
+  "Create-Area.dc.html",
+  "Create-Form.dc.html",
+  "Loading-Equipment-List.dc.html",
+  "Equipment-List.dc.html",
+  "Empty-Manager-Equipment.dc.html",
+  "Empty-Search-Equipment.dc.html",
+  "Loading-Scan.dc.html",
+  "Loading-Equipment-Detail.dc.html",
+  "Equipment-Detail.dc.html",
+  "Equipment-Tickets.dc.html",
+  "Empty-Equipment-Tickets.dc.html",
+  "Closed-Ticket.dc.html",
+  "Main-InHouse.dc.html",
+  "Loading-Ops-Dashboard.dc.html",
+  "Ops-Dashboard.dc.html",
+  "Empty-Ops-Dashboard.dc.html",
+  "Ops-Ticket.dc.html",
+  "Ops-Log-Service.dc.html",
+  "Loading-Save.dc.html",
+  "Ops-Equipment-Details.dc.html",
+  "Ops-Equipment-Tickets.dc.html",
+  "Ops-Edit-Equipment.dc.html",
+  "Ops-Equipment.dc.html",
+  "Empty-Ops-Service.dc.html",
+  "Service-Record.dc.html",
+  "Ops-Edit-Service.dc.html",
+  "Ops-Closed.dc.html",
+  "Empty-Ops-Closed.dc.html",
+  "Ops-Closed-Ticket.dc.html",
+  "Ops-Add-Equipment.dc.html",
+  "Ops-Equipment-QR.dc.html",
+  "Ops-Equipment-List.dc.html",
+  "Ops-Contractors.dc.html",
+  "Ops-Add-Contractor.dc.html",
+  "Ops-Contractor.dc.html",
+  "Ops-Edit-Contractor.dc.html",
+  "Empty-Ops-Contractors.dc.html",
+  "Empty-Search-Contractors.dc.html",
+  "Ops-Invoices.dc.html",
+  "Loading-Exec-Overview.dc.html",
+  "Exec-Overview.dc.html",
+  "Empty-Exec-Overview.dc.html",
+  "Exec-Restaurant.dc.html",
+  "Exec-Ticket.dc.html",
+  "Empty-Exec-Restaurant.dc.html",
+  "Exec-Contractors.dc.html",
+  "Exec-Contractor.dc.html",
+  "Exec-Invoices.dc.html",
+  "Exec-Service-Record.dc.html",
+  "Reset-Request.dc.html",
+  "MFA-Choose.dc.html",
+  "Reset-Sent.dc.html",
+  "MFA-Scan.dc.html",
+  "Reset-Email.dc.html",
+  "MFA-Verify.dc.html",
+  "Reset-New.dc.html",
+  "MFA-Backup.dc.html",
+  "Reset-Done.dc.html",
+  "Profile.dc.html",
+  "Help.dc.html",
+  "MFA-Challenge.dc.html",
+  "MFA-SMS.dc.html",
+  "Error-404.dc.html",
+  "Error-QR-Unknown.dc.html",
+  "Error-No-Access.dc.html",
+  "Error-Expired-Link.dc.html",
+  "Error-Session.dc.html",
+  "Error-Offline.dc.html",
+  "Error-Save-Failed.dc.html",
+  "Error-Server.dc.html",
+  "WT-Home.dc.html",
+  "WT-Ops-Overview.dc.html",
+  "WT-Checklist.dc.html",
+  "WT-Ops-Restaurant.dc.html",
+  "WT-Ticket.dc.html",
+  "WT-Exec.dc.html",
+  "WT-Quarterly.dc.html",
+  "WT-Ops-Schedule.dc.html",
+  "WT-Home-Done.dc.html",
+  "WT-Ops-Tasks.dc.html",
+  "WT-Review.dc.html",
+  "WT-Review-Partial.dc.html",
+  "WT-Fix.dc.html",
+  "WT-Edit-Ticket.dc.html",
+  "WT-Fix-All.dc.html",
+  "WT-Tickets-All.dc.html",
+  "WT-Ops-Fix.dc.html",
+  "Admin-Restaurants.dc.html",
+  "Admin-Add-Restaurant.dc.html",
+  "Import-Equipment-Start.dc.html",
+  "Import-Contractors-Start.dc.html",
+  "Import-Equipment-Map.dc.html",
+  "Import-Contractors-Map.dc.html",
+  "Import-Equipment-Review.dc.html",
+  "Import-Contractors-Review.dc.html",
+  "Import-Equipment-Done.dc.html",
+  "Import-Contractors-Done.dc.html"
+ ],
+ "pages": [],
+ "title": "OnTrack"
+}

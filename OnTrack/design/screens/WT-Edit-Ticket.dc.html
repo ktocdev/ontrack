@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit ticket — Walkthrough</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.ghost{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:1px dashed #A9B3AE;border-radius:10px;background:transparent;font:600 13px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.p-closed{background:#ECEEEB;color:#3F4944}
+.dot{flex:none;width:13px;height:13px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+.i-open{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3C/svg%3E")}
+.i-prog{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='black' d='M16 2a14 14 0 1 0 14 14A14.016 14.016 0 0 0 16 2m0 26a12 12 0 0 1 0-24v12l8.481 8.481A11.96 11.96 0 0 1 16 28'/%3E%3C/svg%3E")}
+.i-wait{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E")}
+.i-sched{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2.5'/%3E%3Cpath d='M8 3v4M16 3v4M8.5 13.5l2.5 2.5 4.5-4.5'/%3E%3C/svg%3E")}
+.i-reop{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20.5 3.5v5h-5'/%3E%3C/svg%3E")}
+.i-done{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='m8.3 12.2 2.5 2.5 4.9-5.2'/%3E%3C/svg%3E")}
+.urg{font-size:11px;font-weight:700;color:#fff;background:#B4400C;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.03em}
+.chips span{padding:4px 9px;border-radius:999px;background:#E5E8E3}
+.upd{background:#fff;border:1px solid #DDE1DC;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.btnp{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 16px 'Public Sans',sans-serif;cursor:pointer;width:100%;text-decoration:none}
+.btns{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 15px 'Public Sans',sans-serif;cursor:pointer;width:100%}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div class="{{__hdCls}}" style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="WT-Checklist.dc.html" aria-label="Back to Back of House checklist" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+      <span class="mono" style="font-size: 12px; font-weight: 500; color: #4D5752">OT-1051</span>
+      <span class="h" style="font-size: 20px; font-weight: 700">Edit ticket</span>
+    </div>
+    <span class="{{pillCls}}"><span class="{{dotCls}}"></span>{{pillLabel}}</span>
+  </div>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+    <sc-if value="{{closed}}" hint-placeholder-val="{{false}}">
+      <div role="status" style="display: flex; gap: 10px; align-items: flex-start; background: #E3EFEA; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #0B4537">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="m5 12 5 5 9-10"></path></svg>
+        <span><b>Ticket closed.</b> {{closedNote}}</span>
+      </div>
+    </sc-if>
+    <div class="chips" style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; font-weight: 600; color: #2E3833">
+      <span>Back of House</span><span>Electrical</span><span>Outlets</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <label class="lbl" for="et-desc">What's wrong?</label>
+      <textarea id="et-desc" class="field" rows="3" style="resize: none; line-height: 1.4" value="{{desc}}" onChange="{{onDesc}}" disabled="{{closed}}"></textarea>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span class="lbl">Equipment <span style="font-weight: 500; color: #5A645F">(optional)</span></span>
+      <div style="display: flex; gap: 8px">
+        <button type="button" class="ghost"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"></path></svg>Scan QR</button>
+        <button type="button" class="ghost"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Add photo</button>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span class="lbl">Urgency</span>
+      <div role="radiogroup" aria-label="Urgency" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+        <button type="button" role="radio" class="{{normCls}}" aria-checked="{{isNorm}}" onClick="{{pickNorm}}">Normal</button>
+        <button type="button" role="radio" class="{{urgCls}}" aria-checked="{{isUrg}}" onClick="{{pickUrg}}">Urgent</button>
+      </div>
+    </div>
+    <div class="upd">
+      <span style="font-size: 12px; font-weight: 700; color: #4D5752">Latest update · Bert, Ops · 1h ago</span>
+      <span style="font-size: 14px; line-height: 1.4">Electrician booked for tomorrow morning. Don't use that outlet until then.</span>
+    </div>
+    <span style="font-size: 12px; color: #5A645F">Opened by Maya from the October walkthrough · today 11:40 AM</span>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC; display: flex; flex-direction: column; gap: 8px">
+    <sc-if value="{{open}}" hint-placeholder-val="{{true}}">
+      <a href="WT-Checklist.dc.html" class="btnp">Save changes</a>
+      <button type="button" class="btns" onClick="{{askClose}}">Close ticket</button>
+    </sc-if>
+    <sc-if value="{{closed}}" hint-placeholder-val="{{false}}">
+      <a href="WT-Checklist.dc.html" class="btnp">Back to checklist</a>
+    </sc-if>
+  </div>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="ct-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <h2 id="ct-title" class="h" style="margin: 0; font-size: 21px; font-weight: 700">Close <span class="mono" style="font-size: 18px">OT-1051</span>?</h2>
+          <button type="button" onClick="{{cancelClose}}" aria-label="Cancel" style="width: 44px; height: 44px; margin-right: -10px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #15201B; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </div>
+        <p style="margin: 0; font-size: 14px; color: #2E3833; line-height: 1.5">Ops will see this ticket as closed.</p>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label class="lbl" for="ct-note">Comment <span style="font-weight: 500; color: #5A645F">(optional)</span></label>
+          <textarea id="ct-note" class="field" rows="3" style="resize: none; line-height: 1.4" placeholder="e.g. Electrician replaced the outlet, all working" value="{{note}}" onChange="{{onNote}}"></textarea>
+        </div>
+        <button type="button" class="btnp" onClick="{{confirmClose}}">Close ticket</button>
+        <button type="button" class="btns" onClick="{{cancelClose}}">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"closePromptOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+function __dot(l){return 'dot i-'+(l==='Open'||l==='Unassigned'?'open':l==='In progress'?'prog':l.indexOf('Waiting')===0?'wait':l.indexOf('Scheduled')===0?'sched':l==='Reopened'?'reop':'done');}
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { desc: 'Scorch marks on prep line outlet', urgent: true, sheet: !!(p && p.closePromptOpen), note: '', closed: false, savedNote: '' };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    return {
+      desc: s.desc, onDesc: function (e) { self.setState({ desc: e.target.value }); },
+      normCls: s.urgent ? 'seg' : 'seg on', urgCls: s.urgent ? 'seg on' : 'seg', isNorm: !s.urgent, isUrg: s.urgent,
+      pickNorm: function () { if (!s.closed) self.setState({ urgent: false }); },
+      pickUrg: function () { if (!s.closed) self.setState({ urgent: true }); },
+      open: !s.closed, closed: s.closed,
+      pillCls: s.closed ? 'pill p-closed' : 'pill p-prog', pillLabel: s.closed ? 'Closed' : 'In progress', dotCls: __dot(s.closed ? 'Closed' : 'In progress'),
+      closedNote: s.savedNote ? 'Your comment: "' + s.savedNote + '"' : 'Ops has been notified.',
+      sheetOpen: s.sheet,
+      note: s.note, onNote: function (e) { self.setState({ note: e.target.value }); },
+      askClose: function () { self.setState({ sheet: true, note: '' }); },
+      cancelClose: function () { self.setState({ sheet: false }); },
+      confirmClose: function () { self.setState({ sheet: false, closed: true, savedNote: (s.note || '').trim() }); }
+    };
+  }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+</script>
+</body>
+</html>

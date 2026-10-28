@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Set up 2-step verification — enter code</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.steps{display:flex;gap:6px}
+.steps span{flex:1;height:4px;border-radius:2px;background:#DDE1DC}
+.steps span.on{background:#12634F}
+.code{width:100%;box-sizing:border-box;min-height:64px;border:1.5px solid #12634F;border-radius:14px;background:#fff;padding:0 16px;text-align:center;font:500 30px 'JetBrains Mono',monospace;letter-spacing:.45em;color:#15201B}
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;text-decoration:none;font-weight:700;font-size:16px}
+.btn.on{background:#12634F;color:#fff}
+.btn.off{background:#DDE1DC;color:#4D5752;pointer-events:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 24px 0 12px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <a href="MFA-Scan.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+      </a>
+      <span style="font-size: 13px; font-weight: 600; color: #4D5752">Step 3 of 4</span>
+    </div>
+    <div class="steps" aria-hidden="true" style="padding-left: 12px"><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 24px 24px 0; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Enter the 6-digit code</h1>
+      <p style="margin: 0; font-size: 15px; color: #4D5752; line-height: 1.5">Find <b style="color: #15201B">OnTrack</b> in your authenticator app and type the code it shows.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="v-code" style="font-size: 13px; font-weight: 600; color: #2E3833">Verification code</label>
+      <input id="v-code" class="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{code}}" onChange="{{onCode}}" placeholder="······">
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #4D5752">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+        Codes change every 30 seconds. Use the newest one.
+      </span>
+    </div>
+  </div>
+  <div style="padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 8px">
+    <a class="{{btnCls}}" href="MFA-Backup.dc.html" aria-disabled="{{notReady}}">Verify and turn on</a>
+    <a href="MFA-Scan.dc.html" style="align-self: center; min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none">Code not working? Set up the app again</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { code: '4829' }; }
+  renderVals() {
+    var c = (this.state.code || '').replace(/\D/g, '').slice(0, 6);
+    var ready = c.length === 6;
+    return {
+      code: c,
+      onCode: (e) => this.setState({ code: e.target.value }),
+      btnCls: ready ? 'btn on' : 'btn off',
+      notReady: !ready
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Choose a new password</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.lbl{font-size:13px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:12px;background:#fff;padding:12px 14px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:48px}
+.req{display:flex;align-items:center;gap:8px;font-size:13px}
+.ok{color:#12634F;font-weight:600}
+.no{color:#5A645F}
+.bad{color:#94390A;font-weight:600}
+.chk{display:flex;align-items:flex-start;gap:10px;min-height:44px;font-size:14px;line-height:1.4;color:#2E3833;cursor:pointer}
+.chk input{width:20px;height:20px;margin:0;flex:none;accent-color:#12634F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="flex: 1; overflow: hidden; padding: 32px 24px 0; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#12634F"></rect><path d="M8 15l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <span class="h" style="font-size: 20px; font-weight: 700">OnTrack</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h1 class="h" style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Choose a new password</h1>
+      <p style="margin: 0; font-size: 14px; color: #4D5752; line-height: 1.45">For maya.reyes@fourcornerstaverns.com</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label class="lbl" for="n-pw">New password</label>
+      <div style="position: relative">
+        <input id="n-pw" class="field" type="{{pwType}}" value="{{pw}}" onChange="{{onPw}}" autocomplete="new-password" style="padding-right: 64px">
+        <button type="button" onClick="{{toggleShow}}" style="position: absolute; right: 4px; top: 2px; min-height: 44px; padding: 0 12px; border: 0; background: transparent; font: 600 13px 'Public Sans', sans-serif; color: #12634F">{{showLabel}}</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 4px">
+        <sc-for list="{{reqs}}" as="r" hint-placeholder-count="4">
+          <div class="req"><span class="{{r.cls}}" aria-hidden="true">{{r.mark}}</span><span class="{{r.cls}}">{{r.text}}</span></div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label class="lbl" for="n-pw2">Confirm new password</label>
+      <input id="n-pw2" class="field" type="{{pwType}}" value="{{pw2}}" onChange="{{onPw2}}" autocomplete="new-password">
+      <sc-if value="{{showMatch}}" hint-placeholder-val="{{true}}">
+        <div class="req"><span class="{{matchCls}}" aria-hidden="true">{{matchMark}}</span><span class="{{matchCls}}" aria-live="polite">{{matchText}}</span></div>
+      </sc-if>
+    </div>
+    <label class="chk"><input type="checkbox" checked=""><span>Sign me out on other phones and computers</span></label>
+  </div>
+  <div style="padding: 16px 24px 28px">
+    <a href="Reset-Done.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Save new password</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { pw: 'Walkin2026!', pw2: 'Walkin2026', show: false }; }
+  renderVals() {
+    var pw = this.state.pw || '', pw2 = this.state.pw2 || '';
+    var reqs = [
+      { text: 'At least 10 characters', ok: pw.length >= 10 },
+      { text: 'One number', ok: /\d/.test(pw) },
+      { text: 'One uppercase letter', ok: /[A-Z]/.test(pw) },
+      { text: 'Different from your last password', ok: pw.length > 0 && pw !== 'kitchen4' }
+    ];
+    var match = pw2.length > 0 && pw2 === pw;
+    return {
+      pw: pw, pw2: pw2, pwType: this.state.show ? 'text' : 'password',
+      showLabel: this.state.show ? 'Hide' : 'Show',
+      toggleShow: () => this.setState({ show: !this.state.show }),
+      onPw: (e) => this.setState({ pw: e.target.value }),
+      onPw2: (e) => this.setState({ pw2: e.target.value }),
+      reqs: reqs.map(function (r) { return { text: r.text, cls: r.ok ? 'ok' : 'no', mark: r.ok ? '✓' : '○' }; }),
+      showMatch: pw2.length > 0,
+      matchCls: match ? 'ok' : 'bad',
+      matchMark: match ? '✓' : '!',
+      matchText: match ? 'Passwords match' : "Passwords don't match yet"
+    };
+  }
+}
+</script>
+</body>
+</html>

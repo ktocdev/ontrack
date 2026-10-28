@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Create ticket — form</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.lbl{font-size:13px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:12px;background:#fff;padding:12px 14px;font:400 15px 'Public Sans',sans-serif;color:#15201B}
+.chip{flex:1;min-height:40px;border:1px solid #C9CFCA;border-radius:10px;background:#fff;font:600 13px 'Public Sans',sans-serif;color:#2E3833;cursor:pointer}
+.chip.on{border-color:#12634F;background:#E3EFEA;color:#0B4537}
+.eq{display:flex;align-items:center;gap:12px;min-height:54px;padding:0 14px;border-bottom:1px solid #ECEEEB;cursor:pointer}
+.eq:last-child{border-bottom:0}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid #A9B3AE;box-sizing:border-box;flex:none}
+.radio.on{border:6px solid #12634F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 4px; display: flex; align-items: center; gap: 4px">
+    <a href="Create-Area.dc.html" aria-label="Back to categories" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="font-size: 13px; font-weight: 600; color: #5A645F">Back of House › Refrigeration</div>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 4px 20px 0; display: flex; flex-direction: column; gap: 16px">
+    <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">New ticket</h1>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label class="lbl" for="t-title">Title</label>
+      <input id="t-title" class="field" type="text" value="Walk-in cooler not holding temp">
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label class="lbl" for="t-desc">Description</label>
+      <textarea id="t-desc" class="field" rows="3" style="resize: none; line-height: 1.4">Reading 46°F at open, should be 38°F. Compressor running constantly. Moved proteins to reach-ins.</textarea>
+      <button type="button" style="align-self: flex-start; display: flex; align-items: center; gap: 6px; min-height: 40px; border: 0; background: transparent; padding: 0; font: 600 14px 'Public Sans', sans-serif; color: #12634F">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+        Add photo
+      </button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span class="lbl" id="urg">Urgency</span>
+      <div role="radiogroup" aria-labelledby="urg" style="display: flex; gap: 8px">
+        <button type="button" role="radio" aria-checked="{{u0}}" class="{{c0}}" onClick="{{pick0}}">Low</button>
+        <button type="button" role="radio" aria-checked="{{u1}}" class="{{c1}}" onClick="{{pick1}}">Normal</button>
+        <button type="button" role="radio" aria-checked="{{u2}}" class="{{c2}}" onClick="{{pick2}}">Urgent</button>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span class="lbl">Attach equipment</span>
+        <span style="font-size: 12px; color: #5A645F">Optional</span>
+      </div>
+      <div role="radiogroup" aria-label="Equipment" style="background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; overflow: hidden">
+        <sc-for list="{{eqs}}" as="e" hint-placeholder-count="4">
+          <div class="eq" role="radio" tabindex="0" aria-checked="{{e.on}}" onClick="{{e.pick}}">
+            <span class="{{e.rcls}}"></span>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 600">{{e.name}}</span>
+              <span class="mono" style="font-size: 11px; color: #5A645F">{{e.sn}}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="padding: 12px 20px 24px; background: #F3F4F1; border-top: 1px solid #DDE1DC">
+    <a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Submit ticket</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { urg: 2, eq: 0 }; }
+  renderVals() {
+    var s = this.state;
+    var list = [
+      { name: 'Walk-in Cooler 1', sn: 'SN KP-7XW-220418' },
+      { name: 'Walk-in Freezer', sn: 'SN KP-9FZ-190233' },
+      { name: 'Reach-in Cooler · Line', sn: 'SN TR-49RR-55120' },
+      { name: 'Prep Table Cooler', sn: 'SN TR-PT27-80911' }
+    ];
+    var self = this;
+    var cls = function (i) { return s.urg === i ? 'chip on' : 'chip'; };
+    return {
+      u0: s.urg === 0, u1: s.urg === 1, u2: s.urg === 2,
+      c0: cls(0), c1: cls(1), c2: cls(2),
+      pick0: () => this.setState({ urg: 0 }), pick1: () => this.setState({ urg: 1 }), pick2: () => this.setState({ urg: 2 }),
+      eqs: list.map(function (e, i) {
+        return Object.assign({}, e, {
+          on: s.eq === i, rcls: s.eq === i ? 'radio on' : 'radio',
+          pick: function () { self.setState({ eq: s.eq === i ? -1 : i }); }
+        });
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Import contractors — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.card{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.hint{font-size:12px;color:#5A645F;line-height:1.4}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+select.field{appearance:auto}
+.btnp{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:12px;border:0;background:#12634F;color:#fff;font:700 16px 'Public Sans',sans-serif;cursor:pointer;text-decoration:none;width:100%}
+.btnp.off{background:#DDE1DC;color:#4D5752;cursor:not-allowed}
+.btns{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:12px;border:1px solid #C9CFCA;background:#fff;color:#15201B;font:600 15px 'Public Sans',sans-serif;cursor:pointer;text-decoration:none;width:100%}
+.btnsm{flex:none;min-height:40px;padding:0 14px;border-radius:10px;border:0;background:#12634F;color:#fff;font:700 14px 'Public Sans',sans-serif;cursor:pointer}
+.lnk{flex:none;min-height:40px;border:0;background:transparent;padding:0;font:600 14px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+.lnk.muted{color:#4D5752}
+.prog{display:flex;gap:4px}
+.prog span{flex:1;height:4px;border-radius:2px;background:#DDE1DC}
+.prog span.on{background:#12634F}
+.drop{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:168px;border:2px dashed #A9B3AE;border-radius:16px;background:#FAFAF8;cursor:pointer;font-family:'Public Sans',sans-serif;color:#15201B;padding:16px}
+.fcard{flex:none;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DDE1DC;border-radius:14px;padding:12px 14px}
+.ficon{flex:none;width:44px;height:52px;border-radius:8px;background:#DCE8E3;color:#0B4537;display:flex;align-items:center;justify-content:center;font:700 11px 'Public Sans',sans-serif}
+.mrow{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.mrow.warn{border-color:#E2C77A;background:#FFFCF2}
+.mtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.req{font-size:11px;font-weight:700;color:#94390A}
+.ok{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#0B4537}
+.nm{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#6A500C}
+.sugg{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #E2C77A;background:#F3ECD6;color:#4A3808;font:600 13px 'Public Sans',sans-serif;cursor:pointer}
+.chip{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;background:#E5E8E3;color:#2E3833;font-size:12px;font-weight:600}
+.tiles{flex:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tile{background:#fff;border:1px solid #DDE1DC;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tile .tl{font-size:12px;color:#4D5752;line-height:1.3}
+.icard{flex:none;background:#fff;border:1px solid #E2C77A;border-left:4px solid #B98A12;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.icard.dup{border-color:#C9D6E8;border-left-color:#1B4F91}
+.rcard{flex:none;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #DDE1DC;border-radius:12px;padding:10px 14px;font-size:14px}
+.seg2{display:flex;gap:4px;background:#E5E8E3;border-radius:10px;padding:3px}
+.seg2 button{flex:1;min-height:36px;border:0;border-radius:8px;background:transparent;font:600 13px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg2 button.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.list{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:12px;overflow:hidden}
+.lrow{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-top:1px solid #ECEEEB;font-size:14px}
+.lrow:first-child{border-top:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="flex: none; padding: 10px 12px 12px 8px; border-bottom: 1px solid #DDE1DC; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 4px">
+      <sc-if value="{{hasBack}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{back}}" aria-label="Back" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #15201B; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
+      <sc-if value="{{noBack}}" hint-placeholder-val="{{true}}"><span style="width: 12px"></span></sc-if>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+        <span style="font-size: 12px; font-weight: 600; color: #4D5752">{{stepLabel}}</span>
+        <span class="h" style="font-size: 20px; font-weight: 700">{{title}}</span>
+      </div>
+      <a href="Ops-Contractors.dc.html" aria-label="Cancel import" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></a>
+    </div>
+    <div class="prog" aria-hidden="true" style="padding: 0 8px 0 12px"><span class="{{p1}}"></span><span class="{{p2}}"></span><span class="{{p3}}"></span><span class="{{p4}}"></span></div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px">
+    <sc-if value="{{isStart}}" hint-placeholder-val="{{true}}">
+      <p style="flex: none; margin: 0; font-size: 14px; line-height: 1.5; color: #2E3833">Use the contractor list you already keep. Any layout works. You’ll match its columns to OnTrack next.</p>
+      <sc-if value="{{noFile}}" hint-placeholder-val="{{true}}">
+        <button type="button" class="drop" onClick="{{pickFile}}">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"></path></svg>
+          <span style="font-size: 16px; font-weight: 700">Choose a spreadsheet</span>
+          <span style="font-size: 13px; color: #4D5752; text-align: center; line-height: 1.4">Excel or CSV from Files, Google Drive<br>or an email attachment</span>
+        </button>
+      </sc-if>
+      <sc-if value="{{hasFile}}" hint-placeholder-val="{{false}}">
+        <div class="fcard">
+          <span class="ficon">XLSX</span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 600; overflow-wrap: anywhere">Vendors 2026.xlsx</span>
+            <span style="font-size: 12px; color: #5A645F">41 rows · 8 columns · first sheet</span>
+          </div>
+          <button type="button" class="lnk" onClick="{{clearFile}}">Change</button>
+        </div>
+        <div class="card" style="gap: 6px">
+          <span class="sec">First rows</span>
+          <span style="font-size: 13px; color: #2E3833; line-height: 1.5">Coldline Refrigeration · Refrigeration · Rosa Alvarez<br>Northstar HVAC · HVAC · Kevin Brooks<br>Brightway Electric · Electrical · Tina Nguyen</span>
+        </div>
+      </sc-if>
+      <div class="card" style="flex-direction: row; align-items: center; gap: 12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></svg>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; font-weight: 600">Starting from scratch?</span>
+          <span class="hint">Download a sheet with the right columns.</span>
+        </div>
+        <button type="button" class="lnk">Template</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isMap}}" hint-placeholder-val="{{false}}">
+      <p style="flex: none; margin: 0; font-size: 14px; line-height: 1.5; color: #2E3833">We matched <b>{{matchedCount}} of {{fieldCount}}</b> fields to your columns. Check anything marked, then continue.</p>
+      <sc-for list="{{fields}}" as="f" hint-placeholder-count="5">
+        <div class="{{f.cls}}">
+          <div class="mtop">
+            <span style="font-size: 15px; font-weight: 700">{{f.name}} <sc-if value="{{f.req}}" hint-placeholder-val="{{false}}"><span class="req">Required</span></sc-if></span>
+            <sc-if value="{{f.matched}}" hint-placeholder-val="{{true}}"><span class="ok"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>Matched</span></sc-if>
+            <sc-if value="{{f.unmatched}}" hint-placeholder-val="{{false}}"><span class="nm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 17h.01"></path></svg>Not matched</span></sc-if>
+          </div>
+          <select class="field" aria-label="{{f.aria}}" value="{{f.col}}" onChange="{{f.onPick}}">
+            <sc-for list="{{f.opts}}" as="o" hint-placeholder-count="4"><option value="{{o.v}}">{{o.l}}</option></sc-for>
+          </select>
+          <sc-if value="{{f.hasSample}}" hint-placeholder-val="{{true}}"><span class="hint">e.g. {{f.sample}}</span></sc-if>
+          <sc-if value="{{f.hasSugg}}" hint-placeholder-val="{{false}}"><button type="button" class="sugg" onClick="{{f.useSugg}}">Use “{{f.sugg}}”?</button></sc-if>
+          <sc-if value="{{f.hasNote}}" hint-placeholder-val="{{false}}"><span class="hint">{{f.note}}</span></sc-if>
+        </div>
+      </sc-for>
+      <div style="flex: none; display: flex; flex-direction: column; gap: 8px; padding-top: 4px">
+        <span class="sec">Not imported</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{unused}}" as="u" hint-placeholder-count="1"><span class="chip">{{u}}</span></sc-for></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isReview}}" hint-placeholder-val="{{false}}">
+      <div class="tiles">
+        <div class="tile"><div style="font-family: Archivo, sans-serif; font-size: 24px; font-weight: 700; line-height: 1.1; color: #0B4537">{{readyCount}}</div><span class="tl">Ready</span></div>
+        <div class="tile"><div style="font-family: Archivo, sans-serif; font-size: 24px; font-weight: 700; line-height: 1.1; color: #6A500C">{{fixCount}}</div><span class="tl">Need a fix</span></div>
+        <div class="tile"><div style="font-family: Archivo, sans-serif; font-size: 24px; font-weight: 700; line-height: 1.1; color: #1B4F91">{{dupCount}}</div><span class="tl">Already exist</span></div>
+      </div>
+      <sc-if value="{{hasIssues}}" hint-placeholder-val="{{true}}"><span class="sec" style="padding-top: 6px">Needs a fix</span></sc-if>
+      <sc-for list="{{issues}}" as="x" hint-placeholder-count="2">
+        <sc-if value="{{x.open}}" hint-placeholder-val="{{true}}">
+          <div class="icard">
+            <div style="display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 700">{{x.title}}</span>
+              <span class="hint">{{x.who}}</span>
+            </div>
+            <sc-if value="{{x.isPick}}" hint-placeholder-val="{{true}}">
+              <select class="field" aria-label="{{x.aria}}" value="{{x.val}}" onChange="{{x.onVal}}">
+                <sc-for list="{{x.opts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for>
+              </select>
+            </sc-if>
+            <sc-if value="{{x.isInput}}" hint-placeholder-val="{{false}}">
+              <input class="field" type="tel" placeholder="{{x.ph}}" aria-label="{{x.aria}}" onChange="{{x.onVal}}">
+            </sc-if>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+              <button type="button" class="lnk muted" onClick="{{x.skip}}">{{x.skipLabel}}</button>
+              <button type="button" class="btnsm" onClick="{{x.apply}}">{{x.applyLabel}}</button>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{x.done}}" hint-placeholder-val="{{false}}">
+          <div class="rcard"><span style="{{x.doneStyle}}">{{x.doneIcon}}</span><span style="flex: 1; min-width: 0">{{x.doneText}}</span><button type="button" class="lnk" onClick="{{x.undo}}">Undo</button></div>
+        </sc-if>
+      </sc-for>
+      <span class="sec" style="padding-top: 6px">Already in OnTrack</span>
+      <sc-for list="{{dups}}" as="x" hint-placeholder-count="1">
+        <div class="icard dup">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 700">{{x.title}}</span>
+            <span class="hint">{{x.sub}}</span>
+          </div>
+          <div class="seg2" role="radiogroup" aria-label="{{x.aria}}">
+            <button type="button" role="radio" class="{{x.skipCls}}" aria-checked="{{x.isSkip}}" onClick="{{x.pickSkip}}">Skip this row</button>
+            <button type="button" role="radio" class="{{x.updCls}}" aria-checked="{{x.isUpd}}" onClick="{{x.pickUpd}}">Update existing</button>
+          </div>
+        </div>
+      </sc-for>
+      <span class="sec" style="padding-top: 6px">Ready · {{readyCount}}</span>
+      <div class="list">
+        <sc-for list="{{ready}}" as="r" hint-placeholder-count="3"><div class="lrow"><span style="font-weight: 600">{{r.a}}</span><span class="hint">{{r.b}}</span></div></sc-for>
+        <div class="lrow" style="color: #4D5752; font-size: 13px">and {{readyMore}} more</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
+      <div style="flex: none; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px 0 8px; text-align: center">
+        <span style="width: 64px; height: 64px; border-radius: 50%; background: #DCE8E3; color: #0B4537; display: flex; align-items: center; justify-content: center"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+        <h2 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.01em">{{doneTitle}}</h2>
+        <span style="font-size: 14px; color: #4D5752">{{doneSub}}</span>
+      </div>
+      <div class="list">
+        <div class="lrow" style="flex-direction: row; justify-content: space-between"><span>Added</span><b>{{nAdded}}</b></div>
+        <div class="lrow" style="flex-direction: row; justify-content: space-between"><span>Updated</span><b>{{nUpdated}}</b></div>
+        <div class="lrow" style="flex-direction: row; justify-content: space-between"><span>Skipped</span><b>{{nSkipped}}</b></div>
+      </div>
+      
+      <span class="hint" style="flex: none; text-align: center">Imported by mistake? You can undo this import for 24 hours from Contractors.</span>
+    </sc-if>
+  </div>
+
+  <div style="flex: none; padding: 12px 20px 24px; border-top: 1px solid #DDE1DC; background: #F3F4F1; display: flex; flex-direction: column; gap: 8px">
+    <sc-if value="{{footHint}}" hint-placeholder-val="{{false}}"><span class="hint" style="text-align: center">{{footHint}}</span></sc-if>
+    <sc-if value="{{notDone}}" hint-placeholder-val="{{true}}"><button type="button" class="{{nextCls}}" aria-disabled="{{nextOff}}" onClick="{{next}}">{{nextLabel}}</button></sc-if>
+    <sc-if value="{{isDone}}" hint-placeholder-val="{{false}}"><a class="btnp" href="Ops-Contractors.dc.html">View contractors</a></sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"step": {"editor": "text", "default": "done"}, "fileChosen": {"editor": "boolean", "default": false}, "$preview": {"width": 390, "height": 844}}'>
+var K = {"title": "Import contractors", "label": "Contractors", "noun": "contractors", "file": "Vendors 2026.xlsx", "rows": 41, "cols": ["Vendor", "Type", "Contact", "Cell", "Email", "Ins. exp", "Notes", "Acct #"], "samples": {"Vendor": "Coldline Refrigeration", "Type": "Refrigeration", "Contact": "Rosa Alvarez", "Cell": "(312) 555-0187", "Email": "rosa@coldlinerefrigeration.com", "Ins. exp": "6/30/2027", "Notes": "After hours: (312) 555-0190", "Acct #": "FC-2210"}, "fields": [{"f": "Company", "req": 1, "col": "Vendor"}, {"f": "Trade", "req": 1, "col": "Type"}, {"f": "Contact name", "col": "Contact"}, {"f": "Phone", "req": 1, "col": "Cell"}, {"f": "Email", "col": "Email"}, {"f": "Insurance expires", "col": "", "guess": "Ins. exp"}, {"f": "Preferred", "col": "", "later": "Not in your sheet. You can mark preferred contractors after importing."}, {"f": "Notes", "col": "Notes"}], "issues": [{"id": "a", "title": "“Refrig.” isn’t a trade", "who": "3 rows · Arctic Air, Polar Service, Kold Kings", "rows": 3, "kind": "pick", "options": ["Refrigeration", "HVAC", "Plumbing", "Electrical", "General repair"], "suggest": "Refrigeration", "pickLabel": "Choose a trade", "fixedText": "Set to Refrigeration"}, {"id": "b", "title": "Phone is missing", "who": "Brightway Glass · row 14", "rows": 1, "kind": "input", "ph": "Phone number", "fixedText": "Phone added"}], "dups": [{"id": "d", "title": "Coldline Refrigeration", "sub": "Row 3 · same phone as a contractor already in OnTrack"}], "ready": [{"a": "Northstar HVAC", "b": "HVAC · Kevin Brooks · (312) 555-0144"}, {"a": "Pipeworks Plumbing", "b": "Plumbing · Marco Ruiz · (773) 555-0121"}, {"a": "Lakeside Hood Cleaning", "b": "Hood cleaning · Dee Carter · (312) 555-0168"}]};
+var STEPS = ['start', 'map', 'review', 'done'];
+var TITLES = { start: K.title, map: 'Match columns', review: 'Review ' + K.rows + ' rows', done: 'Import complete' };
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    var st = (p && p.step) || 'start';
+    var map = {}; K.fields.forEach(function (f) { map[f.f] = f.col; });
+    var iss = {}; if (st === 'done') K.issues.forEach(function (x) { iss[x.id] = 'fixed'; });
+    this.state = { step: st, file: st !== 'start' || !!(p && p.fileChosen), map: map, iss: iss, val: {}, dup: {} };
+  }
+  renderVals() {
+    var self = this, s = this.state, i = STEPS.indexOf(s.step);
+    var go = function (k) { self.setState({ step: k }); };
+    var used = {}; Object.keys(s.map).forEach(function (k) { if (s.map[k]) used[s.map[k]] = 1; });
+    var fields = K.fields.map(function (f) {
+      var col = s.map[f.f] || '', matched = !!col;
+      var opts = [{ v: '', l: matched ? 'Don’t import' : (f.req ? 'Choose a column' : 'Not in this sheet') , sel: !matched }].concat(K.cols.map(function (c) { return { v: c, l: 'Column: ' + c, sel: c === col }; }));
+      var sugg = !matched && f.guess && !used[f.guess] ? f.guess : '';
+      return {
+        name: f.f, col: col, req: !!f.req, matched: matched, unmatched: !matched && !f.later, cls: !matched && !f.later ? 'mrow warn' : 'mrow',
+        aria: f.f + ': which column?', opts: opts,
+        hasSample: matched && !!K.samples[col], sample: K.samples[col] || '',
+        hasSugg: !!sugg, sugg: sugg, hasNote: !matched && !!f.later, note: f.later || '',
+        onPick: function (e) { var m = Object.assign({}, s.map); m[f.f] = e.target.value; self.setState({ map: m }); },
+        useSugg: function () { var m = Object.assign({}, s.map); m[f.f] = sugg; self.setState({ map: m }); }
+      };
+    });
+    var matchedCount = K.fields.filter(function (f) { return !!s.map[f.f]; }).length;
+    var reqMissing = K.fields.some(function (f) { return f.req && !s.map[f.f]; });
+    var issues = K.issues.map(function (x) {
+      var r = s.iss[x.id], v = s.val[x.id] !== undefined ? s.val[x.id] : (x.suggest || '');
+      var set = function (val) { var o = Object.assign({}, s.iss); o[x.id] = val; self.setState({ iss: o }); };
+      return {
+        open: !r, done: !!r, val: v, title: x.title, who: x.who, isPick: x.kind === 'pick', isInput: x.kind === 'input', ph: x.ph || '', aria: x.title,
+        opts: [{ v: '', l: x.pickLabel || 'Choose…', sel: !v }].concat((x.options || []).map(function (o) { return { v: o, l: o, sel: o === v }; })),
+        onVal: function (e) { var o = Object.assign({}, s.val); o[x.id] = e.target.value; self.setState({ val: o }); },
+        skipLabel: x.rows > 1 ? 'Skip ' + x.rows + ' rows' : 'Skip this row',
+        applyLabel: x.rows > 1 ? 'Apply to ' + x.rows + ' rows' : 'Save',
+        apply: function () { if (v) set('fixed'); },
+        skip: function () { set('skipped'); },
+        undo: function () { set(null); },
+        doneIcon: r === 'fixed' ? '✓' : '–',
+        doneStyle: 'flex: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; ' + (r === 'fixed' ? 'background: #DCE8E3; color: #0B4537' : 'background: #ECEEEB; color: #4D5752'),
+        doneText: r === 'fixed' ? (x.fixedText || 'Fixed') + ' · ' + x.rows + (x.rows > 1 ? ' rows' : ' row') + ' ready' : 'Skipped ' + x.rows + (x.rows > 1 ? ' rows' : ' row')
+      };
+    });
+    var dups = K.dups.map(function (x) {
+      var c = s.dup[x.id] || 'skip';
+      var set = function (v) { var o = Object.assign({}, s.dup); o[x.id] = v; self.setState({ dup: o }); };
+      return { title: x.title, sub: x.sub, aria: x.title, isSkip: c === 'skip', isUpd: c === 'upd', skipCls: c === 'skip' ? 'on' : '', updCls: c === 'upd' ? 'on' : '', pickSkip: function () { set('skip'); }, pickUpd: function () { set('upd'); } };
+    });
+    var issueRows = K.issues.reduce(function (a, x) { return a + x.rows; }, 0);
+    var fixedRows = K.issues.reduce(function (a, x) { return a + (s.iss[x.id] === 'fixed' ? x.rows : 0); }, 0);
+    var openRows = K.issues.reduce(function (a, x) { return a + (!s.iss[x.id] ? x.rows : 0); }, 0);
+    var nUpd = K.dups.filter(function (x) { return s.dup[x.id] === 'upd'; }).length;
+    var base = K.rows - issueRows - K.dups.length;
+    var nAdded = base + fixedRows, nSkipped = K.rows - nAdded - nUpd;
+    var ready = nAdded;
+    var nextLabel = s.step === 'start' ? 'Next: match columns' : s.step === 'map' ? 'Next: review rows' : 'Import ' + (nAdded + nUpd) + ' ' + K.noun;
+    var nextOff = (s.step === 'start' && !s.file) || (s.step === 'map' && reqMissing);
+    return {
+      hasBack: i > 0 && i < 3, noBack: !(i > 0 && i < 3), back: function () { go(STEPS[i - 1]); },
+      stepLabel: i < 3 ? 'Step ' + (i + 1) + ' of 3 · ' + K.label : K.label, title: TITLES[s.step],
+      p1: 'on', p2: i >= 1 ? 'on' : '', p3: i >= 2 ? 'on' : '', p4: i >= 3 ? 'on' : '',
+      isStart: s.step === 'start', isMap: s.step === 'map', isReview: s.step === 'review', isDone: s.step === 'done', notDone: s.step !== 'done',
+      noFile: !s.file, hasFile: s.file,
+      pickFile: function () { self.setState({ file: true }); }, clearFile: function () { self.setState({ file: false }); },
+      fields: fields, matchedCount: matchedCount, fieldCount: K.fields.length,
+      unused: K.cols.filter(function (c) { return !used[c]; }),
+      issues: issues, dups: dups, hasIssues: issues.length > 0,
+      readyCount: ready, fixCount: openRows, dupCount: K.dups.length,
+      ready: K.ready, readyMore: Math.max(ready - K.ready.length, 0),
+      footHint: s.step === 'review' && openRows ? openRows + (openRows === 1 ? ' row that still needs a fix will be skipped.' : ' rows that still need a fix will be skipped.') : (s.step === 'map' && reqMissing ? 'Match every required field to continue.' : ''),
+      nextLabel: nextLabel, nextOff: nextOff, nextCls: nextOff ? 'btnp off' : 'btnp',
+      next: function () { if (nextOff) return; go(STEPS[i + 1]); },
+      doneTitle: (nAdded + nUpd) + ' ' + K.noun + ' imported', doneSub: 'From ' + K.file,
+      nAdded: nAdded, nUpdated: nUpd, nSkipped: nSkipped, printLabel: 'Print ' + nAdded + ' QR labels'
+    };
+  }
+}
+</script>
+</body>
+</html>

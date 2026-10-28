@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Equipment service history — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-size:14px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent}
+.tab.on{color:#15201B;border-bottom-color:#12634F}
+.badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:#FBEADF;color:#94390A}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+div.ebrow{display:flex}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kpi{min-width:0;background:#fff;border:1px solid #DDE1DC;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kpi.wide{grid-column:1/-1}
+.kpi b{overflow-wrap:anywhere}
+.kpi b{font:700 22px 'Archivo',sans-serif}
+.kpi span{font-size:12px;color:#4D5752;font-weight:600}
+.log{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid #DDE1DC;font-size:13px;text-decoration:none;color:#15201B}
+a.log:hover{background:#F7F8F6;color:#15201B}
+.fi{flex:none;color:#12634F}
+.fm{flex:none;font-size:11px;font-weight:700;color:#6A500C;background:#FBF5E3;padding:1px 6px;border-radius:5px}
+.log:first-child{border-top:0}
+.rname{-webkit-text-fill-color:#2E3833}
+.rname::before{content:'';display:inline-block;width:9px;height:9px;border-radius:2px;background:currentColor;margin-right:6px;vertical-align:0;box-shadow:inset 0 0 0 1px rgba(21,32,27,.18)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Ops-Ticket.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; font-size: 13px; font-weight: 600; color: #5A645F"><span class="rname" style="font-weight: 700; color: #A3336D">Federale’s Logan Square</span> › BOH › Refrigeration</div>
+    <a href="Ops-Edit-Equipment.dc.html" style="min-height: 40px; padding: 0 12px; display: flex; align-items: center; text-decoration: none; font: 600 14px 'Public Sans', sans-serif; color: #12634F">Edit</a>
+  </div>
+  <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 4px">
+    <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Walk-in Cooler 1</h1>
+    <span style="font-size: 13px; color: #5A645F">Kolpak · <span class="mono">KP-7XW-220418</span> · Installed Mar 2022</span>
+  </div>
+  <nav aria-label="Equipment sections" style="display: flex; margin: 12px 20px 0; border-bottom: 1px solid #DDE1DC">
+    <a class="tab" href="Ops-Equipment-Details.dc.html">Details</a>
+    <a class="tab" href="Ops-Equipment-Tickets.dc.html">Tickets <span class="badge">1</span></a>
+    <a class="tab on" href="Ops-Equipment.dc.html" aria-current="page">Service &amp; cost</a>
+  </nav>
+  <div style="flex: 1; overflow-y: auto; padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+    <div class="kpis">
+      <div class="kpi wide"><b>$2,115.90</b><span>Lifetime cost</span></div>
+      <div class="kpi"><b>$860.90</b><span>2026 cost</span></div>
+      <div class="kpi"><b>4</b><span>Visits 2026</span></div>
+    </div>
+    <span class="sec ebrow">Contractors on this unit</span>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; overflow: hidden">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px; font-weight: 600">Coldline Refrigeration</span>
+        </div>
+        <span style="font-weight: 700; font-size: 14px">$822.40</span>
+        <a href="tel:+10000000000" aria-label="Call Coldline Refrigeration" style="width: 40px; height: 40px; border-radius: 10px; background: #E3EFEA; display: flex; align-items: center; justify-content: center; color: #12634F">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+        </a>
+      </div>
+    </div>
+    <div class="ebrow" style="justify-content: space-between; align-items: center">
+      <span class="sec">Service log · 2026</span>
+      <a href="Ops-Log-Service.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none; min-height: 36px; display: flex; align-items: center">+ Log service</a>
+    </div>
+    <div style="flex: none; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; overflow: hidden">
+      <a class="log" href="Service-Record.dc.html">
+        <span style="width: 48px; color: #4D5752; font-weight: 600">Oct 19</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">Condenser fan motor replaced</span><span style="color: #5A645F; font-size: 12px"><span class="mono">OT-1042</span> · Coldline</span></div>
+        <svg class="fi" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Invoice attached"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg><span style="font-weight: 700">$397.40</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <a class="log" href="Service-Record.dc.html">
+        <span style="width: 48px; color: #4D5752; font-weight: 600">Oct 14</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">Door gasket replaced</span><span style="color: #5A645F; font-size: 12px"><span class="mono">OT-0988</span> · Coldline</span></div>
+        <svg class="fi" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Invoice attached"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg><span style="font-weight: 700">$245.00</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <a class="log" href="Service-Record.dc.html">
+        <span style="width: 48px; color: #4D5752; font-weight: 600">May 3</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">Evaporator fan cleaned, bracket</span><span style="color: #5A645F; font-size: 12px"><span class="mono">OT-0911</span> · In-house</span></div>
+        <span style="font-weight: 700">$38.50</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <a class="log" href="Service-Record.dc.html">
+        <span style="width: 48px; color: #4D5752; font-weight: 600">Jan 15</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">Annual preventive maintenance</span><span style="color: #5A645F; font-size: 12px"><span class="mono">OT-0820</span> · Coldline</span></div>
+        <span class="fm">No invoice</span><span style="font-weight: 700">$180.00</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

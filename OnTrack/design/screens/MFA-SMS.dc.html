@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Set up 2-step verification — text message</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.steps{display:flex;gap:6px}
+.steps span{flex:1;height:4px;border-radius:2px;background:#DDE1DC}
+.steps span.on{background:#12634F}
+.lbl{font-size:13px;font-weight:600;color:#2E3833}
+.field{box-sizing:border-box;border:1px solid #C9CFCA;border-radius:12px;background:#fff;padding:12px 14px;font:400 16px 'Public Sans',sans-serif;color:#15201B;min-height:52px}
+.selwrap{position:relative;display:flex;flex:none}
+select.field{appearance:none;-webkit-appearance:none;padding-right:34px;cursor:pointer}
+.caret{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#4D5752}
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;text-decoration:none;font-weight:700;font-size:16px}
+.btn.on{background:#12634F;color:#fff}
+.btn.off{background:#DDE1DC;color:#4D5752;pointer-events:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 24px 0 12px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <a href="MFA-Choose.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+      </a>
+      <span style="font-size: 13px; font-weight: 600; color: #4D5752">Step 2 of 4</span>
+    </div>
+    <div class="steps" aria-hidden="true" style="padding-left: 12px"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 24px 24px 0; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Where should we text codes?</h1>
+      <p style="margin: 0; font-size: 15px; color: #4D5752; line-height: 1.5">Use a mobile number you'll have with you at work. We'll send a code to confirm it.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label class="lbl" for="p-num">Mobile number</label>
+      <div style="display: flex; gap: 8px">
+        <div class="selwrap">
+          <select class="field" aria-label="Country code"><option>US +1</option><option>CA +1</option><option>MX +52</option></select>
+          <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+        </div>
+        <input id="p-num" class="field" type="tel" inputmode="tel" autocomplete="tel-national" value="{{num}}" onChange="{{onNum}}" placeholder="(312) 555-0142" style="flex: 1; min-width: 0">
+      </div>
+      <span style="font-size: 13px; color: #4D5752">Message and data rates may apply.</span>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: flex-start; background: #F3ECD6; border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: #4A3808">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+      <span>Texts can be delayed in basements and walk-ins with weak signal. An authenticator app works offline.</span>
+    </div>
+    <a href="MFA-Scan.dc.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none">Use an authenticator app instead</a>
+  </div>
+  <div style="padding: 16px 24px 28px">
+    <a class="{{btnCls}}" href="MFA-Verify.dc.html" aria-disabled="{{notReady}}">Text me a code</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { num: '(312) 555-0142' }; }
+  renderVals() {
+    var n = this.state.num || '';
+    var ready = n.replace(/\D/g, '').length >= 10;
+    return {
+      num: n,
+      onNum: (e) => this.setState({ num: e.target.value }),
+      btnCls: ready ? 'btn on' : 'btn off',
+      notReady: !ready
+    };
+  }
+}
+</script>
+</body>
+</html>

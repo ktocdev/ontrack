@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Checking invite — OnTrack</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.spin{width:48px;height:48px;border-radius:50%;border:4px solid #DCE8E3;border-top-color:#12634F;box-sizing:border-box;animation:sp .8s linear infinite}
+@keyframes sp{100%{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 28px 24px 0; display: flex; align-items: center; gap: 8px">
+    <span style="width: 28px; height: 28px; border-radius: 8px; background: #12634F; display: flex; align-items: center; justify-content: center; color: #fff">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+    </span>
+    <span class="h" style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em">OnTrack</span>
+  </div>
+  <div role="status" aria-live="polite" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 32px 140px; text-align: center">
+    <span class="spin" aria-hidden="true"></span>
+    <h1 class="h" style="margin: 6px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Checking your invite…</h1>
+    <p style="margin: 0; font-size: 14px; color: #4D5752; line-height: 1.5; max-width: 280px">From 4C | Four Corners. This only takes a moment.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Set up 2-step verification — backup codes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.steps{display:flex;gap:6px}
+.steps span{flex:1;height:4px;border-radius:2px;background:#DDE1DC}
+.steps span.on{background:#12634F}
+.codes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;list-style:none;margin:0;padding:0}
+.codes li{font:500 15px 'JetBrains Mono',monospace;letter-spacing:.04em;color:#15201B}
+.act{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border-radius:10px;border:1px solid #C9CFCA;background:#fff;font:600 14px 'Public Sans',sans-serif;color:#15201B;cursor:pointer}
+.chk{display:flex;align-items:flex-start;gap:10px;min-height:44px;font-size:14px;line-height:1.4;color:#2E3833;cursor:pointer}
+.chk input{width:20px;height:20px;margin:0;flex:none;accent-color:#12634F}
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;text-decoration:none;font-weight:700;font-size:16px}
+.btn.on{background:#12634F;color:#fff}
+.btn.off{background:#DDE1DC;color:#4D5752;pointer-events:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 20px 24px 0; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between; min-height: 24px">
+      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #12634F">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+        2-step verification is on
+      </span>
+      <span style="font-size: 13px; font-weight: 600; color: #4D5752">Step 4 of 4</span>
+    </div>
+    <div class="steps" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 22px 24px 0; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 class="h" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Save your backup codes</h1>
+      <p style="margin: 0; font-size: 15px; color: #4D5752; line-height: 1.5">If you lose your phone, each code gets you in once. Keep them somewhere safe, like a password manager.</p>
+    </div>
+    <div style="background: #fff; border: 1px solid #DDE1DC; border-radius: 14px; padding: 18px 20px">
+      <ul class="codes" aria-label="Backup codes">
+        <li>4F7K-29QD</li><li>X8M3-RT6P</li>
+        <li>9VCN-4H2L</li><li>QW5B-71JE</li>
+        <li>K3ZT-8PFA</li><li>2LHR-6YMC</li>
+        <li>N7DU-3QWB</li><li>E6PJ-95XK</li>
+      </ul>
+    </div>
+    <div style="display: flex; gap: 8px">
+      <button type="button" class="act" onClick="{{copy}}" aria-live="polite">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"></path></svg>
+        {{copyLabel}}
+      </button>
+      <button type="button" class="act">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>
+        Download
+      </button>
+    </div>
+    <label class="chk"><input type="checkbox" checked="{{saved}}" onChange="{{toggleSaved}}"><span>I saved these codes somewhere I can find them</span></label>
+  </div>
+  <div style="padding: 16px 24px 28px">
+    <a class="{{btnCls}}" href="Main.dc.html" aria-disabled="{{notSaved}}">Done</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { saved: false, copied: false }; }
+  renderVals() {
+    var s = this.state.saved;
+    return {
+      saved: s, notSaved: !s,
+      toggleSaved: () => this.setState({ saved: !s }),
+      btnCls: s ? 'btn on' : 'btn off',
+      copyLabel: this.state.copied ? 'Copied' : 'Copy all',
+      copy: () => this.setState({ copied: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

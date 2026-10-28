@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Equipment tickets, empty</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;font-size:14px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent}
+.tab.on{color:#15201B;border-bottom-color:#12634F}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px 28px 40px}
+.eicon{width:64px;height:64px;border-radius:50%;background:#DCE8E3;color:#12634F;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.etitle{margin:0;font:700 20px 'Archivo',sans-serif;letter-spacing:-0.01em;color:#15201B}
+.ebody{margin:0;font-size:14px;line-height:1.5;color:#4D5752;max-width:290px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="Equipment-List.dc.html" aria-label="Back to equipment" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="font-size: 13px; font-weight: 600; color: #5A645F; line-height: 1.4"><span style="font-weight: 700; color: #2E3833"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span>Federale’s Logan Square</span> › BOH › Refrigeration</div>
+  </div>
+  <div style="padding: 4px 20px 0; display: flex; flex-direction: column; gap: 4px">
+    <h1 class="h" style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Ice Machine</h1>
+    <span style="font-size: 13px; color: #5A645F">Hoshizaki · <span class="mono">HZ-K660-L1173</span></span>
+  </div>
+  <nav aria-label="Equipment sections" style="display: flex; margin: 14px 20px 0; border-bottom: 1px solid #DDE1DC">
+    <a class="tab" href="Equipment-Detail.dc.html">Details</a>
+    <a class="tab on" href="Equipment-Tickets.dc.html" aria-current="page">Tickets</a>
+  </nav>
+  <div class="empty">
+    <span class="eicon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"></path><path d="M14 6v2M14 11v2M14 16v2"></path></svg></span>
+    <h2 class="etitle">No tickets yet</h2>
+    <p class="ebody">Nothing has been reported for this ice machine. Open and past tickets will show up here.</p>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC">
+    <a href="Create-Form.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      Create ticket for this equipment
+    </a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

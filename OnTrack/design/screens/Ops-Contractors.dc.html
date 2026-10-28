@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contractors — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.chipf{flex:none;min-height:36px;padding:0 12px;border:1px solid #C9CFCA;border-radius:999px;background:#fff;font:600 13px 'Public Sans',sans-serif;color:#2E3833;white-space:nowrap;cursor:pointer}
+.chipf.on{background:#15201B;border-color:#15201B;color:#fff}
+.card{background:#fff;border:1px solid #DDE1DC;border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.trade{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#ECEEEB;color:#2E3833}
+.pref{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#12634F}
+.warn{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#FBEADF;color:#94390A}
+.call{flex:none;width:44px;height:44px;border-radius:10px;background:#E3EFEA;display:flex;align-items:center;justify-content:center;color:#12634F}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+.rp-menu{position:absolute;top:48px;left:-6px;z-index:20;width:290px;background:#fff;border:1px solid #DDE1DC;border-radius:14px;box-shadow:0 12px 28px -8px rgba(21,32,27,.28);padding:6px;box-sizing:border-box;display:flex;flex-direction:column}
+.rp-hd{padding:8px 10px 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.rp-opt{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:0;border-radius:10px;background:transparent;font:500 15px 'Public Sans',sans-serif;color:#15201B;text-align:left;cursor:pointer}
+.rp-opt:hover{background:#F3F4F1}
+.rp-scrim{position:fixed;inset:0;z-index:19;background:transparent}
+.ctab{flex:1;display:flex;align-items:center;justify-content:center;min-height:44px;font-size:15px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ctab.on{color:#15201B;border-bottom-color:#12634F}
+.ctab:hover{color:#15201B}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 20px 20px 12px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="position: relative">
+        <button type="button" aria-haspopup="listbox" aria-expanded="{{__rpOpen}}" onClick="{{__rpToggle}}" style="display: flex; align-items: center; gap: 6px; min-height: 44px; border: 0; background: transparent; padding: 0; font: 600 14px 'Public Sans', sans-serif; color: #15201B">
+        <span aria-hidden="true" style="flex: none; display: grid; grid-template-columns: repeat(2, 5px); gap: 1px; width: 11px; height: 11px"><span style="border-radius: 1.5px; background: #A3336D"></span><span style="border-radius: 1.5px; background: #1B4F91"></span><span style="border-radius: 1.5px; background: #6B3FA0"></span><span style="border-radius: 1.5px; background: #9A6A00"></span></span>
+        All restaurants (4)
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{__rpChev}}"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
+        <sc-if value="{{__rpOpen}}" hint-placeholder-val="{{false}}">
+          <div class="rp-scrim" onClick="{{__rpClose}}"></div>
+          <div class="rp-menu" role="listbox" aria-label="Restaurant">
+            <span class="rp-hd">Show tickets for</span>
+            <button type="button" class="rp-opt" role="option" aria-selected="true" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; display: grid; grid-template-columns: repeat(2, 5px); gap: 1px; width: 11px; height: 11px; margin: 0 0.5px"><span style="border-radius: 1.5px; background: #A3336D"></span><span style="border-radius: 1.5px; background: #1B4F91"></span><span style="border-radius: 1.5px; background: #6B3FA0"></span><span style="border-radius: 1.5px; background: #9A6A00"></span></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 700">All restaurants</span><span style="font-size: 12px; font-weight: 500; color: #5A645F">4 restaurants</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #1B4F91"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Ranalli’s Logan Square</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #A3336D"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Federale’s Logan Square</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #6B3FA0"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Federale’s West Loop</span></span></button>
+            <button type="button" class="rp-opt" role="option" aria-selected="false" onClick="{{__rpClose}}"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(21,32,27,.18); background: #9A6A00"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-weight: 600">Porter</span></span></button>
+          </div>
+        </sc-if>
+      </div>
+      <a href="Profile.dc.html" aria-label="Your profile" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #E4EDF8; font: 700 13px 'Archivo', sans-serif; color: #1B4F91; display: flex; align-items: center; justify-content: center; text-decoration: none">BV</a>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Contractors</h1>
+      <a href="Ops-Add-Contractor.dc.html" style="display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font: 700 15px 'Public Sans', sans-serif">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        Add
+      </a>
+    </div>
+    <nav aria-label="Contractors sections" style="display: flex; border-bottom: 1px solid #DDE1DC; margin-top: -2px">
+      <a class="ctab on" href="Ops-Contractors.dc.html" aria-current="page">Directory</a>
+      <a class="ctab" href="Ops-Invoices.dc.html">Invoices</a>
+    </nav>
+    <label style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 0 14px; min-height: 44px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Company, contact or trade" aria-label="Search contractors" style="border: 0; outline: 0; flex: 1; font: 400 15px 'Public Sans', sans-serif; background: transparent; color: #15201B">
+    </label>
+    <div style="display: flex; gap: 8px; overflow: hidden">
+      <sc-for list="{{chips}}" as="c" hint-placeholder-count="5">
+        <button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #4D5752">
+      <span>{{countLabel}}</span><span>Spend · 2026</span>
+    </div>
+    <sc-for list="{{list}}" as="k" hint-placeholder-count="4">
+      <div class="card">
+        <a href="Ops-Contractor.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; text-decoration: none; color: #15201B">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+            <span style="flex: 1; min-width: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{k.name}}</span>
+            <span style="flex: none; font-size: 14px; font-weight: 700">{{k.spend}}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+            <span class="trade">{{k.trade}}</span>
+            <sc-if value="{{k.pref}}" hint-placeholder-val="{{false}}">
+              <span class="pref"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"></path></svg>Preferred</span>
+            </sc-if>
+            <sc-if value="{{k.hasWarn}}" hint-placeholder-val="{{false}}"><span class="warn">{{k.warn}}</span></sc-if>
+          </div>
+          <span style="font-size: 12px; color: #5A645F">{{k.contact}}</span>
+          <span style="font-size: 12px; color: #5A645F">{{k.visits}} visits · last {{k.last}}</span>
+        </a>
+        <a class="call" href="tel:+10000000000" aria-label="{{k.callLabel}}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+        </a>
+      </div>
+    </sc-for>
+  </div>
+  <nav class="nav" aria-label="Operations">
+    <a href="Ops-Dashboard.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+      Dashboard
+    </a>
+    <a href="WT-Ops-Overview.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"></path></svg>
+      Walkthroughs
+    </a>
+    <a href="Ops-Equipment-List.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"></path></svg>
+      Equipment
+    </a>
+    <a class="on" href="Ops-Contractors.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"></path></svg>
+      Contractors
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { f: 'All' }; }
+  renderVals() {
+    var self = this, f = this.state.f;
+    var all = [
+      { name: 'Coldline Refrigeration', trade: 'Refrigeration', pref: true, warn: '', contact: 'Rosa Alvarez', visits: 11, last: 'Oct 19, 2026', spend: '$4,812' },
+      { name: 'Northstar HVAC', trade: 'HVAC', pref: true, warn: '', contact: 'Kevin Brooks', visits: 3, last: 'Sep 22, 2026', spend: '$3,280' },
+      { name: 'Brightway Electric', trade: 'Electrical', pref: false, warn: 'Insurance expires Nov 1', contact: 'Tina Nguyen', visits: 6, last: 'Oct 8, 2026', spend: '$2,140' },
+      { name: 'Pipeworks Plumbing', trade: 'Plumbing', pref: false, warn: '', contact: 'Marco Ruiz', visits: 7, last: 'Sep 30, 2026', spend: '$1,965' },
+      { name: 'Hobart Service', trade: 'Dishwashing', pref: false, warn: '', contact: 'Factory service', visits: 2, last: 'Oct 11, 2026', spend: '$640' }
+    ];
+    var trades = ['All', 'Refrigeration', 'Electrical', 'Plumbing', 'HVAC'];
+    var list = all.filter(function (k) { return f === 'All' || k.trade === f; }).map(function (k) {
+      return Object.assign({}, k, { hasWarn: !!k.warn, callLabel: 'Call ' + k.name });
+    });
+    return {
+      chips: trades.map(function (t) {
+        return {
+          label: t === 'All' ? 'All · 12' : t, on: t === f,
+          cls: t === f ? 'chipf on' : 'chipf',
+          pick: function () { self.setState({ f: t }); }
+        };
+      }),
+      list: list,
+      countLabel: f === 'All' ? 'Most used first' : list.length + ' ' + f.toLowerCase() + ' contractor' + (list.length === 1 ? '' : 's')
+    };
+  }
+}
+(function (C) { var rv = C.prototype.renderVals; C.prototype.renderVals = function () { var self=this, v=(rv?rv.call(this):null)||{}; var o=!!(self.state&&self.state.__rp); v.__rpOpen=o; v.__rpChev=o?'transform: rotate(180deg)':''; v.__rpToggle=function(){ if(!self.state) self.state={}; self.setState({__rp:!(self.state&&self.state.__rp)}); }; v.__rpClose=function(){ if(!self.state) self.state={}; self.setState({__rp:false}); }; return v; }; })(Component);
+</script>
+</body>
+</html>

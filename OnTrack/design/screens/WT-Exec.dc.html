@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Walkthroughs — Leadership</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.seg{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 4px;border-radius:9px;font:600 13px 'Public Sans',sans-serif;color:#4D5752;text-decoration:none;white-space:nowrap}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.ebrow{display:block;padding-top:16px;margin-bottom:-2px}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kpi{min-width:0;background:#fff;border:1px solid #DDE1DC;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kpi b{font:700 24px 'Archivo',sans-serif}
+.kpi span{font-size:12px;color:#4D5752;font-weight:600}
+.r{display:flex;flex-direction:column;gap:7px;padding:12px 14px;border-top:1px solid #ECEEEB}
+.r:first-child{border-top:0}
+.bar{height:6px;border-radius:3px;background:#E5E8E3;overflow:hidden}
+.bar span{display:block;height:100%;background:#12634F}
+.pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.p-done{background:#DCE8E3;color:#0B4537}
+.p-prog{background:#E4EDF8;color:#1B4F91}
+.p-none{background:#FBEADF;color:#94390A}
+.nav{display:flex;border-top:1px solid #DDE1DC;background:#fff;padding:6px 8px 20px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:#5A645F;text-decoration:none;padding:6px 0;min-height:44px}
+.nav a.on{color:#12634F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; background: #15201B; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .04em">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    READ-ONLY VIEW
+  </div>
+  <div style="padding: 18px 20px 12px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="font-size: 13px; font-weight: 600; color: #4D5752">4C | Four Corners</span>
+      <a href="Profile.dc.html" aria-label="Your profile" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #ECEEEB; font: 700 13px 'Archivo', sans-serif; color: #2E3833; display: flex; align-items: center; justify-content: center; text-decoration: none">LC</a>
+    </div>
+    <h1 class="h" style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em">Walkthroughs</h1>
+  </div>
+  <div style="flex: 1; overflow: hidden; padding: 4px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+    <div class="kpis">
+      <div class="kpi"><b>1 of 4</b><span>Submitted · October</span></div>
+      <div class="kpi"><b>62%</b><span>On time · last 6 months</span></div>
+    </div>
+    <span class="sec ebrow">October · due Oct 31</span>
+    <div style="background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; overflow: hidden">
+      <div class="r">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; font-size: 15px; font-weight: 600">Ranalli’s Logan Square</span><span class="pill p-done">Submitted</span></div>
+        <div class="bar"><span style="width: 100%"></span></div>
+        <span style="font-size: 12px; color: #5A645F">2 tickets · on time 6 of 6 months</span>
+      </div>
+      <div class="r">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; font-size: 15px; font-weight: 600">Federale’s Logan Square</span><span class="pill p-prog">40%</span></div>
+        <div class="bar"><span style="width: 40%"></span></div>
+        <span style="font-size: 12px; color: #5A645F">1 ticket so far · on time 3 of 5 months</span>
+      </div>
+      <div class="r">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; font-size: 15px; font-weight: 600">Federale’s West Loop</span><span class="pill p-prog">12%</span></div>
+        <div class="bar"><span style="width: 12%"></span></div>
+        <span style="font-size: 12px; color: #5A645F">No issues so far · on time 4 of 5 months</span>
+      </div>
+      <div class="r">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; font-size: 15px; font-weight: 600">Porter</span><span class="pill p-none">Not started</span></div>
+        <div class="bar"><span style="width: 0%"></span></div>
+        <span style="font-size: 12px; color: #5A645F">On time 0 of 5 months · 2 missed</span>
+      </div>
+    </div>
+  </div>
+  <nav class="nav" aria-label="Leadership">
+    <a href="Exec-Overview.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+      Overview
+    </a>
+    <a href="Exec-Restaurant.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"></path><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path><path d="M5 12v8h14v-8M10 20v-5h4v5"></path></svg>
+      Restaurants
+    </a>
+    <a class="on" href="WT-Exec.dc.html" aria-current="page">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"></path></svg>
+      Walkthroughs
+    </a>
+    <a href="Exec-Contractors.dc.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"></path></svg>
+      Contractors
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

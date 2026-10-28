@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Walkthrough checklist — Back of House</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-size:14px;font-weight:600;color:#5A645F;text-decoration:none;border-bottom:2px solid transparent}
+.tab.on{color:#15201B;border-bottom-color:#12634F}
+.zone{flex:none;background:#fff;border:1px solid #DDE1DC;border-radius:14px;overflow:hidden}
+.zhead{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 6px 0 14px}
+.ztoggle{flex:1;display:flex;align-items:center;gap:10px;min-height:52px;border:0;background:transparent;padding:0;font:600 15px 'Public Sans',sans-serif;color:#15201B;cursor:pointer;text-align:left}
+.zcount{font-size:13px;font-weight:500;color:#4D5752}
+.item{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-top:1px solid #DDE1DC}
+.irow{display:flex;align-items:center;gap:10px}
+.iname{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.3}
+.opts{display:flex;gap:4px;flex:none}
+.opt{min-width:56px;min-height:40px;padding:0 6px;border:1px solid #C9CFCA;border-radius:9px;background:#fff;font:600 12px 'Public Sans',sans-serif;color:#2E3833;cursor:pointer}
+.opt.g{background:#D4F0DE;border:1.5px solid #2E8B57;color:#0E4A2B}
+.opt.i{background:#F3ECD6;border:1.5px solid #B8941F;color:#4A3808}
+.opt.t{background:#FBE3D6;border:1.5px solid #C2551A;color:#7A2E06}
+.detail{display:flex;align-items:center;gap:6px;font-size:12px;line-height:1.4}
+.d-t{color:#94390A;font-weight:600}
+.d-i{color:#6A500C;font-weight:600}
+.tlist{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-radius:9px;background:#FDF5EF}
+.addt{align-self:flex-start;display:flex;align-items:center;gap:4px;min-height:36px;margin-top:2px;border:0;background:transparent;padding:0;font:600 13px 'Public Sans',sans-serif;color:#94390A;cursor:pointer}
+.opt.off{background:#F3F4F1;border-color:#DDE1DC;color:#8A938E;cursor:not-allowed}
+.elist{display:flex;flex-direction:column;gap:10px;margin-top:4px;padding:12px 14px;border-radius:10px;background:#F7F8F6;border:1px solid #DDE1DC}
+.elist > * + *{border-top:1px solid #DDE1DC;padding-top:10px}
+.entry{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.45;color:#2E3833;text-decoration:none;min-height:28px}
+.entry:hover{color:#15201B}
+.entry:hover > span:last-of-type{text-decoration:underline}
+.etag{flex:none;font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;white-space:nowrap}
+.e-i{background:#F3ECD6;color:#4A3808}
+.e-t{background:#FBEADF;color:#94390A}
+.tstack{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.e-urg{background:#B4400C;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+.mini{flex:none;min-width:44px;min-height:40px;padding:0 10px;border:0;border-radius:9px;background:#12634F;color:#fff;font:600 13px 'Public Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mini.x{background:transparent;color:#4D5752;padding:0}
+.note{width:100%;box-sizing:border-box;min-height:40px;border:1px solid #C9CFCA;border-radius:9px;padding:8px 10px;font:400 13px 'Public Sans',sans-serif;color:#15201B;background:#FAFAF8}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.seg{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px 'Public Sans',sans-serif;color:#4D5752;cursor:pointer}
+.seg.on{background:#fff;color:#15201B;box-shadow:0 1px 2px rgba(21,32,27,.12)}
+.ghost{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:1px dashed #A9B3AE;border-radius:10px;background:transparent;font:600 13px 'Public Sans',sans-serif;color:#12634F;cursor:pointer}
+.help{flex:none}
+.help summary{display:inline-flex;align-items:center;gap:6px;min-height:40px;font-size:13px;font-weight:600;color:#12634F;cursor:pointer;list-style:none}
+.help summary::-webkit-details-marker{display:none}
+.help[open] .hchev{transform:rotate(180deg)}
+.stickyhd{position:relative;z-index:2;transition:box-shadow .15s ease,border-color .15s ease}
+.stickyhd.ttl{border-bottom:1px solid transparent}
+.stickyhd.is-scrolled{box-shadow:0 4px 10px -4px rgba(21,32,27,.18)}
+.stickyhd.ttl.is-scrolled{border-bottom-color:#DDE1DC}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 20px 8px 8px; margin-bottom: 8px; border-bottom: 1px solid #DDE1DC; display: flex; align-items: center; gap: 4px">
+    <a href="WT-Home.dc.html" aria-label="Back to walkthrough" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 12px; font-weight: 600; color: #4D5752">October walkthrough · Federale’s Logan Square</span>
+      <span class="h" style="font-size: 20px; font-weight: 700">Back of House</span>
+    </div>
+    <span style="font-size: 13px; font-weight: 700" aria-live="polite">{{done}}/24</span>
+  </div>
+  <div style="margin: 10px 20px 0; height: 6px; border-radius: 3px; background: #E5E8E3; overflow: hidden"><div style="{{barStyle}}"></div></div>
+  <nav class="{{__hdCls}}" aria-label="Walkthrough parts" style="display: flex; margin: 6px 20px 0; border-bottom: 1px solid #DDE1DC">
+    <a class="tab on" href="WT-Checklist.dc.html" aria-current="page">BOH</a>
+    <a class="tab" href="#foh">FOH</a>
+    <a class="tab" href="WT-Quarterly.dc.html">Q4 tasks</a>
+  </nav>
+  <div onScroll="{{__onScroll}}" style="flex: 1; overflow-y: auto; padding: 12px 20px 20px; display: flex; flex-direction: column; gap: 10px">
+    <details class="help">
+      <summary><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.3M12 17h.01"></path></svg>Help<svg class="hchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+      <div style="display: flex; flex-direction: column; gap: 4px; padding: 2px 0 6px; font-size: 13px; line-height: 1.45; color: #2E3833">
+        <span><b style="color: #1E6B3E">Good</b> no issues</span>
+        <span><b style="color: #6A500C">In-house</b> your team fixes it</span>
+        <span><b style="color: #94390A">Ticket</b> needs a repair</span>
+        <span style="color: #4D5752">An item can have several in-house fixes and tickets.</span>
+        <span style="color: #4D5752">Items with an In-house fix or Ticket can't be marked Good unless those In-house and Ticket items are resolved or deleted.</span>
+      </div>
+    </details>
+    <sc-for list="{{zones}}" as="z" hint-placeholder-count="7">
+      <section class="zone" aria-label="{{z.name}}">
+        <div class="zhead">
+          <button type="button" class="ztoggle" aria-expanded="{{z.open}}" onClick="{{z.toggle}}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5752" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{z.chev}}"><path d="m9 18 6-6-6-6"></path></svg>
+            <span>{{z.name}}</span>
+            <span class="zcount">{{z.done}}/{{z.total}}</span>
+            <sc-if value="{{z.complete}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#12634F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Complete"><path d="m5 12 5 5 9-10"></path></svg></sc-if>
+          </button>
+        </div>
+        <sc-if value="{{z.open}}" hint-placeholder-val="{{true}}">
+          <sc-for list="{{z.items}}" as="it" hint-placeholder-count="4">
+            <div class="item">
+              <div class="irow">
+                <span class="iname">{{it.name}}</span>
+                <div class="opts" role="group" aria-label="{{it.name}}">
+                  <sc-if value="{{it.showGood}}" hint-placeholder-val="{{true}}"><button type="button" class="{{it.gCls}}" aria-pressed="{{it.isG}}" onClick="{{it.pickG}}">Good</button></sc-if>
+                  <button type="button" class="{{it.iCls}}" aria-label="{{it.iLabel}}" onClick="{{it.pickI}}">In-house</button>
+                  <button type="button" class="{{it.tCls}}" aria-label="{{it.tLabel}}" onClick="{{it.pickT}}">Ticket</button>
+                </div>
+              </div>
+              <sc-if value="{{it.showList}}" hint-placeholder-val="{{false}}">
+                <div class="elist">
+                  <sc-for list="{{it.entries}}" as="e" hint-placeholder-count="1">
+                    <a class="entry" href="{{e.href}}">
+                      <sc-if value="{{e.isFix}}" hint-placeholder-val="{{true}}"><span class="etag e-i">In-house</span></sc-if>
+                      <sc-if value="{{e.isTk}}" hint-placeholder-val="{{false}}"><span class="tstack"><span class="etag e-t mono">{{e.id}}</span><sc-if value="{{e.urgent}}" hint-placeholder-val="{{false}}"><span class="etag e-urg">Urgent</span></sc-if></span></sc-if>
+                      <span style="flex: 1; min-width: 0">{{e.text}}</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A645F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; align-self: center"><path d="m9 18 6-6-6-6"></path></svg>
+                    </a>
+                  </sc-for>
+                  <sc-if value="{{it.drafting}}" hint-placeholder-val="{{false}}">
+                    <div style="display: flex; gap: 6px; align-items: center">
+                      <input class="note" type="text" placeholder="What will your team fix?" aria-label="{{it.noteLabel}}" value="{{it.draftText}}" onChange="{{it.onDraft}}" style="flex: 1; min-width: 0">
+                      <button type="button" class="mini" onClick="{{it.saveFix}}">Add</button>
+                      <button type="button" class="mini x" onClick="{{it.cancelFix}}" aria-label="Cancel in-house fix"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </sc-if>
+      </section>
+    </sc-for>
+  </div>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(21,32,27,.45); display: flex; align-items: flex-end">
+      <div role="dialog" aria-modal="true" aria-labelledby="qt-title" style="width: 100%; background: #F3F4F1; border-radius: 22px 22px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+        <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #C9CFCA"></span>
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <h2 id="qt-title" class="h" style="margin: 0; font-size: 21px; font-weight: 700">{{sheetTitle}}</h2>
+          <button type="button" onClick="{{closeSheet}}" aria-label="Cancel" style="width: 44px; height: 44px; margin-right: -10px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #15201B; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; font-weight: 600; color: #2E3833">
+          <span style="padding: 4px 9px; border-radius: 999px; background: #E5E8E3">Back of House</span>
+          <span style="padding: 4px 9px; border-radius: 999px; background: #E5E8E3">{{sheetZone}}</span>
+          <span style="padding: 4px 9px; border-radius: 999px; background: #E5E8E3">{{sheetItem}}</span>
+        </div>
+        <sc-if value="{{sheetHasExisting}}" hint-placeholder-val="{{false}}">
+          <span style="font-size: 13px; color: #4D5752; line-height: 1.4">Already on this item: <b style="color: #15201B">{{sheetExisting}}</b>. Make a separate ticket only if it's a different problem.</span>
+        </sc-if>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label class="lbl" for="qt-desc">What's wrong?</label>
+          <textarea id="qt-desc" class="field" rows="3" style="resize: none; line-height: 1.4" placeholder="e.g. Hand sink faucet drips constantly" value="{{desc}}" onChange="{{onDesc}}"></textarea>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span class="lbl">Equipment <span style="font-weight: 500; color: #5A645F">(optional)</span></span>
+          <div style="display: flex; gap: 8px">
+            <button type="button" class="ghost"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"></path></svg>Scan QR</button>
+            <button type="button" class="ghost"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Add photo</button>
+          </div>
+        </div>
+        <div role="radiogroup" aria-label="Urgency" style="display: flex; gap: 4px; background: #E5E8E3; border-radius: 11px; padding: 3px">
+          <button type="button" role="radio" class="{{normCls}}" aria-checked="{{isNorm}}" onClick="{{pickNorm}}">Normal</button>
+          <button type="button" role="radio" class="{{urgCls}}" aria-checked="{{isUrg}}" onClick="{{pickUrg}}">Urgent</button>
+        </div>
+        <button type="button" onClick="{{createTicket}}" style="min-height: 52px; border-radius: 12px; border: 0; background: #12634F; color: #fff; font: 700 16px 'Public Sans', sans-serif; cursor: pointer">Create ticket</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"openSheetFor":{"editor":"text","default":""},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.data = [
+      { z: 'Electrical', items: ['Appliances (plugs, etc.)', 'Light bulbs', 'Emergency lights and signs', 'Outlets', 'Feature'] },
+      { z: 'Plumbing', items: ['Drains and supplies', 'Fixtures', 'Feature'] },
+      { z: 'Envelope', items: ['Windows and doors', 'Walls', 'Floors', 'Feature'] },
+      { z: 'Aesthetics', items: ['Signage', 'Paint', 'Surfaces and seating', 'Feature'] },
+      { z: 'HVAC', items: ['Maintaining temp', 'Ventilation clean', 'Battery check sensor/control'] },
+      { z: 'Health and safety', items: ['Review inspection notes', 'Caulking', 'Perimeter'] },
+      { z: 'Inventory control', items: ['Furniture build-to', 'Storage areas'] }
+    ];
+    var g = {};
+    ['Appliances (plugs, etc.)', 'Light bulbs', 'Emergency lights and signs'].forEach(function (n) { g['Electrical|' + n] = true; });
+    g['Plumbing|Drains and supplies'] = true;
+    ['Windows and doors', 'Walls', 'Floors', 'Feature'].forEach(function (n) { g['Envelope|' + n] = true; });
+    ['Signage', 'Paint', 'Surfaces and seating', 'Feature'].forEach(function (n) { g['Aesthetics|' + n] = true; });
+    g['HVAC|Maintaining temp'] = true; g['HVAC|Ventilation clean'] = true;
+    var sheet = (p && p.openSheetFor) ? p.openSheetFor : null;
+    this.state = {
+      good: g,
+      tickets: { 'Electrical|Outlets': [{ id: 'OT-1050', title: 'Dead outlet by dish pit' }, { id: 'OT-1051', title: 'Scorch marks on prep line outlet', urgent: true }] },
+      fixes: { 'Electrical|Outlets': ['Replaced cracked cover plate by mop sink'], 'Electrical|Feature': ['Re-glue trim on pass shelf'] },
+      draft: {}, draftText: '', desc: '',
+      open: { Electrical: true, Plumbing: true },
+      sheet: sheet, urgent: false, next: 1052
+    };
+  }
+  isDone(st, key) { return !!(st.good[key] || (st.fixes[key] || []).length || (st.tickets[key] || []).length); }
+  openAfter(key, next) {
+    var self = this, data = this.data, z = key.split('|')[0], cur = this.state;
+    var i = data.findIndex(function (d) { return d.z === z; });
+    function full(st, d) { return d.items.every(function (n) { return self.isDone(st, d.z + '|' + n); }); }
+    if (i < 0 || full(cur, data[i]) || !full(next, data[i])) return cur.open;
+    var op = Object.assign({}, cur.open); op[z] = false;
+    for (var j = i + 1; j < data.length; j++) { if (!full(next, data[j])) { op[data[j].z] = true; break; } }
+    return op;
+  }
+  apply(key, patch) {
+    var next = Object.assign({}, this.state, patch);
+    patch.open = this.openAfter(key, next);
+    this.setState(patch);
+  }
+  renderVals() {
+    var self = this, s = this.state, total = 0, done = 0;
+    var zones = this.data.map(function (d) {
+      var zd = 0;
+      var items = d.items.map(function (n) {
+        var key = d.z + '|' + n;
+        var fx = s.fixes[key] || [], tk = s.tickets[key] || [], isG = !!s.good[key];
+        var issues = fx.length + tk.length, drafting = !!s.draft[key];
+        if (isG || issues) zd++;
+        var entries = fx.map(function (f) { return { href: 'WT-Fix.dc.html', isFix: true, isTk: false, urgent: false, id: '', text: f }; })
+          .concat(tk.map(function (t) { return { href: 'WT-Edit-Ticket.dc.html', isFix: false, isTk: true, urgent: !!t.urgent, id: t.id, text: t.title }; }));
+        return {
+          name: n, isG: isG, gDisabled: issues > 0,
+          showGood: !issues, gCls: isG ? 'opt g' : 'opt', iCls: fx.length ? 'opt i' : 'opt', tCls: tk.length ? 'opt t' : 'opt',
+          iLabel: fx.length ? 'Add another in-house fix for ' + n + ' (' + fx.length + ' so far)' : 'Add in-house fix for ' + n,
+          tLabel: tk.length ? 'Add another ticket for ' + n + ' (' + tk.length + ' so far)' : 'Create ticket for ' + n,
+          pickG: function () { if (issues) return; var gg = Object.assign({}, s.good); gg[key] = !isG; self.apply(key, { good: gg }); },
+          pickI: function () { var dr = Object.assign({}, s.draft); dr[key] = true; self.setState({ draft: dr, draftText: '' }); },
+          pickT: function () { self.setState({ sheet: key, urgent: false, desc: '' }); },
+          showList: issues > 0 || drafting, entries: entries, drafting: drafting,
+          noteLabel: 'In-house fix for ' + n, draftText: s.draftText,
+          onDraft: function (e) { self.setState({ draftText: e.target.value }); },
+          saveFix: function () {
+            var t = (s.draftText || '').trim() || 'In-house fix';
+            var f = Object.assign({}, s.fixes); f[key] = fx.concat([t]);
+            var dr = Object.assign({}, s.draft); delete dr[key];
+            var gg = Object.assign({}, s.good); delete gg[key];
+            self.apply(key, { fixes: f, draft: dr, draftText: '', good: gg });
+          },
+          cancelFix: function () { var dr = Object.assign({}, s.draft); delete dr[key]; self.setState({ draft: dr }); }
+        };
+      });
+      total += d.items.length; done += zd;
+      var o = !!s.open[d.z];
+      return {
+        name: d.z, done: zd, total: d.items.length, items: items, open: o,
+        complete: zd === d.items.length,
+        chev: o ? 'transform: rotate(90deg)' : '',
+        toggle: function () { var op = Object.assign({}, s.open); op[d.z] = !o; self.setState({ open: op }); }
+      };
+    });
+    var sk = s.sheet ? s.sheet.split('|') : ['', ''];
+    return {
+      zones: zones, done: done,
+      barStyle: 'height: 100%; background: #12634F; width: ' + Math.round(done / total * 100) + '%',
+      sheetOpen: !!s.sheet, sheetZone: sk[0], sheetItem: sk[1],
+      sheetHasExisting: !!(s.sheet && s.tickets[s.sheet] && s.tickets[s.sheet].length),
+      sheetExisting: (s.sheet && s.tickets[s.sheet] ? s.tickets[s.sheet].map(function (t) { return t.id; }).join(', ') : ''),
+      sheetTitle: (s.sheet && s.tickets[s.sheet] && s.tickets[s.sheet].length) ? 'Add another ticket' : 'Create ticket',
+      desc: s.desc,
+      onDesc: function (e) { self.setState({ desc: e.target.value }); },
+      isNorm: !s.urgent, isUrg: s.urgent,
+      normCls: s.urgent ? 'seg' : 'seg on', urgCls: s.urgent ? 'seg on' : 'seg',
+      pickNorm: function () { self.setState({ urgent: false }); },
+      pickUrg: function () { self.setState({ urgent: true }); },
+      closeSheet: function () { self.setState({ sheet: null }); },
+      createTicket: function () {
+        var k = s.sheet, t = Object.assign({}, s.tickets), gg = Object.assign({}, s.good);
+        t[k] = (t[k] || []).concat([{ id: 'OT-' + s.next, title: (s.desc || '').trim() || 'New issue' , urgent: !!s.urgent }]); delete gg[k];
+        self.apply(k, { tickets: t, good: gg, sheet: null, desc: '', next: s.next + 1 });
+      }
+    };
+  }
+}
+(function (C) {
+  var rv = C.prototype.renderVals;
+  C.prototype.renderVals = function () {
+    var self = this, v = (rv ? rv.call(this) : null) || {};
+    var sc = !!(self.state && self.state.__sc);
+    v.__hdCls = 'stickyhd' + (sc ? ' is-scrolled' : '');
+    v.__onScroll = function (e) {
+      var y = e.target.scrollTop > 2;
+      if (y !== !!(self.state && self.state.__sc)) { if (!self.state) self.state = {}; self.setState({ __sc: y }); }
+    };
+    return v;
+  };
+})(Component);
+</script>
+</body>
+</html>

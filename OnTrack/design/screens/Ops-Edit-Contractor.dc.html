@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit contractor — Operations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&amp;family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#12634F}a:hover{color:#0B4537}
+.h{font-family:'Archivo',sans-serif}
+.lbl{font-size:12px;font-weight:600;color:#2E3833}
+.opt{font-weight:500;color:#5A645F}
+.field{width:100%;box-sizing:border-box;border:1px solid #C9CFCA;border-radius:10px;background:#fff;padding:10px 12px;font:400 15px 'Public Sans',sans-serif;color:#15201B;min-height:44px}
+.f{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.form > *{flex:none}
+.selwrap{position:relative;display:flex}
+select.field{appearance:none;-webkit-appearance:none;padding-right:38px;cursor:pointer;text-overflow:ellipsis}
+.caret{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#4D5752}
+.sec{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4D5752}
+.sw{flex:none;position:relative;width:48px;height:28px;border-radius:999px;border:0;background:#C9CFCA;cursor:pointer;padding:0;transition:background .15s ease}
+.sw.on{background:#12634F}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(21,32,27,.25);transition:left .15s ease}
+.sw.on .knob{left:23px}
+.hint{font-size:12px;color:#5A645F;line-height:1.4}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F3F4F1; font-family: 'Public Sans', system-ui, sans-serif; color: #15201B; overflow: hidden">
+  <div style="padding: 12px 12px 0 20px; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 class="h" style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Edit contractor</h1>
+      <span style="font-size: 12px; color: #4D5752">Coldline Refrigeration</span>
+    </div>
+    <a href="Ops-Contractor.dc.html" aria-label="Close without saving" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #15201B">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+  </div>
+  <div class="form" style="flex: 1; overflow-y: auto; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+    <div class="f">
+      <label class="lbl" for="c-co">Company name</label>
+      <input id="c-co" class="field" type="text" value="Coldline Refrigeration" autocomplete="organization">
+    </div>
+    <div class="f">
+      <label class="lbl" for="c-trade">Trade</label>
+      <div class="selwrap">
+        <select id="c-trade" class="field">
+          <option>Roofing</option>
+          <option selected="">Refrigeration</option>
+          <option>HVAC</option>
+          <option>Electrical</option>
+          <option>Plumbing</option>
+          <option>Dishwashing</option>
+          <option>General repair</option>
+          <option>Other</option>
+        </select>
+        <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+    </div>
+
+    <span class="sec" style="display: block; padding-top: 16px; margin-bottom: -2px">Contact</span>
+    <div class="f">
+      <label class="lbl" for="c-name">Contact name</label>
+      <input id="c-name" class="field" type="text" value="Rosa Alvarez" autocomplete="name">
+    </div>
+    <div class="f">
+      <label class="lbl" for="c-phone">Phone</label>
+      <input id="c-phone" class="field" type="tel" inputmode="tel" value="(312) 555-0187" autocomplete="tel">
+      <span class="hint">Used for the call button in the directory and on tickets.</span>
+    </div>
+    <div class="f">
+      <label class="lbl" for="c-email">Email <span class="opt">(optional)</span></label>
+      <input id="c-email" class="field" type="email" value="rosa@coldlinerefrigeration.com" autocomplete="email">
+    </div>
+
+    <span class="sec" style="display: block; padding-top: 16px; margin-bottom: -2px">Details</span>
+    <div style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #DDE1DC; border-radius: 12px; padding: 12px 14px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+        <span id="pref-l" style="display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="#12634F" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"></path></svg>Preferred contractor</span>
+        <span class="hint">Gets a star in the directory and shows first when you log service.</span>
+      </div>
+      <button type="button" role="switch" class="{{prefCls}}" aria-checked="{{pref}}" aria-labelledby="pref-l" onClick="{{togglePref}}"><span class="knob"></span></button>
+    </div>
+    <div class="f">
+      <label class="lbl" for="c-ins">Insurance expires <span class="opt">(optional)</span></label>
+      <input id="c-ins" class="field" type="text" value="Jun 2027">
+      <span class="hint">You'll see a warning in the directory 30 days before.</span>
+    </div>
+    <div class="f">
+      <label class="lbl" for="c-notes">Notes <span class="opt">(optional)</span></label>
+      <textarea id="c-notes" class="field" rows="2" placeholder="Hours, after-hours number, account #" style="resize: none; line-height: 1.4">After hours: (312) 555-0190. Account #FC-2210.</textarea>
+    </div>
+    <button type="button" style="align-self: center; min-height: 44px; margin-top: 8px; border: 0; background: transparent; font: 600 14px 'Public Sans', sans-serif; color: #94390A; cursor: pointer">Remove contractor</button>
+    <span class="hint" style="align-self: center; margin-top: -10px; text-align: center">Past visits and invoices stay on their tickets.</span>
+  </div>
+  <div style="padding: 12px 20px 24px; border-top: 1px solid #DDE1DC">
+    <a href="Ops-Contractor.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: #12634F; color: #fff; text-decoration: none; font-weight: 700; font-size: 16px">Save changes</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { pref: true }; }
+  renderVals() {
+    var self = this, on = this.state.pref;
+    return {
+      pref: on, prefCls: on ? 'sw on' : 'sw',
+      togglePref: function () { self.setState({ pref: !on }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
