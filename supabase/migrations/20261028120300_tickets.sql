@@ -175,11 +175,11 @@ begin
     values (
       new.id,
       auth.uid(),
-      case
+      (case
         when new.status = 'closed' then 'closed'
         when new.status = 'reopened' then 'reopened'
         else 'status_changed'
-      end,
+      end)::public.update_kind,
       case when new.status = 'closed' then new.resolution end,
       jsonb_build_object('from', old.status, 'to', new.status)
     );
