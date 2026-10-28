@@ -244,9 +244,6 @@ begin
     v_role := v_invite.role;
     v_restaurants := v_invite.restaurant_ids;
     v_name := v_invite.full_name;
-    update public.invites
-      set status = 'accepted', accepted_at = now(), user_id = new.id
-      where id = v_invite.id;
   elsif new.raw_app_meta_data ? 'role' then
     v_role := (new.raw_app_meta_data ->> 'role')::public.app_role;
     v_restaurants := coalesce(
@@ -287,6 +284,13 @@ begin
       insert into public.memberships (user_id, restaurant_id) values (new.id, v_rid)
       on conflict do nothing;
     end loop;
+  end if;
+
+  -- After the profile exists, since invites.user_id points at it.
+  if v_invite.id is not null then
+    update public.invites
+      set status = 'accepted', accepted_at = now(), user_id = new.id
+      where id = v_invite.id;
   end if;
 
   return new;
