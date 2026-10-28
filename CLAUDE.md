@@ -8,7 +8,7 @@ Mobile-first PWA for equipment and repair tickets across the Four Corners restau
 - **Backend:** Supabase Postgres with row-level security on every table, Supabase Auth (email + password, invite only, TOTP), Supabase Storage, Edge Functions (Deno) only for jobs that need a secret or a server.
 - **Hosting:** Cloudflare Workers with static assets (`app/wrangler.jsonc`), connected through Workers Builds: `main` is production, every other branch gets a preview URL and a PR comment.
 - **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone.
-- **CI:** `.github/workflows/ci.yml` runs lint, format check, typecheck, Vitest, build, Playwright on every PR and on `main`.
+- **CI:** `.github/workflows/ci.yml` runs two jobs on every PR and on `main`: the app (lint, format check, typecheck, Vitest, build, Playwright) and the database (`supabase db start`, pgTAP, `db lint`, type generation). `supabase-deploy.yml` pushes migrations to the hosted project on merge once the Supabase secrets exist.
 
 ## Layout
 
@@ -22,7 +22,12 @@ app/                 the PWA
   e2e/                    Playwright flows
   scripts/icons.mjs       regenerates public/ icons from the mark
   wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
-supabase/            migrations, functions, seed, pgTAP tests (from OT-2)
+supabase/
+  migrations/        eight files: types, org+access (can()), equipment, tickets,
+                     service+money, walkthroughs, views, storage
+  seed.sql           the design's sample data; fixed ids (see the header)
+  tests/database/    pgTAP, one file per concern, run by `supabase test db`
+  config.toml        local stack; invite-only signup, 12-char passwords, TOTP on
 design/              exported design: INDEX.md, tokens.md, screens/*.dc.html + .png
 handoff/             build plan, slides, architecture diagram
 ```
@@ -54,7 +59,15 @@ Surfaces `bg`, `surface`, `surface-sunken`, `surface-muted`, `surface-hover`. Bo
 
 ## Permissions
 
-The JWT carries only the user id. One SQL function `can(action, restaurant_id)` reads `memberships` and `rights` and is used by every RLS policy. Never add a second permission code path in the app; the UI may hide a control, but the database is what enforces it. Edge Functions run with the service key and must check the caller themselves.
+The JWT carries only the user id. One SQL function `can(action, restaurant_id)` reads `profiles.role`, `memberships` (scope: a row per restaurant, or one null row for all) and `rights` (role defaults plus per-person overrides) and is used by every RLS policy. Never add a second permission code path in the app; the UI may hide a control, but the database is what enforces it. Edge Functions run with the service key and must check the caller themselves.
+
+Right keys, from the Roles & rights screen: `create_tickets`, `see_all_tickets`, `update_status`, `log_cost`, `see_costs`, `edit_equipment`, `see_contractors`, `set_walkthrough_schedule`, `invite_users`, `manage_rights`. Admin-only actions that are not in the grid (restaurants, memberships) check `is_admin()`.
+
+What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with a resolution, reopen within 30 days. Assigning and the other statuses need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
+
+Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
+
+Seeded sign-ins (local only, password `ontrack-demo-2026`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
 
 ## Working method
 
@@ -75,6 +88,10 @@ Done when a teammate can open the preview URL on an iPhone, add it to the home s
 | OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file                     |
 | OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed         |
 | OT-3 | Component kit on `/kit`, app frame, role shells, loading and error screens |
+
+## Database work
+
+No Supabase CLI or Docker on the dev machine, so the database is verified in CI: push the branch and read the `Database` job. To run it locally when Docker is available: `npx supabase db start && npx supabase test db`. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Keep the seed in step with the design's sample data.
 
 ## Commands
 
