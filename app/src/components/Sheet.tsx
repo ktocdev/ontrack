@@ -1,0 +1,47 @@
+import { Dialog } from 'radix-ui'
+import type { ReactNode } from 'react'
+
+/**
+ * Bottom sheet: scrim at 45% text color, panel on the screen background with
+ * 22px top corners, a 40×5 handle, a 22px Archivo title, 10px 20px 24px
+ * padding plus the home-bar inset.
+ */
+type Props = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description?: ReactNode
+  children: ReactNode
+  /** Visually hide the title (it stays for screen readers). */
+  hideTitle?: boolean
+}
+
+export function Sheet({ open, onOpenChange, title, description, children, hideTitle = false }: Props) {
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-30 bg-[rgba(21,32,27,.45)] data-[state=open]:animate-[fade-in_.15s_ease-out]" />
+        <Dialog.Content
+          className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[520px] flex-col gap-3.5 rounded-t-sheet bg-bg px-screen pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out]"
+          style={{ paddingBottom: 'calc(24px + var(--safe-bottom))' }}
+        >
+          <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-[3px] bg-border-strong" />
+          <Dialog.Title
+            className={`font-display text-22 font-bold tracking-[-0.01em] text-text ${hideTitle ? 'sr-only' : ''}`}
+          >
+            {title}
+          </Dialog.Title>
+          {description ? (
+            <Dialog.Description className="text-14 leading-normal text-text-body">{description}</Dialog.Description>
+          ) : (
+            <Dialog.Description className="sr-only">{title}</Dialog.Description>
+          )}
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  )
+}
+
+/** Centered confirm dialog variant for destructive actions on larger screens later; today it is the same sheet. */
+export const ConfirmSheet = Sheet

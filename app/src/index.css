@@ -1,6 +1,12 @@
-@import '@fontsource-variable/archivo/wght.css';
-@import '@fontsource-variable/public-sans/wght.css';
-@import '@fontsource-variable/jetbrains-mono/wght.css';
+/* Static weights: they render the same in every engine, where variable fonts do not. */
+@import '@fontsource/archivo/500.css';
+@import '@fontsource/archivo/600.css';
+@import '@fontsource/archivo/700.css';
+@import '@fontsource/public-sans/400.css';
+@import '@fontsource/public-sans/500.css';
+@import '@fontsource/public-sans/600.css';
+@import '@fontsource/public-sans/700.css';
+@import '@fontsource/jetbrains-mono/500.css';
 @import 'tailwindcss';
 @import './styles/tokens.css';
 
@@ -84,4 +90,59 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+/* Loading placeholders: shimmer bar and spinner ring (design/screens/Loading-*). */
+@keyframes sk-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes spin-ring {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@utility sk {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-sunken);
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 70%, transparent), transparent);
+    animation: sk-shimmer 1.4s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      animation: none;
+    }
+  }
+}
+@utility sk-on-card {
+  background: var(--surface-muted);
+}
+@utility spin {
+  border-style: solid;
+  box-sizing: border-box;
+  animation: spin-ring 0.8s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 2.4s;
+  }
+}
+
+/* Entrances for sheets and toasts. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
 }

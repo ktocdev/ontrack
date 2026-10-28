@@ -227,9 +227,9 @@
   --color-square-outline: var(--square-outline);
 
   /* Type */
-  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
-  --font-body: 'Public Sans Variable', 'Public Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Public Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-sans: var(--font-body);
 
   /* Scale from tokens.md: 11, 12, 13, 14, 15, 16, 20, 22, 24, 30 */
