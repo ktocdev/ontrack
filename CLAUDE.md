@@ -56,7 +56,7 @@ on a phone and matches its PNG, in light and dark mode.
 - `useUser()` gives the profile, the restaurants in scope and whether that scope is all restaurants. Data hooks are one TanStack Query hook per screen over the typed client in `lib/supabase.ts`; regenerate `lib/database.types.ts` from the CI artifact (`database-types`) after a schema change.
 - `/kit` is public and shows every component in both themes plus the loading and error boards under `/kit/loading/*` and `/kit/errors/*`. A new component goes there first.
 - The e2e build sets `VITE_E2E_MOCK=1`: `/sign-in` becomes a role picker over the seed's people and no backend is needed. Production builds never set it.
-- Local dev needs `app/.env` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (see `.env.example`); the same two go in the Cloudflare Worker's build variables.
+- Local dev needs `app/.env` with `VITE_SUPABASE_URL` (the Project URL, `https://<ref>.supabase.co`) and `VITE_SUPABASE_ANON_KEY` set to the publishable key (`sb_publishable_…`, Project Settings, API Keys); see `.env.example`. Both are public and get built into the bundle, so never put a secret key (`sb_secret_…`), the legacy `service_role` key or a personal access token (`sbp_…`) in a `VITE_` variable. The same two go in the Cloudflare Worker's build variables, set separately for Production and for each branch (the environment dropdown on Settings, Builds).
 
 ## Token names
 
