@@ -2,7 +2,7 @@
 -- lets a manager change. The Phase 1 done test lives here: a manager sees
 -- only their restaurant.
 begin;
-select plan(20);
+select plan(25);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
@@ -56,6 +56,29 @@ select throws_ok($$
   insert into public.tickets (restaurant_id, category_id, title, created_by)
   values ('11111111-1111-4111-8111-000000000001', '33333333-3333-4333-8333-000000000012', 'Test: as someone else', '22222222-2222-4222-8222-000000000003')
 $$, '42501', null, 'manager cannot create a ticket as someone else');
+
+-- Whatever a manager sends on insert, the ticket lands open, unassigned, and
+-- numbered by the database.
+select lives_ok($$
+  insert into public.tickets (restaurant_id, category_id, title, created_by, status, assignee_id, scheduled_for, number)
+  values ('11111111-1111-4111-8111-000000000001', '33333333-3333-4333-8333-000000000012', 'Test: pre-assigned', '22222222-2222-4222-8222-000000000001',
+          'scheduled', '22222222-2222-4222-8222-000000000003', current_date, 9999)
+$$, 'manager insert with assignee, status and number is accepted');
+select is(
+  (select status::text || '|' || coalesce(assignee_id::text, 'none') || '|' || coalesce(scheduled_for::text, 'none')
+     from public.tickets where title = 'Test: pre-assigned'),
+  'open|none|none', 'but it is stored open, unassigned and unscheduled');
+select ok(
+  (select number from public.tickets where title = 'Test: pre-assigned') > 1047,
+  'and the number came from the sequence, not the client');
+select lives_ok($$
+  insert into public.tickets (restaurant_id, category_id, title, created_by, status, closed_at, closed_by, resolution)
+  values ('11111111-1111-4111-8111-000000000001', '33333333-3333-4333-8333-000000000012', 'Test: pre-closed', '22222222-2222-4222-8222-000000000001',
+          'closed', now() - interval '90 days', '22222222-2222-4222-8222-000000000003', 'nope')
+$$, 'manager insert as closed is accepted');
+select is(
+  (select status::text || '|' || coalesce(closed_by::text, 'none') from public.tickets where title = 'Test: pre-closed'),
+  'open|none', 'but it is stored open with no closer');
 
 -- The created event was written by the trigger even though she may only
 -- insert messages herself.

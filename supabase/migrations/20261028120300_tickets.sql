@@ -7,7 +7,8 @@ create sequence public.ticket_number_seq start with 1;
 
 create table public.tickets (
   id                uuid primary key default gen_random_uuid(),
-  number            int  not null unique default nextval('public.ticket_number_seq'),
+  -- Assigned by the tickets_guard trigger on insert, never by the client
+  number            int  not null unique,
   -- "OT-1042"; padded so early ids like OT-0988 sort and read the same way
   display_id        text generated always as ('OT-' || lpad(number::text, 4, '0')) stored,
   restaurant_id     uuid not null references public.restaurants (id) on delete cascade,
@@ -75,11 +76,13 @@ create trigger tickets_updated_at before update on public.tickets
   for each row execute function public.set_updated_at();
 
 -- ---------------------------------------------------------------------------
--- Guard: what a non-ops user may change on a ticket.
--- Ops (update_status at the restaurant) may change anything. Anyone else who
--- can see the ticket may: edit title/description/urgency/equipment/category
--- while it is not closed; close it with a resolution; reopen it within 30
--- days of closing. They may not touch the assignee or pick other statuses.
+-- Guard: what a non-ops user may change on a ticket, on insert and update.
+-- Ops (update_status at the restaurant) may set anything. Anyone else who
+-- can see the ticket may: create it as a plain open ticket; edit
+-- title/description/urgency/equipment/category while it is not closed; close
+-- it with a resolution; reopen it within 30 days of closing. They may not
+-- touch the assignee, schedule, or pick other statuses, and the close
+-- timestamp and closer are always set by the database, never the client.
 -- ---------------------------------------------------------------------------
 
 create or replace function public.tickets_guard()
@@ -88,8 +91,38 @@ language plpgsql
 as $$
 declare
   v_ops boolean := public.can('update_status', new.restaurant_id);
-  v_status_change boolean := new.status is distinct from old.status;
+  v_status_change boolean;
 begin
+  if tg_op = 'INSERT' then
+    -- Identity comes from the database, whatever the client sent.
+    new.number := nextval('public.ticket_number_seq');
+    new.created_at := now();
+    new.updated_at := now();
+    new.reopen_count := 0;
+    new.reopened_at := null;
+    new.last_closed_at := null;
+
+    if not v_ops then
+      new.status := 'open';
+      new.assignee_id := null;
+      new.scheduled_for := null;
+      new.resolution := null;
+    end if;
+
+    if new.status = 'closed' then
+      new.closed_at := now();
+      new.closed_by := auth.uid();
+      new.last_closed_at := new.closed_at;
+    else
+      new.closed_at := null;
+      new.closed_by := null;
+    end if;
+
+    return new;
+  end if;
+
+  v_status_change := new.status is distinct from old.status;
+
   if new.restaurant_id is distinct from old.restaurant_id
      or new.number is distinct from old.number
      or new.created_by is distinct from old.created_by
@@ -99,8 +132,8 @@ begin
 
   -- Bookkeeping that applies to everyone
   if v_status_change and new.status = 'closed' then
-    new.closed_at := coalesce(new.closed_at, now());
-    new.closed_by := coalesce(new.closed_by, auth.uid());
+    new.closed_at := now();
+    new.closed_by := auth.uid();
     new.last_closed_at := new.closed_at;
   elsif v_status_change and old.status = 'closed' then
     -- leaving closed is a reopen
@@ -143,7 +176,7 @@ begin
 end;
 $$;
 
-create trigger tickets_guard before update on public.tickets
+create trigger tickets_guard before insert or update on public.tickets
   for each row execute function public.tickets_guard();
 
 -- ---------------------------------------------------------------------------

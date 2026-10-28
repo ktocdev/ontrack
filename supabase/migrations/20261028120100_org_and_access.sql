@@ -146,8 +146,9 @@ as $$
   where id = auth.uid() and deactivated_at is null;
 $$;
 
--- True when the caller may act in this restaurant: a membership for it, or
--- an all-restaurants membership.
+-- True when the caller may act in this restaurant: an active profile with a
+-- membership for it, or an all-restaurants membership. Deactivation closes
+-- every read path through here, since no policy bypasses this function.
 create or replace function public.has_scope(rid uuid)
 returns boolean
 language sql
@@ -156,8 +157,11 @@ security definer
 set search_path = public
 as $$
   select exists (
-    select 1 from public.memberships m
+    select 1
+    from public.memberships m
+    join public.profiles p on p.id = m.user_id
     where m.user_id = auth.uid()
+      and p.deactivated_at is null
       and (m.restaurant_id is null or m.restaurant_id = rid)
   );
 $$;
@@ -208,8 +212,11 @@ revoke all on function public.is_admin() from public;
 grant execute on function public.is_admin() to authenticated, service_role;
 
 -- ---------------------------------------------------------------------------
--- New users. Auth creates the user (invite accepted, or seed); this trigger
--- creates the profile and memberships from the metadata the invite carried.
+-- New users. OnTrack is invite only: role and restaurants come from a pending
+-- invite matched on email, or from app_metadata, which only the service role
+-- can write. User metadata is client-writable and is never trusted for
+-- privilege. With neither source the insert fails, so a self-signup against
+-- the hosted project cannot create an account at all.
 -- ---------------------------------------------------------------------------
 
 create or replace function public.handle_new_user()
@@ -219,30 +226,62 @@ security definer
 set search_path = public
 as $$
 declare
+  v_invite public.invites%rowtype;
   v_role public.app_role;
   v_restaurants uuid[];
+  v_name text;
   v_rid uuid;
 begin
-  v_role := coalesce((new.raw_user_meta_data ->> 'role')::public.app_role, 'manager');
-  v_restaurants := coalesce(
-    (select array_agg(x::uuid) from jsonb_array_elements_text(
-      coalesce(new.raw_user_meta_data -> 'restaurant_ids', '[]'::jsonb)) as t(x)),
-    '{}'::uuid[]
+  select * into v_invite
+  from public.invites i
+  where lower(i.email) = lower(new.email)
+    and i.status = 'pending'
+    and i.expires_at > now()
+  order by i.sent_at desc
+  limit 1;
+
+  if found then
+    v_role := v_invite.role;
+    v_restaurants := v_invite.restaurant_ids;
+    v_name := v_invite.full_name;
+    update public.invites
+      set status = 'accepted', accepted_at = now(), user_id = new.id
+      where id = v_invite.id;
+  elsif new.raw_app_meta_data ? 'role' then
+    v_role := (new.raw_app_meta_data ->> 'role')::public.app_role;
+    v_restaurants := coalesce(
+      (select array_agg(x::uuid) from jsonb_array_elements_text(
+        coalesce(new.raw_app_meta_data -> 'restaurant_ids', '[]'::jsonb)) as t(x)),
+      '{}'::uuid[]
+    );
+  else
+    raise exception 'OnTrack is invite only: no pending invite for %', new.email
+      using errcode = '42501';
+  end if;
+
+  if v_role = 'manager' and cardinality(v_restaurants) = 0 then
+    raise exception 'a manager invite must name at least one restaurant'
+      using errcode = '23514';
+  end if;
+
+  -- The display name is harmless, so user metadata may supply it.
+  v_name := coalesce(
+    nullif(v_name, ''),
+    nullif(new.raw_user_meta_data ->> 'full_name', ''),
+    split_part(new.email, '@', 1)
   );
 
   insert into public.profiles (id, full_name, email, role, home_restaurant_id)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'full_name', split_part(new.email, '@', 1)),
+    v_name,
     new.email,
     v_role,
-    case when v_role = 'manager' and cardinality(v_restaurants) > 0 then v_restaurants[1] end
-  )
-  on conflict (id) do nothing;
+    case when v_role = 'manager' then v_restaurants[1] end
+  );
 
   if cardinality(v_restaurants) = 0 then
-    insert into public.memberships (user_id, restaurant_id) values (new.id, null)
-    on conflict do nothing;
+    insert into public.memberships (user_id, restaurant_id) values (new.id, null);
   else
     foreach v_rid in array v_restaurants loop
       insert into public.memberships (user_id, restaurant_id) values (new.id, v_rid)

@@ -65,6 +65,8 @@ Right keys, from the Roles & rights screen: `create_tickets`, `see_all_tickets`,
 
 What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with a resolution, reopen within 30 days. Assigning and the other statuses need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
 
+Account creation is invite only at the database level: `handle_new_user` takes role and restaurants from a pending `invites` row matched on email, or from `app_metadata` (service role only), and rejects the insert otherwise. Never read privilege from `user_metadata`; clients can write it. Deactivation (`profiles.deactivated_at`) is enforced inside `has_scope()`, `my_role()` and `can()`, so every policy honors it; the Phase 1 revoke-user function must also ban the auth user so refresh tokens stop working. Keep "Allow new users to sign up" off in the hosted project's Auth settings as defense in depth.
+
 Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
 
 Seeded sign-ins (local only, password `ontrack-demo-2026`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.

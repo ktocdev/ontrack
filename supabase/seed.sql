@@ -23,8 +23,8 @@ insert into public.restaurants (id, name, address, phone, color, sort_order) val
 
 -- ---------------------------------------------------------------------------
 -- People. Inserting into auth.users fires handle_new_user, which creates the
--- profile and memberships from the metadata, exactly as an accepted invite
--- would.
+-- profile and memberships. Role and restaurants travel in app_metadata, which
+-- only the service role can write; user metadata carries the name only.
 -- ---------------------------------------------------------------------------
 create temp table seed_people (id uuid, full_name text, email text, phone text, role text, restaurant_ids jsonb) on commit drop;
 insert into seed_people values
@@ -43,8 +43,8 @@ insert into auth.users (
 select
   '00000000-0000-0000-0000-000000000000', id, 'authenticated', 'authenticated', email,
   extensions.crypt('ontrack-demo-2026', extensions.gen_salt('bf')), now() - interval '30 days',
-  '{"provider":"email","providers":["email"]}'::jsonb,
-  jsonb_build_object('full_name', full_name, 'role', role, 'restaurant_ids', restaurant_ids),
+  jsonb_build_object('provider', 'email', 'providers', jsonb_build_array('email'), 'role', role, 'restaurant_ids', restaurant_ids),
+  jsonb_build_object('full_name', full_name),
   now() - interval '30 days', now() - interval '30 days', '', '', '', '', false
 from seed_people;
 
