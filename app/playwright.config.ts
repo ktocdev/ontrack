@@ -19,7 +19,9 @@ export default defineConfig({
     { name: 'webkit', use: { ...devices['iPhone 14'] } },
   ],
   webServer: {
+    // The e2e build signs in from a role picker instead of Supabase.
     command: 'npm run build && npm run preview',
+    env: { VITE_E2E_MOCK: '1' },
     port: PORT,
     reuseExistingServer: !CI,
     timeout: 180_000,

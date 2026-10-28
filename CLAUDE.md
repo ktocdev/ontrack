@@ -18,8 +18,12 @@ app/                 the PWA
   src/index.css           Tailwind entry, base styles, dark variant
   src/theme/              theme preference (system/light/dark) saved per device
   src/pwa/                install prompt and update hooks
-  src/components/         shared kit (from OT-3), each shown on /kit
-  e2e/                    Playwright flows
+  src/lib/                env, typed Supabase client, generated database.types.ts
+  src/auth/               AuthProvider (session + profile + restaurants), guards, e2e mock
+  src/app/                router, Shell (Outlet + tab bar), roles (homes, tabs)
+  src/components/         shared kit, every piece shown on /kit
+  src/screens/            one folder per area; errors/ and loading/ hold the boards
+  e2e/                    Playwright flows (smoke, frame)
   scripts/icons.mjs       regenerates public/ icons from the mark
   wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
 supabase/
@@ -44,6 +48,15 @@ on a phone and matches its PNG, in light and dark mode.
 - The screens are light mode only. Dark values come from `tokens.md` (the proposed set, plus derived values marked in `tokens.css`). Check a new component in both themes on `/kit` before a screen uses it.
 - Shared patterns are shared components: a restaurant name with its color square is `RestaurantName`; a status with an icon is `StatusPill`. Build once in `app/src/components`, use everywhere.
 - `href` values between screen files are the routes. `data-props` on a screen lists its alternate states.
+
+## App frame
+
+- Routes follow the design's href links: manager `/tickets`, `/tickets/new`, `/walkthrough`, `/equipment`; ops `/ops`, `/ops/walkthroughs`, `/ops/equipment`, `/ops/contractors`; admin `/admin/users`, `/admin/roles`, `/admin/tickets`, `/admin/restaurants`; leadership `/lead`, `/lead/restaurants`, `/lead/walkthroughs`, `/lead/contractors`; everyone `/profile`; public `/sign-in`, `/kit`. `src/app/roles.ts` is the one place these live.
+- Every signed-in route sits under `RequireAuth` then `RequireRole`, and renders inside `Shell` (tab bar) or `BareShell` (detail screens). Screens use `Screen`, `ScreenHeader`, `ScreenBody`, `BackBar` from `components/Screen.tsx`.
+- `useUser()` gives the profile, the restaurants in scope and whether that scope is all restaurants. Data hooks are one TanStack Query hook per screen over the typed client in `lib/supabase.ts`; regenerate `lib/database.types.ts` from the CI artifact (`database-types`) after a schema change.
+- `/kit` is public and shows every component in both themes plus the loading and error boards under `/kit/loading/*` and `/kit/errors/*`. A new component goes there first.
+- The e2e build sets `VITE_E2E_MOCK=1`: `/sign-in` becomes a role picker over the seed's people and no backend is needed. Production builds never set it.
+- Local dev needs `app/.env` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (see `.env.example`); the same two go in the Cloudflare Worker's build variables.
 
 ## Token names
 
@@ -89,7 +102,7 @@ Done when a teammate can open the preview URL on an iPhone, add it to the home s
 | ---- | -------------------------------------------------------------------------- |
 | OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file                     |
 | OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed         |
-| OT-3 | Component kit on `/kit`, app frame, role shells, loading and error screens |
+| OT-3 | Component kit on `/kit`, app frame, auth guard, role shells, loading and error screens |
 
 ## Database work
 

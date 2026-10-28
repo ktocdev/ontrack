@@ -18,7 +18,8 @@ handoff/    build plan, slides, architecture diagram
 ```sh
 cd app
 npm ci
-npm run dev          # http://localhost:5173
+cp .env.example .env # then fill in the Supabase URL and anon key
+npm run dev          # http://localhost:5173 (the component kit is at /kit)
 npm test             # Vitest
 npm run test:e2e     # Playwright on Chromium + WebKit (builds first)
 npm run build        # production build in app/dist
