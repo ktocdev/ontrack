@@ -1,0 +1,88 @@
+# OnTrack
+
+Mobile-first PWA for equipment and repair tickets across the Four Corners restaurants. One person builds it with AI help, so every session starts from this file. The full plan is `handoff/OnTrack - Build Plan.md`; read the current phase section before starting work.
+
+## Stack
+
+- **App:** React 19, Vite, TypeScript, Tailwind v4 (tokens as CSS variables), Radix primitives, React Router, TanStack Query over `@supabase/supabase-js`. Installable PWA via `vite-plugin-pwa`.
+- **Backend:** Supabase Postgres with row-level security on every table, Supabase Auth (email + password, invite only, TOTP), Supabase Storage, Edge Functions (Deno) only for jobs that need a secret or a server.
+- **Hosting:** Cloudflare Workers with static assets (`app/wrangler.jsonc`), connected through Workers Builds: `main` is production, every other branch gets a preview URL and a PR comment.
+- **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone.
+- **CI:** `.github/workflows/ci.yml` runs lint, format check, typecheck, Vitest, build, Playwright on every PR and on `main`.
+
+## Layout
+
+```
+app/                 the PWA
+  src/styles/tokens.css   every color, radius and font (from design/tokens.md)
+  src/index.css           Tailwind entry, base styles, dark variant
+  src/theme/              theme preference (system/light/dark) saved per device
+  src/pwa/                install prompt and update hooks
+  src/components/         shared kit (from OT-3), each shown on /kit
+  e2e/                    Playwright flows
+  scripts/icons.mjs       regenerates public/ icons from the mark
+  wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
+supabase/            migrations, functions, seed, pgTAP tests (from OT-2)
+design/              exported design: INDEX.md, tokens.md, screens/*.dc.html + .png
+handoff/             build plan, slides, architecture diagram
+```
+
+## Design
+
+The design lives in design/. Before building or changing any screen, read its
+file in design/screens/<Name>.dc.html and look at design/screens/<Name>.png.
+Match it; do not reinterpret it. Styles come only from design/tokens.md.
+A phase is done when every screen listed for it in design/INDEX.md renders
+on a phone and matches its PNG, in light and dark mode.
+
+- Never copy a hex value out of a screen file into app code. Add or use a token in `app/src/styles/tokens.css` and reference it through Tailwind (`bg-surface`, `text-text-muted`, `rounded-card`) or `var(--…)`.
+- The screens are light mode only. Dark values come from `tokens.md` (the proposed set, plus derived values marked in `tokens.css`). Check a new component in both themes on `/kit` before a screen uses it.
+- Shared patterns are shared components: a restaurant name with its color square is `RestaurantName`; a status with an icon is `StatusPill`. Build once in `app/src/components`, use everywhere.
+- `href` values between screen files are the routes. `data-props` on a screen lists its alternate states.
+
+## Token names
+
+Surfaces `bg`, `surface`, `surface-sunken`, `surface-muted`, `surface-hover`. Borders `border`, `border-strong`, `border-muted`. Text `text`, `text-body`, `text-secondary`, `text-muted`, `text-faint`. Brand `brand` (links, active tab), `brand-fill` / `brand-fill-hover` / `on-brand` (primary buttons), `brand-strong`, `brand-tint`, `brand-tint-soft`. Semantic `urgent`, `danger`, `danger-fill`, `info`. Status pills `status-{open,progress,waiting,scheduled,reopened,closed,fixed}-{bg,text}`. Fonts `font-display` (Archivo), `font-body` (Public Sans), `font-mono` (JetBrains Mono). Sizes `text-11` … `text-30`. Radii `rounded-card` 14, `rounded-input` 12, `rounded-control` 10, `rounded-segment` 9, `rounded-pill`, `rounded-square` 3, `rounded-tag` 6, `rounded-sheet` 22. Spacing `px-screen` (20px), `min-h-tap` (44px), `pt-safe` / `pb-safe`.
+
+## Phone rules
+
+- Inputs, selects and textareas are 16px, always (iOS zooms on focus otherwise). The base stylesheet sets it; never put a text-size utility below `text-16` on a field. Button labels follow the design (14 to 15px).
+- Full-height layouts use `100dvh`, never `100vh`.
+- Pad the top and bottom of fixed chrome with the safe-area insets (`pt-safe`, `pb-safe`). The bottom tab bar is `6px 8px 20px` plus the home-bar inset.
+- Tap targets are at least 44px. Primary buttons are 52px tall, secondary 48px.
+- Screen padding is 20px on the sides, 12 to 16px between cards.
+
+## Permissions
+
+The JWT carries only the user id. One SQL function `can(action, restaurant_id)` reads `memberships` and `rights` and is used by every RLS policy. Never add a second permission code path in the app; the UI may hide a control, but the database is what enforces it. Edge Functions run with the service key and must check the caller themselves.
+
+## Working method
+
+Inside a phase: migration and policies with pgTAP first, then one TanStack Query hook per screen, then the screens against the design (new components on `/kit` first), then one Playwright flow for the done test, then try the preview URL on a phone.
+
+- Branches are `OT-<n>` (one PR each). Small PRs: one screen or one function. Merge to `main` only when CI is green.
+- Commit messages: imperative, one line of what and why.
+- No restaurant data in the repo; the seed is fictional except restaurant names and colors.
+- Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
+- Each phase ends with a short note of what changed and what the client should try.
+
+## Current phase: 0 · Foundation
+
+Done when a teammate can open the preview URL on an iPhone, add it to the home screen, toggle dark mode, and the RLS tests pass for all four roles.
+
+| PR   | Scope                                                                      |
+| ---- | -------------------------------------------------------------------------- |
+| OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file                     |
+| OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed         |
+| OT-3 | Component kit on `/kit`, app frame, role shells, loading and error screens |
+
+## Commands
+
+```sh
+cd app
+npm ci
+npm run dev            # http://localhost:5173
+npm run lint && npm run typecheck && npm test
+npm run test:e2e       # builds, then Playwright on Chromium + WebKit
+npm run format         # Prettier
+```

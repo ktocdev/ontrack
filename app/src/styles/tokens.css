@@ -1,0 +1,264 @@
+/*
+ * OnTrack design tokens: the only place a color, radius or font is defined.
+ * Source: design/tokens.md. Light values are what the canvas shows; dark values
+ * are the proposed set from tokens.md plus derived values for tokens it does not
+ * list (marked "derived"). Check both in /kit before building screens on them.
+ *
+ * Raw values live on :root and [data-theme="dark"]; the @theme block at the
+ * bottom maps them onto Tailwind utilities (bg-surface, text-text-muted, rounded-card).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #f3f4f1;
+  --surface: #ffffff;
+  --surface-sunken: #e5e8e3;
+  --surface-muted: #eceeeb;
+  --surface-hover: #f7f8f6;
+
+  /* Borders */
+  --border: #dde1dc;
+  --border-strong: #c9cfca;
+  --border-muted: #a9b3ae;
+
+  /* Text */
+  --text: #15201b;
+  --text-body: #2e3833;
+  --text-secondary: #4d5752;
+  --text-muted: #5a645f;
+  --text-faint: #3f4944;
+
+  /* Brand */
+  --brand: #12634f; /* links, active tab, switches on */
+  --brand-fill: #12634f; /* primary button fill */
+  --brand-fill-hover: #0b4537;
+  --on-brand: #ffffff;
+  --brand-strong: #0b4537; /* link hover, dark panels, cover backgrounds */
+  --brand-tint: #dce8e3; /* avatar backgrounds, selected count badge */
+  --brand-tint-soft: #e3efea; /* info banners, selected rows */
+
+  /* Semantic */
+  --urgent: #b4400c; /* URGENT tag background, white text */
+  --danger: #94390a; /* destructive text, expired */
+  --danger-fill: #a33a0b; /* delete buttons */
+  --info: #1b4f91; /* in progress, converted-to-ticket, Ops messages */
+
+  /* Status pills: background / text */
+  --status-open-bg: #fbeadf;
+  --status-open-text: #94390a;
+  --status-progress-bg: #e4edf8;
+  --status-progress-text: #1b4f91;
+  --status-waiting-bg: #f3ecd6;
+  --status-waiting-text: #6a500c;
+  --status-scheduled-bg: #e4edf8;
+  --status-scheduled-text: #1b4f91;
+  --status-reopened-bg: #f3ecd6;
+  --status-reopened-text: #6a500c;
+  --status-closed-bg: #eceeeb;
+  --status-closed-text: #3f4944;
+  --status-fixed-bg: #dce8e3;
+  --status-fixed-text: #0b4537;
+
+  /* Reopened banner and walkthrough tag */
+  --reopened-banner-bg: #fbf5e3;
+  --reopened-banner-border: #e2c77a;
+  --reopened-banner-text: #4a3808;
+  --wt-tag-border: #a9b3ae;
+  --wt-tag-text: #2e3833;
+
+  /* Restaurant color square inset outline */
+  --square-outline: rgba(21, 32, 27, 0.18);
+
+  /* Restaurant accents (seeded; also stored per restaurant in the database) */
+  --restaurant-federales-logan: #a3336d;
+  --restaurant-federales-west-loop: #6b3fa0;
+  --restaurant-ranallis-logan: #1b4f91;
+  --restaurant-porter: #9a6a00;
+
+  /* Restaurant color presets offered on Add restaurant */
+  --preset-ocean: #0e7490;
+  --preset-brick: #9b2c2c;
+  --preset-walnut: #7a4f2a;
+  --preset-olive: #5c6b1f;
+  --preset-slate: #475569;
+  --preset-plum: #6e2f4f;
+  --preset-charcoal: #333b3f;
+
+  /* Shape */
+  --radius-card: 14px;
+  --radius-input: 12px; /* inputs, buttons, inner cards of sheets */
+  --radius-control: 10px; /* small buttons */
+  --radius-segment: 9px; /* segmented control */
+  --radius-pill: 999px;
+  --radius-square: 3px; /* restaurant square */
+  --radius-tag: 6px;
+  --radius-sheet: 22px; /* sheet top corners */
+
+  /* Layout */
+  --screen-pad: 20px;
+  --tap-min: 44px;
+  --btn-primary-h: 52px;
+  --btn-secondary-h: 48px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #121716;
+  --surface: #1b2220;
+  --surface-sunken: #232b29;
+  --surface-muted: #2a3331;
+  --surface-hover: #202826; /* derived */
+
+  --border: #2e3835;
+  --border-strong: #3c4744;
+  --border-muted: #4a5653; /* derived */
+
+  --text: #eef1ee;
+  --text-body: #d6dcd8;
+  --text-secondary: #a8b2ad;
+  --text-muted: #8a948f;
+  --text-faint: #c2c9c5; /* derived */
+
+  /* tokens.md leaves the button treatment open: links and active states take the
+     lifted green, primary buttons keep the brand fill with white text. Revisit in /kit. */
+  --brand: #3ea583;
+  --brand-fill: #12634f;
+  --brand-fill-hover: #177a62; /* derived */
+  --on-brand: #ffffff;
+  --brand-strong: #5cbf9e; /* derived: link hover in dark */
+  --brand-tint: #1e3a32;
+  --brand-tint-soft: #1a2f29; /* derived */
+
+  --urgent: #d9542a;
+  --danger: #e0734a; /* derived */
+  --danger-fill: #b84a1b; /* derived */
+  --info: #6fa3e8; /* derived */
+
+  /* Pills: 20% tints of their text color on the dark surface (tokens.md) */
+  --status-open-text: #f2a273;
+  --status-open-bg: color-mix(in srgb, var(--status-open-text) 20%, var(--surface));
+  --status-progress-text: #8fb6ee;
+  --status-progress-bg: color-mix(in srgb, var(--status-progress-text) 20%, var(--surface));
+  --status-waiting-text: #e2c77a;
+  --status-waiting-bg: color-mix(in srgb, var(--status-waiting-text) 20%, var(--surface));
+  --status-scheduled-text: #8fb6ee;
+  --status-scheduled-bg: color-mix(in srgb, var(--status-scheduled-text) 20%, var(--surface));
+  --status-reopened-text: #e2c77a;
+  --status-reopened-bg: color-mix(in srgb, var(--status-reopened-text) 20%, var(--surface));
+  --status-closed-text: #b9c2bd;
+  --status-closed-bg: color-mix(in srgb, var(--status-closed-text) 20%, var(--surface));
+  --status-fixed-text: #6fcda8;
+  --status-fixed-bg: color-mix(in srgb, var(--status-fixed-text) 20%, var(--surface));
+
+  --reopened-banner-bg: color-mix(in srgb, #e2c77a 16%, var(--surface));
+  --reopened-banner-border: #8a7430;
+  --reopened-banner-text: #e9d9a6;
+  --wt-tag-border: #4a5653;
+  --wt-tag-text: #d6dcd8;
+
+  --square-outline: rgba(238, 241, 238, 0.22);
+}
+
+/* Tailwind v4 theme: utilities reference the variables above, so switching
+   data-theme re-colors everything without a rebuild. */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-hover: var(--surface-hover);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-muted: var(--border-muted);
+
+  --color-text: var(--text);
+  --color-text-body: var(--text-body);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+
+  --color-brand: var(--brand);
+  --color-brand-fill: var(--brand-fill);
+  --color-brand-fill-hover: var(--brand-fill-hover);
+  --color-on-brand: var(--on-brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-tint: var(--brand-tint);
+  --color-brand-tint-soft: var(--brand-tint-soft);
+
+  --color-urgent: var(--urgent);
+  --color-danger: var(--danger);
+  --color-danger-fill: var(--danger-fill);
+  --color-info: var(--info);
+
+  --color-status-open-bg: var(--status-open-bg);
+  --color-status-open-text: var(--status-open-text);
+  --color-status-progress-bg: var(--status-progress-bg);
+  --color-status-progress-text: var(--status-progress-text);
+  --color-status-waiting-bg: var(--status-waiting-bg);
+  --color-status-waiting-text: var(--status-waiting-text);
+  --color-status-scheduled-bg: var(--status-scheduled-bg);
+  --color-status-scheduled-text: var(--status-scheduled-text);
+  --color-status-reopened-bg: var(--status-reopened-bg);
+  --color-status-reopened-text: var(--status-reopened-text);
+  --color-status-closed-bg: var(--status-closed-bg);
+  --color-status-closed-text: var(--status-closed-text);
+  --color-status-fixed-bg: var(--status-fixed-bg);
+  --color-status-fixed-text: var(--status-fixed-text);
+
+  --color-reopened-banner-bg: var(--reopened-banner-bg);
+  --color-reopened-banner-border: var(--reopened-banner-border);
+  --color-reopened-banner-text: var(--reopened-banner-text);
+  --color-wt-tag-border: var(--wt-tag-border);
+  --color-wt-tag-text: var(--wt-tag-text);
+  --color-square-outline: var(--square-outline);
+
+  /* Type */
+  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-body: 'Public Sans Variable', 'Public Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: var(--font-body);
+
+  /* Scale from tokens.md: 11, 12, 13, 14, 15, 16, 20, 22, 24, 30 */
+  --text-11: 11px;
+  --text-12: 12px;
+  --text-13: 13px;
+  --text-14: 14px;
+  --text-15: 15px;
+  --text-16: 16px;
+  --text-20: 20px;
+  --text-22: 22px;
+  --text-24: 24px;
+  --text-30: 30px;
+
+  /* Shape */
+  --radius-card: var(--radius-card);
+  --radius-input: var(--radius-input);
+  --radius-control: var(--radius-control);
+  --radius-segment: var(--radius-segment);
+  --radius-pill: var(--radius-pill);
+  --radius-square: var(--radius-square);
+  --radius-tag: var(--radius-tag);
+  --radius-sheet: var(--radius-sheet);
+
+  /* Layout */
+  --spacing-screen: var(--screen-pad);
+  --spacing-tap: var(--tap-min);
+  --spacing-safe-top: var(--safe-top);
+  --spacing-safe-bottom: var(--safe-bottom);
+  --spacing-safe-left: var(--safe-left);
+  --spacing-safe-right: var(--safe-right);
+}
