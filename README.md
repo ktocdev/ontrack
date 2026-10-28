@@ -30,12 +30,12 @@ Hosting is Cloudflare Workers with static assets, connected to this repo through
 
 Build settings in the Cloudflare dashboard (Workers & Pages, Create application, Continue with GitHub):
 
-| Setting                              | Value                                        |
-| ------------------------------------ | -------------------------------------------- |
-| Root directory                       | `app`                                        |
-| Build command                        | `npm run build`                              |
-| Deploy command                       | `npx wrangler deploy`                        |
-| Non-production branch deploy command | `npx wrangler versions upload` (the default) |
-| Build variable                       | `NODE_VERSION` = `24`                        |
+| Setting                              | Value                                                  |
+| ------------------------------------ | ------------------------------------------------------ |
+| Root directory                       | `app` (the Path field under Advanced)                  |
+| Build command                        | `npm run build`                                        |
+| Deploy command                       | `npx wrangler deploy`                                  |
+| Non-production branch deploy command | `npx wrangler versions upload` (the default)           |
+| Node version                         | read from `app/.node-version` (24); no variable needed |
 
 To check the config locally: `cd app && npm run build && npx wrangler deploy --dry-run`.
