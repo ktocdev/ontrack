@@ -65,7 +65,7 @@ jobs:
         run: supabase test db
 
       - name: Lint SQL
-        run: supabase db lint --level warning
+        run: supabase db lint --schema public --level warning
 
       - name: Generate TypeScript types
         run: supabase gen types typescript --local > database.types.ts
