@@ -12,4 +12,9 @@
     "html_handling": "auto-trailing-slash",
   },
   "observability": { "enabled": true },
+  // Each preview gets https://<branch>-ontrack.<subdomain>.workers.dev.
+  "preview_urls": true,
+  // Required by `wrangler preview`, the non-production branch deploy command.
+  // Empty: previews inherit assets and compatibility settings from the top level.
+  "previews": {},
 }
