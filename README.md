@@ -8,7 +8,7 @@ The plan lives in [handoff/OnTrack - Build Plan.md](handoff/OnTrack%20-%20Build%
 
 ```
 app/        Vite + React + TypeScript PWA
-supabase/   migrations, functions, seed, pgTAP tests (from OT-2)
+supabase/   migrations, seed, pgTAP tests, local config
 design/     exported design: screens, tokens, index
 handoff/    build plan, slides, architecture diagram
 ```
@@ -23,6 +23,18 @@ npm test             # Vitest
 npm run test:e2e     # Playwright on Chromium + WebKit (builds first)
 npm run build        # production build in app/dist
 ```
+
+## Database
+
+Schema, policies, seed and tests live in `supabase/`. CI starts a throwaway Postgres, applies the migrations and seed, and runs pgTAP on every PR. With Docker installed you can do the same locally:
+
+```sh
+npx supabase db start     # migrations + seed on localhost:54322
+npx supabase test db      # pgTAP
+npx supabase stop
+```
+
+Migrations reach the hosted project through `.github/workflows/supabase-deploy.yml` on merge to `main`, once these repository secrets exist: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_ID`, `SUPABASE_DB_PASSWORD`.
 
 ## Deploy
 

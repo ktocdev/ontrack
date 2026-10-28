@@ -46,3 +46,32 @@ jobs:
           name: playwright-report
           path: app/playwright-report
           retention-days: 7
+
+  db:
+    name: Database · migrations, seed, pgTAP
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+
+      - name: Start Postgres with migrations and seed
+        run: supabase db start
+
+      - name: pgTAP
+        run: supabase test db
+
+      - name: Lint SQL
+        run: supabase db lint --schema public --level warning
+
+      - name: Generate TypeScript types
+        run: supabase gen types typescript --local > database.types.ts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: database-types
+          path: database.types.ts
+          retention-days: 14
