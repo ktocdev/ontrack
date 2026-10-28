@@ -1,0 +1,358 @@
+import { useState } from 'react'
+import { Link } from 'react-router'
+import { Avatar } from '../../components/Avatar'
+import { Button, ButtonLink, IconButton } from '../../components/Button'
+import { Card, KeyValueRow, ListCard, ListRow, ListRowLink } from '../../components/Card'
+import { Input, SearchField, Select, Textarea } from '../../components/Field'
+import {
+  CountBadge,
+  RoleTag,
+  StatusPill,
+  TabAlert,
+  UrgentTag,
+  WalkthroughTag,
+  type PillStatus,
+} from '../../components/Pill'
+import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
+import { Screen, ScreenBody, ScreenHeader, SectionLabel, UnderlineTabs } from '../../components/Screen'
+import { Segmented } from '../../components/Segmented'
+import { Sheet } from '../../components/Sheet'
+import {
+  ButtonSpinner,
+  CardFeedSkeleton,
+  DetailSkeleton,
+  GroupedListSkeleton,
+  MetricsSkeleton,
+  PeopleListSkeleton,
+  Spinner,
+} from '../../components/Skeleton'
+import { Switch, SwitchRow } from '../../components/Switch'
+import { TabBar } from '../../components/TabBar'
+import { useToast } from '../../components/Toast'
+import { IconChevronLeft, IconClose, IconPlus, IconQr } from '../../components/icons'
+import { ROLE_TABS } from '../../app/roles'
+import { MOCK_RESTAURANTS } from '../../auth/mock'
+import type { AppRole } from '../../lib/supabase'
+import type { ThemePreference } from '../../theme/theme'
+import { useTheme } from '../../theme/useTheme'
+
+/**
+ * /kit: every shared component in both themes, plus links to the full-screen
+ * loading and error boards. Check a new component here before a screen uses
+ * it. Public, no sign-in needed.
+ */
+
+const STATUSES: PillStatus[] = [
+  'open',
+  'unassigned',
+  'in_progress',
+  'waiting_parts',
+  'scheduled',
+  'reopened',
+  'closed',
+  'fixed',
+]
+const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+]
+
+function Section({ title, children, id }: { title: string; children: React.ReactNode; id: string }) {
+  return (
+    <section id={id} className="flex flex-col gap-3 border-t border-border pt-4" aria-labelledby={`${id}-h`}>
+      <h2 id={`${id}-h`} className="eyebrow">
+        {title}
+      </h2>
+      {children}
+    </section>
+  )
+}
+
+export function KitPage() {
+  const { preference, theme, setPreference } = useTheme()
+  const toast = useToast()
+  const [seg, setSeg] = useState<'all' | 'foh' | 'boh'>('all')
+  const [sw, setSw] = useState(true)
+  const [sheet, setSheet] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  return (
+    <Screen data-testid="kit">
+      <ScreenHeader
+        title="Component kit"
+        action={
+          <span className="eyebrow" data-testid="kit-theme">
+            {theme}
+          </span>
+        }
+      >
+        <Segmented label="Theme" value={preference} onChange={setPreference} options={THEME_OPTIONS} size="md" />
+      </ScreenHeader>
+
+      <ScreenBody className="gap-5 pb-10">
+        <Section id="type" title="Type">
+          <h1 className="font-display text-30 font-bold tracking-[-0.02em]">Open tickets</h1>
+          <span className="font-display text-22 font-bold tracking-[-0.01em]">Sheet title, 22</span>
+          <p className="text-15 text-text-body">Body 15 on text-body. Inputs never go below 16px on a phone.</p>
+          <p className="text-13 text-text-muted">Meta 13 on text-muted · OT-1042 in mono below</p>
+          <span className="font-mono text-14 font-medium">OT-1042 · KP-7XW-220418 · $397.40</span>
+          <span className="eyebrow">Eyebrow · 12 · 700 · 0.06em</span>
+        </Section>
+
+        <Section id="buttons" title="Buttons">
+          <Button>Primary · 52</Button>
+          <Button variant="secondary">Secondary · 48</Button>
+          <Button variant="danger">Delete · danger</Button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Button variant="compact" icon={<IconPlus size={18} />}>
+              Invite
+            </Button>
+            <Button variant="small">Search equipment</Button>
+            <Button variant="ghost">Report this problem</Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Button loading={loading} onClick={() => setLoading((v) => !v)} className="w-auto">
+              {loading ? 'Saving…' : 'Toggle loading'}
+            </Button>
+            <Button disabled className="w-auto">
+              Disabled
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <IconButton label="Back">
+              <IconChevronLeft />
+            </IconButton>
+            <IconButton label="Close">
+              <IconClose />
+            </IconButton>
+            <IconButton label="Scan QR code" framed>
+              <IconQr />
+            </IconButton>
+          </div>
+        </Section>
+
+        <Section id="pills" title="Pills, tags and badges">
+          <div className="flex flex-wrap gap-2" data-testid="pills">
+            {STATUSES.map((s) => (
+              <StatusPill key={s} status={s} />
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <UrgentTag />
+            <WalkthroughTag />
+            <RoleTag>Manager</RoleTag>
+            <RoleTag>Ops Manager</RoleTag>
+            <CountBadge count={5} />
+            <CountBadge count={5} active />
+            <TabAlert count={1} label="1 reopened ticket" />
+          </div>
+        </Section>
+
+        <Section id="restaurants" title="Restaurant names">
+          <div className="flex flex-col gap-2">
+            {MOCK_RESTAURANTS.map((r) => (
+              <RestaurantName key={r.id} name={r.name} color={r.color} />
+            ))}
+            <RestaurantName name="Porter" color="#9A6A00" variant="meta" />
+            <span className="flex items-center gap-1.5 text-14 font-semibold">
+              <AllRestaurantsSquare colors={MOCK_RESTAURANTS.map((r) => r.color)} />
+              All restaurants (4)
+            </span>
+          </div>
+        </Section>
+
+        <Section id="avatars" title="Avatars">
+          <div className="flex items-end gap-3">
+            <Avatar name="Maya Reyes" role="manager" size={28} />
+            <Avatar name="Maya Reyes" role="manager" />
+            <Avatar name="Bert Velilla" role="ops" />
+            <Avatar name="Lee Chen" role="leadership" />
+            <Avatar name="Bert Velilla" role="you" size={28} />
+            <Avatar name="Bert Velilla" role="ops" size={88} />
+          </div>
+        </Section>
+
+        <Section id="cards" title="Cards and rows">
+          <Card className="flex flex-col gap-2 p-4">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-13 text-text-secondary">OT-1042</span>
+              <StatusPill status="in_progress" />
+            </div>
+            <span className="text-16 font-semibold">Walk-in cooler not holding temp</span>
+            <span className="text-13 text-text-muted">Back of House · Refrigeration · Walk-in Cooler 1</span>
+          </Card>
+          <ListCard>
+            <ListRow
+              leading={<Avatar name="Sam Patel" role="manager" />}
+              title="Sam Patel"
+              subtitle="Invite pending · sent 2 days ago"
+              trailing={<RoleTag>Manager</RoleTag>}
+            />
+            <ListRowLink
+              to="#"
+              leading={<Avatar name="Bert Velilla" role="ops" />}
+              title="Bert Velilla"
+              subtitle="All restaurants"
+              trailing={<RoleTag>Ops Manager</RoleTag>}
+            />
+          </ListCard>
+          <Card className="px-3.5">
+            <KeyValueRow label="Brand">Kolpak</KeyValueRow>
+            <KeyValueRow label="Serial number">
+              <span className="font-mono">KP-7XW-220418</span>
+            </KeyValueRow>
+            <KeyValueRow label="Installed">Mar 2022</KeyValueRow>
+          </Card>
+        </Section>
+
+        <Section id="controls" title="Segmented and tabs">
+          <Segmented
+            label="Area"
+            value={seg}
+            onChange={setSeg}
+            size="sm"
+            options={[
+              { value: 'all', label: 'All · 5' },
+              { value: 'foh', label: 'Front · 2' },
+              { value: 'boh', label: 'Back · 3' },
+            ]}
+          />
+          <UnderlineTabs
+            label="Example tabs"
+            items={[
+              { to: '/kit', label: <>Open · 14</>, end: true },
+              {
+                to: '/kit#controls',
+                label: (
+                  <>
+                    Closed <TabAlert count={1} label="1 reopened" />
+                  </>
+                ),
+              },
+            ]}
+          />
+        </Section>
+
+        <Section id="fields" title="Fields">
+          <Input label="Your name" placeholder="First and last" />
+          <Input
+            label="Email"
+            type="email"
+            defaultValue="maya.reyes@example.com"
+            readOnly
+            hint="Managed by your admin."
+          />
+          <Input label="Create password" type="password" error="At least 12 characters." />
+          <Textarea label="Description" placeholder="What is happening?" />
+          <Select label="Contractor company" defaultValue="coldline">
+            <option value="coldline">Coldline Refrigeration</option>
+            <option value="northstar">Northstar HVAC</option>
+          </Select>
+          <SearchField label="Search equipment" placeholder="Name, brand or serial number" />
+        </Section>
+
+        <Section id="switch" title="Switch">
+          <div className="flex items-center gap-3">
+            <Switch checked={sw} onCheckedChange={setSw} label="Example" />
+            <Switch checked={!sw} onCheckedChange={(v) => setSw(!v)} label="Example inverse" />
+          </div>
+          <Card className="px-3.5">
+            <SwitchRow
+              title="Preferred contractor"
+              subtitle="Shows first in the directory"
+              checked={sw}
+              onCheckedChange={setSw}
+              label="Preferred contractor"
+            />
+          </Card>
+        </Section>
+
+        <Section id="overlays" title="Sheet and toast">
+          <div className="flex flex-wrap gap-2.5">
+            <Button variant="secondary" className="w-auto" onClick={() => setSheet(true)}>
+              Open sheet
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-auto"
+              onClick={() => toast.show('Defaults updated. 3 people were notified.')}
+            >
+              Show toast
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-auto"
+              onClick={() =>
+                toast.show('In-house task deleted.', { label: 'Undo', onClick: () => toast.show('Restored.') })
+              }
+            >
+              Toast with action
+            </Button>
+          </div>
+          <Sheet
+            open={sheet}
+            onOpenChange={setSheet}
+            title="Save 2 changes?"
+            description="Defaults change for everyone with these roles. People are notified."
+          >
+            <Button onClick={() => setSheet(false)}>Save changes</Button>
+            <Button variant="secondary" onClick={() => setSheet(false)}>
+              Cancel
+            </Button>
+          </Sheet>
+        </Section>
+
+        <Section id="loading" title="Loading">
+          <div className="flex items-center gap-4">
+            <Spinner />
+            <span className="inline-flex items-center gap-2 rounded-input bg-brand-fill px-4 py-3 text-15 font-bold text-on-brand">
+              <ButtonSpinner /> Saving…
+            </span>
+          </div>
+          <CardFeedSkeleton count={2} />
+          <GroupedListSkeleton rows={2} groups={2} />
+          <PeopleListSkeleton count={3} />
+          <MetricsSkeleton />
+          <DetailSkeleton keys={['Name', 'Brand', 'Model']} />
+          <SectionLabel>Full screens</SectionLabel>
+          <div className="flex flex-wrap gap-2.5">
+            <ButtonLink to="/kit/loading/spinner" variant="small">
+              Centered spinner
+            </ButtonLink>
+            <ButtonLink to="/kit/loading/scan" variant="small">
+              QR lookup
+            </ButtonLink>
+          </div>
+        </Section>
+
+        <Section id="errors" title="Error screens">
+          <div className="flex flex-wrap gap-2.5">
+            <ButtonLink to="/kit/errors/404" variant="small">
+              404
+            </ButtonLink>
+            <ButtonLink to="/kit/errors/403" variant="small">
+              403
+            </ButtonLink>
+            <ButtonLink to="/kit/errors/500" variant="small">
+              500
+            </ButtonLink>
+          </div>
+        </Section>
+
+        <Section id="tabbars" title="Tab bars">
+          <div className="flex flex-col gap-3">
+            {(Object.keys(ROLE_TABS) as AppRole[]).map((role) => (
+              <div key={role} className="overflow-hidden rounded-card border border-border">
+                <TabBar label={ROLE_TABS[role].label} items={ROLE_TABS[role].items} />
+              </div>
+            ))}
+          </div>
+          <p className="text-13 text-text-muted">
+            Tabs link to the real routes; <Link to="/sign-in">sign in</Link> first to use them.
+          </p>
+        </Section>
+      </ScreenBody>
+    </Screen>
+  )
+}

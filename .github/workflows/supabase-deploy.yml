@@ -50,4 +50,4 @@ jobs:
 
       - name: Push migrations
         if: steps.check.outputs.configured == 'true'
-        run: supabase db push
+        run: supabase db push --linked
