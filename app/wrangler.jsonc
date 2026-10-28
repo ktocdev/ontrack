@@ -1,0 +1,15 @@
+{
+  // Cloudflare Workers with static assets: serves app/dist from the edge.
+  // Connected to GitHub through Workers Builds: main is production, every other
+  // branch gets a preview URL and a comment on its pull request.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ontrack",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Client-side routes and QR deep links (/e/<id>) resolve to index.html.
+    "not_found_handling": "single-page-application",
+    "html_handling": "auto-trailing-slash",
+  },
+  "observability": { "enabled": true },
+}

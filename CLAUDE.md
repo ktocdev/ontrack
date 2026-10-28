@@ -6,7 +6,7 @@ Mobile-first PWA for equipment and repair tickets across the Four Corners restau
 
 - **App:** React 19, Vite, TypeScript, Tailwind v4 (tokens as CSS variables), Radix primitives, React Router, TanStack Query over `@supabase/supabase-js`. Installable PWA via `vite-plugin-pwa`.
 - **Backend:** Supabase Postgres with row-level security on every table, Supabase Auth (email + password, invite only, TOTP), Supabase Storage, Edge Functions (Deno) only for jobs that need a secret or a server.
-- **Hosting:** Cloudflare Pages through Git integration: `main` is production, every PR gets a preview URL.
+- **Hosting:** Cloudflare Workers with static assets (`app/wrangler.jsonc`), connected through Workers Builds: `main` is production, every other branch gets a preview URL and a PR comment.
 - **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone.
 - **CI:** `.github/workflows/ci.yml` runs lint, format check, typecheck, Vitest, build, Playwright on every PR and on `main`.
 
@@ -21,6 +21,7 @@ app/                 the PWA
   src/components/         shared kit (from OT-3), each shown on /kit
   e2e/                    Playwright flows
   scripts/icons.mjs       regenerates public/ icons from the mark
+  wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
 supabase/            migrations, functions, seed, pgTAP tests (from OT-2)
 design/              exported design: INDEX.md, tokens.md, screens/*.dc.html + .png
 handoff/             build plan, slides, architecture diagram
@@ -69,10 +70,10 @@ Inside a phase: migration and policies with pgTAP first, then one TanStack Query
 
 Done when a teammate can open the preview URL on an iPhone, add it to the home screen, toggle dark mode, and the RLS tests pass for all four roles.
 
-| PR | Scope |
-| --- | --- |
-| OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file |
-| OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed |
+| PR   | Scope                                                                      |
+| ---- | -------------------------------------------------------------------------- |
+| OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file                     |
+| OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed         |
 | OT-3 | Component kit on `/kit`, app frame, role shells, loading and error screens |
 
 ## Commands
