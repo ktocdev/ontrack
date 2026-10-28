@@ -15,7 +15,8 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Phase | State | Pull requests |
 | --- | --- | --- |
 | 0 · Foundation | Done, except the real-iPhone check | OT-1 scaffold, tokens, theme, PWA, CI · OT-2 schema, RLS, `can()`, pgTAP, seed · OT-3 component kit, app frame, auth guard, role shells, loading and error boards |
-| 1 · Accounts and access | Next | Starts at OT-4 |
+| Kit pass | Next | Every kit component gets its full set of states (hover, active/pressed, focus, disabled, loading, error where it applies) in both themes; the `/kit` page is refined and gets a desktop layout |
+| 1 · Accounts and access | After the kit pass | |
 
 Phase 0 notes:
 
@@ -105,7 +106,7 @@ Real people can be invited, sign in, and land in the right role, with rights an 
 - Admin: Users list with filters (all, pending, managers, ops), Invite user (name, email, role, restaurants), resend and revoke, user profile with per-person rights override, View as (read-only impersonation, logged to the audit table)
 - Admin: Roles & rights grid, editable defaults with the confirm sheet, locked admin column
 - Invite email through Resend; invite link single-use, 72-hour expiry; Set up account screen (name, password rules, confirm)
-- Sign in, password reset (request, sent, email, new password, done), expired link and signed-out screens
+- Sign in, password reset (request, sent, email, new password, done), expired link and signed-out screens. The Sign in button stays disabled until the email has a valid shape and the password has at least 12 characters (the provisional screen from Phase 0 only disables it when Supabase is not configured)
 - 2-step verification: TOTP with authenticator app (choose, scan, verify, backup codes) required for admins and offered to everyone; the SMS option waits unless the group asks for it, since it adds a Twilio cost
 - Profile (name, phone, restaurant, theme toggle, sign out) and Help & support (report a problem to a support inbox, FAQ)
 - Edge Functions: `invite-user`, `revoke-user`, `send-email`. They run with the service key, so each checks the caller with `can()` or `is_admin()` first. `revoke-user` sets `profiles.deactivated_at` and also bans the auth user so refresh tokens stop working
