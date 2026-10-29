@@ -27,8 +27,8 @@ export function TabBar({ items, label }: { items: TabItem[]; label: string }) {
           to={to}
           end={end}
           className={({ isActive }) =>
-            `flex min-h-tap flex-1 flex-col items-center gap-[3px] py-1.5 text-12 font-semibold ${
-              isActive ? 'text-brand' : 'text-text-muted hover:text-text-muted'
+            `flex min-h-tap flex-1 flex-col items-center gap-[3px] rounded-control py-1.5 text-12 font-semibold transition-colors active:bg-surface-muted active:duration-0 ${
+              isActive ? 'text-brand' : 'text-text-muted hover:text-text-secondary'
             }`
           }
         >
