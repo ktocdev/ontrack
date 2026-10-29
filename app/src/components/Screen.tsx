@@ -16,10 +16,14 @@ export function Screen({ className = '', children, ...rest }: HTMLAttributes<HTM
   )
 }
 
-/** Scrolling content area. */
+/**
+ * Scrolling content area. It is `relative` so absolutely positioned children
+ * (sr-only labels, overlays) are placed inside the scroller; without it they
+ * resolve against the page, stretch the document and add a second scrollbar.
+ */
 export function ScreenBody({ className = '', children, ...rest }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`flex min-h-0 flex-1 flex-col overflow-y-auto px-screen ${className}`} {...rest}>
+    <div className={`relative flex min-h-0 flex-1 flex-col overflow-y-auto px-screen ${className}`} {...rest}>
       {children}
     </div>
   )
@@ -60,7 +64,11 @@ export function ScreenHeader({ title, topLeft, topRight, action, children, class
 export function BackBar({ to, label, children }: { to: string; label: string; children?: ReactNode }) {
   return (
     <div className="mb-2 flex flex-none items-center gap-1 border-b border-border px-3 pb-2 pt-safe">
-      <Link to={to} aria-label={label} className="flex h-11 w-11 items-center justify-center text-text">
+      <Link
+        to={to}
+        aria-label={label}
+        className="flex h-11 w-11 items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
+      >
         <IconChevronLeft />
       </Link>
       <div className="min-w-0 text-13 font-semibold leading-snug text-text-muted">{children}</div>
@@ -88,7 +96,7 @@ export function UnderlineTabs({
           className={({ isActive }) =>
             `-mb-px flex min-h-tap flex-1 items-center justify-center gap-1.5 border-b-2 font-semibold ${
               size === 'lg' ? 'text-15' : 'text-14'
-            } ${isActive ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'}`
+            } ${isActive ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'} transition-colors active:bg-surface-hover active:duration-0`
           }
         >
           {t.label}
