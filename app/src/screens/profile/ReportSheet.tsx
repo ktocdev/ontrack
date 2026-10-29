@@ -6,12 +6,22 @@ import { useToast } from '../../components/Toast'
 import { useSendReport } from './useProfile'
 
 /**
- * Report a problem (Profile and Help & support): what happened, then Send to
- * support. The report is saved with the page, app version and device; the
- * toast gives the case number. The design's "Include a screenshot" box is left
- * out until reports show a need for it.
+ * Report a problem (Profile, Help & support and the 500 board): what
+ * happened, then Send to support. The report is saved with the page, app
+ * version and device; the toast gives the case number. `context` (an error
+ * reference) is stored ahead of the person's words. The design's "Include a
+ * screenshot" box is left out until reports show a need for it.
  */
-export function ReportSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function ReportSheet({
+  open,
+  onOpenChange,
+  context,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  /** Attached ahead of the person's words, e.g. "Error 500 · REF 1A2B-3C4D". */
+  context?: string
+}) {
   const [body, setBody] = useState('')
   const send = useSendReport()
   const toast = useToast()
@@ -22,7 +32,7 @@ export function ReportSheet({ open, onOpenChange }: { open: boolean; onOpenChang
   }
 
   const submit = () =>
-    send.mutate(body, {
+    send.mutate(context ? `${context}\n\n${body.trim()}` : body, {
       onSuccess: (caseNo) => {
         setBody('')
         close(false)
@@ -30,12 +40,16 @@ export function ReportSheet({ open, onOpenChange }: { open: boolean; onOpenChang
       },
     })
 
+  const attached = context
+    ? `${context}, your account, the page you were on and your device type are attached.`
+    : 'Your account, the page you were on and your device type are attached.'
+
   return (
     <Sheet
       open={open}
       onOpenChange={close}
       title="Report a problem"
-      description="Goes to OnTrack support. Your account, the page you were on and your device type are attached."
+      description={`Goes to OnTrack support. ${attached}`}
     >
       <Textarea
         label="What happened?"

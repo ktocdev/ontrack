@@ -113,6 +113,8 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [sb])
 
   const dismiss = useCallback(() => setExpired(null), [])
+  const { refetch } = me
+  const refetchMe = useCallback(() => void refetch(), [refetch])
 
   const value = useMemo<AuthState>(() => {
     if (session === undefined) return { status: 'loading' }
@@ -122,9 +124,8 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         : { status: 'signed-out' }
     }
     if (me.isPending) return { status: 'loading' }
-    if (me.isError || !me.data?.profile) {
-      return { status: 'no-profile', email: session.user.email ?? null, signOut }
-    }
+    if (me.isError) return { status: 'error', error: me.error, retry: refetchMe, signOut }
+    if (!me.data.profile) return { status: 'no-profile', email: session.user.email ?? null, signOut }
     return {
       status: 'signed-in',
       user: me.data.profile,
@@ -132,7 +133,7 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       allRestaurants: me.data.allRestaurants,
       signOut,
     }
-  }, [session, expired, dismiss, me.isPending, me.isError, me.data, signOut])
+  }, [session, expired, dismiss, me.isPending, me.isError, me.error, me.data, refetchMe, signOut])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -93,9 +93,17 @@ test.describe('error screens', () => {
     await page.goto('/kit/errors/500')
     await expect(page.getByRole('alert')).toContainText('Something went wrong on our end')
     await expect(page.getByText(/REF [0-9A-F]{4}-[0-9A-F]{4}/)).toBeVisible()
+    // Signed out: nowhere to file a report, so the board asks for the reference instead.
+    await expect(page.getByRole('button', { name: 'Report this problem' })).toBeHidden()
+  })
+
+  test('signed in, the 500 report carries the error reference', async ({ page }) => {
+    await signInAs(page, 'manager')
+    await page.goto('/kit/errors/500')
+    const ref = (await page.getByText(/REF [0-9A-F]{4}-[0-9A-F]{4}/).textContent())!.match(
+      /[0-9A-F]{4}-[0-9A-F]{4}/,
+    )![0]
     await page.getByRole('button', { name: 'Report this problem' }).click()
-    await expect(page.getByRole('dialog', { name: 'Report a problem' })).toBeVisible()
-    await page.getByRole('button', { name: 'Send to support' }).click()
-    await expect(page.getByRole('status').filter({ hasText: 'Sent to support' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: 'Report a problem' })).toContainText(`REF ${ref}`)
   })
 })

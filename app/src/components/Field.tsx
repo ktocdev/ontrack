@@ -1,18 +1,12 @@
-import {
-  forwardRef,
-  useId,
-  type InputHTMLAttributes,
-  type ReactNode,
-  type SelectHTMLAttributes,
-  type TextareaHTMLAttributes,
-} from 'react'
+import { useId, type ComponentPropsWithRef, type InputHTMLAttributes, type ReactNode } from 'react'
 import { IconChevronDown, IconSearch } from './icons'
 
 /**
  * Form fields: 13px semibold label, 4 to 6px gap, white input with 1px
  * border-strong, 12px radius, 12px 14px padding, 15px text (never below 16px
  * on a phone: the base stylesheet pins fields to 16px). Readonly fields sit
- * on surface-muted with faint text.
+ * on surface-muted with faint text. React 19 passes `ref` as a prop, so the
+ * fields take it straight through.
  */
 
 const FIELD =
@@ -51,16 +45,13 @@ export function FieldWrap({ label, hint, error, className = '', children }: Wrap
   )
 }
 
-type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'id'> & {
+type InputProps = Omit<ComponentPropsWithRef<'input'>, 'id'> & {
   label: string
   hint?: ReactNode
   error?: ReactNode
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, hint, error, className, ...rest },
-  ref,
-) {
+export function Input({ label, hint, error, className, ref, ...rest }: InputProps) {
   return (
     <FieldWrap label={label} hint={hint} error={error} className={className}>
       {(id, describedBy) => (
@@ -75,18 +66,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
     </FieldWrap>
   )
-})
+}
 
-type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'> & {
+type TextareaProps = Omit<ComponentPropsWithRef<'textarea'>, 'id'> & {
   label: string
   hint?: ReactNode
   error?: ReactNode
 }
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { label, hint, error, className, rows = 3, ...rest },
-  ref,
-) {
+export function Textarea({ label, hint, error, className, rows = 3, ref, ...rest }: TextareaProps) {
   return (
     <FieldWrap label={label} hint={hint} error={error} className={className}>
       {(id, describedBy) => (
@@ -102,19 +90,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       )}
     </FieldWrap>
   )
-})
+}
 
-type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'> & {
+type SelectProps = Omit<ComponentPropsWithRef<'select'>, 'id'> & {
   label: string
   hint?: ReactNode
   error?: ReactNode
 }
 
 /** Native select with the design's caret; native pickers are what phones do best. */
-export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
-  { label, hint, error, className, children, ...rest },
-  ref,
-) {
+export function Select({ label, hint, error, className, children, ref, ...rest }: SelectProps) {
   return (
     <FieldWrap label={label} hint={hint} error={error} className={className}>
       {(id, describedBy) => (
@@ -134,7 +119,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       )}
     </FieldWrap>
   )
-})
+}
 
 /** Search box: icon on the left, 44px, 1px border (not border-strong), no visible label. */
 export function SearchField({
@@ -144,7 +129,7 @@ export function SearchField({
 }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { label: string }) {
   return (
     <label
-      className={`flex min-h-tap items-center gap-2.5 rounded-input border border-border bg-surface px-3.5 ${className}`}
+      className={`flex min-h-tap items-center gap-2.5 rounded-input border border-border bg-surface px-3.5 focus-within:border-brand ${className}`}
     >
       <IconSearch className="text-text-muted" />
       <input
