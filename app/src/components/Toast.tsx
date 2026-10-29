@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             {toast.action && (
               <button
                 type="button"
-                className="min-h-9 rounded-control px-2 font-bold text-[#8FD4B8]"
+                className="min-h-9 rounded-control px-2 font-bold text-toast-action hover:underline active:opacity-70"
                 onClick={() => {
                   toast.action?.onClick()
                   setToast(null)
