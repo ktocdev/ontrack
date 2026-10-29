@@ -98,14 +98,14 @@ Inside a phase: migration and policies with pgTAP first, then one TanStack Query
 
 Done when an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
 
-| PR    | Scope                                                                                                 |
-| ----- | ----------------------------------------------------------------------------------------------------- |
-| OT-6  | Sign in for real, Signed out and Link expired screens, Profile, Help & support                        |
-| OT-7  | Admin Restaurants and Add restaurant (accent presets, custom color, taken-color check)                |
-| OT-8  | Invites: `send-email`, `invite-user`, `revoke-user`, Users, Invite user, invite email, Set up account |
-| OT-9  | Password reset 1 to 5 (Supabase auth email through Resend SMTP)                                       |
-| OT-10 | Roles & rights grid, User profile overrides, View as with the audit log                               |
-| OT-11 | 2-step verification (TOTP), required for admins                                                       |
+| PR    | Scope                                                                                                               |
+| ----- | ------------------------------------------------------------------------------------------------------------------- |
+| OT-6  | Sign in, Signed out sheet (12-hour cap, app side), Profile, Help & support, support reports                         |
+| OT-7  | Admin Restaurants and Add restaurant (accent presets, custom color, taken-color check)                              |
+| OT-8  | Invites: `send-email`, `invite-user`, `revoke-user`, Users, Invite user, invite email, Set up account, Link expired |
+| OT-9  | Password reset 1 to 5 (Supabase auth email through Resend SMTP), reset links on Sign in and Help                    |
+| OT-10 | Roles & rights grid, User profile overrides, View as with the audit log                                             |
+| OT-11 | 2-step verification (TOTP), required for admins                                                                     |
 
 Email goes through Resend. Until the group has a sending domain, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address.
 
