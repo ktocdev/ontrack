@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
+import { AccentPicker } from '../../components/AccentPicker'
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink, IconButton } from '../../components/Button'
 import { Card, KeyValueRow, ListCard, ListRow, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
@@ -14,8 +15,8 @@ import {
   WalkthroughTag,
   type PillStatus,
 } from '../../components/Pill'
-import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
-import { Screen, ScreenBody, ScreenHeader, SectionLabel, UnderlineTabs } from '../../components/Screen'
+import { AllRestaurantsSquare, RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
+import { CloseBar, Screen, ScreenBody, ScreenHeader, SectionLabel, UnderlineTabs } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { Sidebar, SidebarAnchor } from '../../components/Sidebar'
@@ -44,6 +45,7 @@ import {
 import { SignedOutSheet } from '../auth/SignedOutSheet'
 import { ROLE_TABS } from '../../app/roles'
 import { MOCK_RESTAURANTS } from '../../auth/mock'
+import { isHex, normalizeHex, presetHex, PRESETS } from '../../lib/colors'
 import type { AppRole } from '../../lib/supabase'
 import { useTheme } from '../../theme/useTheme'
 
@@ -108,6 +110,9 @@ export function KitPage() {
   const [sheet, setSheet] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
   const [loading, setLoading] = useState(false)
+  const accents = useMemo(() => PRESETS.map((p) => ({ value: presetHex(p.key), label: p.label })), [])
+  const [accent, setAccent] = useState(() => presetHex(PRESETS[0]!.key))
+  const [customAccent, setCustomAccent] = useState('#4d7c0f')
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-desktop flex-1">
@@ -219,6 +224,23 @@ export function KitPage() {
                   <AllRestaurantsSquare colors={MOCK_RESTAURANTS.map((r) => r.color)} />
                   All restaurants (4)
                 </span>
+                <span className="flex items-center gap-3 text-15 font-semibold">
+                  <RestaurantSquare color={MOCK_RESTAURANTS[0]!.color} size={14} />
+                  14px square, as on the Restaurants list
+                </span>
+              </div>
+              <AccentPicker
+                label="Accent color"
+                hint="Presets come from the --preset-* tokens; the hue wheel opens a custom color."
+                options={accents}
+                value={accent}
+                onChange={setAccent}
+                custom={customAccent}
+                onCustomChange={setCustomAccent}
+                warning={isHex(normalizeHex(customAccent)) ? undefined : 'Enter a 6-digit hex code, like #C2185B.'}
+              />
+              <div className="overflow-hidden rounded-card border border-border">
+                <CloseBar to="/kit" title="Add restaurant" />
               </div>
             </Section>
 

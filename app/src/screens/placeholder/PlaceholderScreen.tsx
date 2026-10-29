@@ -1,5 +1,4 @@
-import { Link } from 'react-router'
-import { Avatar } from '../../components/Avatar'
+import { ProfileLink } from '../../app/ProfileLink'
 import { Card } from '../../components/Card'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
@@ -41,15 +40,7 @@ export function PlaceholderScreen({ title, phase, note }: { title: string; phase
           READ-ONLY VIEW
         </div>
       )}
-      <ScreenHeader
-        title={title}
-        topLeft={topLeft}
-        topRight={
-          <Link to="/profile" aria-label="Your profile">
-            <Avatar name={user.full_name} role={user.role} />
-          </Link>
-        }
-      />
+      <ScreenHeader title={title} topLeft={topLeft} topRight={<ProfileLink />} />
       <ScreenBody className="gap-3 pb-6">
         <Card className="flex flex-col gap-1.5 p-4">
           <span className="eyebrow">Coming in {phase}</span>

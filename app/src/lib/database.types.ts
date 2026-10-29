@@ -51,6 +51,12 @@ isOneToOne: false
       foreignKeyName: "audit_log_target_restaurant_id_fkey"
       columns: ["target_restaurant_id"]
 isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "audit_log_target_restaurant_id_fkey"
+      columns: ["target_restaurant_id"]
+isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     },{
@@ -129,6 +135,12 @@ isOneToOne: false
       foreignKeyName: "equipment_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "equipment_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     }
@@ -175,6 +187,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
     },{
       foreignKeyName: "inhouse_fixes_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -275,6 +293,12 @@ isOneToOne: false
       foreignKeyName: "memberships_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "memberships_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     },{
@@ -303,6 +327,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "profiles_home_restaurant_id_fkey"
+      columns: ["home_restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
     },{
       foreignKeyName: "profiles_home_restaurant_id_fkey"
       columns: ["home_restaurant_id"]
@@ -359,23 +389,35 @@ isOneToOne: false
       foreignKeyName: "quarterly_tasks_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "quarterly_tasks_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     }
                   ]
                 },"restaurants": {
                   Row: {
-                    "address": string | null,"color": string,"created_at": string,"id": string,"manager_id": string | null,"name": string,"phone": string | null,"sort_order": number,"updated_at": string
+                    "address": string | null,"archived_at": string | null,"archived_by": string | null,"color": string,"created_at": string,"id": string,"manager_id": string | null,"name": string,"phone": string | null,"sort_order": number,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"color": string,"created_at"?: string,"id"?: string,"manager_id"?: string | null,"name": string,"phone"?: string | null,"sort_order"?: number,"updated_at"?: string
+                    "address"?: string | null,"archived_at"?: string | null,"archived_by"?: string | null,"color": string,"created_at"?: string,"id"?: string,"manager_id"?: string | null,"name": string,"phone"?: string | null,"sort_order"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "address"?: string | null,"color"?: string,"created_at"?: string,"id"?: string,"manager_id"?: string | null,"name"?: string,"phone"?: string | null,"sort_order"?: number,"updated_at"?: string
+                    "address"?: string | null,"archived_at"?: string | null,"archived_by"?: string | null,"color"?: string,"created_at"?: string,"id"?: string,"manager_id"?: string | null,"name"?: string,"phone"?: string | null,"sort_order"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "restaurants_archived_by_fkey"
+      columns: ["archived_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "restaurants_manager_fk"
       columns: ["manager_id"]
 isOneToOne: false
@@ -615,6 +657,12 @@ isOneToOne: false
       foreignKeyName: "tickets_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "tickets_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     },{
@@ -711,6 +759,12 @@ isOneToOne: true
       foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: true
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: true
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     },{
@@ -753,6 +807,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
     },{
       foreignKeyName: "walkthroughs_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -804,6 +864,12 @@ isOneToOne: false
       foreignKeyName: "equipment_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "equipment_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     }
@@ -820,6 +886,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
     },{
       foreignKeyName: "tickets_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -910,6 +982,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"v_restaurant_history": {
+                  Row: {
+                    "equipment": number | null,"home_of": number | null,"inhouse_fixes": number | null,"restaurant_id": string,"tickets": number | null,"walkthroughs": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "equipment"?: never,"home_of"?: never,"inhouse_fixes"?: never,"restaurant_id"?: string | null,"tickets"?: never,"walkthroughs"?: never
+                         }
+                        Update: {
+                           "equipment"?: never,"home_of"?: never,"inhouse_fixes"?: never,"restaurant_id"?: string | null,"tickets"?: never,"walkthroughs"?: never
+                         }
+                        Relationships: [
+                    
+                  ]
                 },"v_restaurant_open_counts": {
                   Row: {
                     "open_count": number | null,"reopened_count": number | null,"restaurant_id": string,"urgent_count": number | null
@@ -943,11 +1029,17 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "can":
+            "add_restaurant":
+{ Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
+                           },
+"can":
 { Args: { "action": string,"rid"?: string }; Returns: boolean
                            },
 "can_see_ticket":
 { Args: { "tid": string }; Returns: boolean
+                           },
+"delete_restaurant":
+{ Args: { "p_id": string }; Returns: undefined
                            },
 "equipment_restaurant":
 { Args: { "eid": string }; Returns: string
@@ -969,6 +1061,9 @@ isOneToOne: false
                            },
 "service_record_restaurant":
 { Args: { "srid": string }; Returns: string
+                           },
+"set_restaurant_archived":
+{ Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
                            },
 "ticket_restaurant":
 { Args: { "tid": string }; Returns: string

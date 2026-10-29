@@ -10,7 +10,8 @@ test('a manager signs in and sees only their restaurant', async ({ page }) => {
 test('ops lands on the dashboard with every restaurant', async ({ page }) => {
   await signIn(page, 'bert.velilla@example.com')
   await expect(page).toHaveURL(/\/ops$/)
-  await expect(page.getByText(/All restaurants \(4\)/)).toBeVisible()
+  // The count grows as other tests add restaurants to the shared database.
+  await expect(page.getByText(/All restaurants \(\d+\)/)).toBeVisible()
 })
 
 test('a wrong password gets a plain message', async ({ page }) => {

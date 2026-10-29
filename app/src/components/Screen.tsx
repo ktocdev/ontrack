@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
-import { IconChevronLeft } from './icons'
+import { IconChevronLeft, IconClose } from './icons'
 
 /**
  * Screen layout primitives. A Screen fills the viewport column; the body
@@ -91,6 +91,26 @@ export function TitleBar({ to, label, title }: { to: string; label: string; titl
         <IconChevronLeft size={22} />
       </Link>
       <h1 className="font-display text-20 font-bold">{title}</h1>
+    </div>
+  )
+}
+
+/**
+ * Header for a full-screen form opened from a list (Add restaurant): 24px
+ * Archivo title on the left, a 44px close target on the right, 1px bottom
+ * border. 12px 12px 8px 20px padding.
+ */
+export function CloseBar({ to, title, label = 'Close' }: { to: string; title: ReactNode; label?: string }) {
+  return (
+    <div className="flex flex-none items-center justify-between border-b border-border pb-2 pl-5 pr-3 pt-[calc(12px+var(--safe-top))]">
+      <h1 className="font-display text-24 font-bold tracking-[-0.02em]">{title}</h1>
+      <Link
+        to={to}
+        aria-label={label}
+        className="flex h-11 w-11 items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
+      >
+        <IconClose />
+      </Link>
     </div>
   )
 }

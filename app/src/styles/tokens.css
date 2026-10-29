@@ -100,6 +100,8 @@
   --preset-slate: #475569;
   --preset-plum: #6e2f4f;
   --preset-charcoal: #333b3f;
+  /* The "custom color" swatch: a hue wheel */
+  --swatch-custom: conic-gradient(#c0392b, #d4a017, #2e8b57, #1e6fb8, #7b3fa0, #c0392b);
 
   /* Shape */
   --radius-card: 14px;

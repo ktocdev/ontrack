@@ -10,17 +10,22 @@ import { IconChevronDown, IconSearch } from './icons'
  */
 
 const FIELD =
-  'w-full min-h-[48px] rounded-input border border-border-strong bg-surface px-3.5 py-3 text-text placeholder:text-text-muted focus:border-brand focus:outline-none disabled:opacity-60 read-only:bg-surface-muted read-only:text-text-faint aria-[invalid=true]:border-danger'
+  'w-full min-h-[48px] rounded-input border border-border-strong bg-surface px-3.5 py-3 text-text placeholder:text-text-muted focus:border-brand focus:outline-none disabled:opacity-60 aria-[invalid=true]:border-danger'
+
+/* Text fields only: a <select> always matches :read-only, which would gray every dropdown. */
+const READONLY = 'read-only:bg-surface-muted read-only:text-text-faint'
 
 type Wrap = {
   label: string
+  /** Adds a lighter "(optional)" after the label, as on the boards. */
+  optional?: boolean
   hint?: ReactNode
   error?: ReactNode
   className?: string
   children: (id: string, describedBy: string | undefined) => ReactNode
 }
 
-export function FieldWrap({ label, hint, error, className = '', children }: Wrap) {
+export function FieldWrap({ label, optional, hint, error, className = '', children }: Wrap) {
   const id = useId()
   const hintId = hint ? `${id}-hint` : undefined
   const errorId = error ? `${id}-error` : undefined
@@ -29,6 +34,7 @@ export function FieldWrap({ label, hint, error, className = '', children }: Wrap
     <div className={`flex flex-col gap-1.5 ${className}`}>
       <label htmlFor={id} className="text-13 font-semibold text-text-body">
         {label}
+        {optional && <span className="font-normal text-text-muted"> (optional)</span>}
       </label>
       {children(id, describedBy)}
       {error && (
@@ -47,20 +53,21 @@ export function FieldWrap({ label, hint, error, className = '', children }: Wrap
 
 type InputProps = Omit<ComponentPropsWithRef<'input'>, 'id'> & {
   label: string
+  optional?: boolean
   hint?: ReactNode
   error?: ReactNode
 }
 
-export function Input({ label, hint, error, className, ref, ...rest }: InputProps) {
+export function Input({ label, optional, hint, error, className, ref, ...rest }: InputProps) {
   return (
-    <FieldWrap label={label} hint={hint} error={error} className={className}>
+    <FieldWrap label={label} optional={optional} hint={hint} error={error} className={className}>
       {(id, describedBy) => (
         <input
           ref={ref}
           id={id}
           aria-describedby={describedBy}
           aria-invalid={error ? true : undefined}
-          className={FIELD}
+          className={`${FIELD} ${READONLY}`}
           {...rest}
         />
       )}
@@ -70,13 +77,14 @@ export function Input({ label, hint, error, className, ref, ...rest }: InputProp
 
 type TextareaProps = Omit<ComponentPropsWithRef<'textarea'>, 'id'> & {
   label: string
+  optional?: boolean
   hint?: ReactNode
   error?: ReactNode
 }
 
-export function Textarea({ label, hint, error, className, rows = 3, ref, ...rest }: TextareaProps) {
+export function Textarea({ label, optional, hint, error, className, rows = 3, ref, ...rest }: TextareaProps) {
   return (
-    <FieldWrap label={label} hint={hint} error={error} className={className}>
+    <FieldWrap label={label} optional={optional} hint={hint} error={error} className={className}>
       {(id, describedBy) => (
         <textarea
           ref={ref}
@@ -84,7 +92,7 @@ export function Textarea({ label, hint, error, className, rows = 3, ref, ...rest
           rows={rows}
           aria-describedby={describedBy}
           aria-invalid={error ? true : undefined}
-          className={`${FIELD} resize-none leading-snug`}
+          className={`${FIELD} ${READONLY} resize-none leading-snug`}
           {...rest}
         />
       )}
@@ -94,14 +102,15 @@ export function Textarea({ label, hint, error, className, rows = 3, ref, ...rest
 
 type SelectProps = Omit<ComponentPropsWithRef<'select'>, 'id'> & {
   label: string
+  optional?: boolean
   hint?: ReactNode
   error?: ReactNode
 }
 
 /** Native select with the design's caret; native pickers are what phones do best. */
-export function Select({ label, hint, error, className, children, ref, ...rest }: SelectProps) {
+export function Select({ label, optional, hint, error, className, children, ref, ...rest }: SelectProps) {
   return (
-    <FieldWrap label={label} hint={hint} error={error} className={className}>
+    <FieldWrap label={label} optional={optional} hint={hint} error={error} className={className}>
       {(id, describedBy) => (
         <div className="relative flex">
           <select

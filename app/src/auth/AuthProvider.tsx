@@ -21,7 +21,8 @@ async function loadMe(userId: string): Promise<Me> {
   const [profileRes, membershipsRes, restaurantsRes] = await Promise.all([
     sb.from('profiles').select('*').eq('id', userId).maybeSingle(),
     sb.from('memberships').select('restaurant_id').eq('user_id', userId),
-    sb.from('restaurants').select('*').order('sort_order'),
+    // Archived restaurants leave everyone's scope list; their history stays readable.
+    sb.from('restaurants').select('*').is('archived_at', null).order('sort_order'),
   ])
   if (profileRes.error) throw profileRes.error
   if (membershipsRes.error) throw membershipsRes.error

@@ -140,7 +140,23 @@ export const router = createBrowserRouter([
                   { path: '/admin/users', ...placeholder('Users', 'Phase 1 (OT-4)') },
                   { path: '/admin/roles', ...placeholder('Roles & rights', 'Phase 1 (OT-4)') },
                   { path: '/admin/tickets', ...placeholder('Tickets', 'Phase 7') },
-                  { path: '/admin/restaurants', ...placeholder('Restaurants', 'Phase 1 (OT-4)') },
+                  {
+                    path: '/admin/restaurants',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/RestaurantsScreen')).RestaurantsScreen,
+                    }),
+                  },
+                ],
+              },
+              {
+                element: <BareShell />,
+                children: [
+                  {
+                    path: '/admin/restaurants/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/AddRestaurantScreen')).AddRestaurantScreen,
+                    }),
+                  },
                 ],
               },
             ],

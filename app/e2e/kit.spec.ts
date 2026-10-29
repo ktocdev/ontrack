@@ -57,3 +57,17 @@ test.describe('kit on a laptop', () => {
     expect(Math.abs(box.y + box.height / 2 - 450)).toBeLessThan(30)
   })
 })
+
+test.describe('accent picker', () => {
+  test('a custom color asks for a full hex code', async ({ page }) => {
+    await page.goto('/kit')
+    const group = page.getByRole('radiogroup', { name: 'Accent color' })
+    await expect(group.getByRole('radio', { name: 'Ocean' })).toHaveAttribute('aria-checked', 'true')
+    await group.getByRole('radio', { name: 'Custom color' }).click()
+    const hex = page.getByLabel('Hex code')
+    await hex.fill('#C21')
+    await expect(page.getByRole('status').filter({ hasText: 'Enter a 6-digit hex code' })).toBeVisible()
+    await hex.fill('C2185B')
+    await expect(page.getByRole('status').filter({ hasText: 'Enter a 6-digit hex code' })).toBeHidden()
+  })
+})
