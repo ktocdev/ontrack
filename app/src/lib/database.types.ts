@@ -943,7 +943,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "can":
+            "add_restaurant":
+{ Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
+                           },
+"can":
 { Args: { "action": string,"rid"?: string }; Returns: boolean
                            },
 "can_see_ticket":

@@ -22,7 +22,7 @@ create or replace function public.add_restaurant(
   p_address text,
   p_phone text,
   p_color text,
-  p_manager_id uuid
+  p_manager_id uuid default null
 )
 returns uuid
 language plpgsql

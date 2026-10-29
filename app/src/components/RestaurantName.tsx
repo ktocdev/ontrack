@@ -3,7 +3,8 @@ import type { CSSProperties } from 'react'
 /**
  * A restaurant is always shown as its color square followed by its name in
  * body text; the name itself is never colored. The square is 9 to 14px with
- * an inset outline so light accents still read on white.
+ * an inset outline so light accents still read on white (radius 2, 3 from
+ * 12px, 4 at 14px as on the Restaurants list).
  */
 
 export function RestaurantSquare({
@@ -19,7 +20,7 @@ export function RestaurantSquare({
     width: size,
     height: size,
     background: color,
-    borderRadius: size >= 12 ? 3 : 2,
+    borderRadius: size >= 14 ? 4 : size >= 12 ? 3 : 2,
     boxShadow: 'inset 0 0 0 1px var(--square-outline)',
   }
   return <span aria-hidden="true" className={`inline-block flex-none ${className}`} style={style} />

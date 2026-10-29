@@ -85,8 +85,9 @@ jobs:
         run: npm run test:e2e:stack
         working-directory: app
 
+      # Always: the report carries screenshots of screens on real data for design review.
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: playwright-report-stack
           path: app/playwright-report-stack
