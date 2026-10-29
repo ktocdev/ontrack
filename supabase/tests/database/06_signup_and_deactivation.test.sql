@@ -3,7 +3,7 @@
 -- audit, that an invite is claimed by its id (service role) and never by
 -- email alone, and that the service role can deactivate someone.
 begin;
-select plan(19);
+select plan(18);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
