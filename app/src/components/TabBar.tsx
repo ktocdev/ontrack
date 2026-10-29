@@ -14,12 +14,21 @@ export type TabItem = {
   end?: boolean
 }
 
-export function TabBar({ items, label }: { items: TabItem[]; label: string }) {
+export function TabBar({
+  items,
+  label,
+  inset = true,
+}: {
+  items: TabItem[]
+  label: string
+  /** Add the home-bar inset. Only the bar pinned to the bottom edge wants it; /kit samples turn it off. */
+  inset?: boolean
+}) {
   return (
     <nav
       aria-label={label}
       className="flex flex-none border-t border-border bg-surface px-2 pt-1.5"
-      style={{ paddingBottom: 'calc(20px + var(--safe-bottom))' }}
+      style={{ paddingBottom: inset ? 'calc(20px + var(--safe-bottom))' : '20px' }}
     >
       {items.map(({ to, label: text, icon: Icon, end }) => (
         <NavLink

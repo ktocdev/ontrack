@@ -401,7 +401,7 @@ export function KitPage() {
               <div className="flex flex-col gap-3">
                 {(Object.keys(ROLE_TABS) as AppRole[]).map((role) => (
                   <div key={role} className="overflow-hidden rounded-card border border-border">
-                    <TabBar label={ROLE_TABS[role].label} items={ROLE_TABS[role].items} />
+                    <TabBar label={ROLE_TABS[role].label} items={ROLE_TABS[role].items} inset={false} />
                   </div>
                 ))}
               </div>
