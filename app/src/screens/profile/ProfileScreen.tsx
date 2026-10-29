@@ -1,17 +1,15 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
-import { Card, ListCard, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
+import { ListCard, ListRow, ListRowButton, ListRowLink, RowIcon, StackedRow } from '../../components/Card'
 import { Input } from '../../components/Field'
 import { Notice } from '../../components/Notice'
 import { RoleTag } from '../../components/Pill'
 import { Screen, ScreenBody, ScreenFooter, SectionLabel, TitleBar } from '../../components/Screen'
-import { Segmented } from '../../components/Segmented'
+import { ThemeControl } from '../../components/ThemeControl'
 import { IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 import { useUser } from '../../auth/context'
-import type { ThemePreference } from '../../theme/theme'
-import { useTheme } from '../../theme/useTheme'
 import { PasswordSheet } from './PasswordSheet'
 import { ReportSheet } from './ReportSheet'
 import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
@@ -23,15 +21,8 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  * bottom. Two things the board does not draw come from the build plan: the
  * phone field and the theme control. The 2-step row arrives with OT-12.
  */
-const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-]
-
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, signOut } = useUser()
-  const { preference, setPreference } = useTheme()
   const [name, setName] = useState(user.full_name)
   const [phone, setPhone] = useState(user.phone ?? '')
   const [notice, setNotice] = useState<string | null>(null)
@@ -129,37 +120,37 @@ export function ProfileScreen() {
         />
 
         <ListCard>
-          <div className="flex min-h-[60px] flex-col justify-center gap-[3px] px-3.5 py-2.5">
-            <span className="text-12 text-text-muted">Email</span>
-            <span className="text-14 font-semibold [overflow-wrap:anywhere]">{user.email}</span>
-          </div>
-          <div className="flex min-h-[60px] flex-col justify-center gap-[3px] border-t border-border px-3.5 py-2.5">
-            <span className="text-12 text-text-muted">Role</span>
+          <StackedRow label="Email">
+            <span className="[overflow-wrap:anywhere]">{user.email}</span>
+          </StackedRow>
+          <StackedRow label="Role">
             <span className="flex items-center justify-between gap-2">
-              <span className="text-14 font-semibold">{scope}</span>
+              {scope}
               <RoleTag>{ROLE_LABEL[user.role]}</RoleTag>
             </span>
-          </div>
+          </StackedRow>
         </ListCard>
         <span className="-mt-1 text-12 text-text-muted">
           Your email, role and restaurants are managed by your admin.
         </span>
 
         <SectionLabel className="-mb-0.5">Sign-in &amp; security</SectionLabel>
-        <Card className="flex min-h-[60px] items-center gap-3 px-3.5 py-2.5">
-          <div className="flex flex-1 flex-col gap-[3px]">
-            <span className="text-14 font-semibold">Password</span>
-            <span className="text-12 text-text-muted">At least 12 characters</span>
-          </div>
-          <Button variant="ghost" onClick={() => setPwOpen(true)}>
-            Change
-          </Button>
-        </Card>
+        <ListCard>
+          <ListRow
+            title="Password"
+            subtitle="At least 12 characters"
+            trailing={
+              <Button variant="ghost" onClick={() => setPwOpen(true)}>
+                Change
+              </Button>
+            }
+          />
+        </ListCard>
 
         {notice && <Notice>{notice}</Notice>}
 
         <SectionLabel className="-mb-0.5">Appearance</SectionLabel>
-        <Segmented label="Theme" value={preference} onChange={setPreference} options={THEME_OPTIONS} />
+        <ThemeControl />
 
         <SectionLabel className="-mb-0.5">Help &amp; support</SectionLabel>
         <ListCard>

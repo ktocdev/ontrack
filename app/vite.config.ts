@@ -103,7 +103,7 @@ export default defineConfig(({ mode }) => {
           scope: '/',
           display: 'standalone',
           orientation: 'portrait',
-          background_color: '#f3f4f1',
+          background_color: '#f3f4f1', // --bg (light); the manifest cannot read CSS
           theme_color: '#12634f',
           icons: [
             { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },

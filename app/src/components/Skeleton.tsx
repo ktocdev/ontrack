@@ -1,5 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react'
 
+/** The i-th item, wrapping around: skeleton rows repeat a short list of widths. */
+function cycle<T>(items: readonly T[], i: number): T {
+  return items[i % items.length]!
+}
+
 /**
  * Loading placeholders from the design's Loading boards. Every skeleton sits
  * inside a role="status" wrapper with a visually hidden sentence, and the
@@ -102,8 +107,8 @@ export function GroupedListSkeleton({ rows = 3, groups = 4 }: { rows?: number; g
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex min-h-[60px] items-center gap-3 border-t border-surface-muted px-3.5 py-2">
             <div className="flex flex-1 flex-col gap-[7px]">
-              <Sk w={widths[i % widths.length][0]} h={14} className="sk-on-card" />
-              <Sk w={widths[i % widths.length][1]} h={11} className="sk-on-card" />
+              <Sk w={cycle(widths, i)[0]} h={14} className="sk-on-card" />
+              <Sk w={cycle(widths, i)[1]} h={11} className="sk-on-card" />
             </div>
           </div>
         ))}
@@ -167,8 +172,8 @@ export function PeopleListSkeleton({ count = 7 }: { count?: number }) {
           >
             <Sk w={38} h={38} r="50%" className="sk-on-card flex-none" />
             <div className="flex flex-1 flex-col gap-2">
-              <Sk w={widths[i % widths.length][0]} h={14} className="sk-on-card" />
-              <Sk w={widths[i % widths.length][1]} h={11} className="sk-on-card" />
+              <Sk w={cycle(widths, i)[0]} h={14} className="sk-on-card" />
+              <Sk w={cycle(widths, i)[1]} h={11} className="sk-on-card" />
             </div>
           </div>
         ))}

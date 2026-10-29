@@ -43,7 +43,9 @@ export function writeStoredPreference(
 
 export function applyTheme(doc: Document, theme: ResolvedTheme) {
   doc.documentElement.dataset.theme = theme
-  // Keep the browser chrome (iOS status bar, Android toolbar) in step with the surface color.
+  // Keep the browser chrome (iOS status bar, Android toolbar) in step with the
+  // screen background, read from the --bg token now that data-theme is set.
   const meta = doc.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
-  if (meta) meta.content = theme === 'dark' ? '#121716' : '#f3f4f1'
+  const bg = doc.defaultView?.getComputedStyle(doc.documentElement).getPropertyValue('--bg').trim()
+  if (meta && bg) meta.content = bg
 }

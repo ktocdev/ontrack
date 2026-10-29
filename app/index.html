@@ -14,6 +14,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>
       // Apply the saved theme before first paint so dark mode never flashes light.
+      // Runs before any CSS: the two colors are copies of --bg in tokens.css.
       ;(function () {
         try {
           var saved = localStorage.getItem('ontrack.theme')

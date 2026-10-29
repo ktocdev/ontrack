@@ -29,6 +29,7 @@ import {
   Spinner,
 } from '../../components/Skeleton'
 import { Switch, SwitchRow } from '../../components/Switch'
+import { ThemeControl } from '../../components/ThemeControl'
 import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
 import {
@@ -44,7 +45,6 @@ import { SignedOutSheet } from '../auth/SignedOutSheet'
 import { ROLE_TABS } from '../../app/roles'
 import { MOCK_RESTAURANTS } from '../../auth/mock'
 import type { AppRole } from '../../lib/supabase'
-import type { ThemePreference } from '../../theme/theme'
 import { useTheme } from '../../theme/useTheme'
 
 /**
@@ -66,11 +66,6 @@ const STATUSES: PillStatus[] = [
   'reopened',
   'closed',
   'fixed',
-]
-const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
 ]
 
 const SECTIONS = {
@@ -106,7 +101,7 @@ function Section({ id, children }: { id: SectionId; children: React.ReactNode })
 }
 
 export function KitPage() {
-  const { preference, theme, setPreference } = useTheme()
+  const { theme } = useTheme()
   const toast = useToast()
   const [seg, setSeg] = useState<'all' | 'foh' | 'boh'>('all')
   const [sw, setSw] = useState(true)
@@ -147,14 +142,7 @@ export function KitPage() {
             </span>
           }
         >
-          <Segmented
-            label="Theme"
-            value={preference}
-            onChange={setPreference}
-            options={THEME_OPTIONS}
-            size="md"
-            className="lg:max-w-[360px]"
-          />
+          <ThemeControl className="lg:max-w-[360px]" />
         </ScreenHeader>
 
         <ScreenBody className="pb-10 lg:px-10 lg:pt-4">
