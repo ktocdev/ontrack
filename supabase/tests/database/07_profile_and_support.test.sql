@@ -6,6 +6,8 @@ select plan(16);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
+  -- Back to the owner first: the lookup below reads auth.users.
+  perform set_config('role', 'postgres', true);
   perform set_config('request.jwt.claims',
     json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated')::text, true);
   perform set_config('role', 'authenticated', true);
@@ -15,9 +17,9 @@ begin
   perform set_config('role', 'postgres', true);
   perform set_config('request.jwt.claims', '', true);
 end $$;
-create function pg_temp.uid(p_email text) returns uuid language sql as $$
-  select id from auth.users where email = p_email
-$$;
+-- Seed ids (supabase/seed.sql), so lookups never need auth.users mid-test.
+\set maya '''22222222-2222-4222-8222-000000000001'''
+\set ari '''22222222-2222-4222-8222-000000000002'''
 
 -- ---------------------------------------------------------------------------
 -- Own profile
@@ -51,23 +53,23 @@ select pg_temp.login('maya.reyes@example.com');
 select lives_ok(format($$
   insert into storage.objects (bucket_id, name, owner_id)
   values ('avatars', '%s/photo.jpg', auth.uid()::text)
-$$, pg_temp.uid('maya.reyes@example.com')), 'a person can upload a photo to their own folder');
+$$, (:maya)), 'a person can upload a photo to their own folder');
 select throws_ok(format($$
   insert into storage.objects (bucket_id, name, owner_id)
   values ('avatars', '%s/photo.jpg', auth.uid()::text)
-$$, pg_temp.uid('ari.kim@example.com')), '42501', null, 'but not into someone else''s folder');
+$$, (:ari)), '42501', null, 'but not into someone else''s folder');
 
 select pg_temp.login('ari.kim@example.com');
 select is(
   (select count(*)::int from storage.objects
-    where bucket_id = 'avatars' and name = pg_temp.uid('maya.reyes@example.com')::text || '/photo.jpg'),
+    where bucket_id = 'avatars' and name = (:maya)::text || '/photo.jpg'),
   1, 'colleagues can see a profile photo');
 delete from storage.objects
-  where bucket_id = 'avatars' and name = pg_temp.uid('maya.reyes@example.com')::text || '/photo.jpg';
+  where bucket_id = 'avatars' and name = (:maya)::text || '/photo.jpg';
 select pg_temp.logout();
 select is(
   (select count(*)::int from storage.objects
-    where bucket_id = 'avatars' and name = pg_temp.uid('maya.reyes@example.com')::text || '/photo.jpg'),
+    where bucket_id = 'avatars' and name = (:maya)::text || '/photo.jpg'),
   1, 'but cannot delete it');
 
 -- ---------------------------------------------------------------------------
@@ -82,7 +84,7 @@ select ok(
   'and it gets a case number');
 select throws_ok(format($$
   insert into public.support_reports (user_id, body) values ('%s', 'Spoofed')
-$$, pg_temp.uid('ari.kim@example.com')), '42501', null, 'a report cannot be filed as someone else');
+$$, (:ari)), '42501', null, 'a report cannot be filed as someone else');
 select throws_ok($$
   insert into public.support_reports (body, emailed_at) values ('Skip the inbox', now())
 $$, '42501', null, 'a report cannot claim it was already emailed');
