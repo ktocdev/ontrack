@@ -22,6 +22,9 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
+    // The service worker precaches the whole app on every new page; with many
+    // workers that crowds out the lazy route chunks. No test needs it.
+    serviceWorkers: 'block',
   },
   projects: [
     { name: 'chromium', use: { ...devices['Pixel 7'] } },
