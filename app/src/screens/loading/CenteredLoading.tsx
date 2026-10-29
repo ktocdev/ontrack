@@ -32,7 +32,7 @@ export function CenteredLoading({ title, body, brand = true, cancelTo, cancelLab
         <div className="flex items-center gap-2 px-6 pt-safe">
           <span className="mt-7 flex items-center gap-2">
             <Logo size={28} />
-            <span className="font-display text-[18px] font-bold tracking-[-0.01em]">OnTrack</span>
+            <span className="font-display text-18 font-bold tracking-[-0.01em]">OnTrack</span>
           </span>
         </div>
       ) : null}

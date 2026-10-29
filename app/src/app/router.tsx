@@ -4,17 +4,16 @@ import { SignInScreen } from '../screens/auth/SignInScreen'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotFoundScreen } from '../screens/errors/NotFoundScreen'
 import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErrorScreen'
-import { KitPage } from '../screens/kit/KitPage'
 import { CenteredLoading } from '../screens/loading/CenteredLoading'
 import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
-import { HelpScreen } from '../screens/profile/HelpScreen'
-import { ProfileScreen } from '../screens/profile/ProfileScreen'
 import { BareShell, Shell } from './Shell'
 
 /**
  * Routes follow the design's href links. Signed-in routes sit under
  * RequireAuth; each role's area sits under RequireRole and renders inside the
  * Shell with that role's tab bar. Anything unknown is the 404 board.
+ * Screens most people rarely open (the kit, Profile, Help) load on demand;
+ * later phases do the same per role area so a manager never downloads admin.
  */
 const placeholder = (title: string, phase: string, note?: string) => ({
   element: <PlaceholderScreen title={title} phase={phase} note={note} />,
@@ -23,6 +22,8 @@ const placeholder = (title: string, phase: string, note?: string) => ({
 export const router = createBrowserRouter([
   {
     errorElement: <RouteErrorScreen />,
+    // Shown on a cold load of a lazy route while its code arrives.
+    hydrateFallbackElement: <CenteredLoading title="Loading…" body="This only takes a moment." />,
     children: [
       // Public
       { path: '/sign-in', element: <BareShell />, children: [{ index: true, element: <SignInScreen /> }] },
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
         path: '/kit',
         element: <BareShell />,
         children: [
-          { index: true, element: <KitPage /> },
+          { index: true, lazy: async () => ({ Component: (await import('../screens/kit/KitPage')).KitPage }) },
           {
             path: 'loading/spinner',
             element: (
@@ -85,8 +86,14 @@ export const router = createBrowserRouter([
             path: '/profile',
             element: <BareShell />,
             children: [
-              { index: true, element: <ProfileScreen /> },
-              { path: 'help', element: <HelpScreen /> },
+              {
+                index: true,
+                lazy: async () => ({ Component: (await import('../screens/profile/ProfileScreen')).ProfileScreen }),
+              },
+              {
+                path: 'help',
+                lazy: async () => ({ Component: (await import('../screens/profile/HelpScreen')).HelpScreen }),
+              },
             ],
           },
 

@@ -38,14 +38,14 @@ export function Sheet({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-30 bg-[rgba(21,32,27,.45)] data-[state=open]:animate-[fade-in_.15s_ease-out]" />
+        <Dialog.Overlay className="fixed inset-0 z-30 bg-scrim data-[state=open]:animate-[fade-in_.15s_ease-out]" />
         <Dialog.Content
           onEscapeKeyDown={hold}
           onPointerDownOutside={hold}
           onInteractOutside={hold}
-          className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[520px] flex-col gap-3.5 rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-[0_24px_48px_-16px_rgba(21,32,27,.35)]`}
+          className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[520px] flex-col gap-3.5 rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-dialog`}
         >
-          <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-[3px] bg-border-strong lg:hidden" />
+          <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-square bg-border-strong lg:hidden" />
           {icon}
           <Dialog.Title
             className={`font-display text-22 font-bold tracking-[-0.01em] text-text ${hideTitle ? 'sr-only' : ''}`}

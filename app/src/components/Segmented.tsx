@@ -31,7 +31,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={`flex gap-1 rounded-[11px] bg-surface-sunken p-[3px] ${className}`}
+      className={`flex gap-1 rounded-track bg-surface-sunken p-[3px] ${className}`}
     >
       {options.map((o) => {
         const on = o.value === value
@@ -44,7 +44,7 @@ export function Segmented<T extends string>({
             onClick={() => onChange(o.value)}
             className={`${fit ? 'px-3.5' : 'flex-1 px-1'} ${h} whitespace-nowrap rounded-segment font-semibold transition-colors ${
               on
-                ? 'bg-surface text-text shadow-[0_1px_2px_rgba(21,32,27,.12)]'
+                ? 'bg-surface text-text shadow-segment'
                 : 'text-text-secondary hover:text-text active:bg-surface/60 active:text-text active:duration-0'
             }`}
           >

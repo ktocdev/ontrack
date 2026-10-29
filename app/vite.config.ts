@@ -71,6 +71,18 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    build: {
+      // The vendor chunk (React, Supabase, Radix) is ~610 KB minified, ~180 KB gzipped.
+      chunkSizeWarningLimit: 700,
+      rolldownOptions: {
+        output: {
+          // Libraries change far less often than the app: keep them in their
+          // own file so a deploy does not make every phone re-download React
+          // and Supabase.
+          codeSplitting: { groups: [{ name: 'vendor', test: /node_modules/ }] },
+        },
+      },
+    },
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
       // A literal true/false in the bundle, so production builds drop the mock

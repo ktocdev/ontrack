@@ -66,7 +66,7 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
       <div className="flex items-center px-screen pt-safe">
         <span className="mt-5 flex items-center gap-2">
           <Logo />
-          <span className="font-display text-[17px] font-bold">OnTrack</span>
+          <span className="font-display text-17 font-bold">OnTrack</span>
         </span>
       </div>
       <ErrorBlock
@@ -96,7 +96,7 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
               type="button"
               onClick={copy}
               aria-live="polite"
-              className="min-h-9 rounded-lg bg-surface-muted px-2.5 text-13 font-semibold text-text"
+              className="min-h-9 rounded-control bg-surface-muted px-2.5 text-13 font-semibold text-text"
             >
               {copied ? 'Copied' : 'Copy'}
             </button>

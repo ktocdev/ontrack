@@ -68,9 +68,7 @@ export function StatusPill({
 /** URGENT: white text on the urgent token, 11px bold, 5px radius. */
 export function UrgentTag({ className = '' }: { className?: string }) {
   return (
-    <span className={`rounded-[5px] bg-urgent px-[7px] py-[2px] text-11 font-bold text-white ${className}`}>
-      URGENT
-    </span>
+    <span className={`rounded-chip bg-urgent px-[7px] py-[2px] text-11 font-bold text-white ${className}`}>URGENT</span>
   )
 }
 
@@ -78,7 +76,7 @@ export function UrgentTag({ className = '' }: { className?: string }) {
 export function WalkthroughTag({ className = '' }: { className?: string }) {
   return (
     <span
-      className={`inline-flex flex-none items-center gap-1 whitespace-nowrap rounded-[5px] border border-wt-tag-border bg-surface px-1.5 py-px text-11 font-bold leading-[15px] text-wt-tag-text ${className}`}
+      className={`inline-flex flex-none items-center gap-1 whitespace-nowrap rounded-chip border border-wt-tag-border bg-surface px-1.5 py-px text-11 font-bold leading-[15px] text-wt-tag-text ${className}`}
     >
       <IconClipboardSmall />
       Walkthrough
