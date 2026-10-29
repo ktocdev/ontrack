@@ -2,7 +2,7 @@
 -- nothing an admin owns; profile photos are written only by their owner; a
 -- support report is the reporter's own and only admins see everyone's.
 begin;
-select plan(16);
+select plan(17);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
@@ -27,9 +27,12 @@ end $$;
 select pg_temp.login('maya.reyes@example.com');
 
 select lives_ok($$
-  update public.profiles set full_name = 'Maya R. Reyes', phone = '312-555-0101', avatar_path = 'x/y.jpg'
+  update public.profiles set full_name = 'Maya R. Reyes', phone = '312-555-0101', avatar_path = auth.uid()::text || '/photo.jpg'
   where id = auth.uid()
 $$, 'a manager can change their own name, phone and photo');
+select throws_ok(format($$
+  update public.profiles set avatar_path = '%s/photo.jpg' where id = auth.uid()
+$$, (:ari)), '23514', null, 'but the photo must sit in their own folder');
 select is(
   (select full_name from public.profiles where id = auth.uid()),
   'Maya R. Reyes', 'and the change is saved');

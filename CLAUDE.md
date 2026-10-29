@@ -55,7 +55,8 @@ on a phone and matches its PNG, in light and dark mode.
 - Every signed-in route sits under `RequireAuth` then `RequireRole`, and renders inside `Shell` (tab bar) or `BareShell` (detail screens). Screens use `Screen`, `ScreenHeader`, `ScreenBody`, `BackBar` from `components/Screen.tsx`.
 - `useUser()` gives the profile, the restaurants in scope and whether that scope is all restaurants. Data hooks are one TanStack Query hook per screen over the typed client in `lib/supabase.ts`; regenerate `lib/database.types.ts` from the CI artifact (`database-types`) after a schema change.
 - `/kit` is public and shows every component in both themes plus the loading and error boards under `/kit/loading/*` and `/kit/errors/*`. A new component goes there first.
-- The e2e build sets `VITE_E2E_MOCK=1`: `/sign-in` becomes a role picker over the seed's people and no backend is needed. Production builds never set it.
+- The e2e build sets `VITE_E2E_MOCK=1`: `/sign-in` becomes a role picker over the seed's people and no backend is needed. Production builds never set it, and `vite.config.ts` refuses the flag under Workers Builds (`WORKERS_CI`).
+- Every build writes `dist/_headers` (from `vite.config.ts`): a content security policy that allows only this origin, the Supabase project and the hashed theme script in `index.html`, plus the frame, sniffing, referrer and transport headers. A new external origin (a font host, an API) must be added there, and a CSP change is checked on the branch preview, since Playwright does not go through Cloudflare.
 - Local dev needs `app/.env` with `VITE_SUPABASE_URL` (the Project URL, `https://<ref>.supabase.co`) and `VITE_SUPABASE_ANON_KEY` set to the publishable key (`sb_publishable_…`, Project Settings, API Keys); see `.env.example`. Both are public and get built into the bundle, so never put a secret key (`sb_secret_…`), the legacy `service_role` key or a personal access token (`sbp_…`) in a `VITE_` variable. The same two go in the Cloudflare Worker's build variables, set separately for Production and for each branch (the environment dropdown on Settings, Builds).
 
 ## Token names
@@ -78,7 +79,11 @@ Right keys, from the Roles & rights screen: `create_tickets`, `see_all_tickets`,
 
 What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with a resolution, reopen within 30 days. Assigning and the other statuses need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
 
-Account creation is invite only at the database level: `handle_new_user` takes role and restaurants from a pending `invites` row matched on email, or from `app_metadata` (service role only), and rejects the insert otherwise. Never read privilege from `user_metadata`; clients can write it. Deactivation (`profiles.deactivated_at`) is enforced inside `has_scope()`, `my_role()` and `can()`, so every policy honors it; the Phase 1 revoke-user function must also ban the auth user so refresh tokens stop working. Keep "Allow new users to sign up" off in the hosted project's Auth settings as defense in depth.
+Account creation is invite only at the database level: `handle_new_user` takes role and restaurants from the pending `invites` row named by `app_metadata.invite_id` (the accept step of `invite-user` creates the auth user with it, after checking the token against `token_hash`), or from `role` and `restaurant_ids` in `app_metadata` (seed, accounts made by hand), and rejects the insert otherwise. Only the service role writes `app_metadata`; an email alone never claims an invite, so the dashboard's Add user no longer creates a profile. Never read privilege from `user_metadata`; clients can write it. Deactivation (`profiles.deactivated_at`) is enforced inside `has_scope()`, `my_role()` and `can()` and in the own-row write policies, so every policy honors it; the revoke-user function must also ban the auth user so refresh tokens stop working. Keep "Allow new users to sign up" off in the hosted project's Auth settings as defense in depth.
+
+`invites` are read with `invite_users` and written only by the service role: `invite-user` and `revoke-user` check the caller with `can('invite_users')` and refuse an admin invite unless the caller is an admin. Triggers that gate on `is_admin()` (`protect_profile_columns`) also pass `is_service()`, the service role or the database owner with no signed-in user, so Edge Functions can set `deactivated_at`. `audit_log` rows are written by admins and holders of `manage_rights` or `invite_users`, as themselves; a `rights` write sets `updated_by` to the caller. `profiles.avatar_path` must sit under `<user id>/`, names are 1 to 120 characters, phones at most 40.
+
+Password change re-checks the current password by signing in with it. `secure_password_change` is on in `config.toml` and must be on in the hosted project (Authentication, Settings); the app's sign-in right before satisfies its recent-login rule.
 
 Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
 
@@ -101,11 +106,12 @@ Done when an admin invites a manager from a phone, the manager sets up the accou
 | PR    | Scope                                                                                                               |
 | ----- | ------------------------------------------------------------------------------------------------------------------- |
 | OT-6  | Sign in, Signed out sheet (12-hour cap, app side), Profile, Help & support, support reports                         |
-| OT-7  | Admin Restaurants and Add restaurant (accent presets, custom color, taken-color check)                              |
-| OT-8  | Invites: `send-email`, `invite-user`, `revoke-user`, Users, Invite user, invite email, Set up account, Link expired |
-| OT-9  | Password reset 1 to 5 (Supabase auth email through Resend SMTP), reset links on Sign in and Help                    |
-| OT-10 | Roles & rights grid, User profile overrides, View as with the audit log                                             |
-| OT-11 | 2-step verification (TOTP), required for admins                                                                     |
+| OT-7  | Security audit of OT-6 and the OT-2 access layer: invite claim by id, invites service-role only, `is_service()`, deactivated write paths, audit log writers, CSP headers |
+| OT-8  | Admin Restaurants and Add restaurant (accent presets, custom color, taken-color check)                              |
+| OT-9  | Invites: `send-email`, `invite-user`, `revoke-user`, Users, Invite user, invite email, Set up account, Link expired |
+| OT-10 | Password reset 1 to 5 (Supabase auth email through Resend SMTP), reset links on Sign in and Help                    |
+| OT-11 | Roles & rights grid, User profile overrides, View as with the audit log                                             |
+| OT-12 | 2-step verification (TOTP), required for admins                                                                     |
 
 Email goes through Resend. Until the group has a sending domain, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address.
 

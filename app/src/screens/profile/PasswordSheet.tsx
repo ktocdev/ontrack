@@ -9,7 +9,7 @@ import { PasswordError, useChangePassword } from './useProfile'
  * Change password (Profile, passwordSheetOpen): current, new with the
  * 12-character hint, confirm, Update password, Cancel. Mismatches are caught
  * here; a wrong current password comes back from Supabase. "Forgot your
- * current password?" arrives with the reset flow (OT-9).
+ * current password?" arrives with the reset flow (OT-10).
  */
 export function PasswordSheet({
   open,

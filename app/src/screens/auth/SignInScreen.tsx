@@ -15,7 +15,7 @@ import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
  * wordmark and tagline, then a panel with 24px top corners rising over it.
  * The button stays disabled until the email has a valid shape and the
  * password has 12 characters. In the e2e build the panel is a role picker.
- * "Forgot password?" arrives with the reset flow (OT-9).
+ * "Forgot password?" arrives with the reset flow (OT-10).
  */
 export function SignInScreen() {
   const auth = useAuth()

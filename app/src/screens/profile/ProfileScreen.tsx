@@ -21,7 +21,7 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  * phone are the person's own; email, role and restaurants belong to the admin.
  * Then password, theme, help and sign out, with Save changes fixed at the
  * bottom. Two things the board does not draw come from the build plan: the
- * phone field and the theme control. The 2-step row arrives with OT-11.
+ * phone field and the theme control. The 2-step row arrives with OT-12.
  */
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'system', label: 'System' },
