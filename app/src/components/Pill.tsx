@@ -121,7 +121,7 @@ export function RoleTag({ children, className = '' }: { children: ReactNode; cla
 /** Alert count on a tab ("Closed 1" with a reopened ticket). */
 export function TabAlert({ count, label }: { count: number; label: string }) {
   return (
-    <span aria-label={label} className="rounded-pill bg-[#B8941F] px-[7px] py-px text-11 font-bold text-white">
+    <span aria-label={label} className="rounded-pill bg-alert-badge px-[7px] py-px text-11 font-bold text-white">
       {count}
     </span>
   )

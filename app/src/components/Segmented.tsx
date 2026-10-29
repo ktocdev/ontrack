@@ -43,7 +43,9 @@ export function Segmented<T extends string>({
             aria-checked={on}
             onClick={() => onChange(o.value)}
             className={`${fit ? 'px-3.5' : 'flex-1 px-1'} ${h} whitespace-nowrap rounded-segment font-semibold transition-colors ${
-              on ? 'bg-surface text-text shadow-[0_1px_2px_rgba(21,32,27,.12)]' : 'text-text-secondary'
+              on
+                ? 'bg-surface text-text shadow-[0_1px_2px_rgba(21,32,27,.12)]'
+                : 'text-text-secondary hover:text-text active:bg-surface/60 active:text-text active:duration-0'
             }`}
           >
             {o.label}

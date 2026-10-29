@@ -4,7 +4,8 @@ import type { ReactNode } from 'react'
 /**
  * Bottom sheet: scrim at 45% text color, panel on the screen background with
  * 22px top corners, a 40×5 handle, a 22px Archivo title, 10px 20px 24px
- * padding plus the home-bar inset.
+ * padding plus the home-bar inset. From the lg breakpoint it is a centered
+ * 440px dialog with all four corners rounded and no handle.
  */
 type Props = {
   open: boolean
@@ -21,11 +22,8 @@ export function Sheet({ open, onOpenChange, title, description, children, hideTi
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-30 bg-[rgba(21,32,27,.45)] data-[state=open]:animate-[fade-in_.15s_ease-out]" />
-        <Dialog.Content
-          className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[520px] flex-col gap-3.5 rounded-t-sheet bg-bg px-screen pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out]"
-          style={{ paddingBottom: 'calc(24px + var(--safe-bottom))' }}
-        >
-          <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-[3px] bg-border-strong" />
+        <Dialog.Content className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[520px] flex-col gap-3.5 rounded-t-sheet bg-bg px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-[0_24px_48px_-16px_rgba(21,32,27,.35)]">
+          <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-[3px] bg-border-strong lg:hidden" />
           <Dialog.Title
             className={`font-display text-22 font-bold tracking-[-0.01em] text-text ${hideTitle ? 'sr-only' : ''}`}
           >
@@ -43,5 +41,5 @@ export function Sheet({ open, onOpenChange, title, description, children, hideTi
   )
 }
 
-/** Centered confirm dialog variant for destructive actions on larger screens later; today it is the same sheet. */
+/** Confirm dialog for destructive actions: the same sheet, centered on desktop. */
 export const ConfirmSheet = Sheet

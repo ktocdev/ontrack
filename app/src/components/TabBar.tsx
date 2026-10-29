@@ -2,9 +2,11 @@ import type { ComponentType } from 'react'
 import { NavLink } from 'react-router'
 
 /**
- * The bottom tab bar: white, 1px top border, 6px 8px 20px padding plus the
- * home-bar inset on device. Each tab is a 44px column with a 24px icon and a
- * 12px label; the active tab is brand green.
+ * The bottom tab bar: white, 1px top border, 6px 8px on top and sides. The
+ * design's 20px bottom is its allowance for the home bar, so on device the
+ * real inset replaces it, never less than 8px (adding both left about 60px
+ * under the labels on an iPhone). Each tab is a 44px column with a 24px icon
+ * and a 12px label; the active tab is brand green.
  */
 export type TabItem = {
   to: string
@@ -14,12 +16,21 @@ export type TabItem = {
   end?: boolean
 }
 
-export function TabBar({ items, label }: { items: TabItem[]; label: string }) {
+export function TabBar({
+  items,
+  label,
+  inset = true,
+}: {
+  items: TabItem[]
+  label: string
+  /** Use the home-bar inset. Only the bar pinned to the bottom edge wants it; /kit samples turn it off. */
+  inset?: boolean
+}) {
   return (
     <nav
       aria-label={label}
       className="flex flex-none border-t border-border bg-surface px-2 pt-1.5"
-      style={{ paddingBottom: 'calc(20px + var(--safe-bottom))' }}
+      style={{ paddingBottom: inset ? 'max(8px, var(--safe-bottom))' : '8px' }}
     >
       {items.map(({ to, label: text, icon: Icon, end }) => (
         <NavLink
@@ -27,8 +38,8 @@ export function TabBar({ items, label }: { items: TabItem[]; label: string }) {
           to={to}
           end={end}
           className={({ isActive }) =>
-            `flex min-h-tap flex-1 flex-col items-center gap-[3px] py-1.5 text-12 font-semibold ${
-              isActive ? 'text-brand' : 'text-text-muted hover:text-text-muted'
+            `flex min-h-tap flex-1 flex-col items-center gap-[3px] rounded-control py-1.5 text-12 font-semibold transition-colors active:bg-surface-muted active:duration-0 ${
+              isActive ? 'text-brand' : 'text-text-muted hover:text-text-secondary'
             }`
           }
         >

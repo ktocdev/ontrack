@@ -29,7 +29,7 @@ export function LoadingRegion({
   className?: string
 }) {
   return (
-    <div role="status" className={className}>
+    <div role="status" className={`relative ${className}`}>
       <span className="sr-only">{label}</span>
       {children}
     </div>

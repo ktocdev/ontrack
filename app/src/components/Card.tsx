@@ -19,7 +19,10 @@ export function Card({ className = '', children, ...rest }: HTMLAttributes<HTMLD
 
 export function CardLink({ className = '', children, ...rest }: LinkProps) {
   return (
-    <Link className={`${CARD} block hover:border-border-muted ${className}`} {...rest}>
+    <Link
+      className={`${CARD} block transition-colors hover:border-border-muted active:bg-surface-hover active:duration-0 ${className}`}
+      {...rest}
+    >
       {children}
     </Link>
   )
@@ -58,11 +61,11 @@ export function ListRow({ title, subtitle, leading, trailing, className = '' }: 
   )
 }
 
-/** Row that navigates. Same geometry as ListRow with a chevron-free hover. */
+/** Row that navigates. Same geometry as ListRow with a hover and pressed tint. */
 export function ListRowLink({ title, subtitle, leading, trailing, className = '', ...rest }: RowProps & LinkProps) {
   return (
     <Link
-      className={`flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5 text-text first:border-t-0 hover:bg-surface-hover ${className}`}
+      className={`flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5 text-text first:border-t-0 transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0 ${className}`}
       {...rest}
     >
       {leading}

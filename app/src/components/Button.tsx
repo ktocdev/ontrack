@@ -13,23 +13,36 @@ import { ButtonSpinner } from './Skeleton'
  */
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'compact' | 'small' | 'ghost'
 
+/*
+ * Hover and pressed colors are prefixed not-disabled so a disabled or loading
+ * button stays still. Tailwind only applies hover: on devices that can hover,
+ * so a phone never keeps a stuck hover color after a tap; it gets active:.
+ */
 const VARIANT: Record<ButtonVariant, string> = {
   primary:
-    'min-h-[52px] w-full rounded-input bg-brand-fill px-5 text-16 font-bold text-on-brand hover:bg-brand-fill-hover',
+    'min-h-[52px] rounded-input bg-brand-fill px-5 text-16 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
   secondary:
-    'min-h-[48px] w-full rounded-input border border-border-strong bg-surface px-4 text-15 font-semibold text-text hover:border-border-muted',
-  danger: 'min-h-[52px] w-full rounded-input bg-danger-fill px-5 text-16 font-bold text-white',
-  compact: 'min-h-[44px] rounded-input bg-brand-fill px-4 text-15 font-bold text-on-brand hover:bg-brand-fill-hover',
+    'min-h-[48px] rounded-input border border-border-strong bg-surface px-4 text-15 font-semibold text-text not-disabled:hover:border-border-muted not-disabled:active:border-border-muted not-disabled:active:bg-surface-muted',
+  danger:
+    'min-h-[52px] rounded-input bg-danger-fill px-5 text-16 font-bold text-white not-disabled:hover:bg-danger-fill-hover not-disabled:active:bg-danger-fill-active',
+  compact:
+    'min-h-[44px] rounded-input bg-brand-fill px-4 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
   small:
-    'min-h-[44px] rounded-input border border-border-strong bg-surface px-4 text-14 font-semibold text-text hover:border-border-muted',
-  ghost: 'min-h-[40px] rounded-control px-1 text-14 font-semibold text-brand hover:text-brand-strong',
+    'min-h-[44px] rounded-input border border-border-strong bg-surface px-4 text-14 font-semibold text-text not-disabled:hover:border-border-muted not-disabled:active:border-border-muted not-disabled:active:bg-surface-muted',
+  ghost:
+    'min-h-[40px] rounded-control px-1 text-14 font-semibold text-brand not-disabled:hover:text-brand-strong not-disabled:active:bg-brand-tint-soft not-disabled:active:text-brand-strong',
 }
 
+/* active:duration-0 makes the press land at once; release fades back over 150ms. */
 const BASE =
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-progress'
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors active:duration-0 disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-progress'
+
+/** Primary, secondary and danger fill the width unless the caller sets its own (w-auto). */
+const FULL_WIDTH: ButtonVariant[] = ['primary', 'secondary', 'danger']
 
 export function buttonClasses(variant: ButtonVariant, className = '') {
-  return `${BASE} ${VARIANT[variant]} ${className}`
+  const width = FULL_WIDTH.includes(variant) && !/(^|\s)w-/.test(className) ? 'w-full' : ''
+  return `${BASE} ${VARIANT[variant]} ${width} ${className}`
 }
 
 type Common = {
@@ -86,8 +99,10 @@ export function IconButton({
     <button
       type="button"
       aria-label={label}
-      className={`inline-flex h-11 w-11 items-center justify-center text-text ${
-        framed ? 'rounded-input border border-border-strong bg-surface' : ''
+      className={`inline-flex h-11 w-11 items-center justify-center text-text transition-colors active:duration-0 disabled:opacity-60 ${
+        framed
+          ? 'rounded-input border border-border-strong bg-surface not-disabled:hover:border-border-muted not-disabled:active:bg-surface-muted'
+          : 'rounded-control not-disabled:hover:bg-surface-hover not-disabled:active:bg-surface-sunken'
       } ${className}`}
       {...rest}
     >
