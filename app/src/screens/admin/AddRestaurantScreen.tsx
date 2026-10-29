@@ -59,7 +59,9 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
     choice !== 'custom'
       ? undefined
       : !isHex(color)
-        ? 'Enter a 6-digit hex code, like #C2185B.'
+        ? custom.trim()
+          ? 'Enter a 6-digit hex code, like #C2185B.'
+          : undefined
         : tooClose(color, unavailable)
           ? 'Looks a lot like a color already in use. Pick something more distinct.'
           : undefined
@@ -128,7 +130,11 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
 
           <AccentPicker
             label="Accent color"
-            hint="Picked for you. Tap another to change it, or pick a custom color. Colors other restaurants use aren’t offered."
+            hint={
+              options.length
+                ? 'Picked for you. Tap another to change it, or pick a custom color. Colors other restaurants use aren’t offered.'
+                : 'Every preset color is in use. Pick a custom color.'
+            }
             options={options}
             value={choice}
             onChange={setChoice}

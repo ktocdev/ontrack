@@ -121,7 +121,7 @@ Email goes through Resend. Until the group has a sending domain, the sender is `
 
 ## Database work
 
-No Supabase CLI or Docker on the dev machine, so the database is verified in CI: push the branch and read the `Database` job. To run it locally when Docker is available: `npx supabase db start && npx supabase test db`. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Keep the seed in step with the design's sample data.
+Docker Desktop runs on the dev machine, so the database and the data flows are checked locally before pushing (CI checks them again): `npx -y supabase@2.122.0 start -x studio,imgproxy,logflare,vector,edge-runtime,realtime,postgres-meta`, then `npx -y supabase@2.122.0 test db`, then `npm run test:e2e:stack` in `app/` with `VITE_SUPABASE_URL=http://127.0.0.1:54321` and `VITE_SUPABASE_ANON_KEY` set to the `PUBLISHABLE_KEY` the start command prints. `npx -y supabase@2.122.0 db reset` puts the seed back. Use the same CLI version as CI. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Keep the seed in step with the design's sample data.
 
 ## Commands
 

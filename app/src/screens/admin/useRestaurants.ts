@@ -5,8 +5,9 @@ import { requireSupabase } from '../../lib/supabase'
  * Admin · Restaurants and Add restaurant. One read for the list: restaurants,
  * their open ticket counts, the managers who could run one, and pending
  * manager invites (so a restaurant whose manager has not accepted yet still
- * shows a name). Adding goes through add_restaurant(), which also gives the
- * chosen manager access and logs the change.
+ * shows a name), plus each restaurant's history so Delete is only offered
+ * when there is none. Adding, archiving, restoring and deleting each go
+ * through one database function that checks the caller and logs the change.
  */
 
 export type ManagerLine =
@@ -19,6 +20,9 @@ export type AdminRestaurant = {
   color: string
   openCount: number
   manager: ManagerLine
+  archived: boolean
+  /** Null when it can be deleted; otherwise why not. */
+  keepReason: string | null
 }
 
 export type ManagerOption = { id: string; name: string }
@@ -31,8 +35,8 @@ export function useAdminRestaurants() {
     throwOnError: true,
     queryFn: async () => {
       const sb = requireSupabase()
-      const [restaurants, counts, managers, invites] = await Promise.all([
-        sb.from('restaurants').select('id, name, address, color, manager_id').order('sort_order'),
+      const [restaurants, counts, managers, invites, history] = await Promise.all([
+        sb.from('restaurants').select('id, name, address, color, manager_id, archived_at').order('sort_order'),
         sb.from('v_restaurant_open_counts').select('restaurant_id, open_count'),
         sb.from('profiles').select('id, full_name').eq('role', 'manager').is('deactivated_at', null).order('full_name'),
         sb
@@ -40,8 +44,10 @@ export function useAdminRestaurants() {
           .select('full_name, restaurant_ids, expires_at')
           .eq('role', 'manager')
           .eq('status', 'pending'),
+        sb.from('v_restaurant_history').select('*'),
       ])
-      for (const r of [restaurants, counts, managers, invites]) if (r.error) throw r.error
+      for (const r of [restaurants, counts, managers, invites, history]) if (r.error) throw r.error
+      const historyBy = new Map((history.data ?? []).map((h) => [h.restaurant_id, h]))
 
       const openBy = new Map((counts.data ?? []).map((c) => [c.restaurant_id, c.open_count ?? 0]))
       const nameBy = new Map((managers.data ?? []).map((m) => [m.id, m.full_name]))
@@ -55,12 +61,39 @@ export function useAdminRestaurants() {
           : invite
             ? { kind: 'invite', name: invite.full_name, expired: new Date(invite.expires_at).getTime() < now }
             : { kind: 'none' }
-        return { id: r.id, name: r.name, address: r.address, color: r.color, openCount: openBy.get(r.id) ?? 0, manager }
+        return {
+          id: r.id,
+          name: r.name,
+          address: r.address,
+          color: r.color,
+          openCount: openBy.get(r.id) ?? 0,
+          manager,
+          archived: r.archived_at !== null,
+          keepReason: keepReason(historyBy.get(r.id)),
+        }
       })
       const managerOptions: ManagerOption[] = (managers.data ?? []).map((m) => ({ id: m.id, name: m.full_name }))
       return { restaurants: list, managers: managerOptions }
     },
   })
+}
+
+type History = {
+  tickets: number | null
+  equipment: number | null
+  walkthroughs: number | null
+  inhouse_fixes: number | null
+  home_of: number | null
+}
+
+/** Matches delete_restaurant(): history means archive instead; a home restaurant stays. */
+function keepReason(h: History | undefined): string | null {
+  if (!h) return null
+  if ((h.tickets ?? 0) + (h.equipment ?? 0) + (h.walkthroughs ?? 0) + (h.inhouse_fixes ?? 0) > 0) {
+    return 'It has tickets, equipment or walkthroughs, so it can only be archived.'
+  }
+  if ((h.home_of ?? 0) > 0) return 'Someone has it as their home restaurant, so it can only be archived.'
+  return null
 }
 
 export type NewRestaurant = {
@@ -107,5 +140,37 @@ export function useAddRestaurant() {
         queryClient.invalidateQueries({ queryKey: RESTAURANTS_KEY }),
         queryClient.invalidateQueries({ queryKey: ['me'] }),
       ]),
+  })
+}
+
+function useRefreshRestaurants() {
+  const queryClient = useQueryClient()
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: RESTAURANTS_KEY }),
+      queryClient.invalidateQueries({ queryKey: ['me'] }),
+    ])
+}
+
+/** Archive (true) or restore (false). */
+export function useSetArchived() {
+  const refresh = useRefreshRestaurants()
+  return useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await requireSupabase().rpc('set_restaurant_archived', { p_id: id, p_archived: archived })
+      if (error) throw error
+    },
+    onSuccess: refresh,
+  })
+}
+
+export function useDeleteRestaurant() {
+  const refresh = useRefreshRestaurants()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await requireSupabase().rpc('delete_restaurant', { p_id: id })
+      if (error) throw error
+    },
+    onSuccess: refresh,
   })
 }
