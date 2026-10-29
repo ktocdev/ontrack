@@ -71,7 +71,24 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+    build: {
+      // The vendor chunk (React, Supabase, Radix) is ~610 KB minified, ~180 KB gzipped.
+      chunkSizeWarningLimit: 700,
+      rolldownOptions: {
+        output: {
+          // Libraries change far less often than the app: keep them in their
+          // own file so a deploy does not make every phone re-download React
+          // and Supabase.
+          codeSplitting: { groups: [{ name: 'vendor', test: /node_modules/ }] },
+        },
+      },
+    },
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+      // A literal true/false in the bundle, so production builds drop the mock
+      // sign-in and its fixtures entirely instead of shipping them switched off.
+      __E2E_MOCK__: JSON.stringify(env.VITE_E2E_MOCK === '1'),
+    },
     plugins: [
       react(),
       tailwindcss(),
@@ -86,7 +103,7 @@ export default defineConfig(({ mode }) => {
           scope: '/',
           display: 'standalone',
           orientation: 'portrait',
-          background_color: '#f3f4f1',
+          background_color: '#f3f4f1', // --bg (light); the manifest cannot read CSS
           theme_color: '#12634f',
           icons: [
             { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },

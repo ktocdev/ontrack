@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router'
 
 /**
@@ -46,40 +46,43 @@ type RowProps = {
   className?: string
 }
 
-/** Settings-style row: 60px min height, 10px 14px padding, divider on top. */
-export function ListRow({ title, subtitle, leading, trailing, className = '' }: RowProps) {
+/** Settings-style row: 60px min height, 10px 14px padding, divider on top (none on the first). */
+const ROW =
+  'flex min-h-[60px] w-full items-center gap-3 border-t border-border px-3.5 py-2.5 text-left text-text first:border-t-0'
+/** Rows that do something: hover tint, and a pressed tint that lands at once. */
+const PRESSABLE = 'transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0'
+
+function RowBody({ title, subtitle, leading, trailing }: Omit<RowProps, 'className'>) {
   return (
-    <div
-      className={`flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5 first:border-t-0 ${className}`}
-    >
+    <>
       {leading}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-14 font-semibold text-text">{title}</span>
         {subtitle && <span className="text-12 text-text-muted">{subtitle}</span>}
       </div>
       {trailing}
+    </>
+  )
+}
+
+export function ListRow({ className = '', ...body }: RowProps) {
+  return (
+    <div className={`${ROW} ${className}`}>
+      <RowBody {...body} />
     </div>
   )
 }
 
-/** Row that navigates. Same geometry as ListRow with a hover and pressed tint. */
+/** Row that navigates inside the app. */
 export function ListRowLink({ title, subtitle, leading, trailing, className = '', ...rest }: RowProps & LinkProps) {
   return (
-    <Link
-      className={`flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5 text-text first:border-t-0 transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0 ${className}`}
-      {...rest}
-    >
-      {leading}
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-14 font-semibold text-text">{title}</span>
-        {subtitle && <span className="text-12 text-text-muted">{subtitle}</span>}
-      </div>
-      {trailing}
+    <Link className={`${ROW} ${PRESSABLE} ${className}`} {...rest}>
+      <RowBody title={title} subtitle={subtitle} leading={leading} trailing={trailing} />
     </Link>
   )
 }
 
-/** Row that opens something on the same screen (a sheet). Same geometry as ListRowLink. */
+/** Row that opens something on the same screen (a sheet). */
 export function ListRowButton({
   title,
   subtitle,
@@ -89,18 +92,35 @@ export function ListRowButton({
   ...rest
 }: RowProps & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'title'>) {
   return (
-    <button
-      type="button"
-      className={`flex min-h-[60px] w-full items-center gap-3 border-t border-border px-3.5 py-2.5 text-left text-text first:border-t-0 transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0 ${className}`}
-      {...rest}
-    >
-      {leading}
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-14 font-semibold text-text">{title}</span>
-        {subtitle && <span className="text-12 text-text-muted">{subtitle}</span>}
-      </div>
-      {trailing}
+    <button type="button" className={`${ROW} ${PRESSABLE} ${className}`} {...rest}>
+      <RowBody title={title} subtitle={subtitle} leading={leading} trailing={trailing} />
     </button>
+  )
+}
+
+/** Row that leaves the app: mailto:, tel:, an external page. */
+export function ListRowAnchor({
+  title,
+  subtitle,
+  leading,
+  trailing,
+  className = '',
+  ...rest
+}: RowProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'title'>) {
+  return (
+    <a className={`${ROW} ${PRESSABLE} ${className}`} {...rest}>
+      <RowBody title={title} subtitle={subtitle} leading={leading} trailing={trailing} />
+    </a>
+  )
+}
+
+/** Label above value (Profile's Email and Role): 12px muted label, 14px semibold value. */
+export function StackedRow({ label, children }: { label: ReactNode; children: ReactNode }) {
+  return (
+    <div className={`${ROW} flex-col items-stretch justify-center gap-[3px]`}>
+      <span className="text-12 text-text-muted">{label}</span>
+      <div className="text-14 font-semibold">{children}</div>
+    </div>
   )
 }
 

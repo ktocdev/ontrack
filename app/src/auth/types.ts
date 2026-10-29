@@ -24,6 +24,8 @@ export type AuthState =
    * sheet asks for the password again. dismiss() is "Not you?".
    */
   | { status: 'expired'; email: string; name?: string; dismiss: () => void }
+  /** The profile could not be loaded (network, server). Not the same as having none. */
+  | { status: 'error'; error: unknown; retry: () => void; signOut: () => Promise<void> }
   /** Auth session exists but no profile row is visible: deactivated, or not yet invited. */
   | { status: 'no-profile'; email: string | null; signOut: () => Promise<void> }
   | SignedIn

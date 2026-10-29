@@ -38,7 +38,7 @@ type Props = {
 export function Avatar({ name, role = 'manager', size = 40, label, src, className = '' }: Props) {
   const [failed, setFailed] = useState<string | undefined>()
   const showPhoto = src && failed !== src
-  const font = size === 88 ? 'text-[28px]' : size === 28 ? 'text-11 tracking-[.02em]' : 'text-13'
+  const font = size === 88 ? 'text-28' : size === 28 ? 'text-11 tracking-[.02em]' : 'text-13'
   return (
     <span
       role={label ? 'img' : undefined}

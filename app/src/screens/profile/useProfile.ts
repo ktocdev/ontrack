@@ -3,13 +3,14 @@ import { useUser } from '../../auth/context'
 import { signInErrorMessage } from '../../auth/validation'
 import { env } from '../../lib/env'
 import { resizeToJpeg } from '../../lib/image'
-import { requireSupabase } from '../../lib/supabase'
+import { requireSupabase, supabase } from '../../lib/supabase'
 
 /**
  * Data for Profile and Help & support. Everything goes through the typed
  * client under RLS: people may change their own name, phone and photo
  * (protect_profile_columns refuses the rest) and file support reports as
- * themselves. The e2e build has no backend, so writes resolve with a stand-in.
+ * themselves. Flows that write are tested against the seeded local stack
+ * (e2e/stack), so there is no stand-in path here.
  */
 
 const AVATAR_TTL = 60 * 60
@@ -18,7 +19,7 @@ const AVATAR_TTL = 60 * 60
 export function useAvatarUrl(path: string | null | undefined) {
   return useQuery({
     queryKey: ['avatar', path],
-    enabled: Boolean(path) && !env.e2eMock,
+    enabled: Boolean(path && supabase),
     staleTime: (AVATAR_TTL - 300) * 1000,
     queryFn: async () => {
       const { data, error } = await requireSupabase().storage.from('avatars').createSignedUrl(path!, AVATAR_TTL)
@@ -33,7 +34,6 @@ export function useSaveProfile() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (fields: { full_name: string; phone: string | null }) => {
-      if (env.e2eMock) return
       const { error } = await requireSupabase().from('profiles').update(fields).eq('id', user.id)
       if (error) throw error
     },
@@ -55,7 +55,6 @@ export function usePhoto() {
 
   const upload = useMutation({
     mutationFn: async (file: File) => {
-      if (env.e2eMock) return
       const blob = await resizeToJpeg(file, 512)
       const path = `${user.id}/${crypto.randomUUID()}.jpg`
       const { error } = await requireSupabase()
@@ -67,10 +66,7 @@ export function usePhoto() {
     onSuccess: done,
   })
   const remove = useMutation({
-    mutationFn: async () => {
-      if (env.e2eMock) return
-      await setPath(null)
-    },
+    mutationFn: () => setPath(null),
     onSuccess: done,
   })
   return { upload, remove }
@@ -92,7 +88,6 @@ export function useChangePassword() {
   const { user } = useUser()
   return useMutation({
     mutationFn: async ({ current, next }: { current: string; next: string }) => {
-      if (env.e2eMock) return
       const sb = requireSupabase()
       const check = await sb.auth.signInWithPassword({ email: user.email, password: current })
       if (check.error) {
@@ -119,7 +114,6 @@ export function useChangePassword() {
 export function useSendReport() {
   return useMutation({
     mutationFn: async (body: string) => {
-      if (env.e2eMock) return 4800
       const { data, error } = await requireSupabase()
         .from('support_reports')
         .insert({

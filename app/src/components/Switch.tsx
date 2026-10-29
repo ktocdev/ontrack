@@ -22,7 +22,7 @@ export function Switch({ checked, onCheckedChange, label, disabled, className = 
       aria-label={label}
       className={`flex h-7 w-12 flex-none items-center rounded-pill bg-border-strong p-[3px] transition-colors data-[state=checked]:bg-brand disabled:opacity-60 ${className}`}
     >
-      <RadixSwitch.Thumb className="block h-[22px] w-[22px] rounded-full bg-white shadow-[0_1px_2px_rgba(21,32,27,.25)] transition-transform data-[state=checked]:translate-x-5" />
+      <RadixSwitch.Thumb className="block h-[22px] w-[22px] rounded-full bg-white shadow-knob transition-transform data-[state=checked]:translate-x-5" />
     </RadixSwitch.Root>
   )
 }

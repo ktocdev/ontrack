@@ -1,7 +1,6 @@
 import type { Session } from '@supabase/supabase-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { env } from '../lib/env'
 import { supabase } from '../lib/supabase'
 import { AuthContext } from './context'
 import { MOCK_RESTAURANTS, MOCK_USERS, readMockRole, writeMockRole } from './mock'
@@ -35,7 +34,8 @@ async function loadMe(userId: string): Promise<Me> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  if (env.e2eMock) return <MockAuthProvider>{children}</MockAuthProvider>
+  // __E2E_MOCK__ is a build-time literal: production bundles drop this branch and the fixtures.
+  if (__E2E_MOCK__) return <MockAuthProvider>{children}</MockAuthProvider>
   if (!supabase) return <AuthContext.Provider value={{ status: 'unconfigured' }}>{children}</AuthContext.Provider>
   return <SupabaseAuthProvider>{children}</SupabaseAuthProvider>
 }
@@ -113,6 +113,8 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [sb])
 
   const dismiss = useCallback(() => setExpired(null), [])
+  const { refetch } = me
+  const refetchMe = useCallback(() => void refetch(), [refetch])
 
   const value = useMemo<AuthState>(() => {
     if (session === undefined) return { status: 'loading' }
@@ -122,9 +124,8 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         : { status: 'signed-out' }
     }
     if (me.isPending) return { status: 'loading' }
-    if (me.isError || !me.data?.profile) {
-      return { status: 'no-profile', email: session.user.email ?? null, signOut }
-    }
+    if (me.isError) return { status: 'error', error: me.error, retry: refetchMe, signOut }
+    if (!me.data.profile) return { status: 'no-profile', email: session.user.email ?? null, signOut }
     return {
       status: 'signed-in',
       user: me.data.profile,
@@ -132,7 +133,7 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       allRestaurants: me.data.allRestaurants,
       signOut,
     }
-  }, [session, expired, dismiss, me.isPending, me.isError, me.data, signOut])
+  }, [session, expired, dismiss, me.isPending, me.isError, me.error, me.data, refetchMe, signOut])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

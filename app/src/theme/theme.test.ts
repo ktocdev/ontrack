@@ -54,11 +54,15 @@ describe('stored preference', () => {
 
 describe('applyTheme', () => {
   it('sets data-theme and the theme-color meta', () => {
-    document.head.innerHTML = '<meta name="theme-color" content="">'
+    document.head.innerHTML =
+      '<meta name="theme-color" content="">' +
+      '<style>:root { --bg: #f3f4f1 } [data-theme="dark"] { --bg: #121716 }</style>'
+    const meta = () => document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.content
     applyTheme(document, 'dark')
     expect(document.documentElement.dataset.theme).toBe('dark')
-    expect(document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.content).toBe('#121716')
+    expect(meta()).toBe('#121716')
     applyTheme(document, 'light')
     expect(document.documentElement.dataset.theme).toBe('light')
+    expect(meta()).toBe('#f3f4f1')
   })
 })

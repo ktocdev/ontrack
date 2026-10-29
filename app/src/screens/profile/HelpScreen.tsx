@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { ListCard, ListRowButton, RowIcon } from '../../components/Card'
+import { ListCard, ListRow, ListRowAnchor, ListRowButton, RowIcon } from '../../components/Card'
 import { SearchField } from '../../components/Field'
 import { Screen, ScreenBody, SectionLabel, TitleBar } from '../../components/Screen'
 import { IconChevronDown, IconChevronRight, IconKey, IconMail, IconPhone, IconReport } from '../../components/icons'
@@ -81,32 +81,28 @@ export function HelpScreen() {
             trailing={<IconChevronRight className="text-text-muted" />}
           />
           {env.supportEmail && (
-            <a
+            <ListRowAnchor
               href={`mailto:${env.supportEmail}`}
-              className="flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5 text-text transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-muted active:duration-0"
-            >
-              <RowIcon>
-                <IconMail />
-              </RowIcon>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="text-14 font-semibold">Email support</span>
-                <span className="text-12 text-text-muted">Replies within 1 business day</span>
-              </span>
-            </a>
+              leading={
+                <RowIcon>
+                  <IconMail />
+                </RowIcon>
+              }
+              title="Email support"
+              subtitle="Replies within 1 business day"
+            />
           )}
           {env.supportPhone && (
-            <a
+            <ListRowAnchor
               href={`tel:${env.supportPhone.replace(/[^\d+]/g, '')}`}
-              className="flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5 text-text transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-muted active:duration-0"
-            >
-              <RowIcon>
-                <IconPhone />
-              </RowIcon>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="text-14 font-semibold">Call support</span>
-                <span className="text-12 text-text-muted">{displayPhone(env.supportPhone)}</span>
-              </span>
-            </a>
+              leading={
+                <RowIcon>
+                  <IconPhone />
+                </RowIcon>
+              }
+              title="Call support"
+              subtitle={displayPhone(env.supportPhone)}
+            />
           )}
         </ListCard>
         <span className="-mt-1 text-12 text-text-muted">
@@ -151,15 +147,15 @@ export function HelpScreen() {
 
         <SectionLabel className="-mb-0.5">Account</SectionLabel>
         <ListCard>
-          <div className="flex min-h-[60px] items-center gap-3 px-3.5 py-2.5">
-            <RowIcon>
-              <IconKey />
-            </RowIcon>
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="text-14 font-semibold">Need a different role or restaurant?</span>
-              <span className="text-12 text-text-muted">Your admin manages roles and restaurants</span>
-            </span>
-          </div>
+          <ListRow
+            leading={
+              <RowIcon>
+                <IconKey />
+              </RowIcon>
+            }
+            title="Need a different role or restaurant?"
+            subtitle="Your admin manages roles and restaurants"
+          />
         </ListCard>
 
         <span className="pt-4 text-center text-12 text-text-muted">OnTrack · Version {env.appVersion}</span>

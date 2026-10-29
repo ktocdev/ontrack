@@ -11,6 +11,7 @@ dev-dist/
 
 # Test output
 playwright-report/
+playwright-report-stack/
 test-results/
 coverage/
 

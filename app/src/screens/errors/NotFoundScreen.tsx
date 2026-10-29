@@ -20,7 +20,7 @@ export function NotFoundScreen() {
       <div className="flex items-center justify-between px-screen pt-safe">
         <span className="mt-5 flex items-center gap-2">
           <Logo />
-          <span className="font-display text-[17px] font-bold">OnTrack</span>
+          <span className="font-display text-17 font-bold">OnTrack</span>
         </span>
         {user && (
           <Link to="/profile" aria-label="Your profile" className="mt-5">

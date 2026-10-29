@@ -1,21 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isRouteErrorResponse, useRouteError } from 'react-router'
 import { Button } from '../../components/Button'
 import { IconFlag, IconServer, Logo } from '../../components/icons'
 import { Screen } from '../../components/Screen'
-import { Sheet } from '../../components/Sheet'
-import { Textarea } from '../../components/Field'
 import { TabBar } from '../../components/TabBar'
 import { ROLE_TABS } from '../../app/roles'
 import { useOptionalAuth } from '../../auth/context'
+import { ReportSheet } from '../profile/ReportSheet'
 import { ErrorBlock } from './ErrorBlock'
 import { NotFoundScreen } from './NotFoundScreen'
 
 /**
  * Error · Something went wrong (500). Used as the router's error boundary.
- * Shows a short reference the person can copy or send to support; the
- * reference and the error are logged to the console until the send-email
- * function lands in Phase 1.
+ * Shows a short reference the person can copy, or attach to a report when
+ * signed in (support_reports only takes reports from a signed-in person).
  */
 
 function makeRef(seed: string) {
@@ -31,8 +29,6 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
-  const [sent, setSent] = useState<string | null>(null)
-  const [note, setNote] = useState('')
 
   const [{ ref, time }] = useState(() => {
     const at = new Date()
@@ -43,7 +39,9 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
     }
   })
 
-  if (given) console.error(`[OnTrack] REF ${ref}`, given)
+  useEffect(() => {
+    if (given) console.error(`[OnTrack] REF ${ref}`, given)
+  }, [given, ref])
 
   const retry = () => {
     setBusy(true)
@@ -63,20 +61,12 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
     }
   }
 
-  const send = () => {
-    // Phase 1 wires this to the send-email function with the reference, the
-    // screen and device info attached.
-    console.info(`[OnTrack] report REF ${ref}: ${note}`)
-    setReportOpen(false)
-    setSent(`Sent to support. Case #${(parseInt(ref.replace('-', ''), 16) % 9000) + 1000}. We'll email you.`)
-  }
-
   return (
     <Screen>
       <div className="flex items-center px-screen pt-safe">
         <span className="mt-5 flex items-center gap-2">
           <Logo />
-          <span className="font-display text-[17px] font-bold">OnTrack</span>
+          <span className="font-display text-17 font-bold">OnTrack</span>
         </span>
       </div>
       <ErrorBlock
@@ -94,7 +84,9 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
         </div>
         <div className="mt-3.5 flex flex-col items-center gap-1">
           <span className="text-13 text-text-secondary">
-            If it keeps happening, report it. This reference is attached for you.
+            {user
+              ? 'If it keeps happening, report it. This reference is attached for you.'
+              : 'If it keeps happening, send this reference to your admin.'}
           </span>
           <div className="flex items-center gap-2 rounded-control border border-border bg-surface py-1 pl-3 pr-1">
             <span className="font-mono text-13 text-text-body">
@@ -104,47 +96,21 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
               type="button"
               onClick={copy}
               aria-live="polite"
-              className="min-h-9 rounded-lg bg-surface-muted px-2.5 text-13 font-semibold text-text"
+              className="min-h-9 rounded-control bg-surface-muted px-2.5 text-13 font-semibold text-text"
             >
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
-          <Button variant="ghost" icon={<IconFlag />} onClick={() => setReportOpen(true)}>
-            Report this problem
-          </Button>
-          {sent && (
-            <p role="status" className="text-13 font-semibold text-brand-strong">
-              {sent}
-            </p>
+          {user && (
+            <Button variant="ghost" icon={<IconFlag />} onClick={() => setReportOpen(true)}>
+              Report this problem
+            </Button>
           )}
         </div>
       </ErrorBlock>
       {user && <TabBar label={ROLE_TABS[user.role].label} items={ROLE_TABS[user.role].items} />}
 
-      <Sheet
-        open={reportOpen}
-        onOpenChange={setReportOpen}
-        title="Report a problem"
-        description={`Goes to OnTrack support. Error 500, reference ${ref}, this screen and your device info are attached.`}
-      >
-        <Textarea
-          label="What happened?"
-          rows={3}
-          placeholder="What were you trying to do, and what went wrong?"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-        <label className="flex min-h-tap cursor-pointer items-center gap-2.5 text-14 text-text-body">
-          <input type="checkbox" defaultChecked className="h-5 w-5 accent-brand" />
-          Include a screenshot
-        </label>
-        <Button variant="primary" onClick={send}>
-          Send to support
-        </Button>
-        <Button variant="secondary" onClick={() => setReportOpen(false)}>
-          Cancel
-        </Button>
-      </Sheet>
+      {user && <ReportSheet open={reportOpen} onOpenChange={setReportOpen} context={`Error 500 · REF ${ref}`} />}
     </Screen>
   )
 }

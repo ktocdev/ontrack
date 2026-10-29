@@ -36,7 +36,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toast && (
           <div
             key={toast.id}
-            className="pointer-events-auto flex w-full max-w-[480px] items-center gap-2.5 rounded-input bg-text px-3.5 py-3 text-14 text-bg shadow-[0_8px_24px_-8px_rgba(21,32,27,.4)] animate-[fade-in_.15s_ease-out]"
+            className="pointer-events-auto flex w-full max-w-[480px] items-center gap-2.5 rounded-input bg-text px-3.5 py-3 text-14 text-bg shadow-raised animate-[fade-in_.15s_ease-out]"
           >
             <span className="flex-1">{toast.message}</span>
             {toast.action && (

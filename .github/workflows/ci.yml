@@ -47,6 +47,51 @@ jobs:
           path: app/playwright-report
           retention-days: 7
 
+  flows:
+    name: Flows · Playwright against the local stack
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+
+      # Auth, REST, storage and Postgres with the seed; nothing the flows don't use.
+      - name: Start the local stack
+        run: supabase start -x studio,imgproxy,logflare,vector,edge-runtime,realtime,postgres-meta
+
+      - name: Point the app build at it
+        run: |
+          eval "$(supabase status -o env)"
+          echo "VITE_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "VITE_SUPABASE_ANON_KEY=${PUBLISHABLE_KEY:-$ANON_KEY}" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - run: npm ci
+        working-directory: app
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+        working-directory: app
+
+      - name: Playwright flows (Chromium + WebKit)
+        run: npm run test:e2e:stack
+        working-directory: app
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-stack
+          path: app/playwright-report-stack
+          retention-days: 7
+
   db:
     name: Database · migrations, seed, pgTAP
     runs-on: ubuntu-latest
@@ -70,8 +115,14 @@ jobs:
       - name: Generate TypeScript types
         run: supabase gen types typescript --local > database.types.ts
 
+
       - uses: actions/upload-artifact@v4
         with:
           name: database-types
           path: database.types.ts
           retention-days: 14
+
+      # The committed types must match the schema. On a mismatch, download the
+      # database-types artifact into app/src/lib/database.types.ts as is.
+      - name: Check committed types
+        run: diff -u app/src/lib/database.types.ts database.types.ts

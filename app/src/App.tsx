@@ -37,7 +37,7 @@ function UpdatePrompt() {
   return (
     <div
       role="status"
-      className="fixed inset-x-4 z-50 mx-auto flex max-w-[480px] items-center justify-between gap-3 rounded-input bg-brand-strong px-4 py-3 text-on-brand shadow-[0_8px_24px_-8px_rgba(21,32,27,.4)]"
+      className="fixed inset-x-4 z-50 mx-auto flex max-w-[480px] items-center justify-between gap-3 rounded-input bg-brand-strong px-4 py-3 text-on-brand shadow-raised"
       style={{ bottom: 'calc(84px + max(8px, var(--safe-bottom)))' }}
     >
       <span className="text-14 font-semibold">A new version is ready.</span>

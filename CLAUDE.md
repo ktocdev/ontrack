@@ -7,8 +7,8 @@ Mobile-first PWA for equipment and repair tickets across the Four Corners restau
 - **App:** React 19, Vite, TypeScript, Tailwind v4 (tokens as CSS variables), Radix primitives, React Router, TanStack Query over `@supabase/supabase-js`. Installable PWA via `vite-plugin-pwa`.
 - **Backend:** Supabase Postgres with row-level security on every table, Supabase Auth (email + password, invite only, TOTP), Supabase Storage, Edge Functions (Deno) only for jobs that need a secret or a server.
 - **Hosting:** Cloudflare Workers with static assets (`app/wrangler.jsonc`), connected through Workers Builds: `main` is production, every other branch gets a preview URL and a PR comment.
-- **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone.
-- **CI:** `.github/workflows/ci.yml` runs two jobs on every PR and on `main`: the app (lint, format check, typecheck, Vitest, build, Playwright) and the database (`supabase db start`, pgTAP, `db lint`, type generation). `supabase-deploy.yml` pushes migrations to the hosted project on merge once the Supabase secrets exist.
+- **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone. Playwright has two suites: `e2e/` runs on the mock build (no backend, runs locally), `e2e/stack/` runs against the seeded local Supabase stack (CI only, since this machine has no Docker).
+- **CI:** `.github/workflows/ci.yml` runs three jobs on every PR and on `main`: the app (lint, format check, typecheck, Vitest, build, mock-build Playwright), the flows (`supabase start`, then `e2e/stack` Playwright against it) and the database (`supabase db start`, pgTAP, `db lint`, type generation, and a diff of the generated types against the committed file). `supabase-deploy.yml` pushes migrations to the hosted project on merge once the Supabase secrets exist.
 
 ## Layout
 
@@ -23,7 +23,8 @@ app/                 the PWA
   src/app/                router, Shell (Outlet + tab bar), roles (homes, tabs)
   src/components/         shared kit, every piece shown on /kit
   src/screens/            one folder per area; errors/ and loading/ hold the boards
-  e2e/                    Playwright flows (smoke, frame)
+  e2e/                    Playwright on the mock build (smoke, frame, kit, profile)
+  e2e/stack/              Playwright against the seeded local stack (playwright.stack.config.ts, CI only)
   scripts/icons.mjs       regenerates public/ icons from the mark
   wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
 supabase/
@@ -53,15 +54,15 @@ on a phone and matches its PNG, in light and dark mode.
 
 - Routes follow the design's href links: manager `/tickets`, `/tickets/new`, `/walkthrough`, `/equipment`; ops `/ops`, `/ops/walkthroughs`, `/ops/equipment`, `/ops/contractors`; admin `/admin/users`, `/admin/roles`, `/admin/tickets`, `/admin/restaurants`; leadership `/lead`, `/lead/restaurants`, `/lead/walkthroughs`, `/lead/contractors`; everyone `/profile`; public `/sign-in`, `/kit`. `src/app/roles.ts` is the one place these live.
 - Every signed-in route sits under `RequireAuth` then `RequireRole`, and renders inside `Shell` (tab bar) or `BareShell` (detail screens). Screens use `Screen`, `ScreenHeader`, `ScreenBody`, `BackBar` from `components/Screen.tsx`.
-- `useUser()` gives the profile, the restaurants in scope and whether that scope is all restaurants. Data hooks are one TanStack Query hook per screen over the typed client in `lib/supabase.ts`; regenerate `lib/database.types.ts` from the CI artifact (`database-types`) after a schema change.
+- `useUser()` gives the profile, the restaurants in scope and whether that scope is all restaurants. Data hooks are one TanStack Query hook per screen over the typed client in `lib/supabase.ts`; after a schema change, copy the CI artifact (`database-types`) into `lib/database.types.ts` exactly as generated (Prettier skips it; CI fails if it drifts).
 - `/kit` is public and shows every component in both themes plus the loading and error boards under `/kit/loading/*` and `/kit/errors/*`. A new component goes there first.
-- The e2e build sets `VITE_E2E_MOCK=1`: `/sign-in` becomes a role picker over the seed's people and no backend is needed. Production builds never set it, and `vite.config.ts` refuses the flag under Workers Builds (`WORKERS_CI`).
+- The mock e2e build sets `VITE_E2E_MOCK=1`, which becomes the build-time literal `__E2E_MOCK__`: `/sign-in` becomes a role picker over the seed's people and no backend is needed, and production bundles drop that code entirely. Data hooks have no mock path: a flow that reads or writes data is tested in `e2e/stack/`. Production builds never set it, and `vite.config.ts` refuses the flag under Workers Builds (`WORKERS_CI`).
 - Every build writes `dist/_headers` (from `vite.config.ts`): a content security policy that allows only this origin, the Supabase project and the hashed theme script in `index.html`, plus the frame, sniffing, referrer and transport headers. A new external origin (a font host, an API) must be added there, and a CSP change is checked on the branch preview, since Playwright does not go through Cloudflare.
 - Local dev needs `app/.env` with `VITE_SUPABASE_URL` (the Project URL, `https://<ref>.supabase.co`) and `VITE_SUPABASE_ANON_KEY` set to the publishable key (`sb_publishable_…`, Project Settings, API Keys); see `.env.example`. Both are public and get built into the bundle, so never put a secret key (`sb_secret_…`), the legacy `service_role` key or a personal access token (`sbp_…`) in a `VITE_` variable. The same two go in the Cloudflare Worker's build variables, set separately for Production and for each branch (the environment dropdown on Settings, Builds).
 
 ## Token names
 
-Surfaces `bg`, `surface`, `surface-sunken`, `surface-muted`, `surface-hover`. Borders `border`, `border-strong`, `border-muted`. Text `text`, `text-body`, `text-secondary`, `text-muted`, `text-faint`. Brand `brand` (links, active tab), `brand-fill` / `brand-fill-hover` / `on-brand` (primary buttons), `brand-strong`, `brand-tint`, `brand-tint-soft`. Semantic `urgent`, `danger`, `danger-fill`, `info`. Status pills `status-{open,progress,waiting,scheduled,reopened,closed,fixed}-{bg,text}`. Fonts `font-display` (Archivo), `font-body` (Public Sans), `font-mono` (JetBrains Mono). Sizes `text-11` … `text-30`. Radii `rounded-card` 14, `rounded-input` 12, `rounded-control` 10, `rounded-segment` 9, `rounded-pill`, `rounded-square` 3, `rounded-tag` 6, `rounded-sheet` 22. Spacing `px-screen` (20px), `min-h-tap` (44px), `pt-safe` / `pb-safe`.
+Surfaces `bg`, `surface`, `surface-sunken`, `surface-muted`, `surface-hover`. Borders `border`, `border-strong`, `border-muted`. Text `text`, `text-body`, `text-secondary`, `text-muted`, `text-faint`. Brand `brand` (links, active tab), `brand-fill` / `brand-fill-hover` / `on-brand` (primary buttons), `brand-strong`, `brand-tint`, `brand-tint-soft`. Semantic `urgent`, `danger`, `danger-fill`, `info`. Status pills `status-{open,progress,waiting,scheduled,reopened,closed,fixed}-{bg,text}`. Fonts `font-display` (Archivo), `font-body` (Public Sans), `font-mono` (JetBrains Mono). Sizes `text-11` … `text-30`, plus `text-17`, `text-18`, `text-28`, `text-40` from the boards. Radii `rounded-card` 14, `rounded-input` 12, `rounded-track` 11, `rounded-control` 10, `rounded-segment` 9, `rounded-pill`, `rounded-tag` 6, `rounded-chip` 5, `rounded-square` 3, `rounded-sheet` 22, `rounded-cover` 24. Overlays `bg-scrim`; shadows `shadow-raised`, `shadow-dialog`, `shadow-segment`, `shadow-knob`. Spacing `px-screen` (20px), `min-h-tap` (44px), `pt-safe` / `pb-safe`.
 
 ## Phone rules
 
@@ -91,7 +92,7 @@ Seeded sign-ins (local only, password `ontrack-demo-2026`): maya.reyes@ (manager
 
 ## Working method
 
-Inside a phase: migration and policies with pgTAP first, then one TanStack Query hook per screen, then the screens against the design (new components on `/kit` first), then one Playwright flow for the done test, then try the preview URL on a phone.
+Inside a phase: migration and policies with pgTAP first, then one TanStack Query hook per screen, then the screens against the design (new components on `/kit` first), then one Playwright flow for the done test in `e2e/stack`, then try the preview URL on a phone.
 
 - Branches are `OT-<n>` (one PR each). Small PRs: one screen or one function. Merge to `main` only when CI is green.
 - Commit messages: imperative, one line of what and why.
@@ -103,15 +104,16 @@ Inside a phase: migration and policies with pgTAP first, then one TanStack Query
 
 Done when an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
 
-| PR    | Scope                                                                                                               |
-| ----- | ------------------------------------------------------------------------------------------------------------------- |
-| OT-6  | Sign in, Signed out sheet (12-hour cap, app side), Profile, Help & support, support reports                         |
-| OT-7  | Security audit of OT-6 and the OT-2 access layer: invite claim by id, invites service-role only, `is_service()`, deactivated write paths, audit log writers, CSP headers |
-| OT-8  | Admin Restaurants and Add restaurant (accent presets, custom color, taken-color check)                              |
-| OT-9  | Invites: `send-email`, `invite-user`, `revoke-user`, Users, Invite user, invite email, Set up account, Link expired |
-| OT-10 | Password reset 1 to 5 (Supabase auth email through Resend SMTP), reset links on Sign in and Help                    |
-| OT-11 | Roles & rights grid, User profile overrides, View as with the audit log                                             |
-| OT-12 | 2-step verification (TOTP), required for admins                                                                     |
+| PR    | Scope                                                                                                                                                                                                          |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OT-6  | Sign in, Signed out sheet (12-hour cap, app side), Profile, Help & support, support reports                                                                                                                    |
+| OT-7  | Security audit of OT-6 and the OT-2 access layer: invite claim by id, invites service-role only, `is_service()`, deactivated write paths, audit log writers, CSP headers                                       |
+| OT-8  | Code quality pass: real report on the 500 screen, auth load errors, mock code out of production, Playwright against the local stack for data flows, type drift check, lazy routes, token and component cleanup |
+| OT-9  | Admin Restaurants and Add restaurant (accent presets, custom color, taken-color check)                                                                                                                         |
+| OT-10 | Invites: `send-email`, `invite-user`, `revoke-user`, Users, Invite user, invite email, Set up account, Link expired                                                                                            |
+| OT-11 | Password reset 1 to 5 (Supabase auth email through Resend SMTP), reset links on Sign in and Help                                                                                                               |
+| OT-12 | Roles & rights grid, User profile overrides, View as with the audit log                                                                                                                                        |
+| OT-13 | 2-step verification (TOTP), required for admins                                                                                                                                                                |
 
 Email goes through Resend. Until the group has a sending domain, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address.
 
@@ -126,6 +128,7 @@ cd app
 npm ci
 npm run dev            # http://localhost:5173
 npm run lint && npm run typecheck && npm test
-npm run test:e2e       # builds, then Playwright on Chromium + WebKit
+npm run test:e2e       # builds the mock build, then Playwright on Chromium + WebKit
+npm run test:e2e:stack # needs `supabase start` and VITE_SUPABASE_* pointed at it (CI runs it)
 npm run format         # Prettier
 ```
