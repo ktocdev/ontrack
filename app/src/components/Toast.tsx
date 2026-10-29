@@ -31,7 +31,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         role="status"
         aria-live="polite"
         className="pointer-events-none fixed inset-x-4 z-50 flex justify-center"
-        style={{ bottom: 'calc(104px + var(--safe-bottom))' }}
+        style={{ bottom: 'calc(84px + max(8px, var(--safe-bottom)))' }}
       >
         {toast && (
           <div

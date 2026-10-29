@@ -80,6 +80,11 @@ test.describe('role shells', () => {
     const link = page.getByRole('navigation', { name: 'Operations' }).getByRole('link', { name: 'Equipment' })
     const box = (await link.boundingBox())!
     expect(box.height).toBeGreaterThanOrEqual(44)
+    // The home-bar inset replaces the design's 20px; with no inset it is 8px.
+    const pad = await page
+      .getByRole('navigation', { name: 'Operations' })
+      .evaluate((el) => getComputedStyle(el).paddingBottom)
+    expect(pad).toBe('8px')
   })
 })
 

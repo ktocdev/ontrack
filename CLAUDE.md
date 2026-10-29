@@ -66,7 +66,7 @@ Surfaces `bg`, `surface`, `surface-sunken`, `surface-muted`, `surface-hover`. Bo
 
 - Inputs, selects and textareas are 16px, always (iOS zooms on focus otherwise). The base stylesheet sets it; never put a text-size utility below `text-16` on a field. Button labels follow the design (14 to 15px).
 - Full-height layouts use `100dvh`, never `100vh`.
-- Pad the top and bottom of fixed chrome with the safe-area insets (`pt-safe`, `pb-safe`). The bottom tab bar is `6px 8px 20px` plus the home-bar inset.
+- Pad the top and bottom of fixed chrome with the safe-area insets (`pt-safe`, `pb-safe`). The bottom tab bar is `6px 8px` on top and sides; its bottom is the home-bar inset, at least 8px. The design's 20px bottom is its home-bar allowance, so it is replaced, not added to.
 - Tap targets are at least 44px. Primary buttons are 52px tall, secondary 48px.
 - Screen padding is 20px on the sides, 12 to 16px between cards.
 
@@ -98,10 +98,10 @@ Inside a phase: migration and policies with pgTAP first, then one TanStack Query
 
 Done when a teammate can open the preview URL on an iPhone, add it to the home screen, toggle dark mode, and the RLS tests pass for all four roles.
 
-| PR   | Scope                                                                      |
-| ---- | -------------------------------------------------------------------------- |
-| OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file                     |
-| OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed         |
+| PR   | Scope                                                                                  |
+| ---- | -------------------------------------------------------------------------------------- |
+| OT-1 | Repo scaffold, tokens, theme, PWA shell, CI, this file                                 |
+| OT-2 | Supabase schema (all five table groups), RLS, `can()`, pgTAP, seed                     |
 | OT-3 | Component kit on `/kit`, app frame, auth guard, role shells, loading and error screens |
 
 ## Database work
