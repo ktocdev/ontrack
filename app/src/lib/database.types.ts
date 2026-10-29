@@ -1,1836 +1,1104 @@
+
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
+  
+  "graphql_public": {
+          Tables: {
+            [_ in never]: never
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "graphql":
+{ Args: { "extensions"?: Json,"operationName"?: string,"query"?: string,"variables"?: Json }; Returns: Json
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        },"public": {
+          Tables: {
+            "audit_log": {
+                  Row: {
+                    "action": string,"actor_id": string | null,"created_at": string,"id": number,"meta": NonNullable<Json>,"target_restaurant_id": string | null,"target_user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "action": string,"actor_id"?: string | null,"created_at"?: string,"id"?: never,"meta"?: NonNullable<Json>,"target_restaurant_id"?: string | null,"target_user_id"?: string | null
+                  }
+                  Update: {
+                    "action"?: string,"actor_id"?: string | null,"created_at"?: string,"id"?: never,"meta"?: NonNullable<Json>,"target_restaurant_id"?: string | null,"target_user_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "audit_log_actor_id_fkey"
+      columns: ["actor_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "audit_log_target_restaurant_id_fkey"
+      columns: ["target_restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "audit_log_target_restaurant_id_fkey"
+      columns: ["target_restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "audit_log_target_user_id_fkey"
+      columns: ["target_user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-    Views: {
-      [_ in never]: never
+                  ]
+                },"categories": {
+                  Row: {
+                    "area": Database["public"]['Enums']["area"],"id": string,"name": string,"sort_order": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "area": Database["public"]['Enums']["area"],"id"?: string,"name": string,"sort_order"?: number
+                  }
+                  Update: {
+                    "area"?: Database["public"]['Enums']["area"],"id"?: string,"name"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"contractors": {
+                  Row: {
+                    "archived_at": string | null,"contact_name": string | null,"created_at": string,"created_by": string | null,"email": string | null,"id": string,"insurance_until": string | null,"name": string,"notes": string | null,"phone": string | null,"preferred": boolean,"trade": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"contact_name"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"insurance_until"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"preferred"?: boolean,"trade": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"contact_name"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"insurance_until"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"preferred"?: boolean,"trade"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "contractors_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-    Functions: {
-      graphql: { Args: { extensions?: Json; operationName?: string; query?: string; variables?: Json }; Returns: Json }
+                  ]
+                },"equipment": {
+                  Row: {
+                    "brand": string | null,"category_id": string,"created_at": string,"created_by": string | null,"id": string,"installed_on": string | null,"location_note": string | null,"manual_path": string | null,"model": string | null,"name": string,"restaurant_id": string,"retired_at": string | null,"serial": string | null,"updated_at": string,"warranty_note": string | null,"warranty_until": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "brand"?: string | null,"category_id": string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"installed_on"?: string | null,"location_note"?: string | null,"manual_path"?: string | null,"model"?: string | null,"name": string,"restaurant_id": string,"retired_at"?: string | null,"serial"?: string | null,"updated_at"?: string,"warranty_note"?: string | null,"warranty_until"?: string | null
+                  }
+                  Update: {
+                    "brand"?: string | null,"category_id"?: string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"installed_on"?: string | null,"location_note"?: string | null,"manual_path"?: string | null,"model"?: string | null,"name"?: string,"restaurant_id"?: string,"retired_at"?: string | null,"serial"?: string | null,"updated_at"?: string,"warranty_note"?: string | null,"warranty_until"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "equipment_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
     }
-    Enums: {
-      [_ in never]: never
+                  ]
+                },"inhouse_fixes": {
+                  Row: {
+                    "check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"deleted_at": string | null,"done_at": string | null,"done_by": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"deleted_at"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id": string,"title": string,"walkthrough_id"?: string | null
+                  }
+                  Update: {
+                    "check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"deleted_at"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id"?: string,"title"?: string,"walkthrough_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "inhouse_fixes_check_id_fkey"
+      columns: ["check_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_checks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_converted_ticket_id_fkey"
+      columns: ["converted_ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_done_by_fkey"
+      columns: ["done_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "inhouse_fixes_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "walkthroughs"
+      referencedColumns: ["id"]
     }
-    CompositeTypes: {
-      [_ in never]: never
+                  ]
+                },"invites": {
+                  Row: {
+                    "accepted_at": string | null,"created_at": string,"email": string,"expires_at": string,"full_name": string,"id": string,"invited_by": string | null,"restaurant_ids": (string)[],"revoked_at": string | null,"role": Database["public"]['Enums']["app_role"],"sent_at": string,"status": Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "accepted_at"?: string | null,"created_at"?: string,"email": string,"expires_at"?: string,"full_name": string,"id"?: string,"invited_by"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role": Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id"?: string | null
+                  }
+                  Update: {
+                    "accepted_at"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"full_name"?: string,"id"?: string,"invited_by"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash"?: string,"user_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "invites_invited_by_fkey"
+      columns: ["invited_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invites_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-  }
-  public: {
-    Tables: {
-      audit_log: {
-        Row: {
-          action: string
-          actor_id: string | null
-          created_at: string
-          id: number
-          meta: NonNullable<Json>
-          target_restaurant_id: string | null
-          target_user_id: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          action: string
-          actor_id?: string | null
-          created_at?: string
-          id?: never
-          meta?: NonNullable<Json>
-          target_restaurant_id?: string | null
-          target_user_id?: string | null
-        }
-        Update: {
-          action?: string
-          actor_id?: string | null
-          created_at?: string
-          id?: never
-          meta?: NonNullable<Json>
-          target_restaurant_id?: string | null
-          target_user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'audit_log_actor_id_fkey'
-            columns: ['actor_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'audit_log_target_restaurant_id_fkey'
-            columns: ['target_restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'audit_log_target_restaurant_id_fkey'
-            columns: ['target_restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-          {
-            foreignKeyName: 'audit_log_target_user_id_fkey'
-            columns: ['target_user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      categories: {
-        Row: {
-          area: Database['public']['Enums']['area']
-          id: string
-          name: string
-          sort_order: number
-        }
-        ComputedFields: never
-        Insert: {
-          area: Database['public']['Enums']['area']
-          id?: string
-          name: string
-          sort_order?: number
-        }
-        Update: {
-          area?: Database['public']['Enums']['area']
-          id?: string
-          name?: string
-          sort_order?: number
-        }
-        Relationships: []
-      }
-      contractors: {
-        Row: {
-          archived_at: string | null
-          contact_name: string | null
-          created_at: string
-          created_by: string | null
-          email: string | null
-          id: string
-          insurance_until: string | null
-          name: string
-          notes: string | null
-          phone: string | null
-          preferred: boolean
-          trade: string
-          updated_at: string
-        }
-        ComputedFields: never
-        Insert: {
-          archived_at?: string | null
-          contact_name?: string | null
-          created_at?: string
-          created_by?: string | null
-          email?: string | null
-          id?: string
-          insurance_until?: string | null
-          name: string
-          notes?: string | null
-          phone?: string | null
-          preferred?: boolean
-          trade: string
-          updated_at?: string
-        }
-        Update: {
-          archived_at?: string | null
-          contact_name?: string | null
-          created_at?: string
-          created_by?: string | null
-          email?: string | null
-          id?: string
-          insurance_until?: string | null
-          name?: string
-          notes?: string | null
-          phone?: string | null
-          preferred?: boolean
-          trade?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'contractors_created_by_fkey'
-            columns: ['created_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      equipment: {
-        Row: {
-          brand: string | null
-          category_id: string
-          created_at: string
-          created_by: string | null
-          id: string
-          installed_on: string | null
-          location_note: string | null
-          manual_path: string | null
-          model: string | null
-          name: string
-          restaurant_id: string
-          retired_at: string | null
-          serial: string | null
-          updated_at: string
-          warranty_note: string | null
-          warranty_until: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          brand?: string | null
-          category_id: string
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          installed_on?: string | null
-          location_note?: string | null
-          manual_path?: string | null
-          model?: string | null
-          name: string
-          restaurant_id: string
-          retired_at?: string | null
-          serial?: string | null
-          updated_at?: string
-          warranty_note?: string | null
-          warranty_until?: string | null
-        }
-        Update: {
-          brand?: string | null
-          category_id?: string
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          installed_on?: string | null
-          location_note?: string | null
-          manual_path?: string | null
-          model?: string | null
-          name?: string
-          restaurant_id?: string
-          retired_at?: string | null
-          serial?: string | null
-          updated_at?: string
-          warranty_note?: string | null
-          warranty_until?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'equipment_category_id_fkey'
-            columns: ['category_id']
-            isOneToOne: false
-            referencedRelation: 'categories'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'equipment_created_by_fkey'
-            columns: ['created_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'equipment_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'equipment_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-        ]
-      }
-      inhouse_fixes: {
-        Row: {
-          check_id: string | null
-          converted_ticket_id: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          done_at: string | null
-          done_by: string | null
-          id: string
-          note: string | null
-          origin_label: string | null
-          restaurant_id: string
-          title: string
-          walkthrough_id: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          check_id?: string | null
-          converted_ticket_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          done_at?: string | null
-          done_by?: string | null
-          id?: string
-          note?: string | null
-          origin_label?: string | null
-          restaurant_id: string
-          title: string
-          walkthrough_id?: string | null
-        }
-        Update: {
-          check_id?: string | null
-          converted_ticket_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          done_at?: string | null
-          done_by?: string | null
-          id?: string
-          note?: string | null
-          origin_label?: string | null
-          restaurant_id?: string
-          title?: string
-          walkthrough_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'inhouse_fixes_check_id_fkey'
-            columns: ['check_id']
-            isOneToOne: false
-            referencedRelation: 'walkthrough_checks'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'inhouse_fixes_converted_ticket_id_fkey'
-            columns: ['converted_ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'inhouse_fixes_created_by_fkey'
-            columns: ['created_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'inhouse_fixes_done_by_fkey'
-            columns: ['done_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'inhouse_fixes_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'inhouse_fixes_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-          {
-            foreignKeyName: 'inhouse_fixes_walkthrough_id_fkey'
-            columns: ['walkthrough_id']
-            isOneToOne: false
-            referencedRelation: 'walkthroughs'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      invites: {
-        Row: {
-          accepted_at: string | null
-          created_at: string
-          email: string
-          expires_at: string
-          full_name: string
-          id: string
-          invited_by: string | null
-          restaurant_ids: string[]
-          revoked_at: string | null
-          role: Database['public']['Enums']['app_role']
-          sent_at: string
-          status: Database['public']['Enums']['invite_status']
-          token_hash: string
-          user_id: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          accepted_at?: string | null
-          created_at?: string
-          email: string
-          expires_at?: string
-          full_name: string
-          id?: string
-          invited_by?: string | null
-          restaurant_ids?: string[]
-          revoked_at?: string | null
-          role: Database['public']['Enums']['app_role']
-          sent_at?: string
-          status?: Database['public']['Enums']['invite_status']
-          token_hash: string
-          user_id?: string | null
-        }
-        Update: {
-          accepted_at?: string | null
-          created_at?: string
-          email?: string
-          expires_at?: string
-          full_name?: string
-          id?: string
-          invited_by?: string | null
-          restaurant_ids?: string[]
-          revoked_at?: string | null
-          role?: Database['public']['Enums']['app_role']
-          sent_at?: string
-          status?: Database['public']['Enums']['invite_status']
-          token_hash?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'invites_invited_by_fkey'
-            columns: ['invited_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'invites_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      invoices: {
-        Row: {
-          amount_cents: number | null
-          attached_at: string | null
-          attached_by: string | null
-          created_at: string
-          id: string
-          number: string | null
-          path: string | null
-          service_record_id: string
-          status: Database['public']['Enums']['invoice_status']
-          updated_at: string
-        }
-        ComputedFields: never
-        Insert: {
-          amount_cents?: number | null
-          attached_at?: string | null
-          attached_by?: string | null
-          created_at?: string
-          id?: string
-          number?: string | null
-          path?: string | null
-          service_record_id: string
-          status?: Database['public']['Enums']['invoice_status']
-          updated_at?: string
-        }
-        Update: {
-          amount_cents?: number | null
-          attached_at?: string | null
-          attached_by?: string | null
-          created_at?: string
-          id?: string
-          number?: string | null
-          path?: string | null
-          service_record_id?: string
-          status?: Database['public']['Enums']['invoice_status']
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'invoices_attached_by_fkey'
-            columns: ['attached_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'invoices_service_record_id_fkey'
-            columns: ['service_record_id']
-            isOneToOne: true
-            referencedRelation: 'service_records'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'invoices_service_record_id_fkey'
-            columns: ['service_record_id']
-            isOneToOne: true
-            referencedRelation: 'v_missing_invoices'
-            referencedColumns: ['service_record_id']
-          },
-          {
-            foreignKeyName: 'invoices_service_record_id_fkey'
-            columns: ['service_record_id']
-            isOneToOne: true
-            referencedRelation: 'v_service_record_totals'
-            referencedColumns: ['service_record_id']
-          },
-        ]
-      }
-      memberships: {
-        Row: {
-          created_at: string
-          id: string
-          restaurant_id: string | null
-          user_id: string
-        }
-        ComputedFields: never
-        Insert: {
-          created_at?: string
-          id?: string
-          restaurant_id?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          restaurant_id?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'memberships_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'memberships_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-          {
-            foreignKeyName: 'memberships_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          avatar_path: string | null
-          created_at: string
-          deactivated_at: string | null
-          email: string
-          full_name: string
-          home_restaurant_id: string | null
-          id: string
-          phone: string | null
-          role: Database['public']['Enums']['app_role']
-          updated_at: string
-        }
-        ComputedFields: never
-        Insert: {
-          avatar_path?: string | null
-          created_at?: string
-          deactivated_at?: string | null
-          email: string
-          full_name: string
-          home_restaurant_id?: string | null
-          id: string
-          phone?: string | null
-          role: Database['public']['Enums']['app_role']
-          updated_at?: string
-        }
-        Update: {
-          avatar_path?: string | null
-          created_at?: string
-          deactivated_at?: string | null
-          email?: string
-          full_name?: string
-          home_restaurant_id?: string | null
-          id?: string
-          phone?: string | null
-          role?: Database['public']['Enums']['app_role']
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'profiles_home_restaurant_id_fkey'
-            columns: ['home_restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'profiles_home_restaurant_id_fkey'
-            columns: ['home_restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-        ]
-      }
-      push_subscriptions: {
-        Row: {
-          auth: string
-          created_at: string
-          endpoint: string
-          id: string
-          last_seen_at: string
-          p256dh: string
-          prefs: NonNullable<Json>
-          user_agent: string | null
-          user_id: string
-        }
-        ComputedFields: never
-        Insert: {
-          auth: string
-          created_at?: string
-          endpoint: string
-          id?: string
-          last_seen_at?: string
-          p256dh: string
-          prefs?: NonNullable<Json>
-          user_agent?: string | null
-          user_id: string
-        }
-        Update: {
-          auth?: string
-          created_at?: string
-          endpoint?: string
-          id?: string
-          last_seen_at?: string
-          p256dh?: string
-          prefs?: NonNullable<Json>
-          user_agent?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'push_subscriptions_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      quarterly_tasks: {
-        Row: {
-          active: boolean
-          created_at: string
-          directions: string | null
-          id: string
-          months: number[]
-          overrides_task_id: string | null
-          removed: boolean
-          restaurant_id: string | null
-          sort_order: number
-          title: string
-          updated_at: string
-          video_url: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          active?: boolean
-          created_at?: string
-          directions?: string | null
-          id?: string
-          months?: number[]
-          overrides_task_id?: string | null
-          removed?: boolean
-          restaurant_id?: string | null
-          sort_order?: number
-          title: string
-          updated_at?: string
-          video_url?: string | null
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          directions?: string | null
-          id?: string
-          months?: number[]
-          overrides_task_id?: string | null
-          removed?: boolean
-          restaurant_id?: string | null
-          sort_order?: number
-          title?: string
-          updated_at?: string
-          video_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'quarterly_tasks_overrides_task_id_fkey'
-            columns: ['overrides_task_id']
-            isOneToOne: false
-            referencedRelation: 'quarterly_tasks'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'quarterly_tasks_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'quarterly_tasks_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-        ]
-      }
-      restaurants: {
-        Row: {
-          address: string | null
-          color: string
-          created_at: string
-          id: string
-          manager_id: string | null
-          name: string
-          phone: string | null
-          sort_order: number
-          updated_at: string
-        }
-        ComputedFields: never
-        Insert: {
-          address?: string | null
-          color: string
-          created_at?: string
-          id?: string
-          manager_id?: string | null
-          name: string
-          phone?: string | null
-          sort_order?: number
-          updated_at?: string
-        }
-        Update: {
-          address?: string | null
-          color?: string
-          created_at?: string
-          id?: string
-          manager_id?: string | null
-          name?: string
-          phone?: string | null
-          sort_order?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'restaurants_manager_fk'
-            columns: ['manager_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      rights: {
-        Row: {
-          allowed: boolean
-          id: string
-          key: string
-          role: Database['public']['Enums']['app_role'] | null
-          updated_at: string
-          updated_by: string | null
-          user_id: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          allowed: boolean
-          id?: string
-          key: string
-          role?: Database['public']['Enums']['app_role'] | null
-          updated_at?: string
-          updated_by?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          allowed?: boolean
-          id?: string
-          key?: string
-          role?: Database['public']['Enums']['app_role'] | null
-          updated_at?: string
-          updated_by?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'rights_updated_by_fkey'
-            columns: ['updated_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'rights_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      service_line_items: {
-        Row: {
-          amount_cents: number
-          description: string | null
-          id: string
-          kind: Database['public']['Enums']['line_item_kind']
-          service_record_id: string
-          sort_order: number
-        }
-        ComputedFields: never
-        Insert: {
-          amount_cents: number
-          description?: string | null
-          id?: string
-          kind: Database['public']['Enums']['line_item_kind']
-          service_record_id: string
-          sort_order?: number
-        }
-        Update: {
-          amount_cents?: number
-          description?: string | null
-          id?: string
-          kind?: Database['public']['Enums']['line_item_kind']
-          service_record_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'service_line_items_service_record_id_fkey'
-            columns: ['service_record_id']
-            isOneToOne: false
-            referencedRelation: 'service_records'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'service_line_items_service_record_id_fkey'
-            columns: ['service_record_id']
-            isOneToOne: false
-            referencedRelation: 'v_missing_invoices'
-            referencedColumns: ['service_record_id']
-          },
-          {
-            foreignKeyName: 'service_line_items_service_record_id_fkey'
-            columns: ['service_record_id']
-            isOneToOne: false
-            referencedRelation: 'v_service_record_totals'
-            referencedColumns: ['service_record_id']
-          },
-        ]
-      }
-      service_records: {
-        Row: {
-          contractor_id: string | null
-          created_at: string
-          equipment_id: string | null
-          id: string
-          kind: Database['public']['Enums']['service_kind']
-          logged_by: string | null
-          notes: string | null
-          service_date: string
-          technician: string | null
-          ticket_id: string
-          title: string
-          updated_at: string
-        }
-        ComputedFields: never
-        Insert: {
-          contractor_id?: string | null
-          created_at?: string
-          equipment_id?: string | null
-          id?: string
-          kind: Database['public']['Enums']['service_kind']
-          logged_by?: string | null
-          notes?: string | null
-          service_date?: string
-          technician?: string | null
-          ticket_id: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          contractor_id?: string | null
-          created_at?: string
-          equipment_id?: string | null
-          id?: string
-          kind?: Database['public']['Enums']['service_kind']
-          logged_by?: string | null
-          notes?: string | null
-          service_date?: string
-          technician?: string | null
-          ticket_id?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_contractor_id_fkey'
-            columns: ['contractor_id']
-            isOneToOne: false
-            referencedRelation: 'contractors'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'service_records_equipment_id_fkey'
-            columns: ['equipment_id']
-            isOneToOne: false
-            referencedRelation: 'equipment'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'service_records_logged_by_fkey'
-            columns: ['logged_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'service_records_ticket_id_fkey'
-            columns: ['ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      support_reports: {
-        Row: {
-          app_version: string | null
-          body: string
-          case_no: number
-          created_at: string
-          emailed_at: string | null
-          id: string
-          page: string | null
-          user_agent: string | null
-          user_id: string
-        }
-        ComputedFields: never
-        Insert: {
-          app_version?: string | null
-          body: string
-          case_no?: never
-          created_at?: string
-          emailed_at?: string | null
-          id?: string
-          page?: string | null
-          user_agent?: string | null
-          user_id?: string
-        }
-        Update: {
-          app_version?: string | null
-          body?: string
-          case_no?: never
-          created_at?: string
-          emailed_at?: string | null
-          id?: string
-          page?: string | null
-          user_agent?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'support_reports_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      ticket_photos: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          height: number | null
-          id: string
-          path: string
-          ticket_id: string
-          update_id: string | null
-          width: number | null
-        }
-        ComputedFields: never
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          height?: number | null
-          id?: string
-          path: string
-          ticket_id: string
-          update_id?: string | null
-          width?: number | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          height?: number | null
-          id?: string
-          path?: string
-          ticket_id?: string
-          update_id?: string | null
-          width?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'ticket_photos_created_by_fkey'
-            columns: ['created_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'ticket_photos_ticket_id_fkey'
-            columns: ['ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'ticket_photos_update_id_fkey'
-            columns: ['update_id']
-            isOneToOne: false
-            referencedRelation: 'ticket_updates'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      ticket_updates: {
-        Row: {
-          author_id: string | null
-          body: string | null
-          created_at: string
-          id: string
-          internal: boolean
-          kind: Database['public']['Enums']['update_kind']
-          meta: NonNullable<Json>
-          ticket_id: string
-        }
-        ComputedFields: never
-        Insert: {
-          author_id?: string | null
-          body?: string | null
-          created_at?: string
-          id?: string
-          internal?: boolean
-          kind?: Database['public']['Enums']['update_kind']
-          meta?: NonNullable<Json>
-          ticket_id: string
-        }
-        Update: {
-          author_id?: string | null
-          body?: string | null
-          created_at?: string
-          id?: string
-          internal?: boolean
-          kind?: Database['public']['Enums']['update_kind']
-          meta?: NonNullable<Json>
-          ticket_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'ticket_updates_author_id_fkey'
-            columns: ['author_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'ticket_updates_ticket_id_fkey'
-            columns: ['ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      tickets: {
-        Row: {
-          assignee_id: string | null
-          category_id: string
-          closed_at: string | null
-          closed_by: string | null
-          created_at: string
-          created_by: string
-          description: string | null
-          display_id: string | null
-          equipment_id: string | null
-          id: string
-          last_closed_at: string | null
-          number: number
-          parent_ticket_id: string | null
-          reopen_count: number
-          reopened_at: string | null
-          resolution: string | null
-          restaurant_id: string
-          scheduled_for: string | null
-          source: Database['public']['Enums']['ticket_source']
-          status: Database['public']['Enums']['ticket_status']
-          title: string
-          updated_at: string
-          urgency: Database['public']['Enums']['ticket_urgency']
-          walkthrough_id: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          assignee_id?: string | null
-          category_id: string
-          closed_at?: string | null
-          closed_by?: string | null
-          created_at?: string
-          created_by: string
-          description?: string | null
-          display_id?: never
-          equipment_id?: string | null
-          id?: string
-          last_closed_at?: string | null
-          number: number
-          parent_ticket_id?: string | null
-          reopen_count?: number
-          reopened_at?: string | null
-          resolution?: string | null
-          restaurant_id: string
-          scheduled_for?: string | null
-          source?: Database['public']['Enums']['ticket_source']
-          status?: Database['public']['Enums']['ticket_status']
-          title: string
-          updated_at?: string
-          urgency?: Database['public']['Enums']['ticket_urgency']
-          walkthrough_id?: string | null
-        }
-        Update: {
-          assignee_id?: string | null
-          category_id?: string
-          closed_at?: string | null
-          closed_by?: string | null
-          created_at?: string
-          created_by?: string
-          description?: string | null
-          display_id?: never
-          equipment_id?: string | null
-          id?: string
-          last_closed_at?: string | null
-          number?: number
-          parent_ticket_id?: string | null
-          reopen_count?: number
-          reopened_at?: string | null
-          resolution?: string | null
-          restaurant_id?: string
-          scheduled_for?: string | null
-          source?: Database['public']['Enums']['ticket_source']
-          status?: Database['public']['Enums']['ticket_status']
-          title?: string
-          updated_at?: string
-          urgency?: Database['public']['Enums']['ticket_urgency']
-          walkthrough_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'tickets_assignee_id_fkey'
-            columns: ['assignee_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_category_id_fkey'
-            columns: ['category_id']
-            isOneToOne: false
-            referencedRelation: 'categories'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_closed_by_fkey'
-            columns: ['closed_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_created_by_fkey'
-            columns: ['created_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_equipment_id_fkey'
-            columns: ['equipment_id']
-            isOneToOne: false
-            referencedRelation: 'equipment'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_parent_ticket_id_fkey'
-            columns: ['parent_ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-          {
-            foreignKeyName: 'tickets_walkthrough_fk'
-            columns: ['walkthrough_id']
-            isOneToOne: false
-            referencedRelation: 'walkthroughs'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      walkthrough_checks: {
-        Row: {
-          checked_at: string
-          checked_by: string | null
-          id: string
-          item_id: string | null
-          note: string | null
-          quarterly_task_id: string | null
-          result: Database['public']['Enums']['check_result']
-          ticket_id: string | null
-          walkthrough_id: string
-        }
-        ComputedFields: never
-        Insert: {
-          checked_at?: string
-          checked_by?: string | null
-          id?: string
-          item_id?: string | null
-          note?: string | null
-          quarterly_task_id?: string | null
-          result: Database['public']['Enums']['check_result']
-          ticket_id?: string | null
-          walkthrough_id: string
-        }
-        Update: {
-          checked_at?: string
-          checked_by?: string | null
-          id?: string
-          item_id?: string | null
-          note?: string | null
-          quarterly_task_id?: string | null
-          result?: Database['public']['Enums']['check_result']
-          ticket_id?: string | null
-          walkthrough_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'walkthrough_checks_checked_by_fkey'
-            columns: ['checked_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthrough_checks_item_id_fkey'
-            columns: ['item_id']
-            isOneToOne: false
-            referencedRelation: 'walkthrough_items'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthrough_checks_quarterly_task_id_fkey'
-            columns: ['quarterly_task_id']
-            isOneToOne: false
-            referencedRelation: 'quarterly_tasks'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthrough_checks_ticket_id_fkey'
-            columns: ['ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthrough_checks_walkthrough_id_fkey'
-            columns: ['walkthrough_id']
-            isOneToOne: false
-            referencedRelation: 'walkthroughs'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      walkthrough_items: {
-        Row: {
-          active: boolean
-          area: Database['public']['Enums']['area']
-          directions: string | null
-          group_name: string
-          id: string
-          sort_order: number
-          template_id: string
-          title: string
-          video_url: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          active?: boolean
-          area: Database['public']['Enums']['area']
-          directions?: string | null
-          group_name: string
-          id?: string
-          sort_order?: number
-          template_id: string
-          title: string
-          video_url?: string | null
-        }
-        Update: {
-          active?: boolean
-          area?: Database['public']['Enums']['area']
-          directions?: string | null
-          group_name?: string
-          id?: string
-          sort_order?: number
-          template_id?: string
-          title?: string
-          video_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'walkthrough_items_template_id_fkey'
-            columns: ['template_id']
-            isOneToOne: false
-            referencedRelation: 'walkthrough_templates'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      walkthrough_schedules: {
-        Row: {
-          active: boolean
-          due_day: number
-          id: string
-          months: number[]
-          reminder_days: number[]
-          restaurant_id: string | null
-          updated_at: string
-          updated_by: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          active?: boolean
-          due_day?: number
-          id?: string
-          months?: number[]
-          reminder_days?: number[]
-          restaurant_id?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          active?: boolean
-          due_day?: number
-          id?: string
-          months?: number[]
-          reminder_days?: number[]
-          restaurant_id?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'walkthrough_schedules_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: true
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthrough_schedules_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: true
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-          {
-            foreignKeyName: 'walkthrough_schedules_updated_by_fkey'
-            columns: ['updated_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      walkthrough_templates: {
-        Row: {
-          active: boolean
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        ComputedFields: never
-        Insert: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      walkthroughs: {
-        Row: {
-          created_at: string
-          due_on: string
-          id: string
-          period: string
-          restaurant_id: string
-          started_by: string | null
-          status: Database['public']['Enums']['walkthrough_status']
-          submitted_at: string | null
-          submitted_by: string | null
-          template_id: string | null
-        }
-        ComputedFields: never
-        Insert: {
-          created_at?: string
-          due_on: string
-          id?: string
-          period: string
-          restaurant_id: string
-          started_by?: string | null
-          status?: Database['public']['Enums']['walkthrough_status']
-          submitted_at?: string | null
-          submitted_by?: string | null
-          template_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          due_on?: string
-          id?: string
-          period?: string
-          restaurant_id?: string
-          started_by?: string | null
-          status?: Database['public']['Enums']['walkthrough_status']
-          submitted_at?: string | null
-          submitted_by?: string | null
-          template_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'walkthroughs_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthroughs_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-          {
-            foreignKeyName: 'walkthroughs_started_by_fkey'
-            columns: ['started_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthroughs_submitted_by_fkey'
-            columns: ['submitted_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'walkthroughs_template_id_fkey'
-            columns: ['template_id']
-            isOneToOne: false
-            referencedRelation: 'walkthrough_templates'
-            referencedColumns: ['id']
-          },
-        ]
-      }
+                  ]
+                },"invoices": {
+                  Row: {
+                    "amount_cents": number | null,"attached_at": string | null,"attached_by": string | null,"created_at": string,"id": string,"number": string | null,"path": string | null,"service_record_id": string,"status": Database["public"]['Enums']["invoice_status"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents"?: number | null,"attached_at"?: string | null,"attached_by"?: string | null,"created_at"?: string,"id"?: string,"number"?: string | null,"path"?: string | null,"service_record_id": string,"status"?: Database["public"]['Enums']["invoice_status"],"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number | null,"attached_at"?: string | null,"attached_by"?: string | null,"created_at"?: string,"id"?: string,"number"?: string | null,"path"?: string | null,"service_record_id"?: string,"status"?: Database["public"]['Enums']["invoice_status"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "invoices_attached_by_fkey"
+      columns: ["attached_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invoices_service_record_id_fkey"
+      columns: ["service_record_id"]
+isOneToOne: true
+      referencedRelation: "service_records"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invoices_service_record_id_fkey"
+      columns: ["service_record_id"]
+isOneToOne: true
+      referencedRelation: "v_missing_invoices"
+      referencedColumns: ["service_record_id"]
+    },{
+      foreignKeyName: "invoices_service_record_id_fkey"
+      columns: ["service_record_id"]
+isOneToOne: true
+      referencedRelation: "v_service_record_totals"
+      referencedColumns: ["service_record_id"]
     }
-    Views: {
-      v_category_equipment_counts: {
-        Row: {
-          category_id: string
-          equipment_count: number | null
-          open_ticket_count: number | null
-          restaurant_id: string
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'equipment_category_id_fkey'
-            columns: ['category_id']
-            isOneToOne: false
-            referencedRelation: 'categories'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'equipment_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'equipment_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-        ]
-      }
-      v_closed_by_month: {
-        Row: {
-          closed_count: number | null
-          month: string | null
-          restaurant_id: string
-          total_cents: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'tickets_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'restaurants'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'tickets_restaurant_id_fkey'
-            columns: ['restaurant_id']
-            isOneToOne: false
-            referencedRelation: 'v_restaurant_open_counts'
-            referencedColumns: ['restaurant_id']
-          },
-        ]
-      }
-      v_contractor_spend: {
-        Row: {
-          contractor_id: string | null
-          last_visit_on: string | null
-          total_cents: number | null
-          visits: number | null
-          year: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_contractor_id_fkey'
-            columns: ['contractor_id']
-            isOneToOne: false
-            referencedRelation: 'contractors'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      v_equipment_contractors: {
-        Row: {
-          contractor_id: string | null
-          equipment_id: string | null
-          last_visit_on: string | null
-          total_cents: number | null
-          visits: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_contractor_id_fkey'
-            columns: ['contractor_id']
-            isOneToOne: false
-            referencedRelation: 'contractors'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'service_records_equipment_id_fkey'
-            columns: ['equipment_id']
-            isOneToOne: false
-            referencedRelation: 'equipment'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      v_equipment_lifetime: {
-        Row: {
-          equipment_id: string | null
-          last_service_on: string | null
-          total_cents: number | null
-          visits: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_equipment_id_fkey'
-            columns: ['equipment_id']
-            isOneToOne: false
-            referencedRelation: 'equipment'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      v_equipment_spend: {
-        Row: {
-          equipment_id: string | null
-          total_cents: number | null
-          visits: number | null
-          year: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_equipment_id_fkey'
-            columns: ['equipment_id']
-            isOneToOne: false
-            referencedRelation: 'equipment'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      v_missing_invoices: {
-        Row: {
-          contractor_id: string | null
-          service_date: string
-          service_record_id: string
-          ticket_id: string
-          total_cents: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_contractor_id_fkey'
-            columns: ['contractor_id']
-            isOneToOne: false
-            referencedRelation: 'contractors'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'service_records_ticket_id_fkey'
-            columns: ['ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      v_restaurant_open_counts: {
-        Row: {
-          open_count: number | null
-          reopened_count: number | null
-          restaurant_id: string
-          urgent_count: number | null
-        }
-        ComputedFields: never
-        Relationships: []
-      }
-      v_service_record_totals: {
-        Row: {
-          service_record_id: string
-          total_cents: number | null
-        }
-        ComputedFields: never
-        Relationships: []
-      }
-      v_ticket_costs: {
-        Row: {
-          last_service_on: string | null
-          ticket_id: string
-          total_cents: number | null
-          visits: number | null
-        }
-        ComputedFields: never
-        Relationships: [
-          {
-            foreignKeyName: 'service_records_ticket_id_fkey'
-            columns: ['ticket_id']
-            isOneToOne: false
-            referencedRelation: 'tickets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
+                  ]
+                },"memberships": {
+                  Row: {
+                    "created_at": string,"id": string,"restaurant_id": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"restaurant_id"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"restaurant_id"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "memberships_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "memberships_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "memberships_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-    Functions: {
-      can: { Args: { action: string; rid?: string }; Returns: boolean }
-      can_see_ticket: { Args: { tid: string }; Returns: boolean }
-      equipment_restaurant: { Args: { eid: string }; Returns: string }
-      has_scope: { Args: { rid: string }; Returns: boolean }
-      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
-      is_service: { Args: Record<PropertyKey, never>; Returns: boolean }
-      my_role: { Args: Record<PropertyKey, never>; Returns: Database['public']['Enums']['app_role'] }
-      path_uuid: { Args: { object_name: string }; Returns: string }
-      service_record_restaurant: { Args: { srid: string }; Returns: string }
-      ticket_restaurant: { Args: { tid: string }; Returns: string }
-      walkthrough_restaurant: { Args: { wid: string }; Returns: string }
+                  ]
+                },"profiles": {
+                  Row: {
+                    "avatar_path": string | null,"created_at": string,"deactivated_at": string | null,"email": string,"full_name": string,"home_restaurant_id": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "avatar_path"?: string | null,"created_at"?: string,"deactivated_at"?: string | null,"email": string,"full_name": string,"home_restaurant_id"?: string | null,"id": string,"phone"?: string | null,"role": Database["public"]['Enums']["app_role"],"updated_at"?: string
+                  }
+                  Update: {
+                    "avatar_path"?: string | null,"created_at"?: string,"deactivated_at"?: string | null,"email"?: string,"full_name"?: string,"home_restaurant_id"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "profiles_home_restaurant_id_fkey"
+      columns: ["home_restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "profiles_home_restaurant_id_fkey"
+      columns: ["home_restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
     }
-    Enums: {
-      app_role: 'manager' | 'ops' | 'leadership' | 'admin'
-      area: 'foh' | 'boh'
-      check_result: 'good' | 'in_house' | 'ticket'
-      invite_status: 'pending' | 'accepted' | 'revoked'
-      invoice_status: 'attached' | 'missing'
-      line_item_kind: 'labor' | 'parts' | 'trip'
-      service_kind: 'in_house' | 'contractor'
-      ticket_source: 'reported' | 'walkthrough'
-      ticket_status: 'open' | 'in_progress' | 'waiting_parts' | 'scheduled' | 'reopened' | 'closed'
-      ticket_urgency: 'normal' | 'urgent'
-      update_kind: 'message' | 'created' | 'assigned' | 'status_changed' | 'closed' | 'reopened'
-      walkthrough_status: 'open' | 'submitted'
+                  ]
+                },"push_subscriptions": {
+                  Row: {
+                    "auth": string,"created_at": string,"endpoint": string,"id": string,"last_seen_at": string,"p256dh": string,"prefs": NonNullable<Json>,"user_agent": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "auth": string,"created_at"?: string,"endpoint": string,"id"?: string,"last_seen_at"?: string,"p256dh": string,"prefs"?: NonNullable<Json>,"user_agent"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "auth"?: string,"created_at"?: string,"endpoint"?: string,"id"?: string,"last_seen_at"?: string,"p256dh"?: string,"prefs"?: NonNullable<Json>,"user_agent"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "push_subscriptions_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-    CompositeTypes: {
-      [_ in never]: never
+                  ]
+                },"quarterly_tasks": {
+                  Row: {
+                    "active": boolean,"created_at": string,"directions": string | null,"id": string,"months": (number)[],"overrides_task_id": string | null,"removed": boolean,"restaurant_id": string | null,"sort_order": number,"title": string,"updated_at": string,"video_url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"created_at"?: string,"directions"?: string | null,"id"?: string,"months"?: (number)[],"overrides_task_id"?: string | null,"removed"?: boolean,"restaurant_id"?: string | null,"sort_order"?: number,"title": string,"updated_at"?: string,"video_url"?: string | null
+                  }
+                  Update: {
+                    "active"?: boolean,"created_at"?: string,"directions"?: string | null,"id"?: string,"months"?: (number)[],"overrides_task_id"?: string | null,"removed"?: boolean,"restaurant_id"?: string | null,"sort_order"?: number,"title"?: string,"updated_at"?: string,"video_url"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quarterly_tasks_overrides_task_id_fkey"
+      columns: ["overrides_task_id"]
+isOneToOne: false
+      referencedRelation: "quarterly_tasks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "quarterly_tasks_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "quarterly_tasks_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
     }
-  }
+                  ]
+                },"restaurants": {
+                  Row: {
+                    "address": string | null,"color": string,"created_at": string,"id": string,"manager_id": string | null,"name": string,"phone": string | null,"sort_order": number,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "address"?: string | null,"color": string,"created_at"?: string,"id"?: string,"manager_id"?: string | null,"name": string,"phone"?: string | null,"sort_order"?: number,"updated_at"?: string
+                  }
+                  Update: {
+                    "address"?: string | null,"color"?: string,"created_at"?: string,"id"?: string,"manager_id"?: string | null,"name"?: string,"phone"?: string | null,"sort_order"?: number,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "restaurants_manager_fk"
+      columns: ["manager_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"rights": {
+                  Row: {
+                    "allowed": boolean,"id": string,"key": string,"role": Database["public"]['Enums']["app_role"] | null,"updated_at": string,"updated_by": string | null,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "allowed": boolean,"id"?: string,"key": string,"role"?: Database["public"]['Enums']["app_role"] | null,"updated_at"?: string,"updated_by"?: string | null,"user_id"?: string | null
+                  }
+                  Update: {
+                    "allowed"?: boolean,"id"?: string,"key"?: string,"role"?: Database["public"]['Enums']["app_role"] | null,"updated_at"?: string,"updated_by"?: string | null,"user_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "rights_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "rights_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"service_line_items": {
+                  Row: {
+                    "amount_cents": number,"description": string | null,"id": string,"kind": Database["public"]['Enums']["line_item_kind"],"service_record_id": string,"sort_order": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents": number,"description"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["line_item_kind"],"service_record_id": string,"sort_order"?: number
+                  }
+                  Update: {
+                    "amount_cents"?: number,"description"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["line_item_kind"],"service_record_id"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "service_line_items_service_record_id_fkey"
+      columns: ["service_record_id"]
+isOneToOne: false
+      referencedRelation: "service_records"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_line_items_service_record_id_fkey"
+      columns: ["service_record_id"]
+isOneToOne: false
+      referencedRelation: "v_missing_invoices"
+      referencedColumns: ["service_record_id"]
+    },{
+      foreignKeyName: "service_line_items_service_record_id_fkey"
+      columns: ["service_record_id"]
+isOneToOne: false
+      referencedRelation: "v_service_record_totals"
+      referencedColumns: ["service_record_id"]
+    }
+                  ]
+                },"service_records": {
+                  Row: {
+                    "contractor_id": string | null,"created_at": string,"equipment_id": string | null,"id": string,"kind": Database["public"]['Enums']["service_kind"],"logged_by": string | null,"notes": string | null,"service_date": string,"technician": string | null,"ticket_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "contractor_id"?: string | null,"created_at"?: string,"equipment_id"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["service_kind"],"logged_by"?: string | null,"notes"?: string | null,"service_date"?: string,"technician"?: string | null,"ticket_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "contractor_id"?: string | null,"created_at"?: string,"equipment_id"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["service_kind"],"logged_by"?: string | null,"notes"?: string | null,"service_date"?: string,"technician"?: string | null,"ticket_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "contractors"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_logged_by_fkey"
+      columns: ["logged_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"support_reports": {
+                  Row: {
+                    "app_version": string | null,"body": string,"case_no": number,"created_at": string,"emailed_at": string | null,"id": string,"page": string | null,"user_agent": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_version"?: string | null,"body": string,"case_no"?: never,"created_at"?: string,"emailed_at"?: string | null,"id"?: string,"page"?: string | null,"user_agent"?: string | null,"user_id"?: string
+                  }
+                  Update: {
+                    "app_version"?: string | null,"body"?: string,"case_no"?: never,"created_at"?: string,"emailed_at"?: string | null,"id"?: string,"page"?: string | null,"user_agent"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "support_reports_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"ticket_photos": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"height": number | null,"id": string,"path": string,"ticket_id": string,"update_id": string | null,"width": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"height"?: number | null,"id"?: string,"path": string,"ticket_id": string,"update_id"?: string | null,"width"?: number | null
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"height"?: number | null,"id"?: string,"path"?: string,"ticket_id"?: string,"update_id"?: string | null,"width"?: number | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "ticket_photos_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "ticket_photos_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "ticket_photos_update_id_fkey"
+      columns: ["update_id"]
+isOneToOne: false
+      referencedRelation: "ticket_updates"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"ticket_updates": {
+                  Row: {
+                    "author_id": string | null,"body": string | null,"created_at": string,"id": string,"internal": boolean,"kind": Database["public"]['Enums']["update_kind"],"meta": NonNullable<Json>,"ticket_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "author_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind"?: Database["public"]['Enums']["update_kind"],"meta"?: NonNullable<Json>,"ticket_id": string
+                  }
+                  Update: {
+                    "author_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind"?: Database["public"]['Enums']["update_kind"],"meta"?: NonNullable<Json>,"ticket_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "ticket_updates_author_id_fkey"
+      columns: ["author_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "ticket_updates_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"tickets": {
+                  Row: {
+                    "assignee_id": string | null,"category_id": string,"closed_at": string | null,"closed_by": string | null,"created_at": string,"created_by": string,"description": string | null,"display_id": string | null,"equipment_id": string | null,"id": string,"last_closed_at": string | null,"number": number,"parent_ticket_id": string | null,"reopen_count": number,"reopened_at": string | null,"resolution": string | null,"restaurant_id": string,"scheduled_for": string | null,"source": Database["public"]['Enums']["ticket_source"],"status": Database["public"]['Enums']["ticket_status"],"title": string,"updated_at": string,"urgency": Database["public"]['Enums']["ticket_urgency"],"walkthrough_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "assignee_id"?: string | null,"category_id": string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by": string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number": number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id": string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title": string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_id"?: string | null
+                  }
+                  Update: {
+                    "assignee_id"?: string | null,"category_id"?: string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by"?: string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number"?: number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id"?: string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title"?: string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "tickets_assignee_id_fkey"
+      columns: ["assignee_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_closed_by_fkey"
+      columns: ["closed_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_parent_ticket_id_fkey"
+      columns: ["parent_ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "tickets_walkthrough_fk"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "walkthroughs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"walkthrough_checks": {
+                  Row: {
+                    "checked_at": string,"checked_by": string | null,"id": string,"item_id": string | null,"note": string | null,"quarterly_task_id": string | null,"result": Database["public"]['Enums']["check_result"],"ticket_id": string | null,"walkthrough_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "checked_at"?: string,"checked_by"?: string | null,"id"?: string,"item_id"?: string | null,"note"?: string | null,"quarterly_task_id"?: string | null,"result": Database["public"]['Enums']["check_result"],"ticket_id"?: string | null,"walkthrough_id": string
+                  }
+                  Update: {
+                    "checked_at"?: string,"checked_by"?: string | null,"id"?: string,"item_id"?: string | null,"note"?: string | null,"quarterly_task_id"?: string | null,"result"?: Database["public"]['Enums']["check_result"],"ticket_id"?: string | null,"walkthrough_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthrough_checks_checked_by_fkey"
+      columns: ["checked_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_checks_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_checks_quarterly_task_id_fkey"
+      columns: ["quarterly_task_id"]
+isOneToOne: false
+      referencedRelation: "quarterly_tasks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_checks_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_checks_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "walkthroughs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"walkthrough_items": {
+                  Row: {
+                    "active": boolean,"area": Database["public"]['Enums']["area"],"directions": string | null,"group_name": string,"id": string,"sort_order": number,"template_id": string,"title": string,"video_url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"area": Database["public"]['Enums']["area"],"directions"?: string | null,"group_name": string,"id"?: string,"sort_order"?: number,"template_id": string,"title": string,"video_url"?: string | null
+                  }
+                  Update: {
+                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"],"directions"?: string | null,"group_name"?: string,"id"?: string,"sort_order"?: number,"template_id"?: string,"title"?: string,"video_url"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthrough_items_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"walkthrough_schedules": {
+                  Row: {
+                    "active": boolean,"due_day": number,"id": string,"months": (number)[],"reminder_days": (number)[],"restaurant_id": string | null,"updated_at": string,"updated_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"due_day"?: number,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Update: {
+                    "active"?: boolean,"due_day"?: number,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: true
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: true
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "walkthrough_schedules_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"walkthrough_templates": {
+                  Row: {
+                    "active": boolean,"created_at": string,"id": string,"name": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"created_at"?: string,"id"?: string,"name": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "active"?: boolean,"created_at"?: string,"id"?: string,"name"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"walkthroughs": {
+                  Row: {
+                    "created_at": string,"due_on": string,"id": string,"period": string,"restaurant_id": string,"started_by": string | null,"status": Database["public"]['Enums']["walkthrough_status"],"submitted_at": string | null,"submitted_by": string | null,"template_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"due_on": string,"id"?: string,"period": string,"restaurant_id": string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"template_id"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"due_on"?: string,"id"?: string,"period"?: string,"restaurant_id"?: string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"template_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthroughs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "walkthroughs_started_by_fkey"
+      columns: ["started_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_submitted_by_fkey"
+      columns: ["submitted_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
+          }
+          Views: {
+            "v_category_equipment_counts": {
+                  Row: {
+                    "category_id": string,"equipment_count": number | null,"open_ticket_count": number | null,"restaurant_id": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "equipment_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    }
+                  ]
+                },"v_closed_by_month": {
+                  Row: {
+                    "closed_count": number | null,"month": string | null,"restaurant_id": string,"total_cents": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "tickets_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    }
+                  ]
+                },"v_contractor_spend": {
+                  Row: {
+                    "contractor_id": string | null,"last_visit_on": string | null,"total_cents": number | null,"visits": number | null,"year": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "contractors"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_equipment_contractors": {
+                  Row: {
+                    "contractor_id": string | null,"equipment_id": string | null,"last_visit_on": string | null,"total_cents": number | null,"visits": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "contractors"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_equipment_lifetime": {
+                  Row: {
+                    "equipment_id": string | null,"last_service_on": string | null,"total_cents": number | null,"visits": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_equipment_spend": {
+                  Row: {
+                    "equipment_id": string | null,"total_cents": number | null,"visits": number | null,"year": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_missing_invoices": {
+                  Row: {
+                    "contractor_id": string | null,"service_date": string,"service_record_id": string,"ticket_id": string,"total_cents": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "contractors"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_restaurant_open_counts": {
+                  Row: {
+                    "open_count": number | null,"reopened_count": number | null,"restaurant_id": string,"urgent_count": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_service_record_totals": {
+                  Row: {
+                    "service_record_id": string,"total_cents": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_ticket_costs": {
+                  Row: {
+                    "last_service_on": string | null,"ticket_id": string,"total_cents": number | null,"visits": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
+          }
+          Functions: {
+            "can":
+{ Args: { "action": string,"rid"?: string }; Returns: boolean
+                           },
+"can_see_ticket":
+{ Args: { "tid": string }; Returns: boolean
+                           },
+"equipment_restaurant":
+{ Args: { "eid": string }; Returns: string
+                           },
+"has_scope":
+{ Args: { "rid": string }; Returns: boolean
+                           },
+"is_admin":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"is_service":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"my_role":
+{ Args: Record<PropertyKey, never>; Returns: Database["public"]['Enums']["app_role"]
+                           },
+"path_uuid":
+{ Args: { "object_name": string }; Returns: string
+                           },
+"service_record_restaurant":
+{ Args: { "srid": string }; Returns: string
+                           },
+"ticket_restaurant":
+{ Args: { "tid": string }; Returns: string
+                           },
+"walkthrough_restaurant":
+{ Args: { "wid": string }; Returns: string
+                           }
+          }
+          Enums: {
+            "app_role": "manager"|"ops"|"leadership"|"admin","area": "foh"|"boh","check_result": "good"|"in_house"|"ticket","invite_status": "pending"|"accepted"|"revoked","invoice_status": "attached"|"missing","line_item_kind": "labor"|"parts"|"trip","service_kind": "in_house"|"contractor","ticket_source": "reported"|"walkthrough","ticket_status": "open"|"in_progress"|"waiting_parts"|"scheduled"|"reopened"|"closed","ticket_urgency": "normal"|"urgent","update_kind": "message"|"created"|"assigned"|"status_changed"|"closed"|"reopened","walkthrough_status": "open"|"submitted"
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        }
 }
 
 type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    keyof (DefaultSchema['Tables'] & DefaultSchema['Views']) | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never) = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
     : never
+  : never
 
 export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
     : never
+  : never
 
 export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
     : never
+  : never
 
 export type Enums<
-  DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    keyof DefaultSchema['CompositeTypes'] | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
-  public: {
-    Enums: {
-      app_role: ['manager', 'ops', 'leadership', 'admin'],
-      area: ['foh', 'boh'],
-      check_result: ['good', 'in_house', 'ticket'],
-      invite_status: ['pending', 'accepted', 'revoked'],
-      invoice_status: ['attached', 'missing'],
-      line_item_kind: ['labor', 'parts', 'trip'],
-      service_kind: ['in_house', 'contractor'],
-      ticket_source: ['reported', 'walkthrough'],
-      ticket_status: ['open', 'in_progress', 'waiting_parts', 'scheduled', 'reopened', 'closed'],
-      ticket_urgency: ['normal', 'urgent'],
-      update_kind: ['message', 'created', 'assigned', 'status_changed', 'closed', 'reopened'],
-      walkthrough_status: ['open', 'submitted'],
-    },
-  },
+  "graphql_public": {
+          Enums: {
+            
+          }
+        },"public": {
+          Enums: {
+            "app_role": ["manager", "ops", "leadership", "admin"],"area": ["foh", "boh"],"check_result": ["good", "in_house", "ticket"],"invite_status": ["pending", "accepted", "revoked"],"invoice_status": ["attached", "missing"],"line_item_kind": ["labor", "parts", "trip"],"service_kind": ["in_house", "contractor"],"ticket_source": ["reported", "walkthrough"],"ticket_status": ["open", "in_progress", "waiting_parts", "scheduled", "reopened", "closed"],"ticket_urgency": ["normal", "urgent"],"update_kind": ["message", "created", "assigned", "status_changed", "closed", "reopened"],"walkthrough_status": ["open", "submitted"]
+          }
+        }
 } as const
