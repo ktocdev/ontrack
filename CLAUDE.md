@@ -94,6 +94,8 @@ Seeded sign-ins (local only, password `ontrack-demo-2026`): maya.reyes@ (manager
 
 Inside a phase: migration and policies with pgTAP first, then one TanStack Query hook per screen, then the screens against the design (new components on `/kit` first), then one Playwright flow for the done test in `e2e/stack`, then try the preview URL on a phone.
 
+A screen that needs real data can only render against the stack, which runs in CI. Its `e2e/stack` test attaches screenshots (`testInfo.attach`), and the Flows job always uploads `playwright-report-stack`: download it with `gh run download <run> -n playwright-report-stack` and compare the attachments with the board's PNG.
+
 - Branches are `OT-<n>` (one PR each). Small PRs: one screen or one function. Merge to `main` only when CI is green.
 - Commit messages: imperative, one line of what and why.
 - No restaurant data in the repo; the seed is fictional except restaurant names and colors.

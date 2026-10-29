@@ -103,7 +103,8 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
             onChange={(e) => setAddress(e.target.value)}
           />
           <Input
-            label="Phone (optional)"
+            label="Phone"
+            optional
             type="tel"
             inputMode="tel"
             placeholder="(312) 555-0100"
