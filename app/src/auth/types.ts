@@ -18,6 +18,12 @@ export type AuthState =
   | { status: 'unconfigured' }
   | { status: 'loading' }
   | { status: 'signed-out' }
+  /**
+   * The session ended without the person signing out: the 12-hour cap, or a
+   * revoked refresh token. The current route stays put and the signed-out
+   * sheet asks for the password again. dismiss() is "Not you?".
+   */
+  | { status: 'expired'; email: string; name?: string; dismiss: () => void }
   /** Auth session exists but no profile row is visible: deactivated, or not yet invited. */
   | { status: 'no-profile'; email: string | null; signOut: () => Promise<void> }
   | SignedIn

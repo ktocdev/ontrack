@@ -4,13 +4,15 @@ import type { AppRole } from '../lib/supabase'
 import { ROLE_HOME, ROLE_LABEL } from '../app/roles'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotConfiguredScreen } from '../screens/errors/NotConfiguredScreen'
+import { SignedOutScreen } from '../screens/auth/SignedOutSheet'
 import { CenteredLoading } from '../screens/loading/CenteredLoading'
 import { useAuth } from './context'
 
 /**
  * Route guards. RequireAuth sits above every signed-in route: it shows the
  * centered spinner while the session and profile load, sends signed-out
- * people to /sign-in with a return path, and shows the no-access screen to a
+ * people to /sign-in with a return path, keeps an expired session on its
+ * route behind the signed-out sheet, and shows the no-access screen to a
  * session with no visible profile (deactivated or uninvited).
  */
 export function RequireAuth({ children }: { children?: ReactNode }) {
@@ -22,6 +24,8 @@ export function RequireAuth({ children }: { children?: ReactNode }) {
       return <NotConfiguredScreen />
     case 'loading':
       return <CenteredLoading title="Signing you in…" body="This only takes a moment." />
+    case 'expired':
+      return <SignedOutScreen />
     case 'signed-out':
       return <Navigate to="/sign-in" replace state={{ from: location.pathname + location.search }} />
     case 'no-profile':

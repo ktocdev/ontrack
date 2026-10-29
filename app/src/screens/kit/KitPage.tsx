@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink, IconButton } from '../../components/Button'
-import { Card, KeyValueRow, ListCard, ListRow, ListRowLink } from '../../components/Card'
+import { Card, KeyValueRow, ListCard, ListRow, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
 import { Input, SearchField, Select, Textarea } from '../../components/Field'
+import { Notice } from '../../components/Notice'
 import {
   CountBadge,
   RoleTag,
@@ -30,7 +31,16 @@ import {
 import { Switch, SwitchRow } from '../../components/Switch'
 import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
-import { IconChevronLeft, IconClose, IconPlus, IconQr } from '../../components/icons'
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconClose,
+  IconHelpCircle,
+  IconPlus,
+  IconQr,
+  IconSignOut,
+} from '../../components/icons'
+import { SignedOutSheet } from '../auth/SignedOutSheet'
 import { ROLE_TABS } from '../../app/roles'
 import { MOCK_RESTAURANTS } from '../../auth/mock'
 import type { AppRole } from '../../lib/supabase'
@@ -101,6 +111,7 @@ export function KitPage() {
   const [seg, setSeg] = useState<'all' | 'foh' | 'boh'>('all')
   const [sw, setSw] = useState(true)
   const [sheet, setSheet] = useState(false)
+  const [signedOut, setSignedOut] = useState(false)
   const [loading, setLoading] = useState(false)
 
   return (
@@ -167,7 +178,11 @@ export function KitPage() {
                 </Button>
                 <Button variant="small">Search equipment</Button>
                 <Button variant="ghost">Report this problem</Button>
+                <Button variant="ghost-danger">Remove</Button>
               </div>
+              <Button variant="secondary-danger" icon={<IconSignOut />}>
+                Sign out
+              </Button>
               <div className="flex flex-wrap items-center gap-2.5">
                 <Button loading={loading} onClick={() => setLoading((v) => !v)} className="w-auto">
                   {loading ? 'Saving…' : 'Toggle loading'}
@@ -253,7 +268,19 @@ export function KitPage() {
                   subtitle="All restaurants"
                   trailing={<RoleTag>Ops Manager</RoleTag>}
                 />
+                <ListRowButton
+                  onClick={() => toast.show('Row pressed.')}
+                  leading={
+                    <RowIcon>
+                      <IconHelpCircle />
+                    </RowIcon>
+                  }
+                  title="Help center"
+                  subtitle="Common questions and ways to reach support"
+                  trailing={<IconChevronRight className="text-text-muted" />}
+                />
               </ListCard>
+              <Notice>Profile saved.</Notice>
               <Card className="px-3.5">
                 <KeyValueRow label="Brand">Kolpak</KeyValueRow>
                 <KeyValueRow label="Serial number">
@@ -346,7 +373,20 @@ export function KitPage() {
                 >
                   Toast with action
                 </Button>
+                <Button variant="secondary" className="w-auto" onClick={() => setSignedOut(true)}>
+                  Signed out sheet
+                </Button>
               </div>
+              <SignedOutSheet
+                open={signedOut}
+                email="maya.reyes@example.com"
+                name="Maya Reyes"
+                onSignIn={async () => {
+                  setSignedOut(false)
+                  return null
+                }}
+                onNotMe={() => setSignedOut(false)}
+              />
               <Sheet
                 open={sheet}
                 onOpenChange={setSheet}

@@ -61,6 +61,7 @@ function profile(id: string, full_name: string, email: string, role: AppRole, ho
     full_name,
     email,
     phone: null,
+    avatar_path: null,
     role,
     home_restaurant_id: home,
     deactivated_at: null,

@@ -1,7 +1,7 @@
 -- Schema shape: every table exists, every table has RLS on, the permission
 -- functions exist. Runs with `supabase test db`.
 begin;
-select plan(27);
+select plan(28);
 
 select has_table('public', t, 'table ' || t || ' exists')
 from unnest(array[
@@ -10,7 +10,8 @@ from unnest(array[
   'tickets', 'ticket_updates', 'ticket_photos',
   'contractors', 'service_records', 'service_line_items', 'invoices',
   'walkthrough_schedules', 'walkthrough_templates', 'walkthrough_items', 'walkthroughs',
-  'walkthrough_checks', 'inhouse_fixes', 'quarterly_tasks'
+  'walkthrough_checks', 'inhouse_fixes', 'quarterly_tasks',
+  'support_reports'
 ]) as t;
 
 -- Row-level security is on for every table in public, no exceptions.
