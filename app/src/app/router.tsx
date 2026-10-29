@@ -7,6 +7,8 @@ import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErr
 import { KitPage } from '../screens/kit/KitPage'
 import { CenteredLoading } from '../screens/loading/CenteredLoading'
 import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
+import { HelpScreen } from '../screens/profile/HelpScreen'
+import { ProfileScreen } from '../screens/profile/ProfileScreen'
 import { BareShell, Shell } from './Shell'
 
 /**
@@ -83,14 +85,8 @@ export const router = createBrowserRouter([
             path: '/profile',
             element: <BareShell />,
             children: [
-              {
-                index: true,
-                ...placeholder(
-                  'Profile',
-                  'Phase 1 (OT-4)',
-                  'Your account, theme, sign-in and security settings arrive with Phase 1.',
-                ),
-              },
+              { index: true, element: <ProfileScreen /> },
+              { path: 'help', element: <HelpScreen /> },
             ],
           },
 

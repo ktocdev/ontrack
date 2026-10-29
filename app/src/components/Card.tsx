@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router'
 
 /**
@@ -7,7 +7,8 @@ import { Link, type LinkProps } from 'react-router'
  * A list card holds rows separated by 1px lines.
  */
 
-const CARD = 'rounded-card border border-border bg-surface text-text'
+// flex-none: inside a scrolling flex column an overflow-hidden card would otherwise shrink and clip its rows.
+const CARD = 'flex-none rounded-card border border-border bg-surface text-text'
 
 export function Card({ className = '', children, ...rest }: HTMLAttributes<HTMLDivElement>) {
   return (
@@ -75,6 +76,40 @@ export function ListRowLink({ title, subtitle, leading, trailing, className = ''
       </div>
       {trailing}
     </Link>
+  )
+}
+
+/** Row that opens something on the same screen (a sheet). Same geometry as ListRowLink. */
+export function ListRowButton({
+  title,
+  subtitle,
+  leading,
+  trailing,
+  className = '',
+  ...rest
+}: RowProps & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'title'>) {
+  return (
+    <button
+      type="button"
+      className={`flex min-h-[60px] w-full items-center gap-3 border-t border-border px-3.5 py-2.5 text-left text-text first:border-t-0 transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0 ${className}`}
+      {...rest}
+    >
+      {leading}
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-14 font-semibold text-text">{title}</span>
+        {subtitle && <span className="text-12 text-text-muted">{subtitle}</span>}
+      </div>
+      {trailing}
+    </button>
+  )
+}
+
+/** 36px tinted square that leads a settings row (Help center, Report a problem). */
+export function RowIcon({ children }: { children: ReactNode }) {
+  return (
+    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-control bg-brand-tint-soft text-brand">
+      {children}
+    </span>
   )
 }
 

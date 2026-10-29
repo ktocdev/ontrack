@@ -527,6 +527,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_path: string | null
           created_at: string
           deactivated_at: string | null
           email: string
@@ -539,6 +540,7 @@ export type Database = {
         }
         ComputedFields: never
         Insert: {
+          avatar_path?: string | null
           created_at?: string
           deactivated_at?: string | null
           email: string
@@ -550,6 +552,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_path?: string | null
           created_at?: string
           deactivated_at?: string | null
           email?: string
@@ -902,6 +905,51 @@ export type Database = {
             columns: ['ticket_id']
             isOneToOne: false
             referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      support_reports: {
+        Row: {
+          app_version: string | null
+          body: string
+          case_no: number
+          created_at: string
+          emailed_at: string | null
+          id: string
+          page: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          app_version?: string | null
+          body: string
+          case_no?: never
+          created_at?: string
+          emailed_at?: string | null
+          id?: string
+          page?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Update: {
+          app_version?: string | null
+          body?: string
+          case_no?: never
+          created_at?: string
+          emailed_at?: string | null
+          id?: string
+          page?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'support_reports_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
             referencedColumns: ['id']
           },
         ]

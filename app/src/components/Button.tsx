@@ -10,8 +10,11 @@ import { ButtonSpinner } from './Skeleton'
  *  compact   44px primary with 15px text         (Invite, header actions)
  *  small     44px secondary with 14px text       (Search equipment on 404)
  *  ghost     40px text-only brand link           (Report this problem)
+ *  secondary-danger  secondary with danger text  (Sign out)
+ *  ghost-danger      ghost with danger text      (Remove photo)
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'compact' | 'small' | 'ghost'
+export type ButtonVariant =
+  'primary' | 'secondary' | 'danger' | 'compact' | 'small' | 'ghost' | 'secondary-danger' | 'ghost-danger'
 
 /*
  * Hover and pressed colors are prefixed not-disabled so a disabled or loading
@@ -29,6 +32,10 @@ const VARIANT: Record<ButtonVariant, string> = {
     'min-h-[44px] rounded-input bg-brand-fill px-4 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
   small:
     'min-h-[44px] rounded-input border border-border-strong bg-surface px-4 text-14 font-semibold text-text not-disabled:hover:border-border-muted not-disabled:active:border-border-muted not-disabled:active:bg-surface-muted',
+  'secondary-danger':
+    'min-h-[48px] rounded-input border border-border-strong bg-surface px-4 text-15 font-semibold text-danger not-disabled:hover:border-border-muted not-disabled:active:border-border-muted not-disabled:active:bg-surface-muted',
+  'ghost-danger':
+    'min-h-[40px] rounded-control px-1 text-14 font-semibold text-danger not-disabled:active:bg-surface-muted',
   ghost:
     'min-h-[40px] rounded-control px-1 text-14 font-semibold text-brand not-disabled:hover:text-brand-strong not-disabled:active:bg-brand-tint-soft not-disabled:active:text-brand-strong',
 }
@@ -38,7 +45,7 @@ const BASE =
   'inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors active:duration-0 disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-progress'
 
 /** Primary, secondary and danger fill the width unless the caller sets its own (w-auto). */
-const FULL_WIDTH: ButtonVariant[] = ['primary', 'secondary', 'danger']
+const FULL_WIDTH: ButtonVariant[] = ['primary', 'secondary', 'danger', 'secondary-danger']
 
 export function buttonClasses(variant: ButtonVariant, className = '') {
   const width = FULL_WIDTH.includes(variant) && !/(^|\s)w-/.test(className) ? 'w-full' : ''
