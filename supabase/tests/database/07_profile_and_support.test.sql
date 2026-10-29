@@ -64,13 +64,15 @@ select is(
   (select count(*)::int from storage.objects
     where bucket_id = 'avatars' and name = (:maya)::text || '/photo.jpg'),
   1, 'colleagues can see a profile photo');
-delete from storage.objects
+-- Storage refuses direct deletes from SQL, so the owner-only rule is checked
+-- on update, which the same policy shape guards.
+update storage.objects set name = (:ari)::text || '/stolen.jpg'
   where bucket_id = 'avatars' and name = (:maya)::text || '/photo.jpg';
 select pg_temp.logout();
 select is(
   (select count(*)::int from storage.objects
     where bucket_id = 'avatars' and name = (:maya)::text || '/photo.jpg'),
-  1, 'but cannot delete it');
+  1, 'but cannot move or replace it');
 
 -- ---------------------------------------------------------------------------
 -- Support reports
