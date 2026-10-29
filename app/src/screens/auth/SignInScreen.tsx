@@ -3,17 +3,19 @@ import { Navigate, useLocation } from 'react-router'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
 import { Logo } from '../../components/icons'
-import { Screen, ScreenBody } from '../../components/Screen'
 import { useAuth } from '../../auth/context'
 import { MOCK_USERS, writeMockRole } from '../../auth/mock'
+import { canSubmitSignIn, signInErrorMessage } from '../../auth/validation'
 import { env } from '../../lib/env'
 import { supabase, type AppRole } from '../../lib/supabase'
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 
 /**
- * Provisional sign-in. Phase 1 (OT-4) replaces this with the Sign-In board,
- * password reset and 2-step verification. Until then: email and password
- * against Supabase Auth, or, in the e2e build, a role picker.
+ * Sign in (design/screens/Sign-In): a brand cover with the mark, 40px
+ * wordmark and tagline, then a panel with 24px top corners rising over it.
+ * The button stays disabled until the email has a valid shape and the
+ * password has 12 characters. In the e2e build the panel is a role picker.
+ * "Forgot password?" arrives with the reset flow (OT-9).
  */
 export function SignInScreen() {
   const auth = useAuth()
@@ -28,25 +30,27 @@ export function SignInScreen() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!supabase) return
+    if (!supabase || !canSubmitSignIn(email, password)) return
     setBusy(true)
     setError(null)
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+    const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     setBusy(false)
-    if (err) setError(err.message)
+    if (err) setError(signInErrorMessage(err))
   }
 
   return (
-    <Screen>
-      <ScreenBody className="pt-safe">
-        <div className="mt-7 flex items-center gap-2">
-          <Logo size={28} />
-          <span className="font-display text-[18px] font-bold tracking-[-0.01em]">OnTrack</span>
-        </div>
-        <h1 className="mt-8 font-display text-30 font-bold tracking-[-0.02em]">Sign in</h1>
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-brand-fill">
+      <div className="flex flex-none flex-col gap-3.5 px-7 pb-10 pt-[max(72px,calc(var(--safe-top)+28px))] text-on-brand">
+        <Logo size={48} inverse />
+        <h1 className="font-display text-40 font-bold leading-none tracking-[-0.03em]">OnTrack</h1>
+        <p className="text-16 leading-[1.45] text-on-brand-muted">Keep every kitchen, dining room and bar running.</p>
+      </div>
+
+      <main className="flex flex-1 flex-col gap-[18px] rounded-t-cover bg-bg px-6 pt-8 pb-[calc(28px+var(--safe-bottom))] text-text lg:mx-auto lg:mb-10 lg:w-full lg:max-w-[440px] lg:flex-none lg:rounded-cover">
+        <h2 className="font-display text-24 font-bold">Sign in</h2>
 
         {env.e2eMock ? (
-          <div className="mt-6 flex flex-col gap-2.5" data-testid="mock-roles">
+          <div className="flex flex-col gap-2.5" data-testid="mock-roles">
             <span className="eyebrow">Test build · sign in as</span>
             {(Object.keys(MOCK_USERS) as AppRole[]).map((role) => (
               <Button
@@ -63,13 +67,14 @@ export function SignInScreen() {
             ))}
           </div>
         ) : (
-          <form onSubmit={submit} className="mt-6 flex flex-col gap-4">
+          <form onSubmit={submit} className="flex flex-col gap-[18px]" noValidate>
             <Input
-              label="Email"
+              label="Work email"
               type="email"
-              autoComplete="email"
+              autoComplete="username"
               inputMode="email"
-              required
+              autoCapitalize="none"
+              spellCheck={false}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -77,20 +82,21 @@ export function SignInScreen() {
               label="Password"
               type="password"
               autoComplete="current-password"
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={error}
             />
-            <Button type="submit" loading={busy} disabled={!supabase}>
+            <Button type="submit" loading={busy} disabled={!supabase || !canSubmitSignIn(email, password)}>
               Sign in
             </Button>
-            <p className="text-13 leading-normal text-text-secondary">
-              Invite-only. Password reset and 2-step verification arrive in Phase 1.
-            </p>
           </form>
         )}
-      </ScreenBody>
-    </Screen>
+
+        <div className="flex-1" />
+        <p className="text-center text-13 leading-normal text-text-secondary">
+          OnTrack is invite-only. Ask your IT admin for an invite.
+        </p>
+      </main>
+    </div>
   )
 }

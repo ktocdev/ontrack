@@ -36,6 +36,7 @@
   --brand-fill-hover: #0b4537;
   --brand-fill-active: #07342a; /* derived: pressed, one step past hover */
   --on-brand: #ffffff;
+  --on-brand-muted: #d7eae3; /* secondary text on a brand cover (Sign in tagline) */
   --brand-strong: #0b4537; /* link hover, dark panels, cover backgrounds */
   --brand-tint: #dce8e3; /* avatar backgrounds, selected count badge */
   --brand-tint-soft: #e3efea; /* info banners, selected rows */
@@ -102,6 +103,7 @@
   --radius-square: 3px; /* restaurant square */
   --radius-tag: 6px;
   --radius-sheet: 22px; /* sheet top corners */
+  --radius-cover: 24px; /* panel rising over a brand cover (Sign in) */
 
   /* Layout */
   --screen-pad: 20px;
@@ -144,6 +146,7 @@
   --brand-fill-hover: #177a62; /* derived */
   --brand-fill-active: #0d4f3f; /* derived: pressed sinks below the base fill */
   --on-brand: #ffffff;
+  --on-brand-muted: #d7eae3; /* the cover stays brand-fill in dark */
   --brand-strong: #5cbf9e; /* derived: link hover in dark */
   --brand-tint: #1e3a32;
   --brand-tint-soft: #1a2f29; /* derived */
@@ -213,6 +216,7 @@
   --color-brand-fill-hover: var(--brand-fill-hover);
   --color-brand-fill-active: var(--brand-fill-active);
   --color-on-brand: var(--on-brand);
+  --color-on-brand-muted: var(--on-brand-muted);
   --color-brand-strong: var(--brand-strong);
   --color-brand-tint: var(--brand-tint);
   --color-brand-tint-soft: var(--brand-tint-soft);
@@ -254,7 +258,7 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-sans: var(--font-body);
 
-  /* Scale from tokens.md: 11, 12, 13, 14, 15, 16, 20, 22, 24, 30 */
+  /* Scale from tokens.md: 11, 12, 13, 14, 15, 16, 20, 22, 24, 30; 40 is the Sign in wordmark */
   --text-11: 11px;
   --text-12: 12px;
   --text-13: 13px;
@@ -265,6 +269,7 @@
   --text-22: 22px;
   --text-24: 24px;
   --text-30: 30px;
+  --text-40: 40px;
 
   /* Shape */
   --radius-card: var(--radius-card);
@@ -275,6 +280,7 @@
   --radius-square: var(--radius-square);
   --radius-tag: var(--radius-tag);
   --radius-sheet: var(--radius-sheet);
+  --radius-cover: var(--radius-cover);
 
   /* Layout */
   --spacing-screen: var(--screen-pad);

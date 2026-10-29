@@ -201,10 +201,63 @@ export const IconStatusDone = (p: IconProps) => (
   </svg>
 )
 
-/** The OnTrack mark: rounded square in brand green with a white check. */
-export const Logo = ({ size = 24 }: { size?: number }) => (
+/** The OnTrack mark: rounded square in brand green with a white check; inverse on a brand cover. */
+export const Logo = ({ size = 24, inverse = false }: { size?: number; inverse?: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 28 28" aria-hidden="true">
-    <rect width="28" height="28" rx="8" className="fill-brand-fill" />
-    <path d="M8 15l4 4 8-9" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+    <rect width="28" height="28" rx="8" className={inverse ? 'fill-on-brand' : 'fill-brand-fill'} />
+    <path
+      d="M8 15l4 4 8-9"
+      fill="none"
+      className={inverse ? 'stroke-brand-fill' : 'stroke-on-brand'}
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+// Profile and Help
+export const IconHelpCircle = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2.2)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01" />
+  </svg>
+)
+export const IconReport = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2.2)}>
+    <path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5" />
+  </svg>
+)
+export const IconMail = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2.2)}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3 7 9 6 9-6" />
+  </svg>
+)
+export const IconPhone = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2.2)}>
+    <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+  </svg>
+)
+export const IconKey = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2.2)}>
+    <circle cx="7.5" cy="15.5" r="4.5" />
+    <path d="m10.7 12.3 9.3-9.3M16 7l3 3M14 9l2 2" />
+  </svg>
+)
+export const IconChevronRight = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2.2)}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+)
+export const IconSignOut = (p: IconProps) => (
+  <svg {...base({ size: 18, ...p })}>
+    <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3" />
+  </svg>
+)
+export const IconLockSmall = (p: IconProps) => (
+  <svg {...base({ size: 24, ...p })}>
+    <rect x="5" y="11" width="14" height="10" rx="2" />
+    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
   </svg>
 )
