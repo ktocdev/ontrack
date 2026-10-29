@@ -45,6 +45,7 @@ The app talks to Supabase directly and Edge Functions handle only the jobs that 
 | Testing | Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows | WebKit in Playwright is the stand-in for an iPhone until a real-device pass |
 | Repo and CI | One GitHub repo (`app/`, `supabase/`), GitHub Actions: lint, typecheck, Vitest, Playwright, pgTAP and type generation on every PR; Supabase migrations on merge to main. Cloudflare Workers Builds deploys the app itself | Solo, AI-assisted build: every change goes through the same gate |
 | Offline | Later (Phase 8). v1 caches what you have read; writes need a connection | The queued-ticket flow in the design is real work on its own |
+| Archive and delete | Things people pick from (restaurants, people, equipment, contractors, categories, templates) are archived, not deleted; records of what happened (tickets, walkthroughs, updates, service records, invoices) are never archived or deleted; anything can be deleted only while nothing points to it | Keeps every history and every report intact while still letting an admin clear a mistake or a test entry. The full table is under Archive and delete below and in `CLAUDE.md` |
 | Permissions | Four roles with defaults from the Roles & rights screen, overridable per person | Managers can be granted equipment edits and cost visibility by an admin; the database checks the grant, not the screen |
 
 Two things stay open until the first demo: the production domain (QR labels bake the URL in, so it should be settled before labels are printed) and whether the group wants Google or Microsoft sign-on later.
@@ -74,6 +75,21 @@ Twenty-three tables in five groups, plus ten views. Tickets are the center; equi
 **Counting and costs** (open tickets per restaurant, spend this year per unit, visits per contractor) are Postgres views, not client-side sums, so every screen shows the same numbers.
 
 All five groups landed in Phase 0 (OT-2, eight migration files) even though phases 1 to 4 use only the first three; adding walkthrough tables later would have meant reworking the ticket table's `source` and `walkthrough_id` columns. Account creation is invite only in the database itself: a trigger on new auth users takes role and restaurants from a pending invite and rejects anyone without one.
+
+## Archive and delete
+
+Decided Oct 30, 2026, after restaurants got archive and delete in OT-9. Each phase builds these for its own entities the same way: a database function per action that checks the caller and logs it, the "only while nothing points to it" rule enforced in the database, and a confirm sheet on the row.
+
+| Entity | Archive (reversible) | Delete | Phase |
+| --- | --- | --- | --- |
+| Restaurants | Archive / Restore | Only with no history and nobody's home restaurant | 1 (OT-9, done) |
+| People | Deactivate / Reactivate: no sign-in, out of pickers, name kept on history | Revoke a pending invite; delete an account only with no history | 1 (OT-10 revoke and ban, OT-12 User profile) |
+| Equipment | Retire | Only with no tickets or service records | 4 |
+| Contractors | Archive | Only with no service records | 5 |
+| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | 2 and 6 |
+| Tickets | None (closing ends a ticket) | Never | |
+| Walkthroughs, ticket updates, service records, invoices | None (they are the record) | Never; edits are logged | |
+| In-house fixes and tasks | None | While still open | 6 |
 
 ## Phase 0 · Foundation
 
@@ -246,10 +262,10 @@ These come after the group is using the app daily, in whatever order the feedbac
 
 One person with AI help can move fast on this stack as long as every phase has the same shape: schema and policies first, then the screens against the design, then a Playwright flow that proves the done test. Order inside a phase:
 
-1. **Migration and policies.** Write the tables, the `can()` cases and the pgTAP tests for the phase before any UI. There is no Docker on the dev machine, so the tests run in CI's Database job (`supabase db start`, `supabase test db`): push the branch and read the result. The database is right before a screen exists
+1. **Migration and policies.** Write the tables, the `can()` cases and the pgTAP tests for the phase before any UI. Docker Desktop runs on the dev machine (since Oct 30, 2026), so pgTAP and the stack flows run locally before a push, and CI runs them again on every PR
 2. **Data hooks.** One TanStack Query hook per screen's data, typed from the generated Supabase types (CI builds them as the `database-types` artifact), with the seed data as fixtures
 3. **Screens against the design.** Build each screen from its board on the design canvas, in both themes, in the `/kit` page first when a new component is needed. The canvas's sample data and the seed data match on purpose, so a screen is done when it looks like its board
-4. **Flow test.** One Playwright test per phase on Chromium and WebKit, driving the done test end to end against the seeded local stack
+4. **Flow test.** One Playwright test per phase on Chromium and WebKit, driving the done test end to end against the seeded local stack (`app/e2e/stack`)
 5. **Preview and try on a phone.** Every branch gets a Cloudflare preview URL; open it on a phone (Android today) before merging. A BrowserStack real-iPhone pass before each milestone handed to the client
 
 **Conventions**

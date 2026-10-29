@@ -90,6 +90,23 @@ Costs are a separate axis: `service_records`, line items, invoices and the cost 
 
 Seeded sign-ins (local only, password `ontrack-demo-2026`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
 
+## Archive and delete
+
+One rule for every entity: **things people pick from can be archived; records of what happened are never archived or deleted, only corrected; anything can be deleted only while nothing points to it yet.**
+
+| Entity                                                       | Archive (reversible)                                                                                                                    | Delete                                                                             |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Restaurants                                                  | Archive / Restore (`archived_at`): out of every list and picker, refuses new work                                                       | Only with no tickets, equipment, walkthroughs or in-house fixes, and nobody's home |
+| People                                                       | Deactivate / Reactivate (`deactivated_at`, plus the auth ban in `revoke-user`): no sign-in, out of pickers, name stays on their history | A pending invite is revoked; an account only with no history at all                |
+| Equipment                                                    | Retire (`retired_at`)                                                                                                                   | Only with no tickets or service records                                            |
+| Contractors                                                  | Archive (`archived_at`)                                                                                                                 | Only with no service records                                                       |
+| Categories, walkthrough templates and items, quarterly tasks | Turn off (`active`)                                                                                                                     | Only if never used                                                                 |
+| Tickets                                                      | None: closing ends a ticket                                                                                                             | Never; a mistaken ticket is closed with a note                                     |
+| Walkthroughs, ticket updates, service records, invoices      | None: they are the record                                                                                                               | Never; mistakes are edited, and the edit is logged                                 |
+| In-house fixes and tasks                                     | None                                                                                                                                    | While still open, as the boards show                                               |
+
+How to build one (OT-9's restaurants are the reference): a `security invoker` SQL function per action that checks the caller first, writes an `audit_log` row and does the change in one step; the "only while empty" rule enforced in that function from a `security_invoker` history view, not only in the UI; a guard on inserts so an archived thing takes nothing new; archived rows filtered out of pickers but still readable; a sheet on the row with the action and a confirm step that says what happens, and Delete disabled with the reason when it is not allowed; pgTAP for the role check, the refusal and the log.
+
 ## Working method
 
 Inside a phase: migration and policies with pgTAP first, then one TanStack Query hook per screen, then the screens against the design (new components on `/kit` first), then one Playwright flow for the done test in `e2e/stack`, then try the preview URL on a phone.
