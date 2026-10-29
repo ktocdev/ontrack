@@ -10,7 +10,7 @@ import { ReportSheet } from './ReportSheet'
  * Profile · Help & support (design/screens/Help), any role. Search narrows
  * the questions; one answer is open at a time. Email and Call support come
  * from VITE_SUPPORT_EMAIL / VITE_SUPPORT_PHONE and hide when unset. The
- * board's "Can't sign in?" row arrives with the reset flow (OT-9), and its
+ * board's "Can't sign in?" row arrives with the reset flow (OT-10), and its
  * Terms and Privacy links wait for those pages.
  */
 export const FAQS = [

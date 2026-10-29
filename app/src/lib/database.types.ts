@@ -1689,6 +1689,7 @@ export type Database = {
       equipment_restaurant: { Args: { eid: string }; Returns: string }
       has_scope: { Args: { rid: string }; Returns: boolean }
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      is_service: { Args: Record<PropertyKey, never>; Returns: boolean }
       my_role: { Args: Record<PropertyKey, never>; Returns: Database['public']['Enums']['app_role'] }
       path_uuid: { Args: { object_name: string }; Returns: string }
       service_record_restaurant: { Args: { srid: string }; Returns: string }

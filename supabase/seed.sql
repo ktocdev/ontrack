@@ -6,7 +6,7 @@
 -- Fixed ids keep the pgTAP tests and fixtures readable:
 --   restaurants 1111…000N, users 2222…000N, categories 3333…00NN,
 --   equipment 4444…00NN, contractors 5555…00NN, tickets 6666…0NNNN,
---   service records 7777…00NN.
+--   service records 7777…00NN, invites 8888…000N.
 --
 -- Every seeded person signs in with the password below (local only).
 
@@ -60,11 +60,11 @@ update public.restaurants set manager_id = '22222222-2222-4222-8222-000000000001
 update public.restaurants set manager_id = '22222222-2222-4222-8222-000000000002' where id = '11111111-1111-4111-8111-000000000004';
 
 -- Invites: Sam Patel pending (sent 2 days ago), Jordan Blake expired Oct 10.
-insert into public.invites (email, full_name, role, restaurant_ids, token_hash, status, invited_by, sent_at, expires_at) values
-  ('sam.patel@example.com', 'Sam Patel', 'manager', '{11111111-1111-4111-8111-000000000002}',
+insert into public.invites (id, email, full_name, role, restaurant_ids, token_hash, status, invited_by, sent_at, expires_at) values
+  ('88888888-8888-4888-8888-000000000001', 'sam.patel@example.com', 'Sam Patel', 'manager', '{11111111-1111-4111-8111-000000000002}',
     encode(extensions.digest('seed-token-sam', 'sha256'), 'hex'), 'pending',
     '22222222-2222-4222-8222-000000000006', now() - interval '2 days', now() + interval '1 day'),
-  ('jordan.blake@example.com', 'Jordan Blake', 'manager', '{11111111-1111-4111-8111-000000000003}',
+  ('88888888-8888-4888-8888-000000000002', 'jordan.blake@example.com', 'Jordan Blake', 'manager', '{11111111-1111-4111-8111-000000000003}',
     encode(extensions.digest('seed-token-jordan', 'sha256'), 'hex'), 'pending',
     '22222222-2222-4222-8222-000000000006', '2026-10-07 10:00-05', '2026-10-10 10:00-05');
 
