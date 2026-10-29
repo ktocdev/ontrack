@@ -5,8 +5,8 @@ import { IconCheck, IconPlus, IconStatusWaiting } from './icons'
  * Accent color picker (Add restaurant): a row of 44px swatches, each a 36px
  * rounded color with a check when chosen and a 2px text-color ring around it;
  * the last swatch is the hue wheel for a custom color, which opens a panel with
- * the native color picker and a hex field. A warning under the panel explains
- * why a custom color will not save.
+ * the native color picker and a hex field, starting from the color that was
+ * picked. A warning under the panel explains why a custom color will not save.
  */
 export type AccentOption = { value: string; label: string }
 
@@ -61,7 +61,11 @@ export function AccentPicker({ label, hint, options, value, onChange, custom, on
           role="radio"
           aria-checked={isCustom}
           aria-label="Custom color"
-          onClick={() => onChange('custom')}
+          onClick={() => {
+            // Start from the color that was picked, so the field and picker show something to adjust.
+            if (!isCustom && !/^#[0-9a-f]{6}$/i.test(custom)) onCustomChange(value)
+            onChange('custom')
+          }}
           className={`${SWATCH} ${isCustom ? 'border-text' : 'border-transparent hover:border-border-strong'}`}
         >
           <span className={INNER} style={{ background: 'var(--swatch-custom)' }}>
@@ -74,7 +78,7 @@ export function AccentPicker({ label, hint, options, value, onChange, custom, on
 
       {isCustom && (
         <>
-          <div className="flex items-center gap-2.5 rounded-input border border-border bg-surface px-2.5 py-2">
+          <div className="flex items-center gap-2.5 rounded-input border border-border bg-surface px-2.5 py-2 focus-within:border-brand">
             <input
               type="color"
               value={pickerValue}
@@ -93,9 +97,10 @@ export function AccentPicker({ label, hint, options, value, onChange, custom, on
                 autoCapitalize="none"
                 spellCheck={false}
                 maxLength={7}
+                placeholder="#C2185B"
                 value={custom}
                 onChange={(e) => onCustomChange(e.target.value)}
-                className="min-w-0 border-0 bg-transparent p-0 font-mono font-medium text-text outline-none"
+                className="min-h-7 min-w-0 border-0 bg-transparent p-0 font-mono font-medium text-text outline-none placeholder:text-text-muted"
               />
             </div>
           </div>
