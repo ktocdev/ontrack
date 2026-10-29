@@ -5,6 +5,8 @@ const CI = !!process.env.CI
 
 export default defineConfig({
   testDir: './e2e',
+  // e2e/stack needs the seeded local Supabase stack; it runs from playwright.stack.config.ts in CI.
+  testIgnore: ['stack/**'],
   fullyParallel: true,
   forbidOnly: CI,
   retries: CI ? 1 : 0,

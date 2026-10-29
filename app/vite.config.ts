@@ -71,7 +71,12 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+      // A literal true/false in the bundle, so production builds drop the mock
+      // sign-in and its fixtures entirely instead of shipping them switched off.
+      __E2E_MOCK__: JSON.stringify(env.VITE_E2E_MOCK === '1'),
+    },
     plugins: [
       react(),
       tailwindcss(),

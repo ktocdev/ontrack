@@ -1,9 +1,9 @@
 import { expect, test, type Page } from '@playwright/test'
 
 /**
- * Profile and Help & support (OT-6) against the e2e build. Writes resolve
- * with stand-ins there; what the database allows is covered by pgTAP
- * (07_profile_and_support).
+ * Profile and Help & support (OT-6) against the e2e build: layout, the form
+ * rules and everything that needs no backend. Saving, password change, photos
+ * and reports run against the seeded local stack in e2e/stack/profile.spec.ts.
  */
 
 async function openProfile(page: Page) {
@@ -13,7 +13,7 @@ async function openProfile(page: Page) {
   await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
 }
 
-test('profile shows the account and saves a name change', async ({ page }) => {
+test('profile shows the account and guards the name', async ({ page }) => {
   await openProfile(page)
   await expect(page.getByText('maya.reyes@example.com')).toBeVisible()
   await expect(page.getByText("Federale's Logan Square").or(page.getByText('Federale’s Logan Square'))).toBeVisible()
@@ -24,8 +24,7 @@ test('profile shows the account and saves a name change', async ({ page }) => {
   await expect(page.getByText('Enter your name.')).toBeVisible()
   await expect(save).toBeDisabled()
   await page.getByLabel('Name').fill('Maya R. Reyes')
-  await save.click()
-  await expect(page.getByRole('status').filter({ hasText: 'Profile saved.' })).toBeVisible()
+  await expect(save).toBeEnabled()
 })
 
 test('theme can be changed from the profile', async ({ page }) => {
@@ -46,19 +45,19 @@ test('change password checks length and the confirmation', async ({ page }) => {
 
   await sheet.getByLabel('New password', { exact: true }).fill('a-much-longer-password')
   await sheet.getByLabel('Confirm new password').fill('a-much-longer-password')
-  await sheet.getByRole('button', { name: 'Update password' }).click()
-  await expect(sheet).toBeHidden()
-  await expect(page.getByRole('status').filter({ hasText: 'Password updated' })).toBeVisible()
+  await expect(sheet.getByRole('button', { name: 'Update password' })).toBeEnabled()
+  await sheet.getByLabel('New password', { exact: true }).fill('ontrack-demo-2026')
+  await sheet.getByLabel('Confirm new password').fill('ontrack-demo-2026')
+  await expect(sheet.getByText('Use a different password from your current one.')).toBeVisible()
 })
 
-test('report a problem returns a case number', async ({ page }) => {
+test('report a problem needs a description', async ({ page }) => {
   await openProfile(page)
   await page.getByRole('button', { name: /Report a problem/ }).click()
   const sheet = page.getByRole('dialog', { name: 'Report a problem' })
   await expect(sheet.getByRole('button', { name: 'Send to support' })).toBeDisabled()
   await sheet.getByLabel('What happened?').fill('The camera will not open.')
-  await sheet.getByRole('button', { name: 'Send to support' }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'Case #4800' })).toBeVisible()
+  await expect(sheet.getByRole('button', { name: 'Send to support' })).toBeEnabled()
 })
 
 test('help searches the questions and opens one answer at a time', async ({ page }) => {

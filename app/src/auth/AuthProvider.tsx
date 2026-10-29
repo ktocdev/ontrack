@@ -1,7 +1,6 @@
 import type { Session } from '@supabase/supabase-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { env } from '../lib/env'
 import { supabase } from '../lib/supabase'
 import { AuthContext } from './context'
 import { MOCK_RESTAURANTS, MOCK_USERS, readMockRole, writeMockRole } from './mock'
@@ -35,7 +34,8 @@ async function loadMe(userId: string): Promise<Me> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  if (env.e2eMock) return <MockAuthProvider>{children}</MockAuthProvider>
+  // __E2E_MOCK__ is a build-time literal: production bundles drop this branch and the fixtures.
+  if (__E2E_MOCK__) return <MockAuthProvider>{children}</MockAuthProvider>
   if (!supabase) return <AuthContext.Provider value={{ status: 'unconfigured' }}>{children}</AuthContext.Provider>
   return <SupabaseAuthProvider>{children}</SupabaseAuthProvider>
 }

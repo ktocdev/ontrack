@@ -6,7 +6,6 @@ import { Logo } from '../../components/icons'
 import { useAuth } from '../../auth/context'
 import { MOCK_USERS, writeMockRole } from '../../auth/mock'
 import { canSubmitSignIn, signInErrorMessage } from '../../auth/validation'
-import { env } from '../../lib/env'
 import { supabase, type AppRole } from '../../lib/supabase'
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 
@@ -49,7 +48,7 @@ export function SignInScreen() {
       <main className="flex flex-1 flex-col gap-[18px] rounded-t-cover bg-bg px-6 pt-8 pb-[calc(28px+var(--safe-bottom))] text-text lg:mx-auto lg:mb-10 lg:w-full lg:max-w-[440px] lg:flex-none lg:rounded-cover">
         <h2 className="font-display text-24 font-bold">Sign in</h2>
 
-        {env.e2eMock ? (
+        {__E2E_MOCK__ ? (
           <div className="flex flex-col gap-2.5" data-testid="mock-roles">
             <span className="eyebrow">Test build · sign in as</span>
             {(Object.keys(MOCK_USERS) as AppRole[]).map((role) => (

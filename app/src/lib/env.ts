@@ -10,8 +10,6 @@ export const env = {
   supportPhone: (import.meta.env.VITE_SUPPORT_PHONE as string | undefined) || undefined,
   /** package.json version, stamped by vite.config. */
   appVersion: __APP_VERSION__,
-  /** Set only by the e2e build so shells can be exercised without a backend. */
-  e2eMock: import.meta.env.VITE_E2E_MOCK === '1',
 }
 
 export const supabaseConfigured = Boolean(env.supabaseUrl && env.supabaseAnonKey)
