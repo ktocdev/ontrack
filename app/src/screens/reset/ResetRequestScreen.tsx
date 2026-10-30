@@ -34,6 +34,9 @@ export function ResetRequestScreen() {
       <BrandBackBar to="/sign-in" label="Back to sign in" />
       <form
         onSubmit={submit}
+        onChange={() => {
+          if (request.isError) request.reset()
+        }}
         className="relative flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto px-6 pt-7 pb-[max(28px,var(--safe-bottom))]"
         noValidate
       >

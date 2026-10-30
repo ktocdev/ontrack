@@ -173,6 +173,14 @@ test('a bad link offers a new one, and sends it to the address in the link', asy
   await newMessage(request, 'ari.kim@example.com', RESET, seen)
 })
 
+test('a link from the stock Supabase email signs nobody in and says what is wrong', async ({ page }) => {
+  await page.goto('/reset/new#access_token=abc&refresh_token=def&expires_in=3600&type=recovery')
+  await expect(page.getByRole('heading', { name: "This reset link isn't set up right" })).toBeVisible()
+  await expect(page).toHaveURL(/\/reset\/new$/)
+  await page.goto('/')
+  await expect(page.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible()
+})
+
 test('nobody reaches the form without a link, even signed in', async ({ page }) => {
   await signIn(page, 'maya.reyes@example.com')
   await page.goto('/reset/new')

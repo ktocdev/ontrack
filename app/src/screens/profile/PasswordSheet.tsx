@@ -73,7 +73,14 @@ export function PasswordSheet({
 
   return (
     <Sheet open={open} onOpenChange={close} title="Change password">
-      <form onSubmit={submit} className="flex flex-col gap-3.5" noValidate>
+      <form
+        onSubmit={submit}
+        onChange={() => {
+          if (change.isError) change.reset()
+        }}
+        className="flex flex-col gap-3.5"
+        noValidate
+      >
         <Input
           label="Current password"
           type="password"

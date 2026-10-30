@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { readResetLink } from './useReset'
+import { hasSessionTokens, readResetLink } from './useReset'
+
+describe('hasSessionTokens', () => {
+  it('spots the stock Supabase link and nothing else', () => {
+    expect(hasSessionTokens('#access_token=abc&type=recovery')).toBe(true)
+    expect(hasSessionTokens('#type=recovery&access_token=abc')).toBe(true)
+    expect(hasSessionTokens('#token_hash=abc&email=maya@example.com')).toBe(false)
+    expect(hasSessionTokens('#email=access_token=abc')).toBe(false)
+    expect(hasSessionTokens('')).toBe(false)
+  })
+})
 
 describe('readResetLink', () => {
   it('reads the token and the email', () => {

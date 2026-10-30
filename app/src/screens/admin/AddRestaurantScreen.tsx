@@ -69,6 +69,10 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
   const inviting = managerId === 'invite'
 
   const fieldError = add.error instanceof AddRestaurantError ? add.error : null
+  // An error is about what was sent, so it goes as soon as that changes.
+  const clearError = () => {
+    if (add.isError) add.reset()
+  }
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -93,7 +97,7 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
   return (
     <Screen>
       <CloseBar to="/admin/restaurants" title="Add restaurant" />
-      <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
+      <form onSubmit={submit} onChange={clearError} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-[18px] py-4">
           <Input
             label="Restaurant name"
@@ -151,7 +155,10 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
             }
             options={options}
             value={choice}
-            onChange={setChoice}
+            onChange={(value) => {
+              clearError()
+              setChoice(value)
+            }}
             custom={custom}
             onCustomChange={setCustom}
             warning={warning ?? (fieldError?.field === 'color' ? fieldError.message : undefined)}

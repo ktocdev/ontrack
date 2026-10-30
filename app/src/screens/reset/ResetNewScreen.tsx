@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { Button } from '../../components/Button'
 import { Input, PasswordField, PasswordRules } from '../../components/Field'
@@ -8,7 +8,14 @@ import { MAX_PASSWORD, passwordReady } from '../../auth/validation'
 import { ServerErrorScreen } from '../errors/ServerErrorScreen'
 import { LinkExpiredScreen } from '../invite/LinkExpiredScreen'
 import { CenteredLoading } from '../loading/CenteredLoading'
-import { readResetLink, ResetError, useRequestReset, useResetLink, useSaveNewPassword } from './useReset'
+import {
+  hasSessionTokens,
+  readResetLink,
+  ResetError,
+  useRequestReset,
+  useResetLink,
+  useSaveNewPassword,
+} from './useReset'
 
 /**
  * /reset/new#token_hash=…&email=…, where the reset email lands: spends the link,
@@ -19,10 +26,26 @@ import { readResetLink, ResetError, useRequestReset, useResetLink, useSaveNewPas
  * known by Auth, so it comes back as an error on save.
  */
 export function ResetNewScreen() {
-  const { tokenHash, email: linkEmail } = readResetLink(useLocation().hash)
+  const { hash } = useLocation()
+  const { tokenHash, email: linkEmail } = readResetLink(hash)
   const link = useResetLink(tokenHash)
   const request = useRequestReset()
   const navigate = useNavigate()
+
+  // Supabase's stock email links here with live tokens in the fragment, which this
+  // app never uses. Take them out of the address bar and say what is wrong.
+  const stockLink = hasSessionTokens(hash)
+  useEffect(() => {
+    if (stockLink) window.history.replaceState(null, '', window.location.pathname)
+  }, [stockLink])
+  if (stockLink) {
+    return (
+      <LinkExpiredScreen
+        title="This reset link isn't set up right"
+        body="Your password hasn't changed. The reset email needs updating, so please tell your IT admin."
+      />
+    )
+  }
 
   if (tokenHash !== '' && link.isPending) return <CenteredLoading title="Checking your link…" />
   if (link.isError) return <ServerErrorScreen error={link.error} onRetry={() => void link.refetch()} />
@@ -65,7 +88,14 @@ function NewPasswordForm({ email }: { email: string }) {
 
   return (
     <Screen>
-      <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
+      <form
+        onSubmit={submit}
+        onChange={() => {
+          if (save.isError) save.reset()
+        }}
+        className="flex min-h-0 flex-1 flex-col"
+        noValidate
+      >
         <div className="relative flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto px-6 pb-4 pt-[calc(32px+var(--safe-top))]">
           <BrandMark />
           <div className="flex flex-col gap-1.5">

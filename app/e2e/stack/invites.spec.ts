@@ -150,6 +150,7 @@ test('an invite that is taken or still pending says so on the field', async ({ p
   await page.getByRole('button', { name: 'Send invite' }).click()
   await expect(page.getByText('Someone with this email already has an account.')).toBeVisible()
   await page.getByLabel('Work email').fill('sam.patel@example.com')
+  await expect(page.getByText('Someone with this email already has an account.')).toBeHidden()
   await page.getByRole('button', { name: 'Send invite' }).click()
   await expect(page.getByText('This person already has a pending invite.')).toBeVisible()
 })

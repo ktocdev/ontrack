@@ -33,6 +33,9 @@ export function ProfileScreen() {
   const save = useSaveProfile()
   const photo = usePhoto()
   const avatarUrl = useAvatarUrl(user.avatar_path)
+  const clearSaveError = () => {
+    if (save.isError) save.reset()
+  }
 
   const scope = allRestaurants
     ? 'All restaurants'
@@ -106,7 +109,10 @@ export function ProfileScreen() {
           label="Name"
           autoComplete="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            clearSaveError()
+            setName(e.target.value)
+          }}
           error={dirty ? nameError : undefined}
         />
         <Input
@@ -115,7 +121,10 @@ export function ProfileScreen() {
           autoComplete="tel"
           inputMode="tel"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => {
+            clearSaveError()
+            setPhone(e.target.value)
+          }}
           hint="Optional. Lets your Ops Manager call you about a ticket."
         />
 

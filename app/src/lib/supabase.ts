@@ -19,7 +19,10 @@ export const supabase: SupabaseClient<Database> | null = supabaseConfigured
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // Off: no link in this app signs anyone in through its URL. Invite and reset
+        // links carry their own tokens, and on, a crafted link could sign a visitor
+        // in to someone else's account.
+        detectSessionInUrl: false,
         storageKey: 'ontrack.auth',
       },
     })
