@@ -1,6 +1,22 @@
 /** Matches config.toml's minimum_password_length; the database enforces it too. */
 export const MIN_PASSWORD = 12
 
+/** Past this the password hash silently ignores the rest, so it is refused instead. */
+export const MAX_PASSWORD = 72
+
+/** Set up account's checklist. The invite-user function holds the same rules. */
+export function passwordRules(password: string) {
+  return [
+    { text: `At least ${MIN_PASSWORD} characters`, ok: password.length >= MIN_PASSWORD },
+    { text: 'One number', ok: /\d/.test(password) },
+    { text: 'One uppercase letter', ok: /[A-Z]/.test(password) },
+  ]
+}
+
+export function passwordReady(password: string) {
+  return password.length <= MAX_PASSWORD && passwordRules(password).every((r) => r.ok)
+}
+
 /** Something@something.tld, no spaces. The server is the real check. */
 export function looksLikeEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())

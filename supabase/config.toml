@@ -161,7 +161,7 @@ site_url = "http://localhost:5173"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://localhost:5173", "http://localhost:4173", "https://ontrack.katina-sunrise.workers.dev", "https://*-ontrack.katina-sunrise.workers.dev"]
+additional_redirect_urls = ["http://localhost:5173", "http://localhost:4173", "https://ontrack-app.app", "https://fourcorners.ontrack-app.app", "https://ontrack.katina-sunrise.workers.dev", "https://*-ontrack.katina-sunrise.workers.dev"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -386,8 +386,20 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
-# [edge_runtime.secrets]
-# secret_key = "env(SECRET_VALUE)"
+# Local only: nothing here reaches the hosted project, whose secrets are set in
+# its dashboard. Mail goes to the local Mailpit inbox instead of Resend.
+[edge_runtime.secrets]
+APP_URL = "http://localhost:4174"
+EMAIL_SINK_URL = "http://supabase_inbucket_ontrack:8025"
+
+# These check the caller themselves: invite-user's accept step has no signed-in
+# caller, and a publishable key is not a JWT the gateway could verify.
+[functions.invite-user]
+verify_jwt = false
+[functions.revoke-user]
+verify_jwt = false
+[functions.send-email]
+verify_jwt = false
 
 [analytics]
 enabled = true

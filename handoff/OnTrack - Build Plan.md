@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Oct 28, 2026 after Phase 0
+Oct 28, 2026 · Katie · updated Oct 30, 2026 with the profile photo switch, the group name as data and per-group domains
 
 ## How to read this
 
@@ -20,8 +20,8 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 
 Phase 0 notes:
 
-- Production is https://ontrack.katina-sunrise.workers.dev; each branch previews at `https://<branch>-ontrack.katina-sunrise.workers.dev`.
-- The hosted Supabase project has the full schema (migrations deploy on merge) and no seed data. One admin account exists, made by hand before OT-7: an `invites` row in the SQL editor, then Authentication, Add user with the same email. Since the OT-7 audit an invite is claimed only by its id in `app_metadata`, which the dashboard cannot set, so the invite flow (OT-9) is the way to add people; by hand means an `auth.users` insert like the seed's, with `role` in `app_metadata`.
+- Production is https://ontrack-app.app (domain bought and connected Oct 2026) and still answers at https://ontrack.katina-sunrise.workers.dev; each branch previews at `https://<branch>-ontrack.katina-sunrise.workers.dev`. Four Corners moves to `fourcorners.ontrack-app.app` before its first install.
+- The hosted Supabase project has the full schema (migrations deploy on merge) and no seed data. One admin account exists, made by hand before OT-7: an `invites` row in the SQL editor, then Authentication, Add user with the same email. An invite is claimed only with its link's token or its id in `app_metadata`, which the dashboard cannot set, so the invite flow (OT-10) is the way to add people; by hand means an `auth.users` insert like the seed's, with `role` in `app_metadata`.
 - Install and dark mode were checked on Android Chrome. The iPhone part of the done test waits for a BrowserStack pass; Playwright WebKit covers it in CI until then.
 - Sign-in is a provisional email and password screen; the designed Sign in, reset and 2-step screens are Phase 1.
 
@@ -47,8 +47,10 @@ The app talks to Supabase directly and Edge Functions handle only the jobs that 
 | Offline | Later (Phase 8). v1 caches what you have read; writes need a connection | The queued-ticket flow in the design is real work on its own |
 | Archive and delete | Things people pick from (restaurants, people, equipment, contractors, categories, templates) are archived, not deleted; records of what happened (tickets, walkthroughs, updates, service records, invoices) are never archived or deleted; anything can be deleted only while nothing points to it | Keeps every history and every report intact while still letting an admin clear a mistake or a test entry. The full table is under Archive and delete below and in `CLAUDE.md` |
 | Permissions | Four roles with defaults from the Roles & rights screen, overridable per person | Managers can be granted equipment edits and cost visibility by an admin; the database checks the grant, not the screen |
+| Avatars | Initials follow the boards: the color comes from the role, and pending and expired invites have their own. An admin can turn profile photos off for the whole group | The color says who is talking on a ticket thread and matches the design. The switch is enforced in the database and keeps the files, so it can be reversed |
+| Group name and domains | The group's name is a field in the database, never in the code. Each group gets its own subdomain: `fourcorners.ontrack-app.app`, later `hogsalt.ontrack-app.app` | Another restaurant group may want the app someday, and nothing about Four Corners should have to be edited out of the code when that happens |
 
-Two things stay open until the first demo: the production domain (QR labels bake the URL in, so it should be settled before labels are printed) and whether the group wants Google or Microsoft sign-on later.
+Two things stay open until the first demo: connecting `fourcorners.ontrack-app.app` (`ontrack-app.app` itself is bought and live; QR labels bake the URL in, so it has to be live before labels are printed) and whether the group wants Google or Microsoft sign-on later.
 
 ## Architecture
 
@@ -60,11 +62,11 @@ The app gets two public build values, the Supabase URL and the publishable key (
 
 ## Data model
 
-Twenty-three tables in five groups, plus ten views. Tickets are the center; equipment, service records and walkthroughs all hang off them. The nine-table model in the earlier doc grew by the walkthrough, contractor and rights tables the design added.
+Twenty-four tables in five groups, plus ten views. Tickets are the center; equipment, service records and walkthroughs all hang off them. The nine-table model in the earlier doc grew by the walkthrough, contractor and rights tables the design added.
 
 | Group | Tables | Notes |
 | --- | --- | --- |
-| Org and access | `restaurants`, `profiles`, `memberships`, `invites`, `rights`, `push_subscriptions`, `audit_log` | `restaurants` holds name, address, phone, accent color, manager. `profiles.role` holds the role (manager, ops, leadership, admin); `memberships` is scope only, one row per restaurant or a single null row for all restaurants, which ops and leadership get by default. `rights` = the Roles & rights grid: a default row per role, plus per-person override rows. Right keys: `create_tickets`, `see_all_tickets`, `update_status`, `log_cost`, `see_costs`, `edit_equipment`, `see_contractors`, `set_walkthrough_schedule`, `invite_users`, `manage_rights` |
+| Org and access | `restaurants`, `profiles`, `memberships`, `invites`, `rights`, `push_subscriptions`, `audit_log`, `group_settings` | `restaurants` holds name, address, phone, accent color, manager. `group_settings` is a single row for the group: its name, its short name, and whether profile photos are allowed. `profiles.role` holds the role (manager, ops, leadership, admin); `memberships` is scope only, one row per restaurant or a single null row for all restaurants, which ops and leadership get by default. `rights` = the Roles & rights grid: a default row per role, plus per-person override rows. Right keys: `create_tickets`, `see_all_tickets`, `update_status`, `log_cost`, `see_costs`, `edit_equipment`, `see_contractors`, `set_walkthrough_schedule`, `invite_users`, `manage_rights` |
 | Equipment | `equipment`, `categories` | Category carries area (FOH or BOH). Equipment has brand, model, serial, installed, warranty, location note, manual file, retired_at |
 | Tickets | `tickets`, `ticket_updates`, `ticket_photos` | Ticket: restaurant, equipment (optional), category, title, description, urgency, status, assignee, source (reported or walkthrough), walkthrough_id, reopened_at. Status is an enum: open, in_progress, waiting_parts, scheduled, reopened, closed. Updates carry text, photo, internal flag, and system events (assigned, status change, closed, reopened) |
 | Service and money | `contractors`, `service_records`, `service_line_items`, `invoices` | A service record belongs to a ticket and optionally a contractor; line items are labor, parts, trip. An invoice is a file plus number, amount and status (attached, missing). Per-unit and per-contractor spend are views over service records |
@@ -125,6 +127,9 @@ Real people can be invited, sign in, and land in the right role, with rights an 
 - Sign in, password reset (request, sent, email, new password, done), expired link and signed-out screens. The Sign in button stays disabled until the email has a valid shape and the password has at least 12 characters (the provisional screen from Phase 0 only disables it when Supabase is not configured)
 - 2-step verification: TOTP with authenticator app (choose, scan, verify, backup codes) required for admins and offered to everyone; the SMS option waits unless the group asks for it, since it adds a Twilio cost
 - Profile (name, phone, restaurant, theme toggle, sign out) and Help & support (report a problem to a support inbox, FAQ)
+- Group name as data (OT-10, first step): `group_settings` holds the name and short name, and every "4C | Four Corners" reads from it, including the admin header and the invite email. The name and short name can be read before sign-in, because Checking your invite shows them. The migration starts the row as "OnTrack", the seed sets Four Corners, and the hosted project gets its name by one SQL update after merge. Links in emails come from an `APP_URL` function secret, never from a domain in the code. The app description in `index.html` and the manifest drops the group's name
+- Group settings on Roles & rights (OT-14): an admin edits the name and short name there, through a database function that writes `audit_log`
+- Profile photo switch (OT-14): an admin turns profile photos off or on for the whole group. Off refuses new uploads in the storage policies and on `profiles.avatar_path`, stops serving existing photos, and shows initials everywhere; Profile drops Upload and Change. Files are kept, so turning it back on restores them, and a person can still remove their own photo while it is off. It follows the OT-9 pattern: an admin-only database function that writes `audit_log`, a confirm sheet, and pgTAP for the role check, the refusal and the log. Ticket and equipment photos are not affected. No board exists for this, so it is a `Switch` row with the kit's confirm sheet on Roles & rights, under Edit defaults
 - Edge Functions: `invite-user`, `revoke-user`, `send-email`. They run with the service key, so each checks the caller with `can()` or `is_admin()` first. `revoke-user` sets `profiles.deactivated_at` and also bans the auth user so refresh tokens stop working
 - A `/security-review` pass before the invite and sign-in work merges, since this is the first code that holds the service key
 
@@ -178,7 +183,8 @@ Every unit has a page, a QR label, and a history. This closes the loop that EcoT
 - Manager equipment list: same list scoped to their restaurant, with Add equipment only when `edit_equipment` is granted
 - Equipment detail tabs: Details (serial, QR, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `see_costs`
 - Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print
-- QR: each label encodes `https://<domain>/e/<id>`; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
+- Domain: `fourcorners.ontrack-app.app` connected to the production Worker and added to Supabase Auth's site and redirect URLs, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
+- QR: each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
 - Empty states: no equipment, no tickets on a unit, no service yet, QR not recognized; equipment loading skeletons
 
@@ -256,7 +262,7 @@ These come after the group is using the app daily, in whatever order the feedbac
 - **Reports.** Monthly spend per restaurant and per category as a PDF or CSV for leadership; repeat-repair flags on a unit
 - **Single sign-on** with Google Workspace or Microsoft 365 if the group wants it; Supabase Auth supports both as providers
 - **App Store wrapper** with Capacitor only if someone asks for it; the PWA covers the need
-- **Second organization.** The schema has one group today; a `tenant_id` on restaurants and the `can()` function would let the same deployment serve another restaurant group
+- **Second restaurant group.** Each group gets its own deployment from the same repo: its own Supabase project, its own Cloudflare Worker on `<group>.ontrack-app.app`, and its own `group_settings` row. No policy changes, and one group's data cannot reach another's, because they share no database. The deploy workflow pushes migrations to each project. The cost is one more Supabase project per group. A shared database with a `group_id` on every table is cheaper to run, but it changes every policy and makes a cross-group leak possible, so it waits until there are enough groups to justify it
 
 ## Working method
 
@@ -304,7 +310,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | iPhone push only works when the app is installed to the home screen | The ops team may open it in Safari and wonder why nothing buzzes | Install prompt on first sign-in with a two-step picture; email fallback until a subscription exists; a Profile row that shows whether push is on |
 | RLS policies get complex with per-person rights overrides | A bug here leaks another restaurant's data | Every rule goes through one `can()` function with pgTAP tests per role; never a second code path in the app |
 | Supabase free tier pauses after a week idle | A paused project during the pilot looks like a crash | Move to Pro ($25 a month) before handing the app to the client |
-| QR labels bake in the domain | Reprinting labels is a real cost once they are on units | Buy the domain before Phase 4; use a short path like `/e/` so labels stay small |
+| QR labels bake in the domain | Reprinting labels is a real cost once they are on units | Connect `fourcorners.ontrack-app.app` before Phase 4 (`ontrack-app.app` is already live); use a short path like `/e/` so labels stay small |
 | Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | Set up SPF, DKIM and DMARC on the sending domain in Phase 1, send a test to a Gmail and an Outlook address |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
 | A secret pasted into a `VITE_` build variable | It ships in the public JavaScript; on Oct 28 a Supabase personal access token went out in the OT-3 preview this way and was revoked | Only the URL and the `sb_publishable_` key go in Cloudflare; check the key's prefix when setting a new branch's variables |
@@ -312,7 +318,10 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 
 **Open items**
 
-- [ ] Production domain, so QR labels and emails have a stable base
+- [x] Buy `ontrack-app.app` and connect it to the production Worker
+- [ ] Connect `fourcorners.ontrack-app.app`, so QR labels and emails have a stable base
+- [ ] Set up `ontrack-app.app` as the Resend sending domain, which replaces the `onboarding@resend.dev` test sender
+- [ ] Add the live address to the hosted Supabase project's Auth site and redirect URLs, before invite and reset links are tested on it
 - [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then)

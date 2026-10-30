@@ -4,7 +4,8 @@ import { SignInScreen } from '../screens/auth/SignInScreen'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotFoundScreen } from '../screens/errors/NotFoundScreen'
 import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErrorScreen'
-import { CenteredLoading } from '../screens/loading/CenteredLoading'
+import { LinkExpiredScreen } from '../screens/invite/LinkExpiredScreen'
+import { CenteredLoading, CheckingInvite } from '../screens/loading/CenteredLoading'
 import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
 import { BareShell, Shell } from './Shell'
 
@@ -28,16 +29,23 @@ export const router = createBrowserRouter([
       // Public
       { path: '/sign-in', element: <BareShell />, children: [{ index: true, element: <SignInScreen /> }] },
       {
+        path: '/invite',
+        element: <BareShell />,
+        children: [
+          {
+            index: true,
+            lazy: async () => ({
+              Component: (await import('../screens/invite/SetUpAccountScreen')).SetUpAccountScreen,
+            }),
+          },
+        ],
+      },
+      {
         path: '/kit',
         element: <BareShell />,
         children: [
           { index: true, lazy: async () => ({ Component: (await import('../screens/kit/KitPage')).KitPage }) },
-          {
-            path: 'loading/spinner',
-            element: (
-              <CenteredLoading title="Checking your invite…" body="From 4C | Four Corners. This only takes a moment." />
-            ),
-          },
+          { path: 'loading/spinner', element: <CheckingInvite /> },
           {
             path: 'loading/scan',
             element: (
@@ -53,6 +61,10 @@ export const router = createBrowserRouter([
             ),
           },
           { path: 'errors/404', element: <NotFoundScreen /> },
+          {
+            path: 'errors/invite-expired',
+            element: <LinkExpiredScreen onRequest={() => undefined} />,
+          },
           {
             path: 'errors/403',
             element: (
@@ -137,8 +149,12 @@ export const router = createBrowserRouter([
                 element: <Shell />,
                 children: [
                   { path: '/admin', element: <Navigate to="/admin/users" replace /> },
-                  { path: '/admin/users', ...placeholder('Users', 'Phase 1 (OT-4)') },
-                  { path: '/admin/roles', ...placeholder('Roles & rights', 'Phase 1 (OT-4)') },
+                  {
+                    path: '/admin/users',
+                    lazy: async () => ({ Component: (await import('../screens/admin/UsersScreen')).UsersScreen }),
+                  },
+                  { path: '/admin/users/:id', ...placeholder('User profile', 'Phase 1 (OT-12)') },
+                  { path: '/admin/roles', ...placeholder('Roles & rights', 'Phase 1 (OT-12)') },
                   { path: '/admin/tickets', ...placeholder('Tickets', 'Phase 7') },
                   {
                     path: '/admin/restaurants',
@@ -151,6 +167,12 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
+                  {
+                    path: '/admin/users/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/InviteUserScreen')).InviteUserScreen,
+                    }),
+                  },
                   {
                     path: '/admin/restaurants/new',
                     lazy: async () => ({

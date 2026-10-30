@@ -12,9 +12,20 @@ import { ButtonSpinner } from './Skeleton'
  *  ghost     40px text-only brand link           (Report this problem)
  *  secondary-danger  secondary with danger text  (Sign out)
  *  ghost-danger      ghost with danger text      (Remove photo)
+ *  medium    48px primary with 15px text         (Invite people, empty and error screens)
+ *  done      medium once its work is done        (Request sent)
  */
 export type ButtonVariant =
-  'primary' | 'secondary' | 'danger' | 'compact' | 'small' | 'ghost' | 'secondary-danger' | 'ghost-danger'
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'compact'
+  | 'small'
+  | 'ghost'
+  | 'secondary-danger'
+  | 'ghost-danger'
+  | 'medium'
+  | 'done'
 
 /*
  * Hover and pressed colors are prefixed not-disabled so a disabled or loading
@@ -30,6 +41,9 @@ const VARIANT: Record<ButtonVariant, string> = {
     'min-h-[52px] rounded-input bg-danger-fill px-5 text-16 font-bold text-white not-disabled:hover:bg-danger-fill-hover not-disabled:active:bg-danger-fill-active',
   compact:
     'min-h-[44px] rounded-input bg-brand-fill px-4 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
+  medium:
+    'min-h-[48px] rounded-input bg-brand-fill px-5 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
+  done: 'min-h-[48px] rounded-input bg-brand-tint px-5 text-15 font-bold text-brand-strong disabled:cursor-default disabled:opacity-100',
   small:
     'min-h-[44px] rounded-input border border-border-strong bg-surface px-4 text-14 font-semibold text-text not-disabled:hover:border-border-muted not-disabled:active:border-border-muted not-disabled:active:bg-surface-muted',
   'secondary-danger':

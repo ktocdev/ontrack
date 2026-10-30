@@ -4,8 +4,9 @@ import type { AppRole } from '../lib/supabase'
 /**
  * Initials avatar. Tone follows the role as drawn on the canvas: managers on
  * brand-tint with brand text, ops on the info tint, leadership and admin on
- * surface-muted. Sizes: 28 (card corner), 40 (header), 88 (profile). With a
- * photo the image fills the circle.
+ * surface-muted, and someone still invited in the color of their invite: gold
+ * while pending, orange once expired. Sizes: 28 (card corner), 38 (Users), 40
+ * (header), 88 (profile). With a photo the image fills the circle.
  */
 
 export function initialsOf(name: string) {
@@ -17,18 +18,20 @@ export function initialsOf(name: string) {
     .join('')
 }
 
-const TONE: Record<AppRole | 'you', string> = {
+const TONE: Record<AppRole | 'you' | 'pending' | 'expired', string> = {
   manager: 'bg-brand-tint text-brand',
   ops: 'bg-status-progress-bg text-status-progress-text',
   leadership: 'bg-surface-muted text-text-body',
   admin: 'bg-surface-muted text-text-body',
   you: 'bg-brand-fill text-on-brand',
+  pending: 'bg-status-waiting-bg text-status-waiting-text',
+  expired: 'bg-status-open-bg text-status-open-text',
 }
 
 type Props = {
   name: string
-  role?: AppRole | 'you'
-  size?: 28 | 40 | 88
+  role?: keyof typeof TONE
+  size?: 28 | 38 | 40 | 88
   label?: string
   /** A profile photo URL; initials show instead if it fails to load. */
   src?: string

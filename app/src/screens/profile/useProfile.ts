@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useUser } from '../../auth/context'
 import { signInErrorMessage } from '../../auth/validation'
 import { env } from '../../lib/env'
+import { callFunction } from '../../lib/functions'
 import { resizeToJpeg } from '../../lib/image'
 import { requireSupabase, supabase } from '../../lib/supabase'
 
@@ -110,9 +111,13 @@ export function useChangePassword() {
   })
 }
 
-/** File a report; resolves to its case number. OT-9 emails new reports to support. */
+/**
+ * File a report; resolves to its case number. The send-email function forwards it
+ * to support; if that fails the report is still saved and goes out with the next.
+ */
 export function useSendReport() {
   return useMutation({
+    onSuccess: () => void callFunction('send-email', {}).catch(() => undefined),
     mutationFn: async (body: string) => {
       const { data, error } = await requireSupabase()
         .from('support_reports')

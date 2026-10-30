@@ -4,8 +4,11 @@ import { AccentPicker } from '../../components/AccentPicker'
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink, IconButton } from '../../components/Button'
 import { Card, KeyValueRow, ListCard, ListRow, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
-import { Input, SearchField, Select, Textarea } from '../../components/Field'
+import { Chip } from '../../components/Chip'
+import { EmptyState } from '../../components/EmptyState'
+import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { Notice } from '../../components/Notice'
+import { RadioCard } from '../../components/RadioCard'
 import {
   CountBadge,
   RoleTag,
@@ -41,6 +44,7 @@ import {
   IconPlus,
   IconQr,
   IconSignOut,
+  IconUserPlus,
 } from '../../components/icons'
 import { SignedOutSheet } from '../auth/SignedOutSheet'
 import { ROLE_TABS } from '../../app/roles'
@@ -78,6 +82,7 @@ const SECTIONS = {
   avatars: 'Avatars',
   cards: 'Cards and rows',
   controls: 'Segmented and tabs',
+  choices: 'Chips, radio cards and empty',
   fields: 'Fields',
   switch: 'Switch',
   overlays: 'Sheet and toast',
@@ -113,6 +118,9 @@ export function KitPage() {
   const accents = useMemo(() => PRESETS.map((p) => ({ value: presetHex(p.key), label: p.label })), [])
   const [accent, setAccent] = useState(() => presetHex(PRESETS[0]!.key))
   const [customAccent, setCustomAccent] = useState('#4d7c0f')
+  const [chip, setChip] = useState(true)
+  const [radio, setRadio] = useState(0)
+  const [password, setPassword] = useState('kitchen4')
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-desktop flex-1">
@@ -172,6 +180,12 @@ export function KitPage() {
                 <Button variant="small">Search equipment</Button>
                 <Button variant="ghost">Report this problem</Button>
                 <Button variant="ghost-danger">Remove</Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Button variant="medium">Ask admin for a new invite</Button>
+                <Button variant="done" disabled>
+                  Request sent
+                </Button>
               </div>
               <Button variant="secondary-danger" icon={<IconSignOut />}>
                 Sign out
@@ -253,6 +267,13 @@ export function KitPage() {
                 <Avatar name="Bert Velilla" role="you" size={28} />
                 <Avatar name="Bert Velilla" role="ops" size={88} />
               </div>
+              <div className="flex items-end gap-3">
+                <Avatar name="Sam Patel" role="pending" size={38} />
+                <Avatar name="Jordan Blake" role="expired" size={38} />
+                <Avatar name="Maya Reyes" role="manager" size={38} />
+                <Avatar name="Bert Velilla" role="ops" size={38} />
+                <Avatar name="Lee Chen" role="leadership" size={38} />
+              </div>
             </Section>
 
             <Section id="cards">
@@ -328,8 +349,64 @@ export function KitPage() {
               />
             </Section>
 
+            <Section id="choices">
+              <div className="flex flex-wrap gap-2">
+                <Chip selected={chip} onClick={() => setChip(true)}>
+                  All · 42
+                </Chip>
+                <Chip selected={!chip} onClick={() => setChip(false)}>
+                  Pending · 3
+                </Chip>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Chip tone="pick" selected={chip} onClick={() => setChip(true)}>
+                  Federale’s West Loop
+                </Chip>
+                <Chip tone="pick" selected={!chip} onClick={() => setChip(false)}>
+                  Porter
+                </Chip>
+                <Chip tone="pick" selected={false} disabled>
+                  Disabled
+                </Chip>
+              </div>
+              <div role="radiogroup" aria-label="Example role" className="flex flex-col gap-2">
+                <RadioCard
+                  checked={radio === 0}
+                  title="Restaurant manager"
+                  subtitle="Creates tickets for their restaurant(s)"
+                  onSelect={() => setRadio(0)}
+                />
+                <RadioCard
+                  checked={radio === 1}
+                  title="Operations manager"
+                  subtitle="Works tickets, logs costs and contractors"
+                  onSelect={() => setRadio(1)}
+                />
+              </div>
+              <div className="flex rounded-card border border-border">
+                <EmptyState
+                  icon={<IconUserPlus size={30} />}
+                  title="It's just you so far"
+                  body="An empty list says what belongs here and how to add it."
+                >
+                  <Button variant="medium" className="w-full" icon={<IconPlus size={18} />}>
+                    Invite people
+                  </Button>
+                </EmptyState>
+              </div>
+            </Section>
+
             <Section id="fields">
               <Input label="Your name" placeholder="First and last" />
+              <div className="flex flex-col gap-2.5">
+                <PasswordField
+                  label="Create password"
+                  autoComplete="off"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <PasswordRules password={password} />
+              </div>
               <Input
                 label="Email"
                 type="email"
@@ -435,6 +512,9 @@ export function KitPage() {
 
             <Section id="errors">
               <div className="flex flex-wrap gap-2.5">
+                <ButtonLink to="/kit/errors/invite-expired" variant="small">
+                  Invite expired
+                </ButtonLink>
                 <ButtonLink to="/kit/errors/404" variant="small">
                   404
                 </ButtonLink>

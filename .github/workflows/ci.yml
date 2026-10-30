@@ -58,9 +58,10 @@ jobs:
         with:
           version: 2.122.0
 
-      # Auth, REST, storage and Postgres with the seed; nothing the flows don't use.
+      # Auth, REST, storage, Edge Functions, Mailpit and Postgres with the seed;
+      # nothing the flows don't use.
       - name: Start the local stack
-        run: supabase start -x studio,imgproxy,logflare,vector,edge-runtime,realtime,postgres-meta
+        run: supabase start -x studio,imgproxy,logflare,vector,realtime,postgres-meta
 
       - name: Point the app build at it
         run: |
@@ -109,6 +110,9 @@ jobs:
 
       - name: pgTAP
         run: supabase test db
+
+      - name: Typecheck Edge Functions
+        run: npx -y deno@2 check supabase/functions/*/index.ts
 
       - name: Lint SQL
         run: supabase db lint --schema public --level warning

@@ -40,6 +40,7 @@
   --brand-strong: #0b4537; /* link hover, dark panels, cover backgrounds */
   --brand-tint: #dce8e3; /* avatar backgrounds, selected count badge */
   --brand-tint-soft: #e3efea; /* info banners, selected rows */
+  --brand-tint-faint: #f4f9f7; /* a selected radio card (Invite user) */
 
   /* Semantic */
   --urgent: #b4400c; /* URGENT tag background, white text */
@@ -161,6 +162,7 @@
   --brand-strong: #5cbf9e; /* derived: link hover in dark */
   --brand-tint: #1e3a32;
   --brand-tint-soft: #1a2f29; /* derived */
+  --brand-tint-faint: #162823; /* derived */
 
   --urgent: #d9542a;
   --danger: #e0734a; /* derived */
@@ -238,6 +240,7 @@
   --color-brand-strong: var(--brand-strong);
   --color-brand-tint: var(--brand-tint);
   --color-brand-tint-soft: var(--brand-tint-soft);
+  --color-brand-tint-faint: var(--brand-tint-faint);
 
   --color-urgent: var(--urgent);
   --color-danger: var(--danger);

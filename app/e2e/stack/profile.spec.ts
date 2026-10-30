@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { openProfile, SEED_PASSWORD, signIn } from './helpers'
+import { openProfile, SEED_PASSWORD } from './helpers'
 
 // 1×1 PNG, enough for createImageBitmap and the upload path.
 const PNG = Buffer.from(
@@ -56,7 +56,11 @@ test('a password change works and is changed back', async ({ page }) => {
 
   // The new password signs in; then put the seed's back.
   await page.getByRole('button', { name: 'Sign out' }).click()
-  await signIn(page, email, temp)
-  await page.getByRole('link', { name: 'Your profile' }).click()
+  await expect(page).toHaveURL(/\/sign-in/)
+  await page.getByLabel('Work email').fill(email)
+  await page.getByLabel('Password').fill(temp)
+  await page.getByRole('button', { name: 'Sign in' }).click()
+  // Signing back in returns to where they signed out from.
+  await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
   await change(temp, SEED_PASSWORD)
 })

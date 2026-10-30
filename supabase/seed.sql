@@ -12,6 +12,8 @@
 
 begin;
 
+update public.group_settings set name = 'Four Corners', short_name = '4C';
+
 -- ---------------------------------------------------------------------------
 -- Restaurants
 -- ---------------------------------------------------------------------------
@@ -69,24 +71,9 @@ insert into public.invites (id, email, full_name, role, restaurant_ids, token_ha
     '22222222-2222-4222-8222-000000000006', '2026-10-07 10:00-05', '2026-10-10 10:00-05');
 
 -- ---------------------------------------------------------------------------
--- Rights: the Roles & rights grid defaults, then Maya's two overrides (the
--- design shows her with See costs and Add / edit equipment granted).
+-- Rights: the role defaults come from a migration. These are Maya's two
+-- overrides (the design shows her with See costs and Add / edit equipment granted).
 -- ---------------------------------------------------------------------------
-insert into public.rights (role, key, allowed)
-select r.role::public.app_role, k.key, k.v[array_position(array['manager','ops','leadership','admin'], r.role)]
-from (values
-  ('create_tickets',           array[true,  true,  false, false]),
-  ('see_all_tickets',          array[false, true,  true,  true ]),
-  ('update_status',            array[false, true,  false, false]),
-  ('log_cost',                 array[false, true,  false, false]),
-  ('see_costs',                array[false, true,  true,  true ]),
-  ('edit_equipment',           array[false, true,  false, false]),
-  ('see_contractors',          array[false, true,  true,  true ]),
-  ('set_walkthrough_schedule', array[false, true,  false, true ]),
-  ('invite_users',             array[false, false, false, true ]),
-  ('manage_rights',            array[false, false, false, true ])
-) as k(key, v)
-cross join (values ('manager'), ('ops'), ('leadership'), ('admin')) as r(role);
 
 insert into public.rights (user_id, key, allowed, updated_by) values
   ('22222222-2222-4222-8222-000000000001', 'see_costs',      true, '22222222-2222-4222-8222-000000000006'),
