@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useLocation } from 'react-router'
+import { Link, Navigate, useLocation } from 'react-router'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
 import { Logo } from '../../components/icons'
@@ -14,7 +14,6 @@ import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
  * wordmark and tagline, then a panel with 24px top corners rising over it.
  * The button stays disabled until the email has a valid shape and the
  * password has 12 characters. In the e2e build the panel is a role picker.
- * "Forgot password?" arrives with the reset flow (OT-10).
  */
 export function SignInScreen() {
   const auth = useAuth()
@@ -85,6 +84,13 @@ export function SignInScreen() {
               onChange={(e) => setPassword(e.target.value)}
               error={error}
             />
+            <Link
+              to="/reset"
+              state={{ email: email.trim() }}
+              className="relative flex min-h-8 items-center self-end text-14 font-semibold no-underline before:absolute before:inset-x-0 before:-inset-y-1.5"
+            >
+              Forgot password?
+            </Link>
             <Button type="submit" loading={busy} disabled={!supabase || !canSubmitSignIn(email, password)}>
               Sign in
             </Button>

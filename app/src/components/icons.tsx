@@ -224,6 +224,19 @@ export const BrandMark = () => (
   </span>
 )
 
+// Password reset
+export const IconClockSmall = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p }, 2, false)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 8v4l3 2" />
+  </svg>
+)
+export const IconInbox = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p })}>
+    <path d="M4 4h16v16H4zM4 9h16" />
+  </svg>
+)
+
 // Invites
 export const IconPerson = (p: IconProps) => (
   <svg {...base({ size: 20, ...p })}>

@@ -311,7 +311,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | RLS policies get complex with per-person rights overrides | A bug here leaks another restaurant's data | Every rule goes through one `can()` function with pgTAP tests per role; never a second code path in the app |
 | Supabase free tier pauses after a week idle | A paused project during the pilot looks like a crash | Move to Pro ($25 a month) before handing the app to the client |
 | QR labels bake in the domain | Reprinting labels is a real cost once they are on units | Connect `fourcorners.ontrack-app.app` before Phase 4 (`ontrack-app.app` is already live); use a short path like `/e/` so labels stay small |
-| Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | Set up SPF, DKIM and DMARC on the sending domain in Phase 1, send a test to a Gmail and an Outlook address |
+| Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | SPF, DKIM and DMARC are set on `ontrack-app.app`, and a real invite reached a Gmail inbox (Oct 30, 2026). Four Corners uses Gmail only; test another provider when a group uses one |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
 | A secret pasted into a `VITE_` build variable | It ships in the public JavaScript; on Oct 28 a Supabase personal access token went out in the OT-3 preview this way and was revoked | Only the URL and the `sb_publishable_` key go in Cloudflare; check the key's prefix when setting a new branch's variables |
 | Solo build with AI help drifts from the design | Screens that look close but not right erode trust with a team that already struggled with the canvas | Build from the boards one at a time, check both themes in `/kit`, and put the preview on a phone before merging |
@@ -320,8 +320,9 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 
 - [x] Buy `ontrack-app.app` and connect it to the production Worker
 - [ ] Connect `fourcorners.ontrack-app.app`, so QR labels and emails have a stable base
-- [ ] Set up `ontrack-app.app` as the Resend sending domain, which replaces the `onboarding@resend.dev` test sender
-- [ ] Add the live address to the hosted Supabase project's Auth site and redirect URLs, before invite and reset links are tested on it
+- [x] Set up `ontrack-app.app` as the Resend sending domain, which replaces the `onboarding@resend.dev` test sender
+- [x] Add the live address to the hosted Supabase project's Auth site and redirect URLs
+- [ ] Try the invite flow on two phones, which is the Phase 1 done test as written; so far it has run on a laptop against the live app (deferred Oct 30, 2026)
 - [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then)

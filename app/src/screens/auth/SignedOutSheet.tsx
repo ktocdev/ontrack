@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
 import { Screen } from '../../components/Screen'
@@ -72,7 +73,15 @@ export function SignedOutSheet({ open, email, name, onSignIn, onNotMe }: Props) 
           Sign in and continue
         </Button>
       </form>
-      <div className="-my-1 flex justify-end">
+      <div className="-my-1 flex justify-between">
+        <Link
+          to="/reset"
+          state={{ email }}
+          onClick={onNotMe}
+          className="flex min-h-tap items-center px-1 text-14 font-semibold no-underline"
+        >
+          Forgot password?
+        </Link>
         <button
           type="button"
           onClick={onNotMe}

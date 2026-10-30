@@ -1,8 +1,17 @@
 import { useId, useState } from 'react'
-import { ListCard, ListRow, ListRowAnchor, ListRowButton, RowIcon } from '../../components/Card'
+import { ListCard, ListRow, ListRowAnchor, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
 import { SearchField } from '../../components/Field'
 import { Screen, ScreenBody, SectionLabel, TitleBar } from '../../components/Screen'
-import { IconChevronDown, IconChevronRight, IconKey, IconMail, IconPhone, IconReport } from '../../components/icons'
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconKey,
+  IconLock,
+  IconMail,
+  IconPhone,
+  IconReport,
+} from '../../components/icons'
+import { useUser } from '../../auth/context'
 import { env } from '../../lib/env'
 import { ReportSheet } from './ReportSheet'
 
@@ -10,8 +19,7 @@ import { ReportSheet } from './ReportSheet'
  * Profile · Help & support (design/screens/Help), any role. Search narrows
  * the questions; one answer is open at a time. Email and Call support come
  * from VITE_SUPPORT_EMAIL / VITE_SUPPORT_PHONE and hide when unset. The
- * board's "Can't sign in?" row arrives with the reset flow (OT-10), and its
- * Terms and Privacy links wait for those pages.
+ * board's Terms and Privacy links wait for those pages.
  */
 export const FAQS = [
   {
@@ -47,6 +55,7 @@ function displayPhone(raw: string) {
 }
 
 export function HelpScreen() {
+  const { user } = useUser()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(0)
   const [reportOpen, setReportOpen] = useState(false)
@@ -147,6 +156,18 @@ export function HelpScreen() {
 
         <SectionLabel className="-mb-0.5">Account</SectionLabel>
         <ListCard>
+          <ListRowLink
+            to="/reset"
+            state={{ email: user.email }}
+            leading={
+              <RowIcon>
+                <IconLock size={16} />
+              </RowIcon>
+            }
+            title="Can't sign in?"
+            subtitle="Reset your password"
+            trailing={<IconChevronRight className="text-text-muted" />}
+          />
           <ListRow
             leading={
               <RowIcon>

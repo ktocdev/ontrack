@@ -29,6 +29,30 @@ export const router = createBrowserRouter([
       // Public
       { path: '/sign-in', element: <BareShell />, children: [{ index: true, element: <SignInScreen /> }] },
       {
+        path: '/reset',
+        element: <BareShell />,
+        children: [
+          {
+            index: true,
+            lazy: async () => ({
+              Component: (await import('../screens/reset/ResetRequestScreen')).ResetRequestScreen,
+            }),
+          },
+          {
+            path: 'sent',
+            lazy: async () => ({ Component: (await import('../screens/reset/ResetSentScreen')).ResetSentScreen }),
+          },
+          {
+            path: 'new',
+            lazy: async () => ({ Component: (await import('../screens/reset/ResetNewScreen')).ResetNewScreen }),
+          },
+          {
+            path: 'done',
+            lazy: async () => ({ Component: (await import('../screens/reset/ResetDoneScreen')).ResetDoneScreen }),
+          },
+        ],
+      },
+      {
         path: '/invite',
         element: <BareShell />,
         children: [
@@ -64,6 +88,17 @@ export const router = createBrowserRouter([
           {
             path: 'errors/invite-expired',
             element: <LinkExpiredScreen onRequest={() => undefined} />,
+          },
+          {
+            path: 'errors/reset-expired',
+            element: (
+              <LinkExpiredScreen
+                title="This reset link has expired"
+                body="Reset links work for 30 minutes and only once. Your password hasn't changed. Get a fresh link below."
+                requestLabel="Email me a new link"
+                onRequest={() => undefined}
+              />
+            ),
           },
           {
             path: 'errors/403',
