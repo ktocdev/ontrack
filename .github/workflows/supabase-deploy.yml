@@ -1,14 +1,16 @@
 name: Supabase deploy
 
-# Applies migrations to the hosted project on every merge to main.
-# Skips itself until the three secrets exist, so the repo can be set up
-# before the project is.
+# Applies migrations and deploys Edge Functions to the hosted project on every
+# merge to main. Skips itself until the three secrets exist, so the repo can be
+# set up before the project is. Function secrets (RESEND_API_KEY, APP_URL and so
+# on) are set in the project's dashboard, never here.
 
 on:
   push:
     branches: [main]
     paths:
       - 'supabase/migrations/**'
+      - 'supabase/functions/**'
       - 'supabase/config.toml'
       - '.github/workflows/supabase-deploy.yml'
 
@@ -51,3 +53,8 @@ jobs:
       - name: Push migrations
         if: steps.check.outputs.configured == 'true'
         run: supabase db push --linked
+
+      # After the migrations, so a function never runs ahead of the schema it needs.
+      - name: Deploy functions
+        if: steps.check.outputs.configured == 'true'
+        run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID"
