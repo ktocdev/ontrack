@@ -25,6 +25,7 @@ test('a photo uploads, shows, and can be removed', async ({ page }) => {
   await openProfile(page, 'lee.chen@example.com')
   await page.locator('input[type="file"]').setInputFiles({ name: 'me.png', mimeType: 'image/png', buffer: PNG })
   await expect(page.getByRole('img', { name: 'Your profile photo' }).locator('img')).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'Profile avatar saved.' })).toBeVisible()
   await page.getByRole('button', { name: 'Remove' }).click()
   await expect(page.getByRole('button', { name: 'Upload photo' })).toBeVisible()
 })
