@@ -8,6 +8,7 @@ import { Notice } from '../../components/Notice'
 import { RoleTag } from '../../components/Pill'
 import { Screen, ScreenBody, ScreenFooter, SectionLabel, TitleBar } from '../../components/Screen'
 import { ThemeControl } from '../../components/ThemeControl'
+import { useToast } from '../../components/Toast'
 import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 import { useUser } from '../../auth/context'
@@ -36,6 +37,7 @@ export function ProfileScreen() {
   const photo = usePhoto()
   const avatarUrl = useAvatarUrl(user.avatar_path)
   const photosOn = useProfilePhotosOn()
+  const toast = useToast()
   const clearSaveError = () => {
     if (save.isError) save.reset()
   }
@@ -60,7 +62,8 @@ export function ProfileScreen() {
     e.target.value = ''
     if (!file) return
     setNotice(null)
-    photo.upload.mutate(file)
+    // It saves on its own, so say so, or Save changes looks like the next step.
+    photo.upload.mutate(file, { onSuccess: () => toast.show('Profile photo saved.') })
   }
 
   const photoBusy = photo.upload.isPending || photo.remove.isPending
@@ -91,7 +94,13 @@ export function ProfileScreen() {
               </Button>
             )}
             {user.avatar_path && (
-              <Button variant="ghost-danger" disabled={photoBusy} onClick={() => photo.remove.mutate()}>
+              <Button
+                variant="ghost-danger"
+                disabled={photoBusy}
+                onClick={() =>
+                  photo.remove.mutate(undefined, { onSuccess: () => toast.show('Profile photo removed.') })
+                }
+              >
                 Remove
               </Button>
             )}
