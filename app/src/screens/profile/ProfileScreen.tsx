@@ -63,7 +63,7 @@ export function ProfileScreen() {
     if (!file) return
     setNotice(null)
     // It saves on its own, so say so, or Save changes looks like the next step.
-    photo.upload.mutate(file, { onSuccess: () => toast.show('Profile avatar saved.') })
+    photo.upload.mutate(file, { onSuccess: () => toast.show('Profile photo saved.') })
   }
 
   const photoBusy = photo.upload.isPending || photo.remove.isPending
@@ -94,7 +94,13 @@ export function ProfileScreen() {
               </Button>
             )}
             {user.avatar_path && (
-              <Button variant="ghost-danger" disabled={photoBusy} onClick={() => photo.remove.mutate()}>
+              <Button
+                variant="ghost-danger"
+                disabled={photoBusy}
+                onClick={() =>
+                  photo.remove.mutate(undefined, { onSuccess: () => toast.show('Profile photo removed.') })
+                }
+              >
                 Remove
               </Button>
             )}
