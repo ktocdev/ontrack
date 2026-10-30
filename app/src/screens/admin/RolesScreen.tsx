@@ -8,6 +8,7 @@ import { useToast } from '../../components/Toast'
 import { IconCheck, IconChevronDown, IconHelpCircle } from '../../components/icons'
 import type { AppRole } from '../../lib/supabase'
 import { AdminHeader } from './AdminHeader'
+import { GroupSettings } from './GroupSettings'
 import { changedCells, countPeople } from './rightsDraft'
 import {
   defaultKey,
@@ -24,7 +25,8 @@ import {
  * role, and /admin/roles/edit, where a cell changes with a tap and Save confirms
  * who it affects. Editing has its own route because the board swaps the tab bar
  * for the save buttons. Admin rights are locked, in the database as well. The
- * board says people are notified; that waits for notifications in Phase 3.
+ * board says people are notified; that waits for notifications in Phase 3. The
+ * group's settings sit under Edit defaults; no board draws them.
  */
 const ROLE_HEAD: Record<AppRole, string> = { manager: 'Mgr', ops: 'Ops', leadership: 'Lead', admin: 'Admin' }
 
@@ -178,6 +180,7 @@ export function RolesScreen() {
             <ButtonLink to="/admin/roles/edit" variant="secondary" className="flex-none">
               Edit defaults
             </ButtonLink>
+            <GroupSettings />
           </>
         )}
       </ScreenBody>

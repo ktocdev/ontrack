@@ -94,7 +94,8 @@ test('Phase 1 done: one person’s override changes what the database returns', 
   await expect(page.getByRole('button', { name: 'Reset See costs to role default' })).toBeVisible()
   await save.click()
   await expect(page.getByRole('button', { name: 'Save changes' })).toBeDisabled()
-  expect(await rowsAs(request, 'maya.reyes@example.com', 'service_records')).toBe(before)
+  // The button is also disabled while saving, so this waits for the result.
+  await expect.poll(() => rowsAs(request, 'maya.reyes@example.com', 'service_records')).toBe(before)
 })
 
 test('a role can change, and so does what comes with it', async ({ page, request }) => {

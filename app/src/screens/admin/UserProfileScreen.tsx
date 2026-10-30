@@ -101,11 +101,13 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
         .join(', ') || 'No restaurant yet'
   const seesAll = roleDefault('see_all_tickets')
 
+  // A promise, not mutate's onSuccess: saving changes this form's key, and a callback
+  // on mutate is dropped if the form has already been replaced. A failure shows below.
   const submit = () =>
-    save.mutate(
-      changes.map((r) => ({ key: r.key, allowed: overrideFor(value(r.key), roleDefault(r.key)) })),
-      { onSuccess: () => toast.show(`${first}'s rights saved.`) },
-    )
+    void save
+      .mutateAsync(changes.map((r) => ({ key: r.key, allowed: overrideFor(value(r.key), roleDefault(r.key)) })))
+      .then(() => toast.show(`${first}'s rights saved.`))
+      .catch(() => undefined)
 
   return (
     <Screen>
@@ -448,15 +450,14 @@ function AccessSheet({
         loading={set.isPending}
         disabled={!choice.ready}
         onClick={() =>
-          set.mutate(
-            { role: choice.role, restaurantIds: choice.restaurantIds },
-            {
-              onSuccess: () => {
-                toast.show(`${first}'s role saved.`)
-                onClose()
-              },
-            },
-          )
+          // As in submit above: saving a new role replaces the form this sheet is in.
+          void set
+            .mutateAsync({ role: choice.role, restaurantIds: choice.restaurantIds })
+            .then(() => {
+              toast.show(`${first}'s role saved.`)
+              onClose()
+            })
+            .catch(() => undefined)
         }
       >
         Save role

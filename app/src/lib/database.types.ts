@@ -171,14 +171,14 @@ isOneToOne: false
                   ]
                 },"group_settings": {
                   Row: {
-                    "id": boolean,"name": string,"short_name": string | null,"updated_at": string
+                    "id": boolean,"name": string,"profile_photos": boolean,"short_name": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "id"?: boolean,"name"?: string,"short_name"?: string | null,"updated_at"?: string
+                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "id"?: boolean,"name"?: string,"short_name"?: string | null,"updated_at"?: string
+                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -1356,8 +1356,14 @@ isOneToOne: false
 "person_two_step":
 { Args: { "p_user": string }; Returns: Json
                            },
+"profile_photos_on":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "remember_device":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"save_group_name":
+{ Args: { "p_name": string,"p_short_name": string }; Returns: undefined
                            },
 "save_role_defaults":
 { Args: { "p_changes": Json }; Returns: undefined
@@ -1370,6 +1376,9 @@ isOneToOne: false
                            },
 "set_person_rights":
 { Args: { "p_rights": Json,"p_user": string }; Returns: undefined
+                           },
+"set_profile_photos":
+{ Args: { "p_on": boolean }; Returns: undefined
                            },
 "set_restaurant_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined

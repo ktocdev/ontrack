@@ -11,6 +11,7 @@ import { ThemeControl } from '../../components/ThemeControl'
 import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 import { useUser } from '../../auth/context'
+import { useProfilePhotosOn } from '../../auth/group'
 import { PasswordSheet } from './PasswordSheet'
 import { ReportSheet } from './ReportSheet'
 import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
@@ -34,6 +35,7 @@ export function ProfileScreen() {
   const save = useSaveProfile()
   const photo = usePhoto()
   const avatarUrl = useAvatarUrl(user.avatar_path)
+  const photosOn = useProfilePhotosOn()
   const clearSaveError = () => {
     if (save.isError) save.reset()
   }
@@ -75,35 +77,47 @@ export function ProfileScreen() {
             role={user.role}
             size={88}
             src={avatarUrl.data}
-            label={user.avatar_path ? 'Your profile photo' : undefined}
+            label={photosOn && user.avatar_path ? 'Your profile photo' : undefined}
           />
           <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              loading={photo.upload.isPending}
-              disabled={photoBusy}
-              onClick={() => fileInput.current?.click()}
-            >
-              {user.avatar_path ? 'Change photo' : 'Upload photo'}
-            </Button>
+            {photosOn && (
+              <Button
+                variant="ghost"
+                loading={photo.upload.isPending}
+                disabled={photoBusy}
+                onClick={() => fileInput.current?.click()}
+              >
+                {user.avatar_path ? 'Change photo' : 'Upload photo'}
+              </Button>
+            )}
             {user.avatar_path && (
               <Button variant="ghost-danger" disabled={photoBusy} onClick={() => photo.remove.mutate()}>
                 Remove
               </Button>
             )}
           </div>
-          <span className={`-mt-1.5 text-12 ${photoError ? 'font-semibold text-danger' : 'text-text-muted'}`}>
-            {photoError ? "That photo didn't upload. Try a JPG or PNG." : 'Optional · JPG or PNG'}
+          <span
+            className={`-mt-1.5 text-center text-12 ${photoError ? 'font-semibold text-danger' : 'text-text-muted'}`}
+          >
+            {photoError
+              ? "That photo didn't upload. Try a JPG or PNG."
+              : photosOn
+                ? 'Optional · JPG or PNG'
+                : user.avatar_path
+                  ? "Profile photos are turned off. Yours is hidden, and it comes back if they're turned on again."
+                  : 'Profile photos are turned off for your group.'}
           </span>
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden="true"
-            onChange={onFile}
-          />
+          {photosOn && (
+            <input
+              ref={fileInput}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden="true"
+              onChange={onFile}
+            />
+          )}
         </div>
 
         <Input
