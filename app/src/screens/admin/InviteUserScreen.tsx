@@ -1,32 +1,21 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Button } from '../../components/Button'
-import { Chip } from '../../components/Chip'
 import { Input } from '../../components/Field'
-import { RadioCard } from '../../components/RadioCard'
 import { CloseBar, Screen, ScreenBody, ScreenFooter } from '../../components/Screen'
 import { useToast } from '../../components/Toast'
 import { IconMail } from '../../components/icons'
 import { useUser } from '../../auth/context'
 import { looksLikeEmail } from '../../auth/validation'
 import { FunctionError } from '../../lib/functions'
-import type { AppRole } from '../../lib/supabase'
+import { AccessFields, useAccessChoice } from './AccessFields'
 import { useSendInvite } from './useUsers'
 
 /**
  * Admin · Invite user (design/screens/Admin-Invite). Name, work email, role and
- * the restaurants they get. A manager must have at least one restaurant, so for
- * them All restaurants means each one by name; any other role with All gets the
- * all-restaurants scope, which also covers restaurants added later. Add
- * restaurant links here with its new restaurant already picked. The board says
- * invites last 7 days; they last 72 hours.
+ * the restaurants they get. Add restaurant links here with its new restaurant
+ * already picked. The board says invites last 7 days; they last 72 hours.
  */
-const ROLES: { value: AppRole; name: string; desc: string }[] = [
-  { value: 'manager', name: 'Restaurant manager', desc: 'Creates tickets for their restaurant(s)' },
-  { value: 'ops', name: 'Operations manager', desc: 'Works tickets, logs costs and contractors' },
-  { value: 'leadership', name: 'Leadership', desc: 'Read-only view of everything' },
-  { value: 'admin', name: 'Admin / IT', desc: 'Full access, manages users and rights' },
-]
 
 const EMAIL_ERRORS: Record<string, string> = {
   email_taken: 'Someone with this email already has an account.',
@@ -52,33 +41,18 @@ export function InviteUserScreen() {
   const preset = params.get('restaurant')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState<AppRole>('manager')
-  const [picked, setPicked] = useState<string[]>(preset && restaurants.some((r) => r.id === preset) ? [preset] : [])
-  const [all, setAll] = useState(false)
+  const access = useAccessChoice(restaurants, {
+    role: 'manager',
+    picked: preset && restaurants.some((r) => r.id === preset) ? [preset] : [],
+    all: false,
+  })
 
   // An error is about what was sent, so it goes as soon as that changes.
   const clearError = () => {
     if (send.isError) send.reset()
   }
-  const pickRole = (next: AppRole) => {
-    clearError()
-    setRole(next)
-    // Everyone but a manager usually sees every restaurant; a choice already made stays.
-    if (next !== 'manager' && picked.length === 0) setAll(true)
-    if (next === 'manager' && all && picked.length === 0) setAll(false)
-  }
-  const toggle = (id: string) => {
-    clearError()
-    setAll(false)
-    setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
-  }
-  const toggleAll = () => {
-    clearError()
-    setPicked([])
-    setAll((a) => !a)
-  }
 
-  const ready = name.trim() !== '' && looksLikeEmail(email) && (all || picked.length > 0)
+  const ready = name.trim() !== '' && looksLikeEmail(email) && access.ready
   const code = send.error instanceof FunctionError ? send.error.code : send.error ? 'server_error' : null
   const emailError = code ? EMAIL_ERRORS[code] : undefined
   const formError = code && !emailError ? (FORM_ERRORS[code] ?? 'Something went wrong. Try again.') : undefined
@@ -86,9 +60,8 @@ export function InviteUserScreen() {
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!ready) return
-    const restaurantIds = all ? (role === 'manager' ? restaurants.map((r) => r.id) : []) : picked
     send.mutate(
-      { fullName: name.trim(), email: email.trim(), role, restaurantIds },
+      { fullName: name.trim(), email: email.trim(), role: access.role, restaurantIds: access.restaurantIds },
       {
         onSuccess: () => {
           toast.show(`Invite sent to ${name.trim()}.`)
@@ -122,37 +95,7 @@ export function InviteUserScreen() {
             onChange={(e) => setEmail(e.target.value)}
             error={emailError}
           />
-          <div className="flex flex-col gap-2">
-            <span id="invite-role" className="text-13 font-semibold text-text-body">
-              Role
-            </span>
-            <div role="radiogroup" aria-labelledby="invite-role" className="flex flex-col gap-2">
-              {ROLES.map((r) => (
-                <RadioCard
-                  key={r.value}
-                  checked={role === r.value}
-                  title={r.name}
-                  subtitle={r.desc}
-                  onSelect={() => pickRole(r.value)}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <span className="text-13 font-semibold text-text-body">
-              {role === 'manager' ? 'Restaurants they manage' : 'Restaurants they can see'}
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {restaurants.map((r) => (
-                <Chip key={r.id} tone="pick" selected={picked.includes(r.id)} onClick={() => toggle(r.id)}>
-                  {r.name}
-                </Chip>
-              ))}
-              <Chip tone="pick" selected={all} onClick={toggleAll}>
-                All restaurants
-              </Chip>
-            </div>
-          </div>
+          <AccessFields choice={access} restaurants={restaurants} onEdit={clearError} />
         </ScreenBody>
         <ScreenFooter>
           {formError && (

@@ -6,7 +6,7 @@ import type { AppRole } from '../lib/supabase'
  * brand-tint with brand text, ops on the info tint, leadership and admin on
  * surface-muted, and someone still invited in the color of their invite: gold
  * while pending, orange once expired. Sizes: 28 (card corner), 38 (Users), 40
- * (header), 88 (profile). With a photo the image fills the circle.
+ * (header), 52 (User profile), 88 (profile). With a photo the image fills the circle.
  */
 
 export function initialsOf(name: string) {
@@ -31,7 +31,7 @@ const TONE: Record<AppRole | 'you' | 'pending' | 'expired', string> = {
 type Props = {
   name: string
   role?: keyof typeof TONE
-  size?: 28 | 38 | 40 | 88
+  size?: 28 | 38 | 40 | 52 | 88
   label?: string
   /** A profile photo URL; initials show instead if it fails to load. */
   src?: string
@@ -41,7 +41,7 @@ type Props = {
 export function Avatar({ name, role = 'manager', size = 40, label, src, className = '' }: Props) {
   const [failed, setFailed] = useState<string | undefined>()
   const showPhoto = src && failed !== src
-  const font = size === 88 ? 'text-28' : size === 28 ? 'text-11 tracking-[.02em]' : 'text-13'
+  const font = size === 88 ? 'text-28' : size === 52 ? 'text-17' : size === 28 ? 'text-11 tracking-[.02em]' : 'text-13'
   return (
     <span
       role={label ? 'img' : undefined}

@@ -41,6 +41,8 @@
   --brand-tint: #dce8e3; /* avatar backgrounds, selected count badge */
   --brand-tint-soft: #e3efea; /* info banners, selected rows */
   --brand-tint-faint: #f4f9f7; /* a selected radio card (Invite user) */
+  --info-tint-faint: #f5f8fd; /* a row with a personal override (User profile) */
+  --banner-info: #1b4f91; /* the View as banner, under white text in both themes */
 
   /* Semantic */
   --urgent: #b4400c; /* URGENT tag background, white text */
@@ -163,6 +165,7 @@
   --brand-tint: #1e3a32;
   --brand-tint-soft: #1a2f29; /* derived */
   --brand-tint-faint: #162823; /* derived */
+  --info-tint-faint: #1a2533; /* derived */
 
   --urgent: #d9542a;
   --danger: #e0734a; /* derived */
@@ -241,6 +244,8 @@
   --color-brand-tint: var(--brand-tint);
   --color-brand-tint-soft: var(--brand-tint-soft);
   --color-brand-tint-faint: var(--brand-tint-faint);
+  --color-info-tint-faint: var(--info-tint-faint);
+  --color-banner-info: var(--banner-info);
 
   --color-urgent: var(--urgent);
   --color-danger: var(--danger);

@@ -188,8 +188,10 @@ export const router = createBrowserRouter([
                     path: '/admin/users',
                     lazy: async () => ({ Component: (await import('../screens/admin/UsersScreen')).UsersScreen }),
                   },
-                  { path: '/admin/users/:id', ...placeholder('User profile', 'Phase 1 (OT-12)') },
-                  { path: '/admin/roles', ...placeholder('Roles & rights', 'Phase 1 (OT-12)') },
+                  {
+                    path: '/admin/roles',
+                    lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).RolesScreen }),
+                  },
                   { path: '/admin/tickets', ...placeholder('Tickets', 'Phase 7') },
                   {
                     path: '/admin/restaurants',
@@ -207,6 +209,20 @@ export const router = createBrowserRouter([
                     lazy: async () => ({
                       Component: (await import('../screens/admin/InviteUserScreen')).InviteUserScreen,
                     }),
+                  },
+                  {
+                    path: '/admin/users/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/UserProfileScreen')).UserProfileScreen,
+                    }),
+                  },
+                  {
+                    path: '/admin/users/:id/view',
+                    lazy: async () => ({ Component: (await import('../screens/admin/ViewAsScreen')).ViewAsScreen }),
+                  },
+                  {
+                    path: '/admin/roles/edit',
+                    lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).EditRolesScreen }),
                   },
                   {
                     path: '/admin/restaurants/new',

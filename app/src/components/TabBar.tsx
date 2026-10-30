@@ -20,11 +20,14 @@ export function TabBar({
   items,
   label,
   inset = true,
+  inert = false,
 }: {
   items: TabItem[]
   label: string
   /** Use the home-bar inset. Only the bar pinned to the bottom edge wants it; /kit samples turn it off. */
   inset?: boolean
+  /** Shown but not links, with the first home tab lit (View as). */
+  inert?: boolean
 }) {
   return (
     <nav
@@ -32,21 +35,32 @@ export function TabBar({
       className="flex flex-none border-t border-border bg-surface px-2 pt-1.5"
       style={{ paddingBottom: inset ? 'max(8px, var(--safe-bottom))' : '8px' }}
     >
-      {items.map(({ to, label: text, icon: Icon, end }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={end}
-          className={({ isActive }) =>
-            `flex min-h-tap flex-1 flex-col items-center gap-[3px] rounded-control py-1.5 text-12 font-semibold transition-colors active:bg-surface-muted active:duration-0 ${
-              isActive ? 'text-brand' : 'text-text-muted hover:text-text-secondary'
-            }`
-          }
-        >
-          <Icon size={24} />
-          {text}
-        </NavLink>
-      ))}
+      {items.map(({ to, label: text, icon: Icon, end }) =>
+        inert ? (
+          <span
+            key={to}
+            aria-current={end ? 'page' : undefined}
+            className={`flex min-h-tap flex-1 flex-col items-center gap-[3px] py-1.5 text-12 font-semibold ${end ? 'text-brand' : 'text-border-muted'}`}
+          >
+            <Icon size={24} />
+            {text}
+          </span>
+        ) : (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              `flex min-h-tap flex-1 flex-col items-center gap-[3px] rounded-control py-1.5 text-12 font-semibold transition-colors active:bg-surface-muted active:duration-0 ${
+                isActive ? 'text-brand' : 'text-text-muted hover:text-text-secondary'
+              }`
+            }
+          >
+            <Icon size={24} />
+            {text}
+          </NavLink>
+        ),
+      )}
     </nav>
   )
 }

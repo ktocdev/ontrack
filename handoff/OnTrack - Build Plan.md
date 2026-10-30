@@ -323,6 +323,8 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [x] Set up `ontrack-app.app` as the Resend sending domain, which replaces the `onboarding@resend.dev` test sender
 - [x] Add the live address to the hosted Supabase project's Auth site and redirect URLs
 - [ ] Try the invite flow on two phones, which is the Phase 1 done test as written; so far it has run on a laptop against the live app (deferred Oct 30, 2026)
+- [ ] Notifications for the promises the Roles & rights and User profile boards make ("everyone affected is notified"), left off those screens until Phase 3 has them
+- [ ] View as answers from the admin's own access, scoped by the app. Each screen added from Phase 2 on must scope its data from `useUser()` and hide writes when `viewingAs` is set
 - [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then)
