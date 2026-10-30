@@ -82,7 +82,7 @@ test('profile photos off hides them and refuses new ones, and on brings them bac
 
     // Bert: initials, no way to add one, and still a way to remove it.
     await page.reload()
-    await expect(page.getByText('Profile photos are turned off for your group.')).toBeVisible()
+    await expect(page.getByText("Yours is hidden, and it comes back if they're turned on again.")).toBeVisible()
     await expect(page.getByRole('img', { name: 'Your profile photo' })).toHaveCount(0)
     await expect(page.locator('img')).toHaveCount(0)
     await expect(page.getByRole('button', { name: /photo/ })).toHaveCount(0)

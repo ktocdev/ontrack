@@ -96,12 +96,16 @@ export function ProfileScreen() {
               </Button>
             )}
           </div>
-          <span className={`-mt-1.5 text-12 ${photoError ? 'font-semibold text-danger' : 'text-text-muted'}`}>
+          <span
+            className={`-mt-1.5 text-center text-12 ${photoError ? 'font-semibold text-danger' : 'text-text-muted'}`}
+          >
             {photoError
               ? "That photo didn't upload. Try a JPG or PNG."
               : photosOn
                 ? 'Optional · JPG or PNG'
-                : 'Profile photos are turned off for your group.'}
+                : user.avatar_path
+                  ? "Profile photos are turned off. Yours is hidden, and it comes back if they're turned on again."
+                  : 'Profile photos are turned off for your group.'}
           </span>
           {photosOn && (
             <input
