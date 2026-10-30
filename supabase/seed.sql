@@ -58,6 +58,11 @@ from seed_people;
 
 update public.profiles p set phone = s.phone from seed_people s where s.id = p.id;
 
+-- Admins must have 2-step on. e2e/stack/helpers.ts works out the code from this secret.
+insert into auth.mfa_factors (id, user_id, friendly_name, factor_type, status, secret, created_at, updated_at)
+values ('33333333-3333-4333-8333-000000000006', '22222222-2222-4222-8222-000000000006', 'OnTrack', 'totp', 'verified',
+  'JBSWY3DPEHPK3PXP', now() - interval '30 days', now() - interval '30 days');
+
 update public.restaurants set manager_id = '22222222-2222-4222-8222-000000000001' where id = '11111111-1111-4111-8111-000000000001';
 update public.restaurants set manager_id = '22222222-2222-4222-8222-000000000002' where id = '11111111-1111-4111-8111-000000000004';
 

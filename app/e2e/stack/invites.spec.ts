@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { signIn } from './helpers'
+import { signIn, tokenFor } from './helpers'
 
 /**
  * The Phase 1 done test: an admin invites a manager, the manager sets up the
@@ -199,14 +199,6 @@ test.describe('the functions refuse what the screens would never send', () => {
       data,
       headers: { apikey: KEY, ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     })
-
-  async function tokenFor(request: APIRequestContext, email: string) {
-    const res = await request.post(`${SUPABASE}/auth/v1/token?grant_type=password`, {
-      data: { email, password: 'ontrack-demo-2026' },
-      headers: { apikey: KEY },
-    })
-    return ((await res.json()) as { access_token: string }).access_token
-  }
 
   const base = { action: 'send', full_name: 'Nobody', email: 'nobody@example.com', role: 'ops', restaurant_ids: [] }
 

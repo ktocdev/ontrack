@@ -143,6 +143,27 @@ export function useSetPersonAccess(id: string) {
   })
 }
 
+const personTwoStepKey = (id: string) => ['admin', 'person-two-step', id]
+
+export function usePersonTwoStep(id: string) {
+  return useQuery({
+    queryKey: personTwoStepKey(id),
+    queryFn: async () => {
+      const { data, error } = await requireSupabase().rpc('person_two_step', { p_user: id })
+      if (error) throw error
+      return data as { on: boolean; required: boolean; codes_left: number }
+    },
+  })
+}
+
+export function useResetTwoStep(id: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => callFunction<{ emailed: boolean }>('reset-two-step', { user_id: id }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: personTwoStepKey(id) }),
+  })
+}
+
 export function useSetDeactivated(id: string) {
   const refresh = useRefreshPerson(id)
   return useMutation({

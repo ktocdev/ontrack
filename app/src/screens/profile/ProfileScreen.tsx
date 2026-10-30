@@ -1,13 +1,14 @@
 import { useRef, useState, type ChangeEvent } from 'react'
+import { Link } from 'react-router'
 import { Avatar } from '../../components/Avatar'
-import { Button } from '../../components/Button'
+import { Button, buttonClasses } from '../../components/Button'
 import { ListCard, ListRow, ListRowButton, ListRowLink, RowIcon, StackedRow } from '../../components/Card'
 import { Input } from '../../components/Field'
 import { Notice } from '../../components/Notice'
 import { RoleTag } from '../../components/Pill'
 import { Screen, ScreenBody, ScreenFooter, SectionLabel, TitleBar } from '../../components/Screen'
 import { ThemeControl } from '../../components/ThemeControl'
-import { IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
+import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 import { useUser } from '../../auth/context'
 import { PasswordSheet } from './PasswordSheet'
@@ -19,10 +20,10 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  * phone are the person's own; email, role and restaurants belong to the admin.
  * Then password, theme, help and sign out, with Save changes fixed at the
  * bottom. Two things the board does not draw come from the build plan: the
- * phone field and the theme control. The 2-step row arrives with OT-12.
+ * phone field and the theme control.
  */
 export function ProfileScreen() {
-  const { user, restaurants, allRestaurants, signOut } = useUser()
+  const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
   const [name, setName] = useState(user.full_name)
   const [phone, setPhone] = useState(user.phone ?? '')
   const [notice, setNotice] = useState<string | null>(null)
@@ -152,6 +153,27 @@ export function ProfileScreen() {
               <Button variant="ghost" onClick={() => setPwOpen(true)}>
                 Change
               </Button>
+            }
+          />
+          <ListRow
+            title="2-step verification"
+            subtitle={
+              twoStep.on ? (
+                <span className="inline-flex items-center gap-[5px] text-12 font-bold text-brand">
+                  <IconCheck size={12} strokeWidth={3} />
+                  On · Authenticator app
+                </span>
+              ) : (
+                'Not set up'
+              )
+            }
+            trailing={
+              <Link
+                to={twoStep.on ? '/profile/2-step/codes' : '/profile/2-step'}
+                className={`${buttonClasses('ghost')} no-underline`}
+              >
+                {twoStep.on ? 'Backup codes' : 'Turn on'}
+              </Link>
             }
           />
         </ListCard>

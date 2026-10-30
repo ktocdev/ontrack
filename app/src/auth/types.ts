@@ -1,4 +1,5 @@
 import type { Tables } from '../lib/supabase'
+import type { TwoStep } from './twoStep'
 
 export type Profile = Tables<'profiles'>
 export type Restaurant = Tables<'restaurants'>
@@ -12,6 +13,8 @@ export type SignedIn = {
   allRestaurants: boolean
   /** True under an admin's View as: `user` is the person viewed, and screens must not write. */
   viewingAs?: boolean
+  /** The signed-in person's own 2-step state, for the Profile row. */
+  twoStep: TwoStep
   signOut: () => Promise<void>
 }
 
@@ -30,4 +33,6 @@ export type AuthState =
   | { status: 'error'; error: unknown; retry: () => void; signOut: () => Promise<void> }
   /** Auth session exists but no profile row is visible: deactivated, or not yet invited. */
   | { status: 'no-profile'; email: string | null; signOut: () => Promise<void> }
+  /** Signed in with a password, but the database answers nothing until the second step is done. */
+  | { status: 'two-step'; gate: 'challenge' | 'setup'; signOut: () => Promise<void> }
   | SignedIn

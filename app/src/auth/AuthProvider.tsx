@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { AuthContext } from './context'
 import { MOCK_RESTAURANTS, MOCK_USERS, readMockRole, writeMockRole } from './mock'
 import { clearStamp, isExpired, readStamp, rememberName, stampSignIn, type SignInStamp } from './session'
+import { readTwoStep, TWO_STEP_OFF, type TwoStep } from './twoStep'
 import type { AuthState, Profile, Restaurant } from './types'
 
 /**
@@ -14,10 +15,12 @@ import type { AuthState, Profile, Restaurant } from './types'
  * what the database allows.
  */
 
-type Me = { profile: Profile | null; restaurants: Restaurant[]; allRestaurants: boolean }
+type Me = { profile: Profile | null; restaurants: Restaurant[]; allRestaurants: boolean; twoStep: TwoStep }
 
 async function loadMe(userId: string): Promise<Me> {
   const sb = supabase!
+  const twoStep = await readTwoStep(userId)
+  if (twoStep.gate) return { profile: null, restaurants: [], allRestaurants: false, twoStep }
   const [profileRes, membershipsRes, restaurantsRes] = await Promise.all([
     sb.from('profiles').select('*').eq('id', userId).maybeSingle(),
     sb.from('memberships').select('restaurant_id').eq('user_id', userId),
@@ -31,6 +34,7 @@ async function loadMe(userId: string): Promise<Me> {
     profile: profileRes.data,
     restaurants: restaurantsRes.data ?? [],
     allRestaurants: (membershipsRes.data ?? []).some((m) => m.restaurant_id === null),
+    twoStep,
   }
 }
 
@@ -126,12 +130,14 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     }
     if (me.isPending) return { status: 'loading' }
     if (me.isError) return { status: 'error', error: me.error, retry: refetchMe, signOut }
+    if (me.data.twoStep.gate) return { status: 'two-step', gate: me.data.twoStep.gate, signOut }
     if (!me.data.profile) return { status: 'no-profile', email: session.user.email ?? null, signOut }
     return {
       status: 'signed-in',
       user: me.data.profile,
       restaurants: me.data.restaurants,
       allRestaurants: me.data.allRestaurants,
+      twoStep: me.data.twoStep,
       signOut,
     }
   }, [session, expired, dismiss, me.isPending, me.isError, me.error, me.data, refetchMe, signOut])
@@ -151,7 +157,14 @@ function MockAuthProvider({ children }: { children: ReactNode }) {
     const user = MOCK_USERS[role]
     const restaurants =
       role === 'manager' ? MOCK_RESTAURANTS.filter((r) => r.id === user.home_restaurant_id) : MOCK_RESTAURANTS
-    return { status: 'signed-in', user, restaurants, allRestaurants: role !== 'manager', signOut }
+    return {
+      status: 'signed-in',
+      user,
+      restaurants,
+      allRestaurants: role !== 'manager',
+      twoStep: TWO_STEP_OFF,
+      signOut,
+    }
   }, [role])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

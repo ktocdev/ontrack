@@ -296,6 +296,40 @@ export const IconSignOut = (p: IconProps) => (
     <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3" />
   </svg>
 )
+export const IconPhoneCheck = (p: IconProps) => (
+  <svg {...base({ size: 20, ...p })}>
+    <rect x="6" y="2" width="12" height="20" rx="2.5" />
+    <path d="M10 18h4M9.5 10.5l2 2 3.5-4" />
+  </svg>
+)
+export const IconExternal = (p: IconProps) => (
+  <svg {...base({ size: 20, ...p })}>
+    <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+  </svg>
+)
+export const IconCopy = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p })}>
+    <rect x="8" y="8" width="12" height="12" rx="2" />
+    <path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />
+  </svg>
+)
+export const IconDownload = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p })}>
+    <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+  </svg>
+)
+export const IconShieldTick = (p: IconProps) => (
+  <svg {...base({ size: 26, ...p })}>
+    <path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+)
+export const IconShieldAlert = (p: IconProps) => (
+  <svg {...base({ size: 24, ...p })}>
+    <path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z" />
+    <path d="M12 8v5M12 16h.01" />
+  </svg>
+)
 export const IconLockSmall = (p: IconProps) => (
   <svg {...base({ size: 24, ...p })}>
     <rect x="5" y="11" width="14" height="10" rx="2" />
