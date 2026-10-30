@@ -5,14 +5,18 @@ import { BrandMark, IconTimer } from '../../components/icons'
 import { ErrorBlock } from '../errors/ErrorBlock'
 
 /**
- * Error · Link expired (design/screens/Error-Expired-Link), invite version; the
- * reset version arrives with OT-11. The board says invites last 7 days; they last
- * 72 hours. The same screen answers a link that was used or revoked, without the
- * request button, since a new invite is not what either of those needs.
+ * Error · Link expired (design/screens/Error-Expired-Link). The defaults are the
+ * invite version, and the reset screen passes its own words. The board says
+ * invites last 7 days; they last 72 hours. The same screen answers an invite link
+ * that was used or revoked, without the request button, since a new invite is not
+ * what either of those needs.
  */
 export function LinkExpiredScreen({
   title = 'This invite has expired',
   body = 'Invites last 72 hours. Ask your IT admin to send you a new one.',
+  requestLabel = 'Ask admin for a new invite',
+  requestedLabel = 'Request sent',
+  requestedText = 'We let your admin know. Your new invite will come by email.',
   onRequest,
   requesting = false,
   requested = false,
@@ -20,6 +24,9 @@ export function LinkExpiredScreen({
 }: {
   title?: string
   body?: string
+  requestLabel?: string
+  requestedLabel?: string
+  requestedText?: string
   /** Leave out when there is nothing to ask for. */
   onRequest?: () => void
   requesting?: boolean
@@ -36,11 +43,11 @@ export function LinkExpiredScreen({
           {onRequest &&
             (requested ? (
               <Button variant="done" className="w-full" disabled>
-                Request sent
+                {requestedLabel}
               </Button>
             ) : (
               <Button variant="medium" className="w-full" loading={requesting} onClick={onRequest}>
-                Ask admin for a new invite
+                {requestLabel}
               </Button>
             ))}
           <Link to="/sign-in" className="flex min-h-tap items-center justify-center text-14 font-semibold no-underline">
@@ -49,7 +56,7 @@ export function LinkExpiredScreen({
         </div>
         {requested && (
           <p role="status" className="max-w-[290px] text-13 leading-normal text-brand-strong">
-            We let your admin know. Your new invite will come by email.
+            {requestedText}
           </p>
         )}
         {failed && (

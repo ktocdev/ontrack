@@ -139,7 +139,9 @@ Done when an admin invites a manager from a phone, the manager sets up the accou
 | OT-13 | 2-step verification (TOTP), required for admins                                                                                                                                                                |
 | OT-14 | Group settings on Roles & rights: edit the group name; profile photo switch (off refuses uploads and hides existing photos, on restores them)                                                                  |
 
-Email goes through Resend. Until `EMAIL_FROM` names a verified sender, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM` and `SUPPORT_EMAIL`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite link from there.
+Email goes through Resend. Until `EMAIL_FROM` names a verified sender, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM` and `SUPPORT_EMAIL`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite and reset links from there.
+
+Auth's own emails are set per project: `supabase/templates/` is what `config.toml` uses locally, and the hosted project needs the same files pasted in (Authentication, Emails), since no deploy pushes them, along with the 1800-second email OTP expiry and the password-changed notification. The reset template's link carries `token_hash` in its fragment, and the app spends it when `/reset/new` opens, so a mail scanner fetching the link cannot use it up. Only that link opens the new-password form.
 
 ## Database work
 

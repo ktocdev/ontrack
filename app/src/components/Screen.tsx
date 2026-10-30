@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
-import { IconChevronLeft, IconClose } from './icons'
+import { IconChevronLeft, IconClose, Logo } from './icons'
 
 /**
  * Screen layout primitives. A Screen fills the viewport column; the body
@@ -72,6 +72,27 @@ export function BackBar({ to, label, children }: { to: string; label: string; ch
         <IconChevronLeft />
       </Link>
       <div className="min-w-0 text-13 font-semibold leading-snug text-text-muted">{children}</div>
+    </div>
+  )
+}
+
+/**
+ * Back bar for the signed-out reset screens: 44px back target, the 24px mark and
+ * a 17px name, bottom divider. 12px 12px 8px padding, 8px below.
+ */
+export function BrandBackBar({ to, label, state }: { to: string; label: string; state?: unknown }) {
+  return (
+    <div className="mb-2 flex flex-none items-center gap-1 border-b border-border pb-2 pl-3 pr-3 pt-[calc(12px+var(--safe-top))]">
+      <Link
+        to={to}
+        state={state}
+        aria-label={label}
+        className="flex h-11 w-11 items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
+      >
+        <IconChevronLeft size={22} />
+      </Link>
+      <Logo size={24} />
+      <span className="ml-1 font-display text-17 font-bold">OnTrack</span>
     </div>
   )
 }

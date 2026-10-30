@@ -19,7 +19,15 @@ import {
   type PillStatus,
 } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
-import { CloseBar, Screen, ScreenBody, ScreenHeader, SectionLabel, UnderlineTabs } from '../../components/Screen'
+import {
+  BrandBackBar,
+  CloseBar,
+  Screen,
+  ScreenBody,
+  ScreenHeader,
+  SectionLabel,
+  UnderlineTabs,
+} from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { Sidebar, SidebarAnchor } from '../../components/Sidebar'
@@ -255,6 +263,9 @@ export function KitPage() {
               />
               <div className="overflow-hidden rounded-card border border-border">
                 <CloseBar to="/kit" title="Add restaurant" />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border">
+                <BrandBackBar to="/kit" label="Back" />
               </div>
             </Section>
 
@@ -514,6 +525,9 @@ export function KitPage() {
               <div className="flex flex-wrap gap-2.5">
                 <ButtonLink to="/kit/errors/invite-expired" variant="small">
                   Invite expired
+                </ButtonLink>
+                <ButtonLink to="/kit/errors/reset-expired" variant="small">
+                  Reset expired
                 </ButtonLink>
                 <ButtonLink to="/kit/errors/404" variant="small">
                   404

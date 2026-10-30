@@ -161,7 +161,7 @@ site_url = "http://localhost:5173"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://localhost:5173", "http://localhost:4173", "https://ontrack-app.app", "https://fourcorners.ontrack-app.app", "https://ontrack.katina-sunrise.workers.dev", "https://*-ontrack.katina-sunrise.workers.dev"]
+additional_redirect_urls = ["http://localhost:5173/**", "http://localhost:4173/**", "http://localhost:4174/**", "https://ontrack-app.app", "https://fourcorners.ontrack-app.app", "https://ontrack.katina-sunrise.workers.dev", "https://*-ontrack.katina-sunrise.workers.dev"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -233,8 +233,8 @@ secure_password_change = true
 max_frequency = "1s"
 # Number of characters used in the email OTP.
 otp_length = 6
-# Number of seconds before the email OTP expires (defaults to 1 hour).
-otp_expiry = 3600
+# Number of seconds before the email OTP expires. Reset links last 30 minutes.
+otp_expiry = 1800
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
@@ -246,16 +246,17 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Local only: the hosted project's templates and these two switches are set in its
+# dashboard, by pasting these same files. The reset link carries a token hash for
+# the app to spend when it opens, so nothing that merely fetches the link uses it.
+[auth.email.template.recovery]
+subject = "Reset your OnTrack password"
+content_path = "./supabase/templates/recovery.html"
 
-# Uncomment to customize notification email template
-# [auth.email.notification.password_changed]
-# enabled = true
-# subject = "Your password has been changed"
-# content_path = "./supabase/templates/password_changed_notification.html"
+[auth.email.notification.password_changed]
+enabled = true
+subject = "Your OnTrack password changed"
+content_path = "./supabase/templates/password_changed.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

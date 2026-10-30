@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router'
+import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
 import { Sheet } from '../../components/Sheet'
@@ -9,7 +11,7 @@ import { PasswordError, useChangePassword } from './useProfile'
  * Change password (Profile, passwordSheetOpen): current, new with the
  * 12-character hint, confirm, Update password, Cancel. Mismatches are caught
  * here; a wrong current password comes back from Supabase. "Forgot your
- * current password?" arrives with the reset flow (OT-10).
+ * current password?" goes to the reset flow with their email filled in.
  */
 export function PasswordSheet({
   open,
@@ -25,6 +27,7 @@ export function PasswordSheet({
   const [confirm, setConfirm] = useState('')
   const [touched, setTouched] = useState(false)
   const change = useChangePassword()
+  const { user } = useUser()
 
   const reset = () => {
     setCurrent('')
@@ -109,6 +112,13 @@ export function PasswordSheet({
         <Button variant="secondary" onClick={() => close(false)}>
           Cancel
         </Button>
+        <Link
+          to="/reset"
+          state={{ email: user.email }}
+          className="relative flex min-h-8 items-center self-center text-14 font-semibold no-underline before:absolute before:inset-x-0 before:-inset-y-1.5"
+        >
+          Forgot your current password?
+        </Link>
       </form>
     </Sheet>
   )
