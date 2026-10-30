@@ -10,6 +10,8 @@ export type SignedIn = {
   restaurants: Restaurant[]
   /** True when the membership row is the all-restaurants row. */
   allRestaurants: boolean
+  /** True under an admin's View as: `user` is the person viewed, and screens must not write. */
+  viewingAs?: boolean
   signOut: () => Promise<void>
 }
 

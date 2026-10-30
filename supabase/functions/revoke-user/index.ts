@@ -96,5 +96,45 @@ serve(async (req, body) => {
     return json({ ok: true })
   }
 
+  // For a mistake or a test account: an admin may delete one while nothing points
+  // to it. Anything else is deactivated, so the name stays on the history.
+  if (body.action === 'delete') {
+    if (!isUuid(body.user_id)) return refuse('bad_request', 422)
+    if (body.user_id === caller.id) return refuse('not_yourself', 409)
+    if (!(await isAdmin(caller))) return refuse('admin_only', 403)
+    const { data: history, error } = await caller.db
+      .from('v_person_history')
+      .select('records')
+      .eq('user_id', body.user_id)
+      .maybeSingle()
+    if (error) throw error
+    if (!history) return refuse('not_found', 404)
+    if (history.records > 0) return refuse('has_history', 409)
+
+    const { data: target, error: targetError } = await db
+      .from('profiles')
+      .select('full_name, email, role')
+      .eq('id', body.user_id)
+      .single()
+    if (targetError) throw targetError
+
+    // These two only say who was involved, and would otherwise block the delete.
+    const cleared = await Promise.all([
+      db.from('invites').update({ user_id: null }).eq('user_id', body.user_id),
+      db.from('rights').update({ updated_by: null }).eq('updated_by', body.user_id),
+    ])
+    for (const r of cleared) if (r.error) throw r.error
+
+    // Logged first: the entry keeps the name once the row is gone.
+    await db.from('audit_log').insert({
+      actor_id: caller.id,
+      action: 'user.delete',
+      meta: { user_id: body.user_id, name: target.full_name, email: target.email, role: target.role },
+    })
+    const { error: deleteError } = await db.auth.admin.deleteUser(body.user_id)
+    if (deleteError) throw deleteError
+    return json({ ok: true })
+  }
+
   return refuse('bad_request', 400)
 })

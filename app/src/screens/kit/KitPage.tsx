@@ -54,6 +54,7 @@ import {
   IconSignOut,
   IconUserPlus,
 } from '../../components/icons'
+import { ViewAsBanner } from '../admin/ViewAsScreen'
 import { SignedOutSheet } from '../auth/SignedOutSheet'
 import { ROLE_TABS } from '../../app/roles'
 import { MOCK_RESTAURANTS } from '../../auth/mock'
@@ -267,6 +268,9 @@ export function KitPage() {
               <div className="overflow-hidden rounded-card border border-border">
                 <BrandBackBar to="/kit" label="Back" />
               </div>
+              <div className="overflow-hidden rounded-card border border-border">
+                <ViewAsBanner name="Maya Reyes" first="Maya" exitTo="/kit" />
+              </div>
             </Section>
 
             <Section id="avatars">
@@ -284,6 +288,7 @@ export function KitPage() {
                 <Avatar name="Maya Reyes" role="manager" size={38} />
                 <Avatar name="Bert Velilla" role="ops" size={38} />
                 <Avatar name="Lee Chen" role="leadership" size={38} />
+                <Avatar name="Maya Reyes" role="manager" size={52} />
               </div>
             </Section>
 

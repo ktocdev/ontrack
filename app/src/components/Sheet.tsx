@@ -43,7 +43,7 @@ export function Sheet({
           onEscapeKeyDown={hold}
           onPointerDownOutside={hold}
           onInteractOutside={hold}
-          className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[520px] flex-col gap-3.5 rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-dialog`}
+          className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-dialog`}
         >
           <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-square bg-border-strong lg:hidden" />
           {icon}

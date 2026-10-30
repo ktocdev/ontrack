@@ -42,6 +42,12 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "audit_log_actor_id_fkey"
+      columns: ["actor_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "audit_log_target_restaurant_id_fkey"
       columns: ["target_restaurant_id"]
 isOneToOne: false
@@ -65,6 +71,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "audit_log_target_user_id_fkey"
+      columns: ["target_user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"categories": {
@@ -99,6 +111,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "contractors_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"equipment": {
@@ -125,6 +143,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "equipment_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -190,11 +214,23 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "inhouse_fixes_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "inhouse_fixes_done_by_fkey"
       columns: ["done_by"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_done_by_fkey"
+      columns: ["done_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "inhouse_fixes_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -240,11 +276,23 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "invites_invited_by_fkey"
+      columns: ["invited_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "invites_user_id_fkey"
       columns: ["user_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invites_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"invoices": {
@@ -265,6 +313,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invoices_attached_by_fkey"
+      columns: ["attached_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "invoices_service_record_id_fkey"
       columns: ["service_record_id"]
@@ -321,6 +375,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "memberships_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"profiles": {
@@ -373,6 +433,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "push_subscriptions_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"quarterly_tasks": {
@@ -432,11 +498,23 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "restaurants_archived_by_fkey"
+      columns: ["archived_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "restaurants_manager_fk"
       columns: ["manager_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "restaurants_manager_fk"
+      columns: ["manager_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"rights": {
@@ -458,11 +536,23 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "rights_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "rights_user_id_fkey"
       columns: ["user_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "rights_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"service_line_items": {
@@ -528,6 +618,12 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "service_records_logged_by_fkey"
+      columns: ["logged_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "service_records_ticket_id_fkey"
       columns: ["ticket_id"]
 isOneToOne: false
@@ -553,6 +649,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "support_reports_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"ticket_photos": {
@@ -573,6 +675,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "ticket_photos_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "ticket_photos_ticket_id_fkey"
       columns: ["ticket_id"]
@@ -606,6 +714,12 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "ticket_updates_author_id_fkey"
+      columns: ["author_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "ticket_updates_ticket_id_fkey"
       columns: ["ticket_id"]
 isOneToOne: false
@@ -632,6 +746,12 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "tickets_assignee_id_fkey"
+      columns: ["assignee_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "tickets_category_id_fkey"
       columns: ["category_id"]
 isOneToOne: false
@@ -644,11 +764,23 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "tickets_closed_by_fkey"
+      columns: ["closed_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "tickets_created_by_fkey"
       columns: ["created_by"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "tickets_equipment_id_fkey"
       columns: ["equipment_id"]
@@ -705,6 +837,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_checks_checked_by_fkey"
+      columns: ["checked_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "walkthrough_checks_item_id_fkey"
       columns: ["item_id"]
@@ -787,6 +925,12 @@ isOneToOne: true
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_schedules_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"walkthrough_templates": {
@@ -840,11 +984,23 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "walkthroughs_started_by_fkey"
+      columns: ["started_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "walkthroughs_submitted_by_fkey"
       columns: ["submitted_by"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_submitted_by_fkey"
+      columns: ["submitted_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     },{
       foreignKeyName: "walkthroughs_template_id_fkey"
       columns: ["template_id"]
@@ -996,6 +1152,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"v_person_history": {
+                  Row: {
+                    "records": number | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "records"?: never,"user_id"?: string | null
+                         }
+                        Update: {
+                           "records"?: never,"user_id"?: string | null
+                         }
+                        Relationships: [
+                    
+                  ]
                 },"v_restaurant_history": {
                   Row: {
                     "equipment": number | null,"home_of": number | null,"inhouse_fixes": number | null,"restaurant_id": string,"tickets": number | null,"walkthroughs": number | null
@@ -1067,14 +1237,26 @@ isOneToOne: false
 "is_service":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"log_view_as":
+{ Args: { "p_user": string }; Returns: undefined
+                           },
 "my_role":
 { Args: Record<PropertyKey, never>; Returns: Database["public"]['Enums']["app_role"]
                            },
 "path_uuid":
 { Args: { "object_name": string }; Returns: string
                            },
+"save_role_defaults":
+{ Args: { "p_changes": Json }; Returns: undefined
+                           },
 "service_record_restaurant":
 { Args: { "srid": string }; Returns: string
+                           },
+"set_person_access":
+{ Args: { "p_restaurants": (string)[],"p_role": Database["public"]['Enums']["app_role"],"p_user": string }; Returns: undefined
+                           },
+"set_person_rights":
+{ Args: { "p_rights": Json,"p_user": string }; Returns: undefined
                            },
 "set_restaurant_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
