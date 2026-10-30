@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useUser } from '../../auth/context'
+import { useProfilePhotosOn } from '../../auth/group'
 import { signInErrorMessage } from '../../auth/validation'
 import { env } from '../../lib/env'
 import { callFunction } from '../../lib/functions'
@@ -18,11 +19,15 @@ import { TwoStepError, verifyAuthenticatorCode } from '../twostep/useTwoStep'
 
 const AVATAR_TTL = 60 * 60
 
-/** A signed URL for a profile photo, refreshed before it runs out. */
+/**
+ * A signed URL for a profile photo, refreshed before it runs out. Every avatar comes
+ * through here, so with profile photos off for the group they all fall back to initials.
+ */
 export function useAvatarUrl(path: string | null | undefined) {
-  return useQuery({
+  const photosOn = useProfilePhotosOn()
+  const url = useQuery({
     queryKey: ['avatar', path],
-    enabled: Boolean(path && supabase),
+    enabled: Boolean(path && supabase && photosOn),
     staleTime: (AVATAR_TTL - 300) * 1000,
     queryFn: async () => {
       const { data, error } = await requireSupabase().storage.from('avatars').createSignedUrl(path!, AVATAR_TTL)
@@ -30,6 +35,7 @@ export function useAvatarUrl(path: string | null | undefined) {
       return data.signedUrl
     },
   })
+  return { data: photosOn ? url.data : undefined }
 }
 
 export function useSaveProfile() {

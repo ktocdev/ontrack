@@ -7,21 +7,38 @@ export function groupLabel(group: { name: string; short_name: string | null }) {
   return group.short_name ? `${group.short_name} | ${group.name}` : group.name
 }
 
+export const GROUP_KEY = ['group']
+
 /**
- * The restaurant group's name as the boards show it. It is data, so another
- * group's deployment needs no code change, and it can be read before sign-in.
- * Empty until it has loaded; the app works without it if it fails.
+ * The restaurant group's settings. They are data, so another group's deployment needs
+ * no code change, and they can be read before sign-in. Five minutes, so a change an
+ * admin makes reaches everyone soon. Undefined until loaded; the app works without them.
  */
-export function useGroupLabel() {
+export function useGroup() {
   const { data } = useQuery({
-    queryKey: ['group'],
+    queryKey: GROUP_KEY,
     enabled: !__E2E_MOCK__ && Boolean(supabase),
-    staleTime: 60 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const { data, error } = await supabase!.from('group_settings').select('name, short_name').single()
+      const { data, error } = await supabase!.from('group_settings').select('name, short_name, profile_photos').single()
       if (error) throw error
-      return groupLabel(data)
+      return data
     },
   })
-  return __E2E_MOCK__ ? MOCK_GROUP_LABEL : (data ?? '')
+  return data
+}
+
+/** The group's name as the boards show it; empty until it has loaded. */
+export function useGroupLabel() {
+  const group = useGroup()
+  if (__E2E_MOCK__) return MOCK_GROUP_LABEL
+  return group ? groupLabel(group) : ''
+}
+
+/**
+ * Whether profile photos are on for the group. On until it is known otherwise: this
+ * only decides what to show, and the database refuses them when off.
+ */
+export function useProfilePhotosOn() {
+  return useGroup()?.profile_photos ?? true
 }

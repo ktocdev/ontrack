@@ -96,7 +96,9 @@ Password change re-checks the current password by signing in on a separate throw
 
 Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
 
-Avatars: initials follow the boards, with the color from the role and from the invite state on pending and expired rows. `group_settings` also holds the group-wide profile photo switch; off is enforced in the `avatars` storage policies and on `profiles.avatar_path`, not only by hiding the buttons, and a person can still remove their own photo. It covers profile photos only, not ticket or equipment photos.
+Avatars: initials follow the boards, with the color from the role and from the invite state on pending and expired rows. `group_settings` also holds the group-wide profile photo switch; off is enforced in the `avatars` storage policies and on `profiles.avatar_path`, not only by hiding the buttons, and a person can still remove their own photo, so their own stays readable to them because Storage reads a file to remove it. It covers profile photos only, not ticket or equipment photos. Every avatar goes through `useAvatarUrl`, which returns nothing when off. A signed URL already handed out works until it expires, within the hour.
+
+`group_settings` cannot be written through the API, so nothing skips the log: `save_group_name` and `set_profile_photos` check for an admin and write `audit_log`.
 
 Seeded sign-ins (local only, password `ontrack-demo-2026`; admin@ also needs a code for the authenticator secret `JBSWY3DPEHPK3PXP`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
 
