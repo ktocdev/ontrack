@@ -37,7 +37,7 @@ const EMAIL_ERRORS: Record<string, string> = {
 const FORM_ERRORS: Record<string, string> = {
   email_failed: "The invite email couldn't be sent, so nothing was saved. Try again in a moment.",
   not_allowed: "You don't have permission to invite people.",
-  admin_only: 'Only an admin can invite another admin.',
+  admin_only: 'Only an admin can invite someone to this role.',
   outside_your_scope: 'You can only give access to restaurants you have yourself.',
   network: "Can't reach OnTrack. Check your connection and try again.",
 }

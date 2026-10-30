@@ -81,6 +81,19 @@ export async function isAdmin(caller: Caller) {
   return data === true
 }
 
+/**
+ * Whether the caller's own scope covers these restaurants; none means all of
+ * them, which only an all-restaurants scope covers.
+ */
+export async function coversScope(caller: Caller, restaurantIds: string[]) {
+  for (const rid of restaurantIds.length ? restaurantIds : [null]) {
+    const { data, error } = await caller.db.rpc('has_scope', { rid })
+    if (error) throw error
+    if (data !== true) return false
+  }
+  return true
+}
+
 /** The group's name as the boards show it: "4C | Four Corners". */
 export async function groupLabel(db: SupabaseClient) {
   const { data, error } = await db.from('group_settings').select('name, short_name').single()

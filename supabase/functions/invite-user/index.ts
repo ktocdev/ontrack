@@ -1,10 +1,24 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { emailFrame, emailStyles as s, sendEmail } from '../_shared/email.ts'
-import { can, escapeHtml, getCaller, groupLabel, isAdmin, isUuid, json, refuse, serve, service } from '../_shared/http.ts'
+import {
+  can,
+  coversScope,
+  escapeHtml,
+  getCaller,
+  groupLabel,
+  isAdmin,
+  isUuid,
+  json,
+  refuse,
+  serve,
+  service,
+} from '../_shared/http.ts'
 
 /**
  * Invites, start to finish. `send` and `resend` need a signed-in caller holding
- * invite_users, and only an admin may invite an admin. `check`, `accept` and
+ * invite_users. Nobody grants access they do not have: anyone but an admin may
+ * invite only managers, and only to restaurants in their own scope, since every
+ * other role sees across restaurants. `check`, `accept` and
  * `request_new` are for the person holding the emailed link, who has no account
  * yet, so the link's token is the only credential: only its hash is stored, and
  * sending again replaces it, which kills the old link.
@@ -101,11 +115,12 @@ async function sendInviteEmail(db: SupabaseClient, invite: Pick<Invite, 'email' 
 }
 
 /** Caller rights shared by send and resend; a Response means refused. */
-async function checkInviter(req: Request, role: Role) {
+async function checkInviter(req: Request, role: Role, restaurantIds: string[]) {
   const caller = await getCaller(req)
   if (!caller) return refuse('not_signed_in', 401)
   if (!(await can(caller, 'invite_users'))) return refuse('not_allowed', 403)
-  if (role === 'admin' && !(await isAdmin(caller))) return refuse('admin_only', 403)
+  if (role !== 'manager' && !(await isAdmin(caller))) return refuse('admin_only', 403)
+  if (!(await coversScope(caller, restaurantIds))) return refuse('outside_your_scope', 403)
   return caller
 }
 
@@ -121,16 +136,8 @@ async function send(req: Request, body: Record<string, unknown>) {
   // Empty means every restaurant, which a manager invite may not be.
   if (role === 'manager' && ids.length === 0) return refuse('manager_needs_restaurant', 422)
 
-  const caller = await checkInviter(req, role)
+  const caller = await checkInviter(req, role, ids as string[])
   if (caller instanceof Response) return caller
-
-  // Nobody grants access they do not have: every restaurant in the caller's own
-  // scope, and "all" only from someone whose scope is all.
-  for (const rid of ids.length ? ids : [null]) {
-    const { data, error } = await caller.db.rpc('has_scope', { rid })
-    if (error) throw error
-    if (data !== true) return refuse('outside_your_scope', 403)
-  }
 
   const db = service()
   if (ids.length) {
@@ -205,7 +212,7 @@ async function resend(req: Request, body: Record<string, unknown>) {
   const invite = data as Invite | null
   if (!invite) return refuse('not_found', 404)
 
-  const caller = await checkInviter(req, invite.role)
+  const caller = await checkInviter(req, invite.role, invite.restaurant_ids)
   if (caller instanceof Response) return caller
   if (invite.status !== 'pending') return refuse('not_pending', 409)
 

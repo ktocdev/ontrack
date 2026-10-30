@@ -233,6 +233,58 @@ test.describe('the functions refuse what the screens would never send', () => {
     expect(await self.json()).toEqual({ error: 'not_yourself' })
   })
 
+  test('a manager granted invite_users stays inside their own restaurant and role', async ({ request }, testInfo) => {
+    const ARI = '22222222-2222-4222-8222-000000000002'
+    const ADMIN = '22222222-2222-4222-8222-000000000006'
+    const MAYA = '22222222-2222-4222-8222-000000000001'
+    const BERT = '22222222-2222-4222-8222-000000000003'
+    const RANALLIS = '11111111-1111-4111-8111-000000000004'
+    const PORTER = '11111111-1111-4111-8111-000000000003'
+    const SAM_INVITE = '88888888-8888-4888-8888-000000000001'
+
+    const admin = await tokenFor(request, 'admin@example.com')
+    const rights = `${SUPABASE}/rest/v1/rights`
+    const asAdmin = { apikey: KEY, Authorization: `Bearer ${admin}` }
+    const grant = await request.post(rights, {
+      data: { user_id: ARI, key: 'invite_users', allowed: true, updated_by: ADMIN },
+      headers: asAdmin,
+    })
+    expect(grant.status()).toBe(201)
+
+    try {
+      const ari = await tokenFor(request, 'ari.kim@example.com')
+      const refusal = async (name: string, data: object) => (await (await call(request, name, data, ari)).json()).error
+      const email = unique('ari.invites', testInfo)
+      const send = { action: 'send', full_name: 'Ari Invites', email }
+
+      // No other role, since every other role sees across restaurants.
+      for (const role of ['ops', 'leadership', 'admin']) {
+        expect(await refusal('invite-user', { ...send, role, restaurant_ids: [RANALLIS] })).toBe('admin_only')
+      }
+      // No restaurant but their own.
+      expect(await refusal('invite-user', { ...send, role: 'manager', restaurant_ids: [PORTER] })).toBe(
+        'outside_your_scope',
+      )
+      // Nobody and no invite outside it either.
+      expect(await refusal('revoke-user', { action: 'deactivate', user_id: MAYA })).toBe('outside_your_scope')
+      expect(await refusal('revoke-user', { action: 'reactivate', user_id: MAYA })).toBe('outside_your_scope')
+      expect(await refusal('revoke-user', { action: 'deactivate', user_id: BERT })).toBe('admin_only')
+      expect(await refusal('revoke-user', { action: 'revoke_invite', invite_id: SAM_INVITE })).toBe(
+        'outside_your_scope',
+      )
+      expect(await refusal('invite-user', { action: 'resend', invite_id: SAM_INVITE })).toBe('outside_your_scope')
+
+      // Inside it, the right works.
+      const sent = await call(request, 'invite-user', { ...send, role: 'manager', restaurant_ids: [RANALLIS] }, ari)
+      expect(sent.status()).toBe(200)
+      const { id } = (await sent.json()) as { id: string }
+      const revoked = await call(request, 'revoke-user', { action: 'revoke_invite', invite_id: id }, ari)
+      expect(revoked.status()).toBe(200)
+    } finally {
+      await request.delete(`${rights}?user_id=eq.${ARI}&key=eq.invite_users`, { headers: asAdmin })
+    }
+  })
+
   test('accepting takes a real token and a strong password', async ({ request }) => {
     const junk = await call(request, 'invite-user', {
       action: 'accept',
