@@ -4,6 +4,7 @@ import { AllRestaurantsSquare, RestaurantName } from '../../components/Restauran
 import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { IconEye } from '../../components/icons'
 import { useUser } from '../../auth/context'
+import { useGroupLabel } from '../../auth/group'
 
 /**
  * Stand-in for a screen a later phase builds. It renders the real header for
@@ -12,15 +13,14 @@ import { useUser } from '../../auth/context'
  */
 export function PlaceholderScreen({ title, phase, note }: { title: string; phase: string; note?: string }) {
   const { user, restaurants, allRestaurants } = useUser()
+  const group = useGroupLabel()
   const home = restaurants.find((r) => r.id === user.home_restaurant_id) ?? restaurants[0]
   const readOnly = user.role === 'leadership'
 
   const topLeft = allRestaurants ? (
     <span className="flex items-center gap-1.5 text-14 font-semibold">
       {user.role === 'admin' || user.role === 'leadership' ? (
-        <span className={user.role === 'admin' ? 'eyebrow' : 'text-13 font-semibold text-text-secondary'}>
-          4C | Four Corners
-        </span>
+        <span className={user.role === 'admin' ? 'eyebrow' : 'text-13 font-semibold text-text-secondary'}>{group}</span>
       ) : (
         <>
           <AllRestaurantsSquare colors={restaurants.map((r) => r.color)} />

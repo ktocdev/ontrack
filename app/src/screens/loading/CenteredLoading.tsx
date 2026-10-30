@@ -3,6 +3,7 @@ import { ButtonLink, IconButton } from '../../components/Button'
 import { IconClose, Logo } from '../../components/icons'
 import { Spinner } from '../../components/Skeleton'
 import { Screen } from '../../components/Screen'
+import { useGroupLabel } from '../../auth/group'
 
 /**
  * Centered spinner screen (design: Loading · Centered spinner). Two forms:
@@ -17,6 +18,17 @@ type Props = {
   /** A route to go to when cancelling (QR lookup). */
   cancelTo?: string
   cancelLabel?: string
+}
+
+/** The invite check, which names the group the invite is from. */
+export function CheckingInvite() {
+  const group = useGroupLabel()
+  return (
+    <CenteredLoading
+      title="Checking your invite…"
+      body={group ? `From ${group}. This only takes a moment.` : 'This only takes a moment.'}
+    />
+  )
 }
 
 export function CenteredLoading({ title, body, brand = true, cancelTo, cancelLabel = 'Cancel' }: Props) {

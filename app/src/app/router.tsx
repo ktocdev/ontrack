@@ -4,7 +4,7 @@ import { SignInScreen } from '../screens/auth/SignInScreen'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotFoundScreen } from '../screens/errors/NotFoundScreen'
 import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErrorScreen'
-import { CenteredLoading } from '../screens/loading/CenteredLoading'
+import { CenteredLoading, CheckingInvite } from '../screens/loading/CenteredLoading'
 import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
 import { BareShell, Shell } from './Shell'
 
@@ -32,12 +32,7 @@ export const router = createBrowserRouter([
         element: <BareShell />,
         children: [
           { index: true, lazy: async () => ({ Component: (await import('../screens/kit/KitPage')).KitPage }) },
-          {
-            path: 'loading/spinner',
-            element: (
-              <CenteredLoading title="Checking your invite…" body="From 4C | Four Corners. This only takes a moment." />
-            ),
-          },
+          { path: 'loading/spinner', element: <CheckingInvite /> },
           {
             path: 'loading/scan',
             element: (

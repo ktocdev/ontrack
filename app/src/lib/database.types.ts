@@ -145,6 +145,20 @@ isOneToOne: false
       referencedColumns: ["restaurant_id"]
     }
                   ]
+                },"group_settings": {
+                  Row: {
+                    "id": boolean,"name": string,"short_name": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: boolean,"name"?: string,"short_name"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "id"?: boolean,"name"?: string,"short_name"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"inhouse_fixes": {
                   Row: {
                     "check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"deleted_at": string | null,"done_at": string | null,"done_by": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null

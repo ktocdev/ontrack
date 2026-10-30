@@ -98,7 +98,7 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: 'OnTrack',
           short_name: 'OnTrack',
-          description: 'Equipment and repair tickets for the Four Corners restaurants.',
+          description: 'Equipment and repair tickets for restaurant groups.',
           start_url: '/',
           scope: '/',
           display: 'standalone',

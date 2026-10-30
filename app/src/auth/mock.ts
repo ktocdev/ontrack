@@ -8,6 +8,8 @@ import type { Profile, Restaurant } from './types'
 
 const now = '2026-10-01T00:00:00Z'
 
+export const MOCK_GROUP_LABEL = '4C | Four Corners'
+
 export const MOCK_RESTAURANTS: Restaurant[] = [
   {
     id: '11111111-1111-4111-8111-000000000001',
