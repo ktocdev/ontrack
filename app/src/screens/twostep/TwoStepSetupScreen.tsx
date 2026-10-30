@@ -13,7 +13,8 @@ type Enrollment = { factorId: string; qrCode: string; secret: string; uri: strin
  * 2-step setup 1 to 4 (design/screens/MFA-Choose, -Scan, -Verify, -Backup). One
  * route, so a reload starts over from a new secret. An admin who has none gets it
  * from RequireAuth (`required`, with a way to sign out); anyone else opens it from
- * Profile. The board's Text message option waits, since it adds a Twilio cost.
+ * Profile. The board's Text message option waits, since it adds a Twilio cost. The
+ * board's QR code is for "another phone"; few people have one, so it's for a computer.
  */
 export function TwoStepSetupScreen({
   required = false,
@@ -193,6 +194,7 @@ function ScanStep({ enrollment, onBack, onNext }: { enrollment: Enrollment; onBa
   const [copied, setCopied] = useState(false)
   const copy = async () => {
     try {
+      // Without the on-screen spaces, which are only for reading: not every app accepts them.
       await navigator.clipboard.writeText(enrollment.secret)
       setCopied(true)
     } catch {
@@ -206,7 +208,7 @@ function ScanStep({ enrollment, onBack, onNext }: { enrollment: Enrollment; onBa
         <div className="flex flex-col gap-2">
           <h1 className="font-display text-26 font-bold tracking-[-0.02em]">Connect your authenticator app</h1>
           <p className="text-15 leading-normal text-text-secondary">
-            If the app is on this phone, tap below and it will add OnTrack for you.
+            On your phone, tap below and your authenticator app will add OnTrack for you.
           </p>
         </div>
         <a href={enrollment.uri} className={`${buttonClasses('primary')} no-underline`}>
@@ -214,11 +216,11 @@ function ScanStep({ enrollment, onBack, onNext }: { enrollment: Enrollment; onBa
           Open authenticator app
         </a>
         <div className="flex items-center gap-3 text-12 font-bold uppercase tracking-[.06em] text-text-secondary before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-          Or use another phone
+          On a computer
         </div>
         <div className="flex items-center gap-4 rounded-card border border-border bg-surface p-3.5">
           {/* A QR code needs its light background in dark mode too. The board draws 112px, but the
-              real code is far denser than its drawing and needs the room to scan from another phone. */}
+              real code is far denser than its drawing and needs the room to scan. */}
           <span className="flex-none rounded-square bg-white p-1">
             <img
               src={enrollment.qrCode}
@@ -228,7 +230,7 @@ function ScanStep({ enrollment, onBack, onNext }: { enrollment: Enrollment; onBa
             />
           </span>
           <p className="text-13 leading-normal text-text-body">
-            Open your authenticator app on the other phone, tap <b>Add</b> or <b>+</b>, then scan this code.
+            Open your authenticator app on your phone, tap <b>Add</b> or <b>+</b>, then scan this code.
           </p>
         </div>
         <div className="flex flex-col gap-1.5">
