@@ -50,6 +50,30 @@ test('a restaurant is added with a picked color, then deleted', async ({ page },
   await expect(page.getByText(name, { exact: true })).toBeHidden()
 })
 
+test('inviting a new manager goes on to Invite user with the restaurant picked', async ({ page }, testInfo) => {
+  const name = `Invite Kitchen ${testInfo.project.name} ${Date.now() % 100000}`
+  await signIn(page, 'admin@example.com')
+  await page.goto('/admin/restaurants/new')
+  await page.getByLabel('Restaurant name').fill(name)
+  await page.getByLabel('Address').fill('100 W Test St, Chicago')
+  await page.getByLabel('Manager').selectOption({ label: '+ Invite a new manager' })
+  await expect(page.getByText('you’ll go to Invite user with this restaurant already selected')).toBeVisible()
+  await page.getByRole('button', { name: 'Save restaurant' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Invite a user' })).toBeVisible()
+  await expect(page.getByRole('button', { name })).toHaveAttribute('aria-pressed', 'true')
+
+  // Nobody was invited, so it is still empty and can go.
+  await page.goto('/admin/restaurants')
+  await page.getByRole('button', { name: new RegExp(`^${name}`) }).click()
+  await page.getByRole('dialog', { name }).getByRole('button', { name: 'Delete restaurant' }).click()
+  await page
+    .getByRole('dialog', { name: `Delete ${name}?` })
+    .getByRole('button', { name: 'Delete restaurant' })
+    .click()
+  await expect(page.getByRole('status').filter({ hasText: `${name} deleted.` })).toBeVisible()
+})
+
 test('a custom color too close to one in use will not save', async ({ page }) => {
   await signIn(page, 'admin@example.com')
   await page.goto('/admin/restaurants/new')

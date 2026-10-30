@@ -21,7 +21,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 Phase 0 notes:
 
 - Production is https://ontrack-app.app (domain bought and connected Oct 2026) and still answers at https://ontrack.katina-sunrise.workers.dev; each branch previews at `https://<branch>-ontrack.katina-sunrise.workers.dev`. Four Corners moves to `fourcorners.ontrack-app.app` before its first install.
-- The hosted Supabase project has the full schema (migrations deploy on merge) and no seed data. One admin account exists, made by hand before OT-7: an `invites` row in the SQL editor, then Authentication, Add user with the same email. Since the OT-7 audit an invite is claimed only by its id in `app_metadata`, which the dashboard cannot set, so the invite flow (OT-9) is the way to add people; by hand means an `auth.users` insert like the seed's, with `role` in `app_metadata`.
+- The hosted Supabase project has the full schema (migrations deploy on merge) and no seed data. One admin account exists, made by hand before OT-7: an `invites` row in the SQL editor, then Authentication, Add user with the same email. An invite is claimed only with its link's token or its id in `app_metadata`, which the dashboard cannot set, so the invite flow (OT-10) is the way to add people; by hand means an `auth.users` insert like the seed's, with `role` in `app_metadata`.
 - Install and dark mode were checked on Android Chrome. The iPhone part of the done test waits for a BrowserStack pass; Playwright WebKit covers it in CI until then.
 - Sign-in is a provisional email and password screen; the designed Sign in, reset and 2-step screens are Phase 1.
 

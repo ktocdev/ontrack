@@ -216,6 +216,34 @@ export const Logo = ({ size = 24, inverse = false }: { size?: number; inverse?: 
   </svg>
 )
 
+/** The mark and name at the top of the invite screens. */
+export const BrandMark = () => (
+  <span className="flex items-center gap-2">
+    <Logo size={28} />
+    <span className="font-display text-20 font-bold">OnTrack</span>
+  </span>
+)
+
+// Invites
+export const IconPerson = (p: IconProps) => (
+  <svg {...base({ size: 20, ...p })}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c1-4 4-6 8-6s7 2 8 6" />
+  </svg>
+)
+export const IconUserPlus = (p: IconProps) => (
+  <svg {...base(p)}>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M19 8v6M16 11h6" />
+  </svg>
+)
+export const IconTimer = (p: IconProps) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="13" r="8" />
+    <path d="M12 9v4l2.5 2M9 2h6" />
+  </svg>
+)
+
 // Profile and Help
 export const IconHelpCircle = (p: IconProps) => (
   <svg {...base({ size: 16, ...p }, 2.2)}>

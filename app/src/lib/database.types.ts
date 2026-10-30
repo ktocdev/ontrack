@@ -223,14 +223,14 @@ isOneToOne: false
                   ]
                 },"invites": {
                   Row: {
-                    "accepted_at": string | null,"created_at": string,"email": string,"expires_at": string,"full_name": string,"id": string,"invited_by": string | null,"restaurant_ids": (string)[],"revoked_at": string | null,"role": Database["public"]['Enums']["app_role"],"sent_at": string,"status": Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id": string | null
+                    "accepted_at": string | null,"created_at": string,"email": string,"expires_at": string,"full_name": string,"id": string,"invited_by": string | null,"renewal_requested_at": string | null,"restaurant_ids": (string)[],"revoked_at": string | null,"role": Database["public"]['Enums']["app_role"],"sent_at": string,"status": Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "accepted_at"?: string | null,"created_at"?: string,"email": string,"expires_at"?: string,"full_name": string,"id"?: string,"invited_by"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role": Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id"?: string | null
+                    "accepted_at"?: string | null,"created_at"?: string,"email": string,"expires_at"?: string,"full_name": string,"id"?: string,"invited_by"?: string | null,"renewal_requested_at"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role": Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id"?: string | null
                   }
                   Update: {
-                    "accepted_at"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"full_name"?: string,"id"?: string,"invited_by"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash"?: string,"user_id"?: string | null
+                    "accepted_at"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"full_name"?: string,"id"?: string,"invited_by"?: string | null,"renewal_requested_at"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {

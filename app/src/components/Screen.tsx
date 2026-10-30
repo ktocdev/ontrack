@@ -98,11 +98,24 @@ export function TitleBar({ to, label, title }: { to: string; label: string; titl
 /**
  * Header for a full-screen form opened from a list (Add restaurant): 24px
  * Archivo title on the left, a 44px close target on the right, 1px bottom
- * border. 12px 12px 8px 20px padding.
+ * border. 12px 12px 8px 20px padding. Invite user draws it with no border or
+ * bottom padding.
  */
-export function CloseBar({ to, title, label = 'Close' }: { to: string; title: ReactNode; label?: string }) {
+export function CloseBar({
+  to,
+  title,
+  label = 'Close',
+  bordered = true,
+}: {
+  to: string
+  title: ReactNode
+  label?: string
+  bordered?: boolean
+}) {
   return (
-    <div className="flex flex-none items-center justify-between border-b border-border pb-2 pl-5 pr-3 pt-[calc(12px+var(--safe-top))]">
+    <div
+      className={`flex flex-none items-center justify-between pl-5 pr-3 pt-[calc(12px+var(--safe-top))] ${bordered ? 'border-b border-border pb-2' : ''}`}
+    >
       <h1 className="font-display text-24 font-bold tracking-[-0.02em]">{title}</h1>
       <Link
         to={to}

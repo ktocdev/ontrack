@@ -1,5 +1,6 @@
-import { useId, type ComponentPropsWithRef, type InputHTMLAttributes, type ReactNode } from 'react'
-import { IconChevronDown, IconSearch } from './icons'
+import { useId, useState, type ComponentPropsWithRef, type InputHTMLAttributes, type ReactNode } from 'react'
+import { passwordRules } from '../auth/validation'
+import { IconCheck, IconChevronDown, IconSearch } from './icons'
 
 /**
  * Form fields: 13px semibold label, 4 to 6px gap, white input with 1px
@@ -72,6 +73,60 @@ export function Input({ label, optional, hint, error, className, ref, ...rest }:
         />
       )}
     </FieldWrap>
+  )
+}
+
+/** Password input with a Show / Hide button inside its right edge. */
+export function PasswordField({ label, hint, error, className, ref, ...rest }: Omit<InputProps, 'type' | 'optional'>) {
+  const [shown, setShown] = useState(false)
+  return (
+    <FieldWrap label={label} hint={hint} error={error} className={className}>
+      {(id, describedBy) => (
+        <div className="relative flex">
+          <input
+            ref={ref}
+            id={id}
+            type={shown ? 'text' : 'password'}
+            aria-describedby={describedBy}
+            aria-invalid={error ? true : undefined}
+            className={`${FIELD} pr-16`}
+            {...rest}
+          />
+          <button
+            type="button"
+            onClick={() => setShown((s) => !s)}
+            aria-pressed={shown}
+            aria-label={shown ? 'Hide password' : 'Show password'}
+            className="absolute right-1 top-0.5 min-h-tap px-3 text-13 font-semibold text-brand transition-colors hover:text-brand-strong active:text-brand-strong active:duration-0"
+          >
+            {shown ? 'Hide' : 'Show'}
+          </button>
+        </div>
+      )}
+    </FieldWrap>
+  )
+}
+
+/** The checklist under a new password: a check once a rule is met, a ring until then. */
+export function PasswordRules({ password }: { password: string }) {
+  return (
+    <ul className="flex flex-col gap-1.5">
+      {passwordRules(password).map((r) => (
+        <li
+          key={r.text}
+          className={`flex items-center gap-2 text-13 ${r.ok ? 'font-semibold text-brand' : 'text-text-secondary'}`}
+        >
+          <span className="flex w-3.5 flex-none justify-center">
+            {r.ok ? (
+              <IconCheck size={14} />
+            ) : (
+              <span aria-hidden="true" className="h-3 w-3 rounded-full border-[1.5px] border-current" />
+            )}
+          </span>
+          {r.text}
+        </li>
+      ))}
+    </ul>
   )
 }
 

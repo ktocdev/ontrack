@@ -240,7 +240,7 @@ async function resend(req: Request, body: Record<string, unknown>) {
 }
 
 async function findByToken(db: SupabaseClient, token: unknown) {
-  if (typeof token !== 'string' || token.length < 20 || token.length > 200) return null
+  if (typeof token !== 'string' || token.length < 16 || token.length > 200) return null
   const { data, error } = await db.from('invites').select('*').eq('token_hash', await hashToken(token)).maybeSingle()
   if (error) throw error
   return data as Invite | null
@@ -289,14 +289,15 @@ async function accept(body: Record<string, unknown>) {
   const state = linkState(invite)
   if (state !== 'valid' || !invite) return refuse(`link_${state}`, 409)
 
-  // handle_new_user reads role and restaurants from this invite and marks it
-  // accepted. Only the service role can write app_metadata.
+  // handle_new_user matches this token to the invite, takes role and restaurants
+  // from the row and marks it accepted. Auth writes app_metadata only after the
+  // insert, so the token travels in user_metadata, and is removed again below.
   const { data, error } = await db.auth.admin.createUser({
     email: invite.email,
     password: body.password,
     email_confirm: true,
     app_metadata: { invite_id: invite.id },
-    user_metadata: { full_name: fullName },
+    user_metadata: { full_name: fullName, invite_token: body.token },
   })
   if (error) {
     if (error.code === 'email_exists') return refuse('link_used', 409)
@@ -304,6 +305,11 @@ async function accept(body: Record<string, unknown>) {
     throw error
   }
 
+  // Spent by now, but it has no reason to sit in every token this person is issued.
+  const { error: cleanError } = await db.auth.admin.updateUserById(data.user.id, {
+    user_metadata: { invite_token: null },
+  })
+  if (cleanError) console.error(cleanError)
   const { error: nameError } = await db.from('profiles').update({ full_name: fullName }).eq('id', data.user.id)
   if (nameError) console.error(nameError)
   await db.from('audit_log').insert({

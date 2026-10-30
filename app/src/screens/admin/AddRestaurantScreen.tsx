@@ -15,8 +15,8 @@ import { AddRestaurantError, useAddRestaurant, useAdminRestaurants } from './use
  * address, optional phone, manager, and an accent color: the first preset no
  * restaurant uses is picked for you; presets already in use are not offered;
  * a custom color must be a hex code not too close to one in use. Saving gives
- * the manager access to the new restaurant. The board's "+ Invite a new
- * manager" option arrives with Invite user (OT-10).
+ * the manager access to the new restaurant. "+ Invite a new manager" goes on to
+ * Invite user after saving, with the new restaurant already picked.
  */
 export function AddRestaurantScreen() {
   const { data, isPending } = useAdminRestaurants()
@@ -66,6 +66,7 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
           ? 'Looks a lot like a color already in use. Pick something more distinct.'
           : undefined
   const ready = name.trim() !== '' && address.trim() !== '' && isHex(color) && !warning
+  const inviting = managerId === 'invite'
 
   const fieldError = add.error instanceof AddRestaurantError ? add.error : null
 
@@ -73,11 +74,17 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
     e.preventDefault()
     if (!ready) return
     add.mutate(
-      { name: name.trim(), address: address.trim(), phone: phone.trim(), color, managerId: managerId || null },
       {
-        onSuccess: () => {
+        name: name.trim(),
+        address: address.trim(),
+        phone: phone.trim(),
+        color,
+        managerId: inviting ? null : managerId || null,
+      },
+      {
+        onSuccess: (id) => {
           toast.show(`${name.trim()} added.`)
-          navigate('/admin/restaurants')
+          navigate(inviting ? `/admin/users/new?restaurant=${id}` : '/admin/restaurants')
         },
       },
     )
@@ -118,7 +125,13 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
             label="Manager"
             value={managerId}
             onChange={(e) => setManagerId(e.target.value)}
-            hint={managerId ? 'They get access to this restaurant when you save.' : undefined}
+            hint={
+              inviting
+                ? 'After you save, you’ll go to Invite user with this restaurant already selected.'
+                : managerId
+                  ? 'They get access to this restaurant when you save.'
+                  : undefined
+            }
           >
             <option value="">Choose a manager</option>
             {managers.map((m) => (
@@ -126,6 +139,7 @@ function AddRestaurantForm({ taken, managers }: { taken: string[]; managers: { i
                 {m.name}
               </option>
             ))}
+            <option value="invite">+ Invite a new manager</option>
           </Select>
 
           <AccentPicker
