@@ -9,7 +9,11 @@
     "directory": "./dist",
     // Client-side routes and QR deep links (/e/<id>) resolve to index.html.
     "not_found_handling": "single-page-application",
-    "html_handling": "auto-trailing-slash",
+    // Not auto-trailing-slash: that answers /index.html with a redirect to /. The
+    // service worker falls back to fetching /index.html when its cached copy is
+    // gone, and a browser refuses a redirect from a service worker on a page load,
+    // so the reload fails with ERR_FAILED.
+    "html_handling": "none",
   },
   "observability": { "enabled": true },
   // Each preview gets https://<branch>-ontrack.<subdomain>.workers.dev.
