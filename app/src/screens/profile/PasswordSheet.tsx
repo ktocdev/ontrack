@@ -5,13 +5,16 @@ import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
 import { Sheet } from '../../components/Sheet'
 import { MIN_PASSWORD } from '../../auth/validation'
+import { useNeedsCode } from '../twostep/useTwoStep'
 import { PasswordError, useChangePassword } from './useProfile'
 
 /**
  * Change password (Profile, passwordSheetOpen): current, new with the
  * 12-character hint, confirm, Update password, Cancel. Mismatches are caught
  * here; a wrong current password comes back from Supabase. "Forgot your
- * current password?" goes to the reset flow with their email filled in.
+ * current password?" goes to the reset flow with their email filled in. With
+ * 2-step on and no code yet this session (a remembered phone, a backup code),
+ * it also asks for one, since Auth won't change the password without it.
  */
 export function PasswordSheet({
   open,
@@ -26,13 +29,16 @@ export function PasswordSheet({
   const [next, setNext] = useState('')
   const [confirm, setConfirm] = useState('')
   const [touched, setTouched] = useState(false)
+  const [code, setCode] = useState('')
   const change = useChangePassword()
+  const needsCode = useNeedsCode(open)
   const { user } = useUser()
 
   const reset = () => {
     setCurrent('')
     setNext('')
     setConfirm('')
+    setCode('')
     setTouched(false)
     change.reset()
   }
@@ -44,7 +50,13 @@ export function PasswordSheet({
   const tooShort = next.length > 0 && next.length < MIN_PASSWORD
   const same = next.length > 0 && next === current
   const mismatch = confirm.length > 0 && confirm !== next
-  const ready = current.length > 0 && next.length >= MIN_PASSWORD && confirm === next && !same
+  const ready =
+    current.length > 0 &&
+    next.length >= MIN_PASSWORD &&
+    confirm === next &&
+    !same &&
+    !needsCode.isPending &&
+    (!needsCode.data || code.length === 6)
 
   const serverError = change.error instanceof PasswordError ? change.error : null
   const newError =
@@ -61,7 +73,7 @@ export function PasswordSheet({
     setTouched(true)
     if (!ready) return
     change.mutate(
-      { current, next },
+      { current, next, code: needsCode.data ? code : undefined },
       {
         onSuccess: () => {
           close(false)
@@ -113,6 +125,16 @@ export function PasswordSheet({
           onChange={(e) => setConfirm(e.target.value)}
           error={mismatch ? "Doesn't match the new password." : undefined}
         />
+        {needsCode.data && (
+          <Input
+            label="Code from your authenticator app"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            error={serverError?.field === 'code' ? serverError.message : undefined}
+          />
+        )}
         <Button type="submit" loading={change.isPending} disabled={!ready}>
           Update password
         </Button>

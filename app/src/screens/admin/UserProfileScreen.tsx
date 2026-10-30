@@ -8,7 +8,7 @@ import { Sheet } from '../../components/Sheet'
 import { Spinner } from '../../components/Skeleton'
 import { Switch } from '../../components/Switch'
 import { useToast } from '../../components/Toast'
-import { IconChevronLeft, IconEye, IconShieldCheck } from '../../components/icons'
+import { IconCheck, IconChevronLeft, IconEye, IconShieldAlert, IconShieldCheck } from '../../components/icons'
 import { useUser } from '../../auth/context'
 import { firstName } from '../../auth/session'
 import { FunctionError } from '../../lib/functions'
@@ -22,6 +22,8 @@ import {
   PERSON_RIGHTS,
   useDeletePerson,
   usePerson,
+  usePersonTwoStep,
+  useResetTwoStep,
   useRoleDefaults,
   useSavePersonRights,
   useSetDeactivated,
@@ -33,9 +35,8 @@ import {
  * Admin · User profile (design/screens/Admin-User-Override): role and restaurants,
  * View as, per-person rights, and sign-in. A switch that matches the role's
  * default stores no override, so later changes to the default still reach them.
- * The board's 2-step row arrives with OT-13; its "Signed in on" row and "Last
- * changed" date wait for data Supabase doesn't give the app, and "is notified"
- * waits for notifications. Deactivate and Delete have no board, so they follow the
+ * The board's "Signed in on" row and "Last changed" date wait for data Supabase
+ * doesn't give the app, and "is notified" waits for notifications. Deactivate and Delete have no board, so they follow the
  * confirm-sheet pattern at the bottom. Admins' rights are locked.
  */
 export function UserProfileScreen() {
@@ -82,6 +83,9 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
   const [draft, setDraft] = useState(new Map<RightKey, boolean>())
   const [changing, setChanging] = useState(false)
   const [sheet, setSheet] = useState<'deactivate' | 'delete' | null>(null)
+  const twoStep = usePersonTwoStep(id)
+  const [resettingTwoStep, setResettingTwoStep] = useState(false)
+  const [twoStepNotice, setTwoStepNotice] = useState<string | null>(null)
 
   const roleDefault = (key: RightKey) => roleDefaults.get(defaultKey(profile.role, key)) ?? false
   const savedValue = (key: RightKey) => person.overrides.get(key) ?? roleDefault(key)
@@ -261,7 +265,39 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
               Send reset link
             </Button>
           </div>
+          <div className="flex min-h-[60px] items-center gap-3 border-t border-border px-3.5 py-2.5">
+            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+              <span className="text-14 font-semibold">2-step verification</span>
+              {twoStep.data?.on ? (
+                <>
+                  <span className="inline-flex items-center gap-[5px] text-12 font-bold text-brand">
+                    <IconCheck size={12} strokeWidth={3} />
+                    On · Authenticator app
+                  </span>
+                  <span className="text-12 text-text-secondary">{twoStep.data.codes_left} of 8 backup codes left</span>
+                </>
+              ) : twoStep.data ? (
+                <span className="text-12 font-bold text-status-waiting-text">
+                  {twoStep.data.required ? 'Not set up · required at next sign-in' : 'Not set up'}
+                </span>
+              ) : null}
+            </div>
+            {twoStep.data?.on && !isYou && !deactivated && (
+              <Button variant="ghost-danger" onClick={() => setResettingTwoStep(true)}>
+                Reset
+              </Button>
+            )}
+          </div>
         </ListCard>
+        {twoStepNotice && (
+          <div
+            role="status"
+            className="flex flex-none items-start gap-2.5 rounded-input bg-brand-tint-soft px-3 py-2.5 text-13 leading-[1.45] text-brand-strong"
+          >
+            <IconCheck size={18} className="mt-px flex-none" />
+            <span>{twoStepNotice}</span>
+          </div>
+        )}
 
         {!isYou && (
           <>
@@ -297,11 +333,87 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
         </ScreenFooter>
       )}
 
+      {resettingTwoStep && (
+        <ResetTwoStepSheet
+          id={id}
+          first={first}
+          onClose={() => setResettingTwoStep(false)}
+          onDone={(emailed) => {
+            setResettingTwoStep(false)
+            setTwoStepNotice(
+              `2-step verification was reset. ${first} will set it up again at next sign-in. ${
+                emailed
+                  ? `An email went to ${first}, and this`
+                  : `The email to ${first} didn't send, so tell them. This`
+              } change was logged.`,
+            )
+          }}
+        />
+      )}
       {changing && <AccessSheet id={id} person={person} first={first} onClose={() => setChanging(false)} />}
       {sheet && (
         <AccountSheet id={id} mode={sheet} first={first} deactivated={deactivated} onClose={() => setSheet(null)} />
       )}
     </Screen>
+  )
+}
+
+function ResetTwoStepSheet({
+  id,
+  first,
+  onClose,
+  onDone,
+}: {
+  id: string
+  first: string
+  onClose: () => void
+  onDone: (emailed: boolean) => void
+}) {
+  const reset = useResetTwoStep(id)
+  const [confirmed, setConfirmed] = useState(false)
+  return (
+    <Sheet
+      open
+      surface
+      onOpenChange={(open) => !open && onClose()}
+      title={`Reset ${first}'s 2-step verification?`}
+      icon={
+        <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-status-open-bg text-status-open-text">
+          <IconShieldAlert />
+        </span>
+      }
+      description={`${first}'s authenticator app and backup codes will stop working. ${first} will sign in with just a password once, then set up 2-step again.`}
+    >
+      <p className="text-14 leading-normal text-text-body">
+        Only do this after you&apos;ve confirmed it&apos;s really {first} asking, since anyone with {first}&apos;s
+        password could get in.
+      </p>
+      <label className="flex min-h-tap cursor-pointer items-start gap-2.5 text-14 leading-[1.4] text-text-body">
+        <input
+          type="checkbox"
+          checked={confirmed}
+          onChange={(e) => setConfirmed(e.target.checked)}
+          className="m-0 h-5 w-5 flex-none accent-brand-fill"
+        />
+        I confirmed it&apos;s {first} by phone, video or in person
+      </label>
+      <Button
+        variant="danger"
+        loading={reset.isPending}
+        disabled={!confirmed}
+        onClick={() => reset.mutate(undefined, { onSuccess: ({ emailed }) => onDone(emailed) })}
+      >
+        Reset 2-step verification
+      </Button>
+      <Button variant="secondary" onClick={onClose}>
+        Cancel
+      </Button>
+      {reset.isError && (
+        <span role="alert" className="text-13 font-semibold text-danger">
+          That didn&apos;t go through. Check your connection and try again.
+        </span>
+      )}
+    </Sheet>
   )
 }
 

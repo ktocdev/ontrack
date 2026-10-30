@@ -819,6 +819,110 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"two_step_codes": {
+                  Row: {
+                    "code_hash": string,"used_at": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "code_hash": string,"used_at"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "code_hash"?: string,"used_at"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "two_step_codes_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "two_step_codes_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
+                },"two_step_devices": {
+                  Row: {
+                    "expires_at": string,"token_hash": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "expires_at"?: string,"token_hash": string,"user_id": string
+                  }
+                  Update: {
+                    "expires_at"?: string,"token_hash"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "two_step_devices_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "two_step_devices_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
+                },"two_step_passes": {
+                  Row: {
+                    "expires_at": string,"session_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "expires_at"?: string,"session_id": string,"user_id": string
+                  }
+                  Update: {
+                    "expires_at"?: string,"session_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "two_step_passes_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "two_step_passes_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
+                },"two_step_resets": {
+                  Row: {
+                    "reset_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "reset_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "reset_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "two_step_resets_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "two_step_resets_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
                 },"walkthrough_checks": {
                   Row: {
                     "checked_at": string,"checked_by": string | null,"id": string,"item_id": string | null,"note": string | null,"quarterly_task_id": string | null,"result": Database["public"]['Enums']["check_result"],"ticket_id": string | null,"walkthrough_id": string
@@ -1243,8 +1347,17 @@ isOneToOne: false
 "my_role":
 { Args: Record<PropertyKey, never>; Returns: Database["public"]['Enums']["app_role"]
                            },
+"new_backup_codes":
+{ Args: Record<PropertyKey, never>; Returns: (string)[]
+                           },
 "path_uuid":
 { Args: { "object_name": string }; Returns: string
+                           },
+"person_two_step":
+{ Args: { "p_user": string }; Returns: Json
+                           },
+"remember_device":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "save_role_defaults":
 { Args: { "p_changes": Json }; Returns: undefined
@@ -1263,6 +1376,21 @@ isOneToOne: false
                            },
 "ticket_restaurant":
 { Args: { "tid": string }; Returns: string
+                           },
+"two_step_code_hash":
+{ Args: { "p_code": string,"p_user": string }; Returns: string
+                           },
+"two_step_ok":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"two_step_status":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"use_backup_code":
+{ Args: { "p_code": string }; Returns: string
+                           },
+"use_remembered_device":
+{ Args: { "p_token": string }; Returns: boolean
                            },
 "walkthrough_restaurant":
 { Args: { "wid": string }; Returns: string

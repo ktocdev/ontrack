@@ -6,7 +6,7 @@ select plan(9);
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
   perform set_config('request.jwt.claims',
-    json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated')::text, true);
+    json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated', 'aal', 'aal2')::text, true);
   perform set_config('role', 'authenticated', true);
 end $$;
 create function pg_temp.logout() returns void language plpgsql as $$

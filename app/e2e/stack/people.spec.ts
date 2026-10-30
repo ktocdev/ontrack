@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test'
-import { SEED_PASSWORD, signIn } from './helpers'
+import { signIn, tokenFor } from './helpers'
 
 /**
  * Roles & rights, User profile and View as. The second half of the Phase 1 done
@@ -14,14 +14,6 @@ const MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324'
 const MAYA = '22222222-2222-4222-8222-000000000001'
 const CHRIS = '22222222-2222-4222-8222-000000000004'
 const ADMIN = '22222222-2222-4222-8222-000000000006'
-
-async function tokenFor(request: APIRequestContext, email: string, password = SEED_PASSWORD) {
-  const res = await request.post(`${SUPABASE}/auth/v1/token?grant_type=password`, {
-    data: { email, password },
-    headers: { apikey: KEY },
-  })
-  return ((await res.json()) as { access_token?: string }).access_token
-}
 
 async function rowsAs(request: APIRequestContext, email: string, table: string) {
   const token = await tokenFor(request, email)

@@ -9,7 +9,7 @@ begin
   -- Back to the owner first: the lookup below reads auth.users.
   perform set_config('role', 'postgres', true);
   perform set_config('request.jwt.claims',
-    json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated')::text, true);
+    json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated', 'aal', 'aal2')::text, true);
   perform set_config('role', 'authenticated', true);
 end $$;
 create function pg_temp.logout() returns void language plpgsql as $$

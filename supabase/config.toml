@@ -298,7 +298,7 @@ message_service_sid = ""
 # DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
 auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 
-# Multi-factor-authentication is available to Supabase Pro plan.
+# TOTP is free on every plan; only phone needs a paid add-on.
 [auth.mfa]
 # Control how many MFA factors can be enrolled at once per user.
 max_enrolled_factors = 10
@@ -398,6 +398,8 @@ EMAIL_SINK_URL = "http://supabase_inbucket_ontrack:8025"
 [functions.invite-user]
 verify_jwt = false
 [functions.revoke-user]
+verify_jwt = false
+[functions.reset-two-step]
 verify_jwt = false
 [functions.send-email]
 verify_jwt = false

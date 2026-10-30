@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useUser } from '../../auth/context'
 import { signInErrorMessage } from '../../auth/validation'
@@ -5,6 +6,7 @@ import { env } from '../../lib/env'
 import { callFunction } from '../../lib/functions'
 import { resizeToJpeg } from '../../lib/image'
 import { requireSupabase, supabase } from '../../lib/supabase'
+import { TwoStepError, verifyAuthenticatorCode } from '../twostep/useTwoStep'
 
 /**
  * Data for Profile and Help & support. Everything goes through the typed
@@ -74,23 +76,29 @@ export function usePhoto() {
 }
 
 export class PasswordError extends Error {
-  readonly field: 'current' | 'new'
-  constructor(message: string, field: 'current' | 'new') {
+  readonly field: 'current' | 'new' | 'code'
+  constructor(message: string, field: 'current' | 'new' | 'code') {
     super(message)
     this.field = field
   }
 }
 
 /**
- * Change password: prove the current one by signing in with it, set the new
- * one, then end every other session ("Other devices were signed out").
+ * Change password: prove the current one, take a code if Auth wants one (it
+ * does for anyone with 2-step on whose session hasn't had one), set the new
+ * one, then end every other session ("Other devices were signed out"). The
+ * proof is a sign-in on a separate client, because signing in on the app's own
+ * would swap this session for a new one with no second step behind it.
  */
 export function useChangePassword() {
   const { user } = useUser()
   return useMutation({
-    mutationFn: async ({ current, next }: { current: string; next: string }) => {
+    mutationFn: async ({ current, next, code }: { current: string; next: string; code?: string }) => {
       const sb = requireSupabase()
-      const check = await sb.auth.signInWithPassword({ email: user.email, password: current })
+      const checker = createClient(env.supabaseUrl!, env.supabaseAnonKey!, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      })
+      const check = await checker.auth.signInWithPassword({ email: user.email, password: current })
       if (check.error) {
         throw new PasswordError(
           check.error.code === 'invalid_credentials'
@@ -98,6 +106,14 @@ export function useChangePassword() {
             : signInErrorMessage(check.error),
           'current',
         )
+      }
+      await checker.auth.signOut({ scope: 'local' })
+      if (code) {
+        try {
+          await verifyAuthenticatorCode(code)
+        } catch (e) {
+          throw new PasswordError(e instanceof TwoStepError ? e.message : 'Could not check that code.', 'code')
+        }
       }
       const { error } = await sb.auth.updateUser({ password: next })
       if (error) {

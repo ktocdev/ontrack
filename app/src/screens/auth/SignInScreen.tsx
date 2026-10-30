@@ -25,6 +25,8 @@ export function SignInScreen() {
   const [busy, setBusy] = useState(false)
 
   if (auth.status === 'signed-in') return <Navigate to={from ?? ROLE_HOME[auth.user.role]} replace />
+  // RequireAuth asks for the code on the way in.
+  if (auth.status === 'two-step') return <Navigate to={from ?? '/'} replace />
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()

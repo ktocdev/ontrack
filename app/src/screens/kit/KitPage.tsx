@@ -5,6 +5,7 @@ import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink, IconButton } from '../../components/Button'
 import { Card, KeyValueRow, ListCard, ListRow, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
 import { Chip } from '../../components/Chip'
+import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { Notice } from '../../components/Notice'
@@ -414,6 +415,17 @@ export function KitPage() {
 
             <Section id="fields">
               <Input label="Your name" placeholder="First and last" />
+              <StepBars step={2} />
+              <CodeInput id="kit-code" label="Verification code" value="4829" onChange={() => undefined} />
+              <CodeInput
+                id="kit-backup"
+                label="Backup code"
+                mode="backup"
+                size={26}
+                value=""
+                onChange={() => undefined}
+                error="That code isn't right, or it has been used."
+              />
               <div className="flex flex-col gap-2.5">
                 <PasswordField
                   label="Create password"

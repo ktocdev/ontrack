@@ -4,10 +4,14 @@ import { Button } from '../../components/Button'
 import { Input, PasswordField, PasswordRules } from '../../components/Field'
 import { Screen } from '../../components/Screen'
 import { BrandMark, IconCheck } from '../../components/icons'
+import { clearStamp } from '../../auth/session'
 import { MAX_PASSWORD, passwordReady } from '../../auth/validation'
+import { requireSupabase } from '../../lib/supabase'
 import { ServerErrorScreen } from '../errors/ServerErrorScreen'
 import { LinkExpiredScreen } from '../invite/LinkExpiredScreen'
 import { CenteredLoading } from '../loading/CenteredLoading'
+import { TwoStepChallengeScreen } from '../twostep/TwoStepChallengeScreen'
+import { useNeedsCode } from '../twostep/useTwoStep'
 import {
   hasSessionTokens,
   readResetLink,
@@ -49,7 +53,7 @@ export function ResetNewScreen() {
 
   if (tokenHash !== '' && link.isPending) return <CenteredLoading title="Checking your link…" />
   if (link.isError) return <ServerErrorScreen error={link.error} onRetry={() => void link.refetch()} />
-  if (tokenHash !== '' && link.data) return <NewPasswordForm email={link.data} />
+  if (tokenHash !== '' && link.data) return <AfterLink email={link.data} />
 
   return (
     <LinkExpiredScreen
@@ -65,6 +69,27 @@ export function ResetNewScreen() {
       failed={request.isError}
     />
   )
+}
+
+/** With 2-step on, Auth changes a password only after a code, so a stolen inbox isn't enough. */
+function AfterLink({ email }: { email: string }) {
+  const needsCode = useNeedsCode()
+  const navigate = useNavigate()
+  if (needsCode.isPending) return <CenteredLoading title="Checking your link…" />
+  if (needsCode.isError) return <ServerErrorScreen error={needsCode.error} onRetry={() => void needsCode.refetch()} />
+  if (needsCode.data) {
+    return (
+      <TwoStepChallengeScreen
+        onBack={async () => {
+          clearStamp()
+          await requireSupabase().auth.signOut({ scope: 'local' })
+          navigate('/sign-in', { replace: true })
+        }}
+        onPassed={() => void needsCode.refetch()}
+      />
+    )
+  }
+  return <NewPasswordForm email={email} />
 }
 
 function NewPasswordForm({ email }: { email: string }) {
