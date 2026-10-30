@@ -20,4 +20,8 @@ test('a wrong password gets a plain message', async ({ page }) => {
   await page.getByLabel('Password').fill('not-the-password-2026')
   await page.getByRole('button', { name: 'Sign in' }).click()
   await expect(page.getByText("That email and password don't match.", { exact: false })).toBeVisible()
+
+  // It's about the last try, so it goes as soon as the person starts another.
+  await page.getByLabel('Password').fill('')
+  await expect(page.getByText("That email and password don't match.", { exact: false })).toBeHidden()
 })

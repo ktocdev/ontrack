@@ -58,7 +58,7 @@ export function SignedOutSheet({ open, email, name, onSignIn, onNotMe }: Props) 
         </span>
       }
     >
-      <form onSubmit={submit} className="flex flex-col gap-3.5">
+      <form onSubmit={submit} onChange={() => setError(null)} className="flex flex-col gap-3.5">
         <Input label="Work email" type="email" value={email} readOnly autoComplete="username" />
         <Input
           label="Password"

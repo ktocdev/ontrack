@@ -70,6 +70,11 @@ export function ResetSentScreen() {
                 ? `Resend link in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`
                 : 'Resend link'}
           </button>
+          {resend.isSuccess && (
+            <span role="status" className="text-13 font-semibold text-brand-strong">
+              Link sent again. Use the newest email: it replaces the last one.
+            </span>
+          )}
           {resend.isError && (
             <span role="alert" className="text-13 font-semibold text-danger">
               That didn&apos;t go through. Wait a moment and try again.

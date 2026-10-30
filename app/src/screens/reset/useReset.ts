@@ -33,6 +33,11 @@ export function readResetLink(hash: string) {
   return { tokenHash: decode(fields.get('token_hash')), email: decode(fields.get('email')) }
 }
 
+/** True for Supabase's stock reset link, which arrives signed in rather than with a token hash. */
+export function hasSessionTokens(hash: string) {
+  return /(^#|&)access_token=/.test(hash)
+}
+
 export class ResetError extends Error {}
 
 export function useRequestReset() {

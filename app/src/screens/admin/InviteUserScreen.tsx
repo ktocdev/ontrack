@@ -56,17 +56,24 @@ export function InviteUserScreen() {
   const [picked, setPicked] = useState<string[]>(preset && restaurants.some((r) => r.id === preset) ? [preset] : [])
   const [all, setAll] = useState(false)
 
+  // An error is about what was sent, so it goes as soon as that changes.
+  const clearError = () => {
+    if (send.isError) send.reset()
+  }
   const pickRole = (next: AppRole) => {
+    clearError()
     setRole(next)
     // Everyone but a manager usually sees every restaurant; a choice already made stays.
     if (next !== 'manager' && picked.length === 0) setAll(true)
     if (next === 'manager' && all && picked.length === 0) setAll(false)
   }
   const toggle = (id: string) => {
+    clearError()
     setAll(false)
     setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   }
   const toggleAll = () => {
+    clearError()
     setPicked([])
     setAll((a) => !a)
   }
@@ -94,7 +101,7 @@ export function InviteUserScreen() {
   return (
     <Screen>
       <CloseBar to="/admin/users" title="Invite a user" bordered={false} />
-      <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
+      <form onSubmit={submit} onChange={clearError} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-4 pb-4 pt-3">
           <Input
             label="Full name"

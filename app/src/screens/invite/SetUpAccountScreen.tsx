@@ -103,7 +103,14 @@ function AccountForm({
 
   return (
     <Screen>
-      <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
+      <form
+        onSubmit={submit}
+        onChange={() => {
+          if (accept.isError) accept.reset()
+        }}
+        className="flex min-h-0 flex-1 flex-col"
+        noValidate
+      >
         <div className="relative flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto px-6 pb-4 pt-[calc(32px+var(--safe-top))]">
           <BrandMark />
           <div className="flex flex-col gap-1.5">

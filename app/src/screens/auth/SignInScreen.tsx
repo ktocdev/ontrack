@@ -65,7 +65,7 @@ export function SignInScreen() {
             ))}
           </div>
         ) : (
-          <form onSubmit={submit} className="flex flex-col gap-[18px]" noValidate>
+          <form onSubmit={submit} onChange={() => setError(null)} className="flex flex-col gap-[18px]" noValidate>
             <Input
               label="Work email"
               type="email"
