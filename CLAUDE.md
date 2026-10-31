@@ -146,7 +146,7 @@ Done when a manager at Federale's Logan Square creates a ticket with a photo on 
 | OT-28 | Photos: resize to 1600 px, add on the form and in the composer, thumbnails in the thread |
 | OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
 | OT-30 | In-house tab: list, check off, delete while open |
-| OT-31 | Turn off or delete a category; the done test as one flow; the phase note |
+| OT-31 | The done test as one flow; the phase note |
 
 ## Phase 1, for the record
 

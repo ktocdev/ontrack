@@ -99,7 +99,7 @@ Decided Oct 30, 2026, after restaurants got archive and delete in OT-9. Each pha
 | People | Deactivate / Reactivate: no sign-in, out of pickers, name kept on history | Revoke a pending invite; delete an account only with no history | 1 (OT-10 revoke and ban, OT-12 User profile) |
 | Equipment | Retire | Only with no tickets or service records | 4 |
 | Contractors | Archive | Only with no service records | 5 |
-| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | 2 and 6 |
+| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | 6; categories later, not scheduled |
 | Tickets | None (closing ends a ticket) | Never | |
 | Walkthroughs, ticket updates, service records, invoices | None (they are the record) | Never; edits are logged | |
 | In-house fixes and tasks | None | While still open | 6 |
@@ -177,7 +177,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 | OT-28 | Photos: resize to 1600 px, add on the form and in the composer, thumbnails in the thread |
 | OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
 | OT-30 | In-house tab: list, check off, delete while open |
-| OT-31 | Turn off or delete a category; the done test as one flow; the phase note |
+| OT-31 | The done test as one flow; the phase note |
 
 **What this phase has to work around**
 
@@ -186,7 +186,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 - **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data.
 - **Scan an equipment QR code stays off Create ticket until Phase 4,** since it would have nothing to open. This is the one planned difference from the Create-Area board.
 - **Reopening writes the thread event but notifies nobody yet.** Push and email arrive in Phase 3, which keeps the "notifies Ops" promise.
-- **Categories have no board.** OT-31 follows the archive and delete rule with a simple admin list.
+- **Categories can't be turned off or deleted yet.** That is saved for later (Oct 31, 2026), so the list from OT-25 stays as it is until then, and changing it means a migration.
 - **View as:** each screen scopes its data from `useUser()` and hides writes when `viewingAs` is set, and Open tickets replaces the manager's placeholder in `ViewAsScreen`.
 
 ## Phase 3 · Ops dashboard and ticket work
@@ -370,6 +370,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
+- [ ] Turn off or delete a category, following the archive and delete rule. It has no board, and is saved for later, not scheduled
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default
