@@ -1326,6 +1326,9 @@ isOneToOne: false
 "can_see_ticket":
 { Args: { "tid": string }; Returns: boolean
                            },
+"can_see_ticket_photo":
+{ Args: { "p_name": string }; Returns: boolean
+                           },
 "delete_restaurant":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -1358,6 +1361,9 @@ isOneToOne: false
                            },
 "person_two_step":
 { Args: { "p_user": string }; Returns: Json
+                           },
+"post_ticket_update":
+{ Args: { "p_body": string,"p_paths"?: (string)[],"p_ticket_id": string }; Returns: string
                            },
 "profile_photos_on":
 { Args: Record<PropertyKey, never>; Returns: boolean
