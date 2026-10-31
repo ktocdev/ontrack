@@ -85,7 +85,11 @@ serve(async (req, body) => {
       .update({ deactivated_at: off ? new Date().toISOString() : null })
       .eq('id', target.id)
     if (updateError) throw updateError
-    if (!off) {
+    if (off) {
+      // A ban only pauses refresh tokens: reactivating would bring these sessions back.
+      const { error: sessionsError } = await db.rpc('end_sessions', { p_user: target.id })
+      if (sessionsError) throw sessionsError
+    } else {
       const { error: banError } = await setBan()
       if (banError) throw banError
     }

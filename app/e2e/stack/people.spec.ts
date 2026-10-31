@@ -132,6 +132,12 @@ test('a role can change, and so does what comes with it', async ({ page, request
 })
 
 test('deactivating stops sign-in and refresh, and reactivating restores them', async ({ page, request }) => {
+  const live = await request.post(`${SUPABASE}/auth/v1/token?grant_type=password`, {
+    data: { email: 'chris.novak@example.com', password: 'ontrack-demo-2026' },
+    headers: { apikey: KEY },
+  })
+  const { refresh_token } = (await live.json()) as { refresh_token: string }
+
   await signIn(page, 'admin@example.com')
   await page.goto(`/admin/users/${CHRIS}`)
   await page.getByRole('button', { name: 'Deactivate Chris' }).click()
@@ -156,6 +162,13 @@ test('deactivating stops sign-in and refresh, and reactivating restores them', a
     await expect(page.getByRole('status').filter({ hasText: 'Chris reactivated.' })).toBeVisible()
   }
   expect(await tokenFor(request, 'chris.novak@example.com')).toBeTruthy()
+
+  // A session from before is over for good, not just paused while the ban lasted.
+  const refreshed = await request.post(`${SUPABASE}/auth/v1/token?grant_type=refresh_token`, {
+    data: { refresh_token },
+    headers: { apikey: KEY },
+  })
+  expect(refreshed.ok()).toBe(false)
 })
 
 test('an account with no history can be deleted, and one with history cannot', async ({ page, request }, testInfo) => {

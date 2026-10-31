@@ -1392,6 +1392,9 @@ isOneToOne: false
 "two_step_code_hash":
 { Args: { "p_code": string,"p_user": string }; Returns: string
                            },
+"two_step_forget_trust":
+{ Args: { "p_user": string }; Returns: undefined
+                           },
 "two_step_ok":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },

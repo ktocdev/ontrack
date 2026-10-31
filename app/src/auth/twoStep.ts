@@ -48,6 +48,9 @@ async function fetchStatus(): Promise<TwoStep> {
 export async function readTwoStep(userId: string): Promise<TwoStep> {
   const status = await fetchStatus()
   if (status.gate !== 'challenge') return status
+  // A reset link's session can't spend the token, and the no below would forget this
+  // phone even if the person never finishes the reset. Finishing it ends the token anyway.
+  if (window.location.pathname === '/reset/new') return status
   const token = readDeviceToken(userId)
   if (!token) return status
   const { data, error } = await supabase!.rpc('use_remembered_device', { p_token: token })
