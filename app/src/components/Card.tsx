@@ -133,6 +133,53 @@ export function RowIcon({ children }: { children: ReactNode }) {
   )
 }
 
+/** A category on Create ticket: 76px tile, 15px name, 12px count, brand border on hover. */
+export function CategoryTile({ to, name, count }: { to: string; name: string; count: number }) {
+  return (
+    <Link
+      to={to}
+      className={`${CARD} flex min-h-[76px] flex-col justify-between gap-1.5 p-3.5 transition-colors hover:border-brand hover:text-text active:bg-surface-hover active:duration-0`}
+    >
+      <span className="text-15 font-semibold">{name}</span>
+      <span className="text-12 text-text-muted">
+        {count} {count === 1 ? 'item' : 'items'}
+      </span>
+    </Link>
+  )
+}
+
+/** A choice in a card of rows (Attach equipment): 54px, a 20px radio ring, 15px name, 11px mono line. */
+export function RadioRow({
+  checked,
+  title,
+  subtitle,
+  onSelect,
+}: {
+  checked: boolean
+  title: string
+  subtitle?: string
+  onSelect: () => void
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={checked}
+      onClick={onSelect}
+      className={`flex min-h-[54px] w-full items-center gap-3 border-t border-surface-muted px-3.5 py-2 text-left text-text first:border-t-0 ${PRESSABLE}`}
+    >
+      <span
+        aria-hidden="true"
+        className={`h-5 w-5 flex-none rounded-full ${checked ? 'border-[6px] border-brand' : 'border-2 border-border-muted'}`}
+      />
+      <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="text-15 font-semibold">{title}</span>
+        {subtitle && <span className="font-mono text-11 text-text-muted">{subtitle}</span>}
+      </span>
+    </button>
+  )
+}
+
 /** Key / value row inside a detail card (Equipment details). */
 export function KeyValueRow({ label, children }: { label: string; children: ReactNode }) {
   return (

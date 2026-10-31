@@ -1418,7 +1418,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "app_role": "manager"|"ops"|"leadership"|"admin","area": "foh"|"boh","check_result": "good"|"in_house"|"ticket","invite_status": "pending"|"accepted"|"revoked","invoice_status": "attached"|"missing","line_item_kind": "labor"|"parts"|"trip","service_kind": "in_house"|"contractor","ticket_source": "reported"|"walkthrough","ticket_status": "open"|"in_progress"|"waiting_parts"|"scheduled"|"reopened"|"closed","ticket_urgency": "normal"|"urgent","update_kind": "message"|"created"|"assigned"|"status_changed"|"closed"|"reopened","walkthrough_status": "open"|"submitted"
+            "app_role": "manager"|"ops"|"leadership"|"admin","area": "foh"|"boh","check_result": "good"|"in_house"|"ticket","invite_status": "pending"|"accepted"|"revoked","invoice_status": "attached"|"missing","line_item_kind": "labor"|"parts"|"trip","service_kind": "in_house"|"contractor","ticket_source": "reported"|"walkthrough","ticket_status": "open"|"in_progress"|"waiting_parts"|"scheduled"|"reopened"|"closed","ticket_urgency": "low"|"normal"|"urgent","update_kind": "message"|"created"|"assigned"|"status_changed"|"closed"|"reopened","walkthrough_status": "open"|"submitted"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1538,7 +1538,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["manager", "ops", "leadership", "admin"],"area": ["foh", "boh"],"check_result": ["good", "in_house", "ticket"],"invite_status": ["pending", "accepted", "revoked"],"invoice_status": ["attached", "missing"],"line_item_kind": ["labor", "parts", "trip"],"service_kind": ["in_house", "contractor"],"ticket_source": ["reported", "walkthrough"],"ticket_status": ["open", "in_progress", "waiting_parts", "scheduled", "reopened", "closed"],"ticket_urgency": ["normal", "urgent"],"update_kind": ["message", "created", "assigned", "status_changed", "closed", "reopened"],"walkthrough_status": ["open", "submitted"]
+            "app_role": ["manager", "ops", "leadership", "admin"],"area": ["foh", "boh"],"check_result": ["good", "in_house", "ticket"],"invite_status": ["pending", "accepted", "revoked"],"invoice_status": ["attached", "missing"],"line_item_kind": ["labor", "parts", "trip"],"service_kind": ["in_house", "contractor"],"ticket_source": ["reported", "walkthrough"],"ticket_status": ["open", "in_progress", "waiting_parts", "scheduled", "reopened", "closed"],"ticket_urgency": ["low", "normal", "urgent"],"update_kind": ["message", "created", "assigned", "status_changed", "closed", "reopened"],"walkthrough_status": ["open", "submitted"]
           }
         }
 } as const

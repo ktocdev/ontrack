@@ -11,7 +11,7 @@ import { Segmented } from '../../components/Segmented'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconPlus, IconSearchOff, IconWarning } from '../../components/icons'
-import { activityLine, matchesSearch, scheduledLabel } from './tickets'
+import { activityLine, AREA_LABEL, matchesSearch, scheduledLabel } from './tickets'
 import { useOpenTickets } from './useOpenTickets'
 
 /**
@@ -24,8 +24,6 @@ import { useOpenTickets } from './useOpenTickets'
  * View as, nothing here leads anywhere or changes anything.
  */
 type Area = 'all' | 'foh' | 'boh'
-
-const AREA_LABEL = { foh: 'Front of House', boh: 'Back of House' }
 
 export function OpenTicketsScreen() {
   const { restaurants, viewingAs } = useUser()
