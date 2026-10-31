@@ -131,7 +131,9 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 1 · Accounts and access
+## Current phase: 2 · Tickets, the manager loop
+
+The plan's Phase 2 section says what ships. Phase 1, below, is done and stays as the record of how it was split.
 
 Done when an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
 
