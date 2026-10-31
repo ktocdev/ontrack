@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { signIn } from './helpers'
+import { SEED_PASSWORD, signIn } from './helpers'
 
 /** Manager · Open tickets against the seed: Maya manages Logan Square, Ari manages Ranalli's. */
 
@@ -93,6 +93,56 @@ test('with nothing open it says so and offers Create ticket, without a QR button
   await testInfo.attach('empty', { body: await page.screenshot(), contentType: 'image/png' })
   await page.getByRole('link', { name: 'Create ticket' }).first().click()
   await expect(page).toHaveURL(/\/tickets\/new$/)
+})
+
+test('it loads in the layout it found last time, so an empty list does not jump', async ({ page }) => {
+  // Holds the list back, so the test can look at the screen while it loads.
+  let release = () => {}
+  let answer: 'empty' | 'real' = 'empty'
+  let held = new Promise<void>((resolve) => (release = resolve))
+  await page.route('**/rest/v1/tickets*', async (route) => {
+    await held
+    return answer === 'empty' ? route.fulfill({ json: [] }) : route.continue()
+  })
+  await page.route('**/rest/v1/inhouse_fixes*', (route) =>
+    answer === 'empty'
+      ? route.fulfill({ status: 200, headers: { 'content-range': '*/0' }, body: '' })
+      : route.continue(),
+  )
+  const holdAndReload = async () => {
+    held = new Promise<void>((resolve) => (release = resolve))
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
+  }
+
+  // The first time it can't know, so it draws the list.
+  await page.goto('/sign-in')
+  await page.getByLabel('Work email').fill('maya.reyes@example.com')
+  await page.getByLabel('Password').fill(SEED_PASSWORD)
+  await page.getByRole('button', { name: 'Sign in' }).click()
+  await expect(page.getByRole('searchbox')).toBeVisible()
+  await expect(page.getByText('Loading open tickets')).toBeAttached()
+  release()
+  await expect(page.getByRole('heading', { name: 'No open tickets' })).toBeVisible()
+
+  // It found nothing, so next time it loads with only the title.
+  await holdAndReload()
+  await expect(page.getByRole('searchbox')).toHaveCount(0)
+  await expect(page.getByText('Loading open tickets')).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'No open tickets' })).toHaveCount(0)
+  release()
+  await expect(page.getByRole('heading', { name: 'No open tickets' })).toBeVisible()
+
+  // A hint that has gone stale gives way to the real list, and is forgotten.
+  answer = 'real'
+  await holdAndReload()
+  release()
+  await expect(cards(page)).toHaveCount(5)
+  await holdAndReload()
+  await expect(page.getByRole('searchbox')).toBeVisible()
+  await expect(page.getByText('Loading open tickets')).toBeAttached()
+  release()
+  await expect(cards(page)).toHaveCount(5)
 })
 
 test('a failed load offers Try again', async ({ page }) => {

@@ -7,6 +7,29 @@ import { byAttention } from './tickets'
  * how many in-house tasks are still to do there. The caller passes them from
  * useUser(), so View as shows the person viewed and not what the admin may read.
  */
+const nothingOpenKey = (restaurantIds: string[]) => `ontrack.nothingOpen.${restaurantIds.join(',')}`
+
+/**
+ * Whether these restaurants had nothing open last time, so the screen can load in
+ * the empty layout and not collapse into it. Only a hint for this device.
+ */
+export function expectNothingOpen(restaurantIds: string[]) {
+  try {
+    return localStorage.getItem(nothingOpenKey(restaurantIds)) === '1'
+  } catch {
+    return false
+  }
+}
+
+function rememberNothingOpen(restaurantIds: string[], nothingOpen: boolean) {
+  try {
+    if (nothingOpen) localStorage.setItem(nothingOpenKey(restaurantIds), '1')
+    else localStorage.removeItem(nothingOpenKey(restaurantIds))
+  } catch {
+    // Without storage it just shows the list's skeleton while loading.
+  }
+}
+
 export function useOpenTickets(restaurantIds: string[]) {
   return useQuery({
     queryKey: ['tickets', 'open', restaurantIds],
@@ -29,6 +52,7 @@ export function useOpenTickets(restaurantIds: string[]) {
       ])
       if (tickets.error) throw tickets.error
       if (inHouse.error) throw inHouse.error
+      rememberNothingOpen(restaurantIds, tickets.data.length === 0 && !inHouse.count)
       return { tickets: [...tickets.data].sort(byAttention), inHouseCount: inHouse.count ?? 0 }
     },
   })
