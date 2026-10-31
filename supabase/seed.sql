@@ -145,6 +145,7 @@ insert into public.contractors (id, name, trade, contact_name, phone, email, pre
 -- ---------------------------------------------------------------------------
 alter table public.tickets disable trigger tickets_log_events;
 alter table public.tickets disable trigger tickets_guard;
+alter table public.ticket_updates disable trigger ticket_updates_touch_ticket;
 
 -- Shorthands used below
 -- FLS 0001  FWL 0002  POR 0003  RLS 0004
@@ -225,6 +226,7 @@ where t.status = 'closed' and not exists (select 1 from public.ticket_updates u 
 
 alter table public.tickets enable trigger tickets_log_events;
 alter table public.tickets enable trigger tickets_guard;
+alter table public.ticket_updates enable trigger ticket_updates_touch_ticket;
 
 -- ---------------------------------------------------------------------------
 -- Service records, line items, invoices

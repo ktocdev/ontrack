@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from 'react'
+import type { ComponentPropsWithRef, HTMLAttributes, ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
 import { IconChevronLeft, IconClose, Logo } from './icons'
 
@@ -21,7 +21,7 @@ export function Screen({ className = '', children, ...rest }: HTMLAttributes<HTM
  * (sr-only labels, overlays) are placed inside the scroller; without it they
  * resolve against the page, stretch the document and add a second scrollbar.
  */
-export function ScreenBody({ className = '', children, ...rest }: HTMLAttributes<HTMLDivElement>) {
+export function ScreenBody({ className = '', children, ...rest }: ComponentPropsWithRef<'div'>) {
   return (
     <div className={`relative flex min-h-0 flex-1 flex-col overflow-y-auto px-screen ${className}`} {...rest}>
       {children}
