@@ -12,13 +12,14 @@ import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconPlus, IconSearchOff, IconWarning } from '../../components/icons'
 import { activityLine, AREA_LABEL, matchesSearch, scheduledLabel } from './tickets'
-import { useOpenTickets } from './useOpenTickets'
+import { expectNothingOpen, useOpenTickets } from './useOpenTickets'
 
 /**
  * Manager · Open tickets (design/screens/Main, Empty-Manager-Tickets,
  * Empty-Search-Tickets). The tickets at the person's restaurants, with search and
  * Front / Back whose counts follow the search. With nothing open at all it is only
  * the title and the empty state; the In-house tab stays if tasks are waiting there.
+ * It loads in whichever of those layouts it found last time on this device.
  * A manager with more than one restaurant sees which one each card is for. The
  * boards' QR buttons wait for Phase 4, when a scan has something to open. Under
  * View as, nothing here leads anywhere or changes anything.
@@ -38,6 +39,9 @@ export function OpenTicketsScreen() {
   const count = (a: Area) => (a === 'all' ? found : found.filter((t) => t.category?.area === a)).length
   const shown = area === 'all' ? found : found.filter((t) => t.category?.area === area)
   const noneAtAll = data !== undefined && all.length === 0
+  // Loads in the layout it expects, so an empty list doesn't jump when it arrives.
+  const [expectEmpty] = useState(() => expectNothingOpen(restaurants.map((r) => r.id)))
+  const waitingForEmpty = isPending && expectEmpty
   const noResults = !noneAtAll && found.length === 0 && search.trim() !== ''
   const inHouseCount = data?.inHouseCount ?? 0
 
@@ -60,7 +64,7 @@ export function OpenTicketsScreen() {
           noResults ? <span className="self-end pb-1 text-13 text-text-muted">{all.length} open</span> : undefined
         }
       >
-        {!noResults && !isError && (!noneAtAll || inHouseCount > 0) && (
+        {!noResults && !isError && !waitingForEmpty && (!noneAtAll || inHouseCount > 0) && (
           <UnderlineTabs
             size="lg"
             label="Ticket or in-house view"
@@ -87,7 +91,7 @@ export function OpenTicketsScreen() {
             ]}
           />
         )}
-        {!noneAtAll && !isError && (
+        {!noneAtAll && !isError && !waitingForEmpty && (
           <>
             <SearchField
               label="Search tickets"
@@ -148,6 +152,8 @@ export function OpenTicketsScreen() {
             Clear search
           </Button>
         </EmptyState>
+      ) : waitingForEmpty ? (
+        <div className="flex-1" />
       ) : !isPending && shown.length === 0 ? (
         <EmptyState
           tone="neutral"

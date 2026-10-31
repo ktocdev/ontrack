@@ -18,7 +18,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
-| 2 · Tickets, the manager loop | In progress | OT-24 plan update, then OT-25 to OT-31 (see Phase 2) |
+| 2 · Tickets, the manager loop | In progress | OT-24 plan update, then OT-25 to OT-32 (see Phase 2) |
 
 Phase 0 notes:
 
@@ -178,6 +178,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 | OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
 | OT-30 | In-house tab: list, check off, delete while open |
 | OT-31 | The done test as one flow; the phase note |
+| OT-32 | From trying OT-26 live: Open tickets loads in the empty layout when it found nothing last time, so it doesn't jump |
 
 **What this phase has to work around**
 

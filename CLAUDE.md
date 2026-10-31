@@ -147,6 +147,7 @@ Done when a manager at Federale's Logan Square creates a ticket with a photo on 
 | OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
 | OT-30 | In-house tab: list, check off, delete while open |
 | OT-31 | The done test as one flow; the phase note |
+| OT-32 | From trying OT-26 live: Open tickets loads in the empty layout when it found nothing last time, so it doesn't jump |
 
 ## Phase 1, for the record
 
