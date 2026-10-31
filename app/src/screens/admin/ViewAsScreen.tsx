@@ -11,6 +11,7 @@ import type { AppRole } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { PlaceholderScreen } from '../placeholder/PlaceholderScreen'
 import { ReportSheet } from '../profile/ReportSheet'
+import { OpenTicketsScreen } from '../tickets/OpenTicketsScreen'
 import { useLogViewAs, usePerson } from './useRights'
 
 /**
@@ -20,10 +21,9 @@ import { useLogViewAs, usePerson } from './useRights'
  * still answers as the admin. What differs is what useUser() says, which is how
  * screens know whose restaurants to show. A screen that loads data must scope it
  * from useUser(), and one that writes must hide its controls when viewingAs is set.
- * The home screens are placeholders until their phases replace them here.
+ * The other home screens are placeholders until their phases replace them here.
  */
-const HOME: Record<Exclude<AppRole, 'admin'>, { title: string; phase: string }> = {
-  manager: { title: 'Open tickets', phase: 'Phase 2' },
+const HOME: Record<'ops' | 'leadership', { title: string; phase: string }> = {
   ops: { title: 'Dashboard', phase: 'Phase 3' },
   leadership: { title: 'Overview', phase: 'Phase 7' },
 }
@@ -75,7 +75,11 @@ export function ViewAsScreen() {
         </button>
       </div>
       <AuthContext.Provider value={viewed}>
-        <PlaceholderScreen title={HOME[role].title} phase={HOME[role].phase} />
+        {role === 'manager' ? (
+          <OpenTicketsScreen />
+        ) : (
+          <PlaceholderScreen title={HOME[role].title} phase={HOME[role].phase} />
+        )}
         <TabBar label={tabs.label} items={tabs.items} inert />
       </AuthContext.Provider>
       <ReportSheet open={reporting} onOpenChange={setReporting} context={`Viewing as ${viewed.user.full_name}`} />

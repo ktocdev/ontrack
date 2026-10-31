@@ -163,8 +163,15 @@ export const router = createBrowserRouter([
               {
                 element: <Shell />,
                 children: [
-                  { path: '/tickets', ...placeholder('Open tickets', 'Phase 2') },
+                  {
+                    path: '/tickets',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/OpenTicketsScreen')).OpenTicketsScreen,
+                    }),
+                  },
                   { path: '/tickets/new', ...placeholder('Create ticket', 'Phase 2') },
+                  { path: '/tickets/in-house', ...placeholder('In-house tasks', 'Phase 2') },
+                  { path: '/tickets/:id', ...placeholder('Ticket', 'Phase 2') },
                   { path: '/walkthrough', ...placeholder('Walkthrough', 'Phase 6a') },
                   { path: '/equipment', ...placeholder('Equipment', 'Phase 4') },
                 ],

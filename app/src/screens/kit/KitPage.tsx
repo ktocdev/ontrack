@@ -7,6 +7,7 @@ import { Card, KeyValueRow, ListCard, ListRow, ListRowButton, ListRowLink, RowIc
 import { Chip } from '../../components/Chip'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
+import { TicketCard } from '../../components/TicketCard'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { Notice } from '../../components/Notice'
 import { RadioCard } from '../../components/RadioCard'
@@ -52,6 +53,7 @@ import {
   IconHelpCircle,
   IconPlus,
   IconQr,
+  IconSearchOff,
   IconSignOut,
   IconUserPlus,
 } from '../../components/icons'
@@ -294,14 +296,26 @@ export function KitPage() {
             </Section>
 
             <Section id="cards">
-              <Card className="flex flex-col gap-2 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-13 text-text-secondary">OT-1042</span>
-                  <StatusPill status="in_progress" />
-                </div>
-                <span className="text-16 font-semibold">Walk-in cooler not holding temp</span>
-                <span className="text-13 text-text-muted">Back of House · Refrigeration · Walk-in Cooler 1</span>
-              </Card>
+              <TicketCard
+                to="#"
+                displayId="OT-1042"
+                title="Walk-in cooler not holding temp"
+                status="in_progress"
+                walkthrough
+                place="Back of House · Refrigeration · Walk-in Cooler 1"
+                who="Assigned: Bert Velilla"
+                when="Updated 1h ago"
+              />
+              <TicketCard
+                displayId="OT-1031"
+                title="Bar sink draining slowly"
+                status="scheduled"
+                statusLabel="Scheduled Thu"
+                place="Front of House · Plumbing · Bar sink 2"
+                restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                who="Not yet assigned"
+                when="Created 3h ago"
+              />
               <ListCard>
                 <ListRow
                   leading={<Avatar name="Sam Patel" role="manager" />}
@@ -411,6 +425,19 @@ export function KitPage() {
                   </Button>
                 </EmptyState>
               </div>
+              <div className="flex rounded-card border border-border">
+                <EmptyState
+                  tone="neutral"
+                  titleSize={20}
+                  icon={<IconSearchOff size={30} />}
+                  title='No open tickets match "freezer"'
+                  body="A neutral disc when the list is empty because of a search."
+                >
+                  <Button variant="small" className="w-full">
+                    Clear search
+                  </Button>
+                </EmptyState>
+              </div>
             </Section>
 
             <Section id="fields">
@@ -449,6 +476,12 @@ export function KitPage() {
                 <option value="northstar">Northstar HVAC</option>
               </Select>
               <SearchField label="Search equipment" placeholder="Name, brand or serial number" />
+              <SearchField
+                label="Search tickets"
+                value="freezer"
+                onChange={() => undefined}
+                onClear={() => undefined}
+              />
             </Section>
 
             <Section id="switch">

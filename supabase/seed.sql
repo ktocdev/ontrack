@@ -85,25 +85,8 @@ insert into public.rights (user_id, key, allowed, updated_by) values
   ('22222222-2222-4222-8222-000000000001', 'edit_equipment', true, '22222222-2222-4222-8222-000000000006');
 
 -- ---------------------------------------------------------------------------
--- Categories (the Create ticket grid)
+-- Categories come from a migration (20261031140000), with the ids used below.
 -- ---------------------------------------------------------------------------
-insert into public.categories (id, name, area, sort_order) values
-  ('33333333-3333-4333-8333-000000000001', 'Lighting',           'foh', 1),
-  ('33333333-3333-4333-8333-000000000002', 'Plumbing',           'foh', 2),
-  ('33333333-3333-4333-8333-000000000003', 'Electrical',         'foh', 3),
-  ('33333333-3333-4333-8333-000000000004', 'Decorations',        'foh', 4),
-  ('33333333-3333-4333-8333-000000000005', 'Furniture',          'foh', 5),
-  ('33333333-3333-4333-8333-000000000006', 'HVAC',               'foh', 6),
-  ('33333333-3333-4333-8333-000000000007', 'Audio & video',      'foh', 7),
-  ('33333333-3333-4333-8333-000000000008', 'POS & tech',         'foh', 8),
-  ('33333333-3333-4333-8333-000000000011', 'Cooking',            'boh', 1),
-  ('33333333-3333-4333-8333-000000000012', 'Refrigeration',      'boh', 2),
-  ('33333333-3333-4333-8333-000000000013', 'Plumbing',           'boh', 3),
-  ('33333333-3333-4333-8333-000000000014', 'Electrical',         'boh', 4),
-  ('33333333-3333-4333-8333-000000000015', 'Lighting',           'boh', 5),
-  ('33333333-3333-4333-8333-000000000016', 'Dishwashing',        'boh', 6),
-  ('33333333-3333-4333-8333-000000000017', 'Ventilation',        'boh', 7),
-  ('33333333-3333-4333-8333-000000000018', 'Storage & shelving', 'boh', 8);
 
 -- ---------------------------------------------------------------------------
 -- Equipment. The first eleven are the Ops equipment list; the rest are the
@@ -345,10 +328,13 @@ insert into public.walkthroughs (id, restaurant_id, template_id, period, due_on,
 update public.walkthroughs set submitted_by = '22222222-2222-4222-8222-000000000001', submitted_at = '2026-09-24 17:30-05'
   where id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005';
 
+-- A link, not activity: the lists show these tickets' times as the boards do.
+alter table public.tickets disable trigger tickets_updated_at;
 update public.tickets set walkthrough_id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'
   where id in ('66666666-6666-4666-8666-000000001042', '66666666-6666-4666-8666-000000001039');
 update public.tickets set walkthrough_id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000002'
   where id = '66666666-6666-4666-8666-000000001041';
+alter table public.tickets enable trigger tickets_updated_at;
 
 insert into public.inhouse_fixes (restaurant_id, walkthrough_id, title, origin_label, done_at, done_by, created_by, created_at) values
   ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Replace 2 bulbs over booths 4–6',          'Oct walkthrough · FOH › Electrical › Light bulbs',            null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days'),
