@@ -899,14 +899,14 @@ isOneToOne: false
                   ]
                 },"two_step_resets": {
                   Row: {
-                    "reset_at": string,"user_id": string
+                    "answered_at": string | null,"reset_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "reset_at"?: string,"user_id": string
+                    "answered_at"?: string | null,"reset_at"?: string,"user_id": string
                   }
                   Update: {
-                    "reset_at"?: string,"user_id"?: string
+                    "answered_at"?: string | null,"reset_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -1329,6 +1329,9 @@ isOneToOne: false
 "delete_restaurant":
 { Args: { "p_id": string }; Returns: undefined
                            },
+"end_sessions":
+{ Args: { "p_user": string }; Returns: undefined
+                           },
 "equipment_restaurant":
 { Args: { "eid": string }; Returns: string
                            },
@@ -1391,6 +1394,9 @@ isOneToOne: false
                            },
 "two_step_ok":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"two_step_required":
+{ Args: { "p_user": string }; Returns: boolean
                            },
 "two_step_status":
 { Args: Record<PropertyKey, never>; Returns: Json

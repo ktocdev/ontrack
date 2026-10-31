@@ -4,7 +4,8 @@ import { supabase } from '../lib/supabase'
  * What 2-step verification is owed, from the database (two_step_status), because a
  * session that owes a step cannot read even its own profile. `gate` is what stops
  * the app: 'challenge' for a code, 'setup' to add an authenticator. "Don't ask again
- * on this phone" is a token kept here and worth nothing without the password.
+ * on this phone" is a token kept here, and the database only takes it from a session
+ * signed in with the password, so a reset link can't spend it.
  */
 export type TwoStep = {
   gate: 'challenge' | 'setup' | null

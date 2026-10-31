@@ -12,7 +12,8 @@ import { rememberThisPhone, spendBackupCode, TwoStepError, useRefreshMe, verifyA
  * Sign in · 2-step code (design/screens/MFA-Challenge), with its backup-code state.
  * Back signs out, since the password has already been accepted. A password reset
  * uses it too (`onPassed`), but there Auth accepts only the authenticator, so it
- * drops the backup code and the 30 days.
+ * drops the backup code and the 30 days. A backup code can't remember the phone
+ * either, or one code plus the password would be 30 days without a second step.
  */
 export function TwoStepChallengeScreen({
   onBack,
@@ -33,7 +34,7 @@ export function TwoStepChallengeScreen({
       if (backup) await spendBackupCode(code)
       else await verifyAuthenticatorCode(code)
       if (forReset) return
-      if (remember) {
+      if (remember && !backup) {
         const [token, session] = await Promise.all([rememberThisPhone(), supabase!.auth.getSession()])
         const userId = session.data.session?.user.id
         if (token && userId) saveDeviceToken(userId, token)
@@ -100,7 +101,7 @@ export function TwoStepChallengeScreen({
           }}
           error={error}
         />
-        {!forReset && (
+        {!forReset && !backup && (
           <label className="flex min-h-tap cursor-pointer items-start gap-2.5 text-14 leading-[1.4] text-text-body">
             <input
               type="checkbox"
