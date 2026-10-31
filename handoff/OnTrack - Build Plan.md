@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Oct 30, 2026 with Phase 1 as built: 2-step verification, the profile photo switch, the group name as data and per-group domains
+Oct 28, 2026 · Katie · updated Oct 31, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains) and the Phase 2 pull requests
 
 ## How to read this
 
@@ -17,8 +17,8 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 0 · Foundation | Done, except the real-iPhone check | OT-1 scaffold, tokens, theme, PWA, CI · OT-2 schema, RLS, `can()`, pgTAP, seed · OT-3 component kit, app frame, auth guard, role shells, loading and error boards |
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
-| OT-23 | Done | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
-| 2 · Tickets, the manager loop | Next | |
+| OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
+| 2 · Tickets, the manager loop | In progress | OT-24 plan update, then OT-25 to OT-31 (see Phase 2) |
 
 Phase 0 notes:
 
@@ -32,6 +32,7 @@ Phase 1 note (Oct 30, 2026):
 - **Security audit:** an independent audit of 2-step verification and group settings (Oct 30, 2026) found 11 issues. OT-20 to OT-22 fix them, except that Supabase accepts a 2-step code more than once, which the app cannot change, and ten wrong backup codes briefly stop the owner's own backup codes too.
 - **Security fixes tried on the live app (Oct 31, 2026):** an admin reset ended a test account's live session, and setting up again gave 8 new codes (OT-20). A remembered browser skipped the code, changing the password took a code, and signing in afterwards asked for one again (OT-21). An invite to a new address sent, and its link opened signed out in a private window (OT-22).
 - **What that testing turned up:** the `EMAIL_FROM` function secret on the hosted project was missing or still the test sender, so Resend refused invites to anyone but the account's own address. It is set now.
+- **OT-23 (Oct 31, 2026):** the fixes that testing led to were tried on the live app and work: Edit restaurant, no near-color warning, signing back in after Sign out goes home, a refresh says Loading, and no fallback email sender.
 - **What the client should try:** accept an invite on a phone, sign in, and look at Profile. Change a password, or turn on 2-step verification from Profile. Screens past that are placeholders until Phase 2, and Four Corners has no accounts yet, so this waits until its first admin is chosen (see Open items).
 - **How the done test went:** an invite went out and the account was set up from the email on a second phone, against the live app. Turning on See costs for that manager saved as an override, but changes nothing a person can see yet: no screen shows costs until the Closed ticket in Phase 2, and the live project has no cost records. That the database then returns costs is proven on the seeded data, in `e2e/stack/people.spec.ts` and pgTAP, as are the manager seeing only their restaurant and the refusals behind 2-step and the photo switch.
 
@@ -98,7 +99,7 @@ Decided Oct 30, 2026, after restaurants got archive and delete in OT-9. Each pha
 | People | Deactivate / Reactivate: no sign-in, out of pickers, name kept on history | Revoke a pending invite; delete an account only with no history | 1 (OT-10 revoke and ban, OT-12 User profile) |
 | Equipment | Retire | Only with no tickets or service records | 4 |
 | Contractors | Archive | Only with no service records | 5 |
-| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | 2 and 6 |
+| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | 6; categories later, not scheduled |
 | Tickets | None (closing ends a ticket) | Never | |
 | Walkthroughs, ticket updates, service records, invoices | None (they are the record) | Never; edits are logged | |
 | In-house fixes and tasks | None | While still open | 6 |
@@ -165,6 +166,28 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 **Screens from the design:** Manager · Open tickets, Open in-house tasks, Create ticket area, Create ticket form, Open ticket, Edit / close ticket, Closed ticket; Empty · Manager open tickets; No results · ticket search; Error · validation on save
 
 **Done when:** a manager at Federale’s Logan Square creates a ticket with a photo on an iPhone, it appears in the database with the right restaurant, and a second manager at Porter cannot see it. Ops can still only see tickets through the database at this point; that is Phase 3.
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-25 | Default categories on the hosted project; Open tickets list with search and Front / Back segments; empty and no-results states; the ticket card |
+| OT-26 | Create ticket: area and category, then the form with the equipment picker; the save-failed state |
+| OT-27 | Ticket detail: header, description, equipment card, thread with system events, text composer |
+| OT-28 | Photos: resize to 1600 px, add on the form and in the composer, thumbnails in the thread |
+| OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
+| OT-30 | In-house tab: list, check off, delete while open |
+| OT-31 | The done test as one flow; the phase note |
+
+**What this phase has to work around**
+
+- **Categories exist only in `seed.sql`, so the hosted project has none, and a ticket requires one.** OT-25 adds the design's list in a migration, and the seed stops inserting its own. Nothing can be created on the live app until that merges.
+- **Nothing adds equipment until Phase 4.** On the live app the picker is empty and every category says 0 items, so tickets there have no equipment. The seeded stack shows the full boards.
+- **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data.
+- **Scan an equipment QR code stays off Create ticket until Phase 4,** since it would have nothing to open. This is the one planned difference from the Create-Area board.
+- **Reopening writes the thread event but notifies nobody yet.** Push and email arrive in Phase 3, which keeps the "notifies Ops" promise.
+- **Categories can't be turned off or deleted yet.** That is saved for later (Oct 31, 2026), so the list from OT-25 stays as it is until then, and changing it means a migration.
+- **View as:** each screen scopes its data from `useUser()` and hides writes when `viewingAs` is set, and Open tickets replaces the manager's placeholder in `ViewAsScreen`.
 
 ## Phase 3 · Ops dashboard and ticket work
 
@@ -347,6 +370,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
+- [ ] Turn off or delete a category, following the archive and delete rule. It has no board, and is saved for later, not scheduled
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default
