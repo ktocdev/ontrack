@@ -9,7 +9,8 @@ begin
   perform set_config('role', 'postgres', true);
   perform set_config('request.jwt.claims',
     json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated',
-      'aal', p_aal, 'session_id', p_session)::text, true);
+      'aal', p_aal, 'session_id', p_session,
+      'amr', json_build_array(json_build_object('method', 'password')))::text, true);
   perform set_config('role', 'authenticated', true);
 end $$;
 create function pg_temp.logout() returns void language plpgsql as $$

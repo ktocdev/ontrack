@@ -3,8 +3,8 @@ import { escapeHtml, getCaller, isAdmin, isUuid, json, refuse, serve, service } 
 
 /**
  * Admin · Reset 2-step verification, for someone who has lost their phone and their
- * backup codes. It removes their authenticator, codes, remembered phones and passes,
- * and they set it up again at next sign-in. Auth lets only the service key remove a
+ * backup codes. It removes their authenticator, codes, remembered phones, passes and
+ * sessions, and they set it up again at next sign-in. Auth lets only the service key remove a
  * verified factor. Nobody resets their own: that would turn a stolen password and an
  * open session into a way past the second step.
  */
@@ -25,12 +25,16 @@ serve(async (req, body) => {
   if (error) throw error
   if (!target) return refuse('not_found', 404)
 
-  const { data: factors, error: listError } = await db.auth.admin.mfa.listFactors({ userId: target.id })
-  if (listError) throw listError
-  for (const factor of factors.factors) {
-    const { error: deleteError } = await db.auth.admin.mfa.deleteFactor({ id: factor.id, userId: target.id })
-    if (deleteError) throw deleteError
-  }
+  // Logged first, and the reset row before anything is removed: it kills every token
+  // issued so far, so a failure from here on can only leave them more locked out.
+  const { error: logError } = await db
+    .from('audit_log')
+    .insert({ actor_id: caller.id, action: 'two_step.reset', target_user_id: target.id })
+  if (logError) throw logError
+  const { error: resetError } = await db
+    .from('two_step_resets')
+    .upsert({ user_id: target.id, reset_at: new Date().toISOString(), answered_at: null })
+  if (resetError) throw resetError
 
   const cleared = await Promise.all(
     ['two_step_codes', 'two_step_devices', 'two_step_passes'].map((table) =>
@@ -38,9 +42,17 @@ serve(async (req, body) => {
     ),
   )
   for (const r of cleared) if (r.error) throw r.error
-  const { error: resetError } = await db.from('two_step_resets').upsert({ user_id: target.id })
-  if (resetError) throw resetError
-  await db.from('audit_log').insert({ actor_id: caller.id, action: 'two_step.reset', target_user_id: target.id })
+
+  const { data: factors, error: listError } = await db.auth.admin.mfa.listFactors({ userId: target.id })
+  if (listError) throw listError
+  for (const factor of factors.factors) {
+    const { error: deleteError } = await db.auth.admin.mfa.deleteFactor({ id: factor.id, userId: target.id })
+    if (deleteError) throw deleteError
+  }
+
+  // Last, or a live attacker could refresh to a new token and enroll their own authenticator.
+  const { error: sessionsError } = await db.rpc('end_sessions', { p_user: target.id })
+  if (sessionsError) throw sessionsError
 
   // The reset has happened either way, and the admin is told if this part failed.
   let emailed = true

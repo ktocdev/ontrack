@@ -72,6 +72,32 @@ async function signOut(page: Page) {
   await expect(page.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible()
 }
 
+/** Sign in over the API and pay the second step, as an attacker holding the password and a code would. */
+async function apiSession(request: APIRequestContext, email: string, password: string, secret: string) {
+  const res = await request.post(`${SUPABASE}/auth/v1/token?grant_type=password`, {
+    data: { email, password },
+    headers: { apikey: KEY },
+  })
+  const signedIn = (await res.json()) as { access_token: string; user: { factors: { id: string }[] } }
+  const factor = signedIn.user.factors[0]!.id
+  const headers = { apikey: KEY, Authorization: `Bearer ${signedIn.access_token}` }
+  const challenge = await request.post(`${SUPABASE}/auth/v1/factors/${factor}/challenge`, { headers })
+  const { id } = (await challenge.json()) as { id: string }
+  const verified = await request.post(`${SUPABASE}/auth/v1/factors/${factor}/verify`, {
+    data: { challenge_id: id, code: totp(secret) },
+    headers,
+  })
+  const session = (await verified.json()) as { access_token: string; refresh_token: string }
+  return { ...session, factor }
+}
+
+const auth = (token: string) => ({ apikey: KEY, Authorization: `Bearer ${token}` })
+
+async function ticketsSeenBy(request: APIRequestContext, token: string) {
+  const rows = await request.get(`${SUPABASE}/rest/v1/tickets?select=id`, { headers: auth(token) })
+  return (await rows.json()) as unknown[]
+}
+
 /** Steps 2 to 4 of setup, from Continue on step 1. Returns the secret and the backup codes. */
 async function finishSetup(page: Page, testInfo: TestInfo) {
   await page.getByRole('button', { name: 'Continue' }).click()
@@ -146,7 +172,7 @@ test('someone turns it on, then signs in by code, by backup code and by a rememb
   await phone.getByRole('button', { name: 'Use a backup code instead' }).click()
   await expect(phone.getByRole('heading', { name: 'Use a backup code' })).toBeVisible()
   await phone.getByLabel('Backup code').fill(codes[0]!)
-  await phone.getByLabel(/Don't ask again/).uncheck()
+  await expect(phone.getByLabel(/Don't ask again/)).toBeHidden()
   await phone.getByRole('button', { name: 'Verify', exact: true }).click()
   await expect(phone).toHaveURL(/\/(tickets|profile)$/)
   await expect(phone.getByText(RESTAURANT).first()).toBeVisible()
@@ -202,6 +228,10 @@ test('someone turns it on, then signs in by code, by backup code and by a rememb
   await phone.getByRole('button', { name: 'Done' }).click()
   await expect(phone.getByRole('heading', { name: 'Profile' })).toBeVisible()
 
+  // Someone else is signed in as Tess, having got past the second step once.
+  const attacker = await apiSession(request, person.email, NEXT_PASSWORD, secret)
+  expect(await ticketsSeenBy(request, attacker.access_token)).not.toEqual([])
+
   // An admin resets it: the row says so, an email goes out, and it's asked for again.
   await page.goto('/admin/users')
   await page
@@ -220,6 +250,21 @@ test('someone turns it on, then signs in by code, by backup code and by a rememb
   await expect(page.getByText('Not set up · required at next sign-in')).toBeVisible()
   await testInfo.attach('admin-reset-done', { body: await page.screenshot(), contentType: 'image/png' })
   expect(await newestMail(request, person.email, 'Your 2-step verification was reset')).toContain('admin reset')
+
+  // The reset ends that session: its token reads nothing and mints nothing, and it can't refresh.
+  expect(await ticketsSeenBy(request, attacker.access_token)).toEqual([])
+  const minted = await request.post(`${SUPABASE}/rest/v1/rpc/new_backup_codes`, {
+    headers: auth(attacker.access_token),
+  })
+  expect(minted.ok()).toBe(false)
+  const refreshed = await request.post(`${SUPABASE}/auth/v1/token?grant_type=refresh_token`, {
+    data: { refresh_token: attacker.refresh_token },
+    headers: { apikey: KEY },
+  })
+  expect(refreshed.ok()).toBe(false)
+
+  // Tokens count whole seconds, so one from the same second as the reset counts as before it.
+  await phone.waitForTimeout(1100)
 
   await signOut(phone)
   await submitSignIn(phone, person.email, NEXT_PASSWORD)
@@ -262,6 +307,40 @@ test('a new admin must set it up before anything works', async ({ browser, page,
   await person.close()
 })
 
+test('removing your own authenticator through the API does not turn 2-step off', async ({
+  browser,
+  page,
+  request,
+}, testInfo) => {
+  await signIn(page, 'admin@example.com')
+  const person = await newPerson(browser, page, request, testInfo, 'Una Manager', 'Restaurant manager')
+  const phone = person.page
+  await expect(phone).toHaveURL(/\/tickets$/)
+  await phone.goto('/profile/2-step')
+  const { secret } = await finishSetup(phone, testInfo)
+  await expect(phone.getByRole('heading', { name: 'Profile' })).toBeVisible()
+  await signOut(phone)
+
+  const session = await apiSession(request, person.email, PASSWORD, secret)
+  const removed = await request.delete(`${SUPABASE}/auth/v1/factors/${session.factor}`, {
+    headers: auth(session.access_token),
+  })
+  expect(removed.ok()).toBe(true)
+
+  // Auth let it go, but a password alone still gets nothing, and the app asks for setup.
+  const direct = await request.post(`${SUPABASE}/auth/v1/token?grant_type=password`, {
+    data: { email: person.email, password: PASSWORD },
+    headers: { apikey: KEY },
+  })
+  const { access_token } = (await direct.json()) as { access_token: string }
+  expect(await ticketsSeenBy(request, access_token)).toEqual([])
+  await submitSignIn(phone, person.email)
+  await expect(phone.getByRole('heading', { name: 'Turn on 2-step verification' })).toBeVisible()
+  await finishSetup(phone, testInfo)
+  await expect(phone.getByText(RESTAURANT).first()).toBeVisible()
+  await person.close()
+})
+
 test('a reset link with 2-step on asks for a code before the new password', async ({
   browser,
   page,
@@ -276,6 +355,13 @@ test('a reset link with 2-step on asks for a code before the new password', asyn
   await expect(phone.getByRole('heading', { name: 'Profile' })).toBeVisible()
   await signOut(phone)
 
+  // This browser is remembered, which must not help someone holding only the inbox.
+  await submitSignIn(phone, person.email)
+  await phone.getByLabel('Verification code').fill(totp(secret))
+  await phone.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(phone.getByText(RESTAURANT).first()).toBeVisible()
+  await signOut(phone)
+
   await phone.goto('/reset')
   await phone.getByLabel('Work email').fill(person.email)
   await phone.getByRole('button', { name: /reset link/i }).click()
@@ -285,6 +371,10 @@ test('a reset link with 2-step on asks for a code before the new password', asyn
 
   await expect(phone.getByRole('heading', { name: 'Enter your code' })).toBeVisible()
   await expect(phone.getByRole('button', { name: 'Use a backup code instead' })).toBeHidden()
+  const recovery = await phone.evaluate(
+    () => (JSON.parse(localStorage.getItem('ontrack.auth')!) as { access_token: string }).access_token,
+  )
+  expect(await ticketsSeenBy(request, recovery)).toEqual([])
   await passTwoStepForReset(phone, secret)
   await expect(phone.getByRole('heading', { name: 'Choose a new password' })).toBeVisible()
   await phone.getByLabel('New password', { exact: true }).fill('Kitchen6-kitchen')
