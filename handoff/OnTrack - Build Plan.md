@@ -16,7 +16,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | --- | --- | --- |
 | 0 · Foundation | Done, except the real-iPhone check | OT-1 scaffold, tokens, theme, PWA, CI · OT-2 schema, RLS, `can()`, pgTAP, seed · OT-3 component kit, app frame, auth guard, role shells, loading and error boards |
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
-| 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages |
+| 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | 2 · Tickets, the manager loop | Next | |
 
 Phase 0 notes:
@@ -28,6 +28,7 @@ Phase 0 notes:
 Phase 1 note (Oct 30, 2026):
 
 - **What changed:** real accounts. An admin invites someone by email and chooses their role and restaurants; they set up their own account from the link. Sign in, password reset, Profile and Help & support all work. An admin manages restaurants, people, role defaults and one person's rights, can view the app as someone else (read-only and logged), and can rename the group or turn profile photos off. 2-step verification is required for admins and offered to everyone.
+- **Security audit:** an independent audit of 2-step verification and group settings (Oct 30, 2026) found 11 issues. OT-20 to OT-22 fix them, except that Supabase accepts a 2-step code more than once, which the app cannot change, and ten wrong backup codes briefly stop the owner's own backup codes too.
 - **What the client should try:** accept an invite on a phone, sign in, and look at Profile. Change a password, or turn on 2-step verification from Profile. Screens past that are placeholders until Phase 2, and Four Corners has no accounts yet, so this waits until its first admin is chosen (see Open items).
 - **How the done test went:** an invite went out and the account was set up from the email on a second phone, against the live app. Turning on See costs for that manager saved as an override, but changes nothing a person can see yet: no screen shows costs until the Closed ticket in Phase 2, and the live project has no cost records. That the database then returns costs is proven on the seeded data, in `e2e/stack/people.spec.ts` and pgTAP, as are the manager seeing only their restaurant and the refusals behind 2-step and the photo switch.
 

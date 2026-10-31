@@ -13,6 +13,16 @@ const PNG = Buffer.from(
   'base64',
 )
 
+test('signed out, the group name reads and no database function runs', async ({ request }) => {
+  const headers = { apikey: KEY, Authorization: `Bearer ${KEY}` }
+  const group = await request.get(`${SUPABASE}/rest/v1/group_settings?select=name`, { headers })
+  expect(await group.json()).toEqual([{ name: 'Four Corners' }])
+  for (const fn of ['can', 'my_role', 'is_admin', 'equipment_restaurant']) {
+    const called = await request.post(`${SUPABASE}/rest/v1/rpc/${fn}`, { headers, data: {} })
+    expect(called.ok(), fn).toBe(false)
+  }
+})
+
 test('an admin renames the group, and the header follows', async ({ page }, testInfo) => {
   await signIn(page, 'admin@example.com')
   await page.goto('/admin/roles')
