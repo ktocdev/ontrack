@@ -41,6 +41,7 @@
   --brand-tint: #dce8e3; /* avatar backgrounds, selected count badge */
   --brand-tint-soft: #e3efea; /* info banners, selected rows */
   --brand-tint-faint: #f4f9f7; /* a selected radio card (Invite user) */
+  --brand-tint-border: #c5dcd2; /* your own message in a thread */
   --info-tint-faint: #f5f8fd; /* a row with a personal override (User profile) */
   --banner-info: #1b4f91; /* the View as banner, under white text in both themes */
 
@@ -88,6 +89,7 @@
   --shadow-dialog: 0 24px 48px -16px rgba(21, 32, 27, 0.35); /* centered dialog on desktop */
   --shadow-segment: 0 1px 2px rgba(21, 32, 27, 0.12); /* selected segment */
   --shadow-knob: 0 1px 2px rgba(21, 32, 27, 0.25); /* switch knob */
+  --shadow-scrolled: 0 4px 10px -4px rgba(21, 32, 27, 0.18); /* a header with content under it */
 
   /* Restaurant accents (seeded; also stored per restaurant in the database) */
   --restaurant-federales-logan: #a3336d;
@@ -165,6 +167,7 @@
   --brand-tint: #1e3a32;
   --brand-tint-soft: #1a2f29; /* derived */
   --brand-tint-faint: #162823; /* derived */
+  --brand-tint-border: #2a4a3f; /* derived */
   --info-tint-faint: #1a2533; /* derived */
 
   --urgent: #d9542a;
@@ -207,6 +210,7 @@
   --shadow-dialog: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
   --shadow-segment: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-knob: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-scrolled: 0 4px 10px -4px rgba(0, 0, 0, 0.5);
 }
 
 /* Tailwind v4 theme: utilities reference the variables above, so switching
@@ -244,6 +248,7 @@
   --color-brand-tint: var(--brand-tint);
   --color-brand-tint-soft: var(--brand-tint-soft);
   --color-brand-tint-faint: var(--brand-tint-faint);
+  --color-brand-tint-border: var(--brand-tint-border);
   --color-info-tint-faint: var(--info-tint-faint);
   --color-banner-info: var(--banner-info);
 
@@ -321,6 +326,7 @@
   --shadow-raised: var(--shadow-raised);
   --shadow-dialog: var(--shadow-dialog);
   --shadow-segment: var(--shadow-segment);
+  --shadow-scrolled: var(--shadow-scrolled);
   --shadow-knob: var(--shadow-knob);
 
   /* Layout */

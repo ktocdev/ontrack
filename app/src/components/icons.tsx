@@ -125,6 +125,16 @@ export const IconWarning = (p: IconProps) => (
     <path d="M12 7.5v5.5M12 16.5v.01" />
   </svg>
 )
+export const IconEdit = (p: IconProps) => (
+  <svg {...base({ size: 17, ...p })}>
+    <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+  </svg>
+)
+export const IconArrowRight = (p: IconProps) => (
+  <svg {...base({ size: 20, ...p })}>
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+)
 export const IconQr = (p: IconProps) => (
   <svg {...base({ size: 22, ...p }, 2, false)}>
     <path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8" />

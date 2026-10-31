@@ -18,6 +18,7 @@ import { Chip, ChoiceChips } from '../../components/Chip'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { TicketCard } from '../../components/TicketCard'
+import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
 import { RadioCard } from '../../components/RadioCard'
@@ -142,6 +143,7 @@ export function KitPage() {
   const [customAccent, setCustomAccent] = useState('#4d7c0f')
   const [chip, setChip] = useState(true)
   const [radio, setRadio] = useState(0)
+  const [draft, setDraft] = useState('')
   const [urgency, setUrgency] = useState<'low' | 'normal' | 'urgent'>('normal')
   const [password, setPassword] = useState('kitchen4')
 
@@ -335,6 +337,28 @@ export function KitPage() {
                 ]}
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
+              <div className="flex flex-col rounded-card border border-border px-3 py-1">
+                <ThreadEvent text="Bert Velilla assigned · status In progress" when="9:40 AM" />
+                <ThreadMessage
+                  who="Bert Velilla, Ops"
+                  when="1h ago"
+                  avatar={<Avatar name="Bert Velilla" role="ops" size={30} />}
+                >
+                  Refrigeration tech booked for today 2–4 PM.
+                </ThreadMessage>
+                <ThreadMessage who="You" when="45m ago" mine avatar={<Avatar name="Maya Reyes" size={30} />}>
+                  Thanks. Lunch rush ends at 2, so that window works.
+                </ThreadMessage>
+              </div>
+              <div className="overflow-hidden rounded-card border border-border">
+                <Composer
+                  label="Write an update"
+                  placeholder="Write an update…"
+                  value={draft}
+                  onChange={setDraft}
+                  onSend={() => setDraft('')}
+                />
+              </div>
               <TicketCard
                 to="#"
                 displayId="OT-1042"
