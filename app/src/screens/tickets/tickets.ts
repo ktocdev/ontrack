@@ -2,6 +2,8 @@ import type { TicketStatus } from '../../lib/supabase'
 
 /** What the ticket lists say about a ticket's time and how they find and order it. */
 
+export const AREA_LABEL = { foh: 'Front of House', boh: 'Back of House' }
+
 const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR

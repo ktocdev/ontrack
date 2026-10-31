@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { IconCheck } from './icons'
+import { IconCheck, IconWarning } from './icons'
 
 /**
  * Inline confirmation inside a form ("Profile saved."): brand-tint-soft
@@ -15,6 +15,24 @@ export function Notice({ children, className = '' }: { children: ReactNode; clas
     >
       <IconCheck size={18} strokeWidth={2.4} className="flex-none" />
       <span>{children}</span>
+    </div>
+  )
+}
+
+/**
+ * Why a form didn't save (Error-Save-Failed): the open status tint, 12px radius,
+ * 13px text with a bold lead. Announced through role="alert".
+ */
+export function ErrorBanner({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-none items-start gap-2.5 rounded-input bg-status-open-bg px-3 py-2.5 text-13 leading-[1.45] text-status-open-text"
+    >
+      <IconWarning size={18} className="mt-px flex-none" />
+      <span>
+        <b>{title}</b> {children}
+      </span>
     </div>
   )
 }

@@ -60,10 +60,24 @@ export function ScreenHeader({ title, topLeft, topRight, action, children, class
   )
 }
 
-/** Back bar for detail screens: 44px back target, a crumb, bottom divider. */
-export function BackBar({ to, label, children }: { to: string; label: string; children?: ReactNode }) {
+/** Back bar for detail screens: 44px back target, a crumb, bottom divider. The Create form draws it with no line. */
+export function BackBar({
+  to,
+  label,
+  bordered = true,
+  children,
+}: {
+  to: string
+  label: string
+  bordered?: boolean
+  children?: ReactNode
+}) {
   return (
-    <div className="mb-2 flex flex-none items-center gap-1 border-b border-border px-3 pb-2 pt-safe">
+    <div
+      className={`flex flex-none items-center gap-1 px-3 ${
+        bordered ? 'mb-2 border-b border-border pb-2 pt-safe' : 'pb-1 pt-[calc(12px+var(--safe-top))]'
+      }`}
+    >
       <Link
         to={to}
         aria-label={label}

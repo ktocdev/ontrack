@@ -169,11 +169,27 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/tickets/OpenTicketsScreen')).OpenTicketsScreen,
                     }),
                   },
-                  { path: '/tickets/new', ...placeholder('Create ticket', 'Phase 2') },
+                  {
+                    path: '/tickets/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/CreateAreaScreen')).CreateAreaScreen,
+                    }),
+                  },
                   { path: '/tickets/in-house', ...placeholder('In-house tasks', 'Phase 2') },
                   { path: '/tickets/:id', ...placeholder('Ticket', 'Phase 2') },
                   { path: '/walkthrough', ...placeholder('Walkthrough', 'Phase 6a') },
                   { path: '/equipment', ...placeholder('Equipment', 'Phase 4') },
+                ],
+              },
+              {
+                element: <BareShell />,
+                children: [
+                  {
+                    path: '/tickets/new/:categoryId',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/CreateFormScreen')).CreateFormScreen,
+                    }),
+                  },
                 ],
               },
             ],

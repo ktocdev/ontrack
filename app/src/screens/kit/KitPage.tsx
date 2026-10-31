@@ -3,13 +3,23 @@ import { Link } from 'react-router'
 import { AccentPicker } from '../../components/AccentPicker'
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink, IconButton } from '../../components/Button'
-import { Card, KeyValueRow, ListCard, ListRow, ListRowButton, ListRowLink, RowIcon } from '../../components/Card'
-import { Chip } from '../../components/Chip'
+import {
+  Card,
+  CategoryTile,
+  KeyValueRow,
+  ListCard,
+  ListRow,
+  ListRowButton,
+  ListRowLink,
+  RadioRow,
+  RowIcon,
+} from '../../components/Card'
+import { Chip, ChoiceChips } from '../../components/Chip'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { TicketCard } from '../../components/TicketCard'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
-import { Notice } from '../../components/Notice'
+import { ErrorBanner, Notice } from '../../components/Notice'
 import { RadioCard } from '../../components/RadioCard'
 import {
   CountBadge,
@@ -132,6 +142,7 @@ export function KitPage() {
   const [customAccent, setCustomAccent] = useState('#4d7c0f')
   const [chip, setChip] = useState(true)
   const [radio, setRadio] = useState(0)
+  const [urgency, setUrgency] = useState<'low' | 'normal' | 'urgent'>('normal')
   const [password, setPassword] = useState('kitchen4')
 
   return (
@@ -296,6 +307,34 @@ export function KitPage() {
             </Section>
 
             <Section id="cards">
+              <div className="grid grid-cols-2 gap-2.5">
+                <CategoryTile to="#" name="Refrigeration" count={9} />
+                <CategoryTile to="#" name="Dishwashing" count={1} />
+              </div>
+              <div
+                role="radiogroup"
+                aria-label="Equipment"
+                className="overflow-hidden rounded-card border border-border bg-surface"
+              >
+                <RadioRow
+                  checked={radio === 0}
+                  title="Walk-in Cooler 1"
+                  subtitle="SN KP-7XW-220418"
+                  onSelect={() => setRadio(0)}
+                />
+                <RadioRow checked={radio === 1} title="Walk-in Freezer" onSelect={() => setRadio(1)} />
+              </div>
+              <ChoiceChips
+                label="Urgency"
+                value={urgency}
+                onChange={setUrgency}
+                options={[
+                  { value: 'low', label: 'Low' },
+                  { value: 'normal', label: 'Normal' },
+                  { value: 'urgent', label: 'Urgent' },
+                ]}
+              />
+              <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
               <TicketCard
                 to="#"
                 displayId="OT-1042"

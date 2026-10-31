@@ -36,3 +36,46 @@ export function Chip({ selected, tone = 'filter', className = '', children, ...r
     </button>
   )
 }
+
+/**
+ * One choice from a few, as equal chips under a label (Urgency): 40px, 10px radius,
+ * 13px semibold; the chosen one is brand on its tint.
+ */
+export function ChoiceChips<T extends string>({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string
+  value: T
+  onChange: (value: T) => void
+  options: { value: T; label: string }[]
+}) {
+  return (
+    <div className="flex flex-none flex-col gap-1.5">
+      <span className="text-13 font-semibold text-text-body">{label}</span>
+      <div role="radiogroup" aria-label={label} className="flex gap-2">
+        {options.map((o) => {
+          const on = o.value === value
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => onChange(o.value)}
+              className={`relative min-h-10 flex-1 rounded-control border text-13 font-semibold transition-colors before:absolute before:inset-x-0 before:-inset-y-0.5 active:duration-0 ${
+                on
+                  ? 'border-brand bg-brand-tint-soft text-brand-strong'
+                  : 'border-border-strong bg-surface text-text-body hover:border-border-muted active:bg-surface-muted'
+              }`}
+            >
+              {o.label}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
