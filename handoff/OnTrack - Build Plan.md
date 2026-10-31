@@ -184,6 +184,9 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 
 - **Categories exist only in `seed.sql`, so the hosted project has none, and a ticket requires one.** OT-25 adds the design's list in a migration, and the seed stops inserting its own. Nothing can be created on the live app until that merges.
 - **Open tickets cards always show the assignee.** The board shows a contractor on one card, but managers cannot read service records without `see_costs`, and none exist until Phase 5.
+- **The equipment card on a ticket isn't a link until Phase 4,** when the unit has a page to open.
+- **A ticket's thread rereads every 30 seconds** while it is on screen and when the app comes back to the front, so a reply turns up without a reload. Live updates can wait for push in Phase 3, if the delay matters.
+- **The database still accepts a message on a closed ticket.** The closed screen has no composer. OT-29 decides whether the database should refuse it too.
 - **Nothing adds equipment until Phase 4.** On the live app the picker is empty and every category says 0 items, so tickets there have no equipment. The seeded stack shows the full boards.
 - **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data.
 - **The QR buttons wait for Phase 4,** since a scan would have nothing to open: Scan an equipment QR code on Create ticket, and Scan a QR code with its sentence on the empty Open tickets screen. These are the planned differences from those boards.
