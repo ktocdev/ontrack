@@ -163,22 +163,43 @@ export function UnderlineTabs({
   items,
   label,
   size = 'md',
+  inert = false,
+  className = '',
 }: {
   items: { to: string; label: ReactNode; end?: boolean }[]
   label: string
   size?: 'md' | 'lg'
+  /** Shown but not links, with the first tab lit (View as). */
+  inert?: boolean
+  className?: string
 }) {
+  const text = size === 'lg' ? 'text-15' : 'text-14'
+  if (inert) {
+    return (
+      <nav aria-label={label} className={`flex border-b border-border ${className}`}>
+        {items.map((t, i) => (
+          <span
+            key={t.to}
+            aria-current={i === 0 ? 'page' : undefined}
+            className={`-mb-px flex min-h-tap flex-1 items-center justify-center gap-1.5 border-b-2 font-semibold ${text} ${
+              i === 0 ? 'border-brand text-text' : 'border-transparent text-text-muted'
+            }`}
+          >
+            {t.label}
+          </span>
+        ))}
+      </nav>
+    )
+  }
   return (
-    <nav aria-label={label} className="flex border-b border-border">
+    <nav aria-label={label} className={`flex border-b border-border ${className}`}>
       {items.map((t) => (
         <NavLink
           key={t.to}
           to={t.to}
           end={t.end}
           className={({ isActive }) =>
-            `-mb-px flex min-h-tap flex-1 items-center justify-center gap-1.5 border-b-2 font-semibold ${
-              size === 'lg' ? 'text-15' : 'text-14'
-            } ${isActive ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'} transition-colors active:bg-surface-hover active:duration-0`
+            `-mb-px flex min-h-tap flex-1 items-center justify-center gap-1.5 border-b-2 font-semibold ${text} ${isActive ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'} transition-colors active:bg-surface-hover active:duration-0`
           }
         >
           {t.label}

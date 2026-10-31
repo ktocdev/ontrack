@@ -50,6 +50,11 @@
     color: inherit;
   }
 
+  /* SearchField draws its own clear button; WebKit would add a second. */
+  input[type='search']::-webkit-search-cancel-button {
+    display: none;
+  }
+
   button {
     font: inherit;
     color: inherit;

@@ -106,6 +106,25 @@ export const IconSearch = (p: IconProps) => (
     <path d="m20 20-3.5-3.5" />
   </svg>
 )
+/** No results: a magnifier with a cross in the lens. */
+export const IconSearchOff = (p: IconProps) => (
+  <svg {...base({ size: 18, ...p }, 2, false)}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5M8.5 8.5l5 5M13.5 8.5l-5 5" />
+  </svg>
+)
+export const IconCheckCircle = (p: IconProps) => (
+  <svg {...base({ size: 24, ...p })}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m8 12 3 3 5-6" />
+  </svg>
+)
+export const IconWarning = (p: IconProps) => (
+  <svg {...base({ size: 24, ...p })}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7.5v5.5M12 16.5v.01" />
+  </svg>
+)
 export const IconQr = (p: IconProps) => (
   <svg {...base({ size: 22, ...p }, 2, false)}>
     <path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8" />

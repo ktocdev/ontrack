@@ -1,6 +1,6 @@
 import { useId, useState, type ComponentPropsWithRef, type InputHTMLAttributes, type ReactNode } from 'react'
 import { passwordRules } from '../auth/validation'
-import { IconCheck, IconChevronDown, IconSearch } from './icons'
+import { IconCheck, IconChevronDown, IconClose, IconSearch } from './icons'
 
 /**
  * Form fields: 13px semibold label, 4 to 6px gap, white input with 1px
@@ -188,9 +188,14 @@ export function Select({ label, optional, hint, error, className, children, ref,
 /** Search box: icon on the left, 44px, 1px border (not border-strong), no visible label. */
 export function SearchField({
   label,
+  onClear,
   className = '',
   ...rest
-}: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { label: string }) {
+}: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+  label: string
+  /** Shows a clear button once there is something to clear. */
+  onClear?: () => void
+}) {
   return (
     <label
       className={`flex min-h-tap items-center gap-2.5 rounded-input border border-border bg-surface px-3.5 focus-within:border-brand ${className}`}
@@ -199,9 +204,19 @@ export function SearchField({
       <input
         type="search"
         aria-label={label}
-        className="flex-1 bg-transparent text-text outline-none placeholder:text-text-muted"
+        className="min-w-0 flex-1 bg-transparent text-text outline-none placeholder:text-text-muted"
         {...rest}
       />
+      {onClear && rest.value ? (
+        <button
+          type="button"
+          aria-label="Clear search"
+          onClick={onClear}
+          className="-mr-3.5 flex h-11 w-11 flex-none items-center justify-center text-text-muted hover:text-text"
+        >
+          <IconClose size={18} />
+        </button>
+      ) : null}
     </label>
   )
 }
