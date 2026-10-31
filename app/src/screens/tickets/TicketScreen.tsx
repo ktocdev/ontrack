@@ -4,6 +4,7 @@ import { useUser } from '../../auth/context'
 import { Avatar } from '../../components/Avatar'
 import { Card } from '../../components/Card'
 import { ErrorBanner } from '../../components/Notice'
+import { AddPhotoButton, PhotoThumb, PhotoTray, PhotoViewer } from '../../components/Photo'
 import { StatusPill, UrgentTag } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
@@ -14,13 +15,14 @@ import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useAvatarUrl } from '../profile/useProfile'
 import { threadItems, type ThreadItem } from './thread'
 import { scheduledLabel } from './tickets'
+import { usePickedPhotos, useSignedPhotos } from './usePhotos'
 import { usePostUpdate, useTicket } from './useTicket'
 
 /**
  * Manager · Ticket (design/screens/Ticket): the header with the status, the title and
- * where it is, the description and equipment, then the updates and the composer. The
- * equipment card opens the unit once Phase 4 builds that page, and photos come with
- * OT-28. Closed tickets get their own screen in OT-29; until then this one drops the
+ * where it is, the description, its photos and equipment, then the updates and the
+ * composer. The equipment card opens the unit once Phase 4 builds that page. A photo
+ * opens large when tapped, which has no board. Closed tickets get their own screen in OT-29; until then this one drops the
  * composer and Edit for them.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
@@ -33,6 +35,9 @@ export function TicketScreen() {
   const [draft, setDraft] = useState('')
   const [scrolled, setScrolled] = useState(false)
   const body = useRef<HTMLDivElement>(null)
+  const picked = usePickedPhotos()
+  const urls = useSignedPhotos(data?.photos.map((p) => p.path) ?? [])
+  const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
 
   if (isPending) {
     return (
@@ -50,10 +55,11 @@ export function TicketScreen() {
 
   const send = () =>
     post.mutate(
-      { body: draft.trim(), authorId: user.id },
+      { body: draft.trim(), photos: picked.photos },
       {
         onSuccess: () => {
           setDraft('')
+          picked.clear()
           // After the refreshed thread has drawn.
           requestAnimationFrame(() => body.current?.scrollTo({ top: body.current.scrollHeight }))
         },
@@ -118,6 +124,25 @@ export function TicketScreen() {
           </>
         )}
 
+        {data.photos.some((p) => !p.update_id) && (
+          <div className="flex flex-none flex-wrap gap-2">
+            {data.photos
+              .filter((p) => !p.update_id)
+              .map((p) => {
+                const src = urls.data?.get(p.path)
+                return (
+                  <PhotoThumb
+                    key={p.path}
+                    size="ticket"
+                    src={src}
+                    alt="Photo on this ticket"
+                    onOpen={() => src && setViewing({ src, alt: 'Photo on this ticket' })}
+                  />
+                )
+              })}
+          </div>
+        )}
+
         {ticket.equipment && (
           <>
             <SectionLabel className="-mb-0.5">Equipment</SectionLabel>
@@ -140,7 +165,17 @@ export function TicketScreen() {
         <SectionLabel className="-mb-0.5">Updates · {count}</SectionLabel>
         <div role="log" aria-label="Ticket updates" className="flex flex-none flex-col">
           {items.map((item) => (
-            <ThreadRow key={item.key} item={item} />
+            <ThreadRow
+              key={item.key}
+              item={item}
+              paths={
+                item.type === 'message'
+                  ? data.photos.filter((p) => p.update_id === item.updateId).map((p) => p.path)
+                  : []
+              }
+              urls={urls.data}
+              onOpen={setViewing}
+            />
           ))}
         </div>
       </ScreenBody>
@@ -164,20 +199,48 @@ export function TicketScreen() {
               setDraft(value)
             }}
             onSend={send}
-            busy={post.isPending}
+            busy={post.isPending || picked.reading}
+            canSendEmpty={picked.photos.length > 0}
+            leading={
+              <AddPhotoButton
+                variant="icon"
+                disabled={post.isPending || picked.reading}
+                onFiles={(files) => {
+                  if (post.isError) post.reset()
+                  void picked.add(files)
+                }}
+              />
+            }
+            above={
+              <>
+                <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
+                {picked.error && (
+                  <span role="alert" className="text-13 font-semibold text-danger">
+                    {picked.error}
+                  </span>
+                )}
+              </>
+            }
           />
         </>
       )}
+      <PhotoViewer src={viewing?.src ?? null} alt={viewing?.alt ?? ''} onClose={() => setViewing(null)} />
     </Screen>
   )
 }
 
-function ThreadRow({ item }: { item: ThreadItem }) {
-  if (item.type === 'event') return <ThreadEvent text={item.text} when={item.when} />
-  return <Message item={item} />
+type PhotoProps = {
+  paths: string[]
+  urls: Map<string, string> | undefined
+  onOpen: (photo: { src: string; alt: string }) => void
 }
 
-function Message({ item }: { item: Extract<ThreadItem, { type: 'message' }> }) {
+function ThreadRow({ item, ...photos }: { item: ThreadItem } & PhotoProps) {
+  if (item.type === 'event') return <ThreadEvent text={item.text} when={item.when} />
+  return <Message item={item} {...photos} />
+}
+
+function Message({ item, paths, urls, onOpen }: { item: Extract<ThreadItem, { type: 'message' }> } & PhotoProps) {
   const photo = useAvatarUrl(item.avatarPath)
   return (
     <ThreadMessage
@@ -185,6 +248,23 @@ function Message({ item }: { item: Extract<ThreadItem, { type: 'message' }> }) {
       when={item.when}
       mine={item.mine}
       avatar={<Avatar name={item.name} role={item.role} size={30} src={photo.data} />}
+      photos={
+        paths.length > 0
+          ? paths.map((path) => {
+              const src = urls?.get(path)
+              const alt = `Photo from ${item.mine ? 'You' : item.name}`
+              return (
+                <PhotoThumb
+                  key={path}
+                  src={src}
+                  alt={alt}
+                  tinted={item.mine}
+                  onOpen={() => src && onOpen({ src, alt })}
+                />
+              )
+            })
+          : undefined
+      }
     >
       {item.text}
     </ThreadMessage>

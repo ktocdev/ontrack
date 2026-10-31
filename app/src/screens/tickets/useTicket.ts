@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase } from '../../lib/supabase'
 import { assigneeIds, type Update } from './thread'
+import { uploadPhotos, type PickedPhoto } from './usePhotos'
 
 /**
  * Manager · Ticket: the ticket and its thread. RLS decides what comes back: a ticket
@@ -16,7 +17,7 @@ export function useTicket(id: string) {
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const sb = requireSupabase()
-      const [ticket, updates] = await Promise.all([
+      const [ticket, updates, photos] = await Promise.all([
         sb
           .from('tickets')
           .select(
@@ -31,11 +32,14 @@ export function useTicket(id: string) {
           )
           .eq('ticket_id', id)
           .order('created_at'),
+        sb.from('ticket_photos').select('path, update_id').eq('ticket_id', id).order('created_at'),
       ])
       // A malformed id in the address is a page that doesn't exist, not a failure.
-      if (ticket.error?.code === '22P02') return { ticket: null, updates: [], names: new Map<string, string>() }
+      if (ticket.error?.code === '22P02')
+        return { ticket: null, updates: [], photos: [], names: new Map<string, string>() }
       if (ticket.error) throw ticket.error
       if (updates.error) throw updates.error
+      if (photos.error) throw photos.error
 
       const thread = updates.data as Update[]
       const ids = assigneeIds(thread)
@@ -47,7 +51,7 @@ export function useTicket(id: string) {
         : null
       if (people?.error) throw people.error
       const names = new Map((people?.data ?? []).map((p) => [p.id, p.full_name]))
-      return { ticket: ticket.data, updates: thread, names }
+      return { ticket: ticket.data, updates: thread, photos: photos.data, names }
     },
   })
 }
@@ -55,10 +59,14 @@ export function useTicket(id: string) {
 export function usePostUpdate(ticketId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ body, authorId }: { body: string; authorId: string }) => {
-      const { error } = await requireSupabase()
-        .from('ticket_updates')
-        .insert({ ticket_id: ticketId, author_id: authorId, body })
+    // The files go first: if one fails nothing has been posted, and it can be tried again.
+    mutationFn: async ({ body, photos }: { body: string; photos: PickedPhoto[] }) => {
+      const paths = await uploadPhotos(ticketId, photos)
+      const { error } = await requireSupabase().rpc('post_ticket_update', {
+        p_ticket_id: ticketId,
+        p_body: body,
+        p_paths: paths,
+      })
       if (error) throw error
     },
     // The list moves too: a message is activity.

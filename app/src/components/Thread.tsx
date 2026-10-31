@@ -24,13 +24,15 @@ export function ThreadMessage({
   who,
   when,
   mine = false,
+  photos,
   children,
 }: {
   avatar: ReactNode
   who: string
   when: string
   mine?: boolean
-  children: ReactNode
+  photos?: ReactNode
+  children?: ReactNode
 }) {
   return (
     <div className="flex gap-2.5 py-2">
@@ -43,9 +45,12 @@ export function ThreadMessage({
         <span className="text-12 font-bold text-text-body">
           {who} <span className="font-medium text-text-muted">· {when}</span>
         </span>
-        <span className="whitespace-pre-wrap text-14 leading-[1.45] text-text [overflow-wrap:anywhere]">
-          {children}
-        </span>
+        {children && (
+          <span className="whitespace-pre-wrap text-14 leading-[1.45] text-text [overflow-wrap:anywhere]">
+            {children}
+          </span>
+        )}
+        {photos && <div className="mt-0.5 flex flex-wrap gap-2">{photos}</div>}
       </div>
     </div>
   )
@@ -61,6 +66,9 @@ export function Composer({
   label,
   placeholder,
   maxLength,
+  canSendEmpty = false,
+  leading,
+  above,
 }: {
   value: string
   onChange: (value: string) => void
@@ -69,8 +77,14 @@ export function Composer({
   label: string
   placeholder: string
   maxLength?: number
+  /** There is something to send without words: a picked photo. */
+  canSendEmpty?: boolean
+  /** Beside the field, on its left: the camera. */
+  leading?: ReactNode
+  /** Over the field: what has been picked. */
+  above?: ReactNode
 }) {
-  const empty = !value.trim()
+  const empty = !value.trim() && !canSendEmpty
 
   const grow = (el: HTMLTextAreaElement) => {
     el.style.height = 'auto'
@@ -89,33 +103,37 @@ export function Composer({
   return (
     <form
       onSubmit={submit}
-      className="flex flex-none items-end gap-2 border-t border-border bg-surface px-3 pb-[max(24px,var(--safe-bottom))] pt-2.5"
+      className="relative flex flex-none flex-col gap-2.5 border-t border-border bg-surface px-3 pb-[max(24px,var(--safe-bottom))] pt-2.5"
     >
-      <textarea
-        ref={setRef}
-        rows={1}
-        aria-label={label}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        value={value}
-        onChange={(e) => {
-          onChange(e.target.value)
-          grow(e.target)
-        }}
-        className="max-h-[120px] min-h-tap min-w-0 flex-1 resize-none rounded-[22px] border border-border-strong bg-surface-hover px-4 py-[11px] leading-[1.4] text-text outline-none transition-colors placeholder:text-text-muted focus:border-brand"
-      />
-      <button
-        type="submit"
-        aria-label="Post update"
-        disabled={empty || busy}
-        className={`flex h-11 w-11 flex-none items-center justify-center rounded-full transition-colors active:duration-0 ${
-          empty
-            ? 'cursor-not-allowed bg-border text-text-secondary'
-            : 'bg-brand-fill text-on-brand not-disabled:hover:bg-brand-fill-hover'
-        }`}
-      >
-        <IconArrowRight size={20} strokeWidth={2.2} />
-      </button>
+      {above}
+      <div className="flex items-end gap-2">
+        {leading}
+        <textarea
+          ref={setRef}
+          rows={1}
+          aria-label={label}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value)
+            grow(e.target)
+          }}
+          className="max-h-[120px] min-h-tap min-w-0 flex-1 resize-none rounded-[22px] border border-border-strong bg-surface-hover px-4 py-[11px] leading-[1.4] text-text outline-none transition-colors placeholder:text-text-muted focus:border-brand"
+        />
+        <button
+          type="submit"
+          aria-label="Post update"
+          disabled={empty || busy}
+          className={`flex h-11 w-11 flex-none items-center justify-center rounded-full transition-colors active:duration-0 ${
+            empty
+              ? 'cursor-not-allowed bg-border text-text-secondary'
+              : 'bg-brand-fill text-on-brand not-disabled:hover:bg-brand-fill-hover'
+          }`}
+        >
+          <IconArrowRight size={20} strokeWidth={2.2} />
+        </button>
+      </div>
     </form>
   )
 }

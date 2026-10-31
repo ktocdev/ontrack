@@ -135,6 +135,19 @@ export const IconArrowRight = (p: IconProps) => (
     <path d="M5 12h14M13 6l6 6-6 6" />
   </svg>
 )
+export const IconCamera = (p: IconProps) => (
+  <svg {...base({ size: 22, ...p })}>
+    <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </svg>
+)
+export const IconImage = (p: IconProps) => (
+  <svg {...base({ size: 24, ...p })}>
+    <rect x="3" y="4" width="18" height="16" rx="3" />
+    <circle cx="9" cy="10" r="2" />
+    <path d="m21 16-5-5-9 9" />
+  </svg>
+)
 export const IconQr = (p: IconProps) => (
   <svg {...base({ size: 22, ...p }, 2, false)}>
     <path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8" />
