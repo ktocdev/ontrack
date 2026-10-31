@@ -6,6 +6,9 @@ import { signIn } from './helpers'
  * tickets tests count on their times. Anything posted goes on Ari's OT-1045.
  */
 
+// The thread shows times in the device's zone, and the seed's are in Chicago.
+test.use({ timezoneId: 'America/Chicago' })
+
 const T1042 = '66666666-6666-4666-8666-000000001042'
 const T0988 = '66666666-6666-4666-8666-000000000988'
 const T1045 = '66666666-6666-4666-8666-000000001045'
