@@ -74,15 +74,69 @@ test('inviting a new manager goes on to Invite user with the restaurant picked',
   await expect(page.getByRole('status').filter({ hasText: `${name} deleted.` })).toBeVisible()
 })
 
-test('a custom color too close to one in use will not save', async ({ page }) => {
+test('a custom color may look like one in use, but not match it', async ({ page }) => {
   await signIn(page, 'admin@example.com')
   await page.goto('/admin/restaurants/new')
   await page.getByLabel('Restaurant name').fill('Almost Federale’s')
   await page.getByLabel('Address').fill('1 Test St')
   await page.getByRole('radio', { name: 'Custom color' }).click()
+  const save = page.getByRole('button', { name: 'Save restaurant' })
+
   await page.getByLabel('Hex code').fill('#A8386F') // next to Federale's Logan Square
-  await expect(page.getByText('Looks a lot like a color already in use.')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Save restaurant' })).toBeDisabled()
+  await expect(save).toBeEnabled()
+
+  await page.getByLabel('Hex code').fill('#A3336D') // Federale's Logan Square itself
+  await expect(page.getByText('That color is already in use.')).toBeVisible()
+  await expect(save).toBeDisabled()
+})
+
+test('a restaurant is edited, and only its own color stays free', async ({ page }, testInfo) => {
+  const name = `Edit Kitchen ${testInfo.project.name} ${Date.now() % 100000}`
+  const renamed = `${name} Two`
+  await signIn(page, 'admin@example.com')
+  await page.goto('/admin/restaurants/new')
+  await page.getByLabel('Restaurant name').fill(name)
+  await page.getByLabel('Address').fill('100 W Test St, Chicago')
+  await page.getByLabel('Phone').fill('(312) 555-0100')
+  await page.getByRole('radio', { name: 'Custom color' }).click()
+  const color = `#0${String(Date.now() % 100000).padStart(5, '0')}`
+  await page.getByLabel('Hex code').fill(color)
+  await page.getByRole('button', { name: 'Save restaurant' }).click()
+  await expect(page.getByRole('status').filter({ hasText: `${name} added.` })).toBeVisible()
+
+  await page.getByRole('button', { name: new RegExp(`^${name}`) }).click()
+  await page.getByRole('dialog', { name }).getByRole('link', { name: 'Edit restaurant' }).click()
+  await expect(page.getByRole('heading', { name: 'Edit restaurant' })).toBeVisible()
+
+  // It opens as saved, with no manager to pick.
+  await expect(page.getByLabel('Restaurant name')).toHaveValue(name)
+  await expect(page.getByLabel('Address')).toHaveValue('100 W Test St, Chicago')
+  await expect(page.getByLabel('Phone')).toHaveValue('(312) 555-0100')
+  await expect(page.getByLabel('Hex code')).toHaveValue(color)
+  await expect(page.getByLabel('Manager')).toHaveCount(0)
+  await page.waitForTimeout(400)
+  await testInfo.attach('edit-restaurant', { body: await page.screenshot(), contentType: 'image/png' })
+
+  // A name another restaurant has is refused on the field, and the error clears on the next edit.
+  await page.getByLabel('Restaurant name').fill('Porter')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+  await expect(page.getByText('A restaurant with this name already exists.')).toBeVisible()
+
+  await page.getByLabel('Restaurant name').fill(renamed)
+  await expect(page.getByText('A restaurant with this name already exists.')).toBeHidden()
+  await page.getByLabel('Phone').fill('')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+  await expect(page).toHaveURL(/\/admin\/restaurants$/)
+  await expect(page.getByRole('status').filter({ hasText: `${renamed} saved.` })).toBeVisible()
+  await expect(page.getByText(renamed, { exact: true })).toBeVisible()
+
+  await page.getByRole('button', { name: new RegExp(`^${renamed}`) }).click()
+  await page.getByRole('dialog', { name: renamed }).getByRole('button', { name: 'Delete restaurant' }).click()
+  await page
+    .getByRole('dialog', { name: `Delete ${renamed}?` })
+    .getByRole('button', { name: 'Delete restaurant' })
+    .click()
+  await expect(page.getByRole('status').filter({ hasText: `${renamed} deleted.` })).toBeVisible()
 })
 
 test('a manager cannot open the admin screens', async ({ page }) => {

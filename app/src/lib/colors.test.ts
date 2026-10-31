@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { distance, isHex, normalizeHex, presetHex, reservedColors, tooClose } from './colors'
+import { isHex, normalizeHex, presetHex, reservedColors } from './colors'
 
 describe('restaurant colors', () => {
   it('accepts six-digit hex only', () => {
@@ -12,13 +12,6 @@ describe('restaurant colors', () => {
     expect(normalizeHex(' A3336D ')).toBe('#a3336d')
     expect(normalizeHex('#C2185B')).toBe('#c2185b')
     expect(normalizeHex('#C21')).toBe('#C21')
-  })
-
-  it('flags colors too close to one in use', () => {
-    const taken = ['#a3336d', '#1b4f91']
-    expect(distance('#a3336d', '#a3336d')).toBe(0)
-    expect(tooClose('#a8386f', taken)).toBe(true)
-    expect(tooClose('#5c6b1f', taken)).toBe(false)
   })
 
   it('reads presets and reserved colors from the tokens', () => {
