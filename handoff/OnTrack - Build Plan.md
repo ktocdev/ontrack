@@ -189,7 +189,7 @@ Every unit has a page, a QR label, and a history. This closes the loop that EcoT
 - Manager equipment list: same list scoped to their restaurant, with Add equipment only when `edit_equipment` is granted
 - Equipment detail tabs: Details (serial, QR, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `see_costs`
 - Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print
-- Domain: `fourcorners.ontrack-app.app` connected to the production Worker and added to Supabase Auth's site and redirect URLs, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
+- Domain (done Oct 30, 2026): `fourcorners.ontrack-app.app` connected to the production Worker and set as Supabase Auth's site URL, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
 - QR: each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
 - Empty states: no equipment, no tickets on a unit, no service yet, QR not recognized; equipment loading skeletons
@@ -326,7 +326,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 
 - [x] Buy `ontrack-app.app` and connect it to the production Worker
 - [x] Connect `fourcorners.ontrack-app.app`, so QR labels and emails have a stable base
-- [ ] Set `APP_URL` (Edge Functions, Secrets) and the Site URL (Authentication, URL Configuration) to `https://fourcorners.ontrack-app.app`, so emails link there
+- [x] Set `APP_URL` (Edge Functions, Secrets) and the Site URL (Authentication, URL Configuration) to `https://fourcorners.ontrack-app.app`, so emails link there (Oct 30, 2026)
 - [x] Set up `ontrack-app.app` as the Resend sending domain, which replaces the `onboarding@resend.dev` test sender
 - [x] Add the live address to the hosted Supabase project's Auth site and redirect URLs
 - [x] Try the invite flow on two devices, which is the Phase 1 done test as written (Oct 30, 2026)
