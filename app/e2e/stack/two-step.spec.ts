@@ -341,6 +341,60 @@ test('removing your own authenticator through the API does not turn 2-step off',
   await person.close()
 })
 
+test('a new password ends remembered phones, and an unfinished reset does not', async ({
+  browser,
+  page,
+  request,
+}, testInfo) => {
+  await signIn(page, 'admin@example.com')
+  const person = await newPerson(browser, page, request, testInfo, 'Wes Manager', 'Restaurant manager')
+  const phone = person.page
+  await expect(phone).toHaveURL(/\/tickets$/)
+  await phone.goto('/profile/2-step')
+  const { secret } = await finishSetup(phone, testInfo)
+  await expect(phone.getByRole('heading', { name: 'Profile' })).toBeVisible()
+  await signOut(phone)
+
+  // Remember this browser.
+  await submitSignIn(phone, person.email)
+  await phone.getByLabel('Verification code').fill(totp(secret))
+  await phone.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(phone.getByText(RESTAURANT).first()).toBeVisible()
+  await signOut(phone)
+
+  // Open a reset link and walk away: the browser is still remembered.
+  await phone.goto('/reset')
+  await phone.getByLabel('Work email').fill(person.email)
+  await phone.getByRole('button', { name: /reset link/i }).click()
+  await expect(phone.getByRole('heading', { name: 'Check your email' })).toBeVisible()
+  const mail = await newestMail(request, person.email, 'password')
+  await phone.goto(/https?:\/\/\S+\/reset\/new#[^\s)\]]+/.exec(mail)![0].replace(/&amp;/g, '&'))
+  await expect(phone.getByRole('heading', { name: 'Enter your code' })).toBeVisible()
+  await phone.getByRole('button', { name: 'Back to sign in' }).click()
+  await expect(phone.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible()
+
+  await submitSignIn(phone, person.email)
+  await expect(phone.getByText(RESTAURANT).first()).toBeVisible()
+  await expect(phone.getByRole('heading', { name: 'Enter your code' })).toBeHidden()
+
+  // Change the password: the session carries on, but the browser is not remembered now.
+  await phone.goto('/profile')
+  await phone.getByRole('button', { name: 'Change', exact: true }).click()
+  await phone.getByLabel('Current password').fill(PASSWORD)
+  await phone.getByLabel('New password', { exact: true }).fill(NEXT_PASSWORD)
+  await phone.getByLabel('Confirm new password').fill(NEXT_PASSWORD)
+  await phone.getByLabel('Code from your authenticator app').fill(totp(secret))
+  await phone.getByRole('button', { name: 'Update password' }).click()
+  await expect(phone.getByText('Password updated.')).toBeVisible()
+  await phone.reload()
+  await expect(phone.getByRole('heading', { name: 'Profile' })).toBeVisible()
+  await signOut(phone)
+
+  await submitSignIn(phone, person.email, NEXT_PASSWORD)
+  await expect(phone.getByRole('heading', { name: 'Enter your code' })).toBeVisible()
+  await person.close()
+})
+
 test('a reset link with 2-step on asks for a code before the new password', async ({
   browser,
   page,
