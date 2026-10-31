@@ -28,7 +28,7 @@ app/                 the PWA
   scripts/icons.mjs       regenerates public/ icons from the mark
   wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
 supabase/
-  migrations/        eight files: types, org+access (can()), equipment, tickets,
+  migrations/        one file per change; the first eight are types, org+access (can()), equipment, tickets,
                      service+money, walkthroughs, views, storage
   functions/         Edge Functions: invite-user, revoke-user, reset-two-step, send-email, _shared/
   seed.sql           the design's sample data; fixed ids (see the header)
@@ -131,7 +131,9 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 1 · Accounts and access
+## Current phase: 2 · Tickets, the manager loop
+
+The plan's Phase 2 section says what ships. Phase 1, below, is done and stays as the record of how it was split.
 
 Done when an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
 
@@ -147,6 +149,10 @@ Done when an admin invites a manager from a phone, the manager sets up the accou
 | OT-13 | 2-step verification (TOTP), required for admins                                                                                                                                                                |
 | OT-15 | Fixes from trying OT-11 live: form errors clear on the next edit, Resend confirms, no signing in through a URL                                                                                                 |
 | OT-14 | Group settings on Roles & rights: edit the group name; profile photo switch (off refuses uploads and hides existing photos, on restores them)                                                                  |
+| OT-16 | Reload fix: `html_handling: none`, so the service worker's fallback never meets a redirect |
+| OT-17 | 2-step wording: the QR code is for someone on a computer, not a second phone |
+| OT-18 | Profile confirms a photo saved or removed |
+| OT-19 | Phase 1 note and status |
 
 Email goes through Resend. Until `EMAIL_FROM` names a verified sender, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM` and `SUPPORT_EMAIL`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite and reset links from there.
 
