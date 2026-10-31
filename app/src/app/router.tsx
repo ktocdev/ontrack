@@ -242,6 +242,12 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/admin/AddRestaurantScreen')).AddRestaurantScreen,
                     }),
                   },
+                  {
+                    path: '/admin/restaurants/:id/edit',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/EditRestaurantScreen')).EditRestaurantScreen,
+                    }),
+                  },
                 ],
               },
             ],

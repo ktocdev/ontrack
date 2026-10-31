@@ -14,7 +14,8 @@ import { useAuth } from './context'
 /**
  * Route guards. RequireAuth sits above every signed-in route: it shows the
  * centered spinner while the session and profile load, sends signed-out
- * people to /sign-in with a return path, keeps an expired session on its
+ * people to /sign-in with a return path (none if they just signed out on
+ * purpose), keeps an expired session on its
  * route behind the signed-out sheet, shows the 500 board with Try again when
  * the profile fails to load, and shows the no-access screen to a session
  * with no visible profile (deactivated or uninvited). A session that owes its
@@ -37,13 +38,17 @@ export function RequireAuth({ children }: { children?: ReactNode }) {
     case 'unconfigured':
       return <NotConfiguredScreen />
     case 'loading':
-      return <CenteredLoading title="Signing you in…" body="This only takes a moment." />
+      return <CenteredLoading title="Loading…" body="This only takes a moment." />
     case 'expired':
       return <SignedOutScreen />
     case 'error':
       return <ServerErrorScreen error={auth.error} onRetry={auth.retry} />
     case 'signed-out':
-      return <Navigate to="/sign-in" replace state={{ from: location.pathname + location.search }} />
+      return auth.deliberate ? (
+        <Navigate to="/sign-in" replace />
+      ) : (
+        <Navigate to="/sign-in" replace state={{ from: location.pathname + location.search }} />
+      )
     case 'no-profile':
       return (
         <NoAccessScreen

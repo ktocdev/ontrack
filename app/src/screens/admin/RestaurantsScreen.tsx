@@ -13,8 +13,8 @@ import { useAdminRestaurants, type AdminRestaurant } from './useRestaurants'
 /**
  * Admin · Restaurants (design/screens/Admin-Restaurants). Every restaurant
  * with its color, open ticket count, manager (or the pending invite for one)
- * and address; Add opens the form. Tapping a row offers Archive (or Restore)
- * and Delete; archived restaurants sit in their own section below.
+ * and address; Add opens the form. Tapping a row offers Edit, Archive (or
+ * Restore) and Delete; archived restaurants sit in their own section below.
  */
 export function RestaurantsScreen() {
   const { data, isPending } = useAdminRestaurants()

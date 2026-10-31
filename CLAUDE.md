@@ -156,8 +156,9 @@ Done when an admin invites a manager from a phone, the manager sets up the accou
 | OT-20 | 2-step audit fixes: a reset ends live sessions, reset links cannot use a remembered phone, removing your own authenticator does not turn it off |
 | OT-21 | 2-step audit fixes: a new password or deactivation ends remembered phones, passes and sessions |
 | OT-22 | 2-step audit fixes: signed-out visitors run no database functions, checked in CI |
+| OT-23 | Fixes from trying Phase 1 live: no near-color warning, Edit restaurant, signing back in after Sign out goes home, a refresh says Loading, no fallback email sender |
 
-Email goes through Resend. Until `EMAIL_FROM` names a verified sender, the sender is `onboarding@resend.dev`, which only delivers to the Resend account's own address. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM` and `SUPPORT_EMAIL`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite and reset links from there.
+Email goes through Resend. `EMAIL_FROM` names the sender, on a domain verified with Resend; there is no fallback, so without it sending fails and the function log says why. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM` and `SUPPORT_EMAIL`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite and reset links from there.
 
 Auth's own emails are set per project: `supabase/templates/` is what `config.toml` uses locally, and the hosted project needs the same files pasted in (Authentication, Emails), since no deploy pushes them, along with the 1800-second email OTP expiry and the password-changed notification. The reset template's link carries `token_hash` in its fragment, and the app spends it when `/reset/new` opens, so a mail scanner fetching the link cannot use it up. Only that link opens the new-password form.
 

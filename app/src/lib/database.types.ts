@@ -1404,6 +1404,9 @@ isOneToOne: false
 "two_step_status":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"update_restaurant":
+{ Args: { "p_address": string,"p_color": string,"p_id": string,"p_name": string,"p_phone": string }; Returns: undefined
+                           },
 "use_backup_code":
 { Args: { "p_code": string }; Returns: string
                            },

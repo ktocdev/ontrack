@@ -80,10 +80,12 @@ test('help searches the questions and opens one answer at a time', async ({ page
   await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
 })
 
-test('sign out returns to sign in', async ({ page }) => {
+test('sign out returns to sign in, and signing back in goes home', async ({ page }) => {
   await openProfile(page)
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/sign-in/)
+  await page.getByTestId('mock-manager').click()
+  await expect(page).toHaveURL(/\/tickets$/)
 })
 
 test('the signed-out sheet stays until an action closes it', async ({ page }) => {

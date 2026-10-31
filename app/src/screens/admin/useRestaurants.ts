@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase } from '../../lib/supabase'
 
 /**
- * Admin · Restaurants and Add restaurant. One read for the list: restaurants,
+ * Admin · Restaurants, Add and Edit restaurant. One read for the list: restaurants,
  * their open ticket counts, the managers who could run one, and pending
  * manager invites (so a restaurant whose manager has not accepted yet still
  * shows a name), plus each restaurant's history so Delete is only offered
- * when there is none. Adding, archiving, restoring and deleting each go
+ * when there is none. Adding, editing, archiving, restoring and deleting each go
  * through one database function that checks the caller and logs the change.
  */
 
@@ -17,6 +17,7 @@ export type AdminRestaurant = {
   id: string
   name: string
   address: string | null
+  phone: string | null
   color: string
   openCount: number
   manager: ManagerLine
@@ -36,7 +37,7 @@ export function useAdminRestaurants() {
     queryFn: async () => {
       const sb = requireSupabase()
       const [restaurants, counts, managers, invites, history] = await Promise.all([
-        sb.from('restaurants').select('id, name, address, color, manager_id, archived_at').order('sort_order'),
+        sb.from('restaurants').select('id, name, address, phone, color, manager_id, archived_at').order('sort_order'),
         sb.from('v_restaurant_open_counts').select('restaurant_id, open_count'),
         sb.from('profiles').select('id, full_name').eq('role', 'manager').is('deactivated_at', null).order('full_name'),
         sb
@@ -65,6 +66,7 @@ export function useAdminRestaurants() {
           id: r.id,
           name: r.name,
           address: r.address,
+          phone: r.phone,
           color: r.color,
           openCount: openBy.get(r.id) ?? 0,
           manager,
@@ -105,7 +107,7 @@ export type NewRestaurant = {
 }
 
 /** Which field a refusal belongs to, from the constraint Postgres names. */
-export class AddRestaurantError extends Error {
+export class RestaurantError extends Error {
   readonly field: 'name' | 'color' | 'form'
   constructor(message: string, field: 'name' | 'color' | 'form') {
     super(message)
@@ -113,8 +115,27 @@ export class AddRestaurantError extends Error {
   }
 }
 
-export function useAddRestaurant() {
+function refusal(error: { code: string; message: string; details: string | null }) {
+  const text = `${error.message} ${error.details ?? ''}`
+  if (error.code === '23505' && /color/.test(text)) {
+    return new RestaurantError('Another restaurant already uses this color. Pick another.', 'color')
+  }
+  if (error.code === '23505') return new RestaurantError('A restaurant with this name already exists.', 'name')
+  return new RestaurantError("Couldn't save the restaurant. Check your connection and try again.", 'form')
+}
+
+/** Restaurants appear in everyone's scope list too (useUser), so refresh both. */
+function useRefreshRestaurants() {
   const queryClient = useQueryClient()
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: RESTAURANTS_KEY }),
+      queryClient.invalidateQueries({ queryKey: ['me'] }),
+    ])
+}
+
+export function useAddRestaurant() {
+  const refresh = useRefreshRestaurants()
   return useMutation({
     mutationFn: async (r: NewRestaurant) => {
       const { data, error } = await requireSupabase().rpc('add_restaurant', {
@@ -124,32 +145,28 @@ export function useAddRestaurant() {
         p_color: r.color,
         ...(r.managerId ? { p_manager_id: r.managerId } : {}),
       })
-      if (error) {
-        const text = `${error.message} ${error.details ?? ''}`
-        if (error.code === '23505' && /color/.test(text)) {
-          throw new AddRestaurantError('Another restaurant already uses this color. Pick another.', 'color')
-        }
-        if (error.code === '23505') throw new AddRestaurantError('A restaurant with this name already exists.', 'name')
-        throw new AddRestaurantError("Couldn't save the restaurant. Check your connection and try again.", 'form')
-      }
+      if (error) throw refusal(error)
       return data
     },
-    // Restaurants appear in everyone's scope list too (useUser), so refresh both.
-    onSuccess: () =>
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: RESTAURANTS_KEY }),
-        queryClient.invalidateQueries({ queryKey: ['me'] }),
-      ]),
+    onSuccess: refresh,
   })
 }
 
-function useRefreshRestaurants() {
-  const queryClient = useQueryClient()
-  return () =>
-    Promise.all([
-      queryClient.invalidateQueries({ queryKey: RESTAURANTS_KEY }),
-      queryClient.invalidateQueries({ queryKey: ['me'] }),
-    ])
+export function useUpdateRestaurant() {
+  const refresh = useRefreshRestaurants()
+  return useMutation({
+    mutationFn: async (r: Omit<NewRestaurant, 'managerId'> & { id: string }) => {
+      const { error } = await requireSupabase().rpc('update_restaurant', {
+        p_id: r.id,
+        p_name: r.name,
+        p_address: r.address,
+        p_phone: r.phone,
+        p_color: r.color,
+      })
+      if (error) throw refusal(error)
+    },
+    onSuccess: refresh,
+  })
 }
 
 /** Archive (true) or restore (false). */

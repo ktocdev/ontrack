@@ -1,13 +1,17 @@
 /**
- * Sends through Resend. EMAIL_FROM names the sender; until the group's domain is
- * verified, Resend's test sender only delivers to the Resend account's own
- * address. EMAIL_SINK_URL is set only in config.toml for the local stack: mail
- * goes to its Mailpit inbox, so the flow tests can open a real invite email.
+ * Sends through Resend. EMAIL_FROM names the sender, on a domain verified with
+ * Resend; with it unset, sending fails and says so in the function log.
+ * EMAIL_SINK_URL is set only in config.toml for the local stack: mail goes to its
+ * Mailpit inbox, so the flow tests can open a real invite email.
  */
 
 export type Email = { to: string; subject: string; html: string; text: string; replyTo?: string }
 
-const FROM = () => Deno.env.get('EMAIL_FROM') ?? 'OnTrack <onboarding@resend.dev>'
+function sender() {
+  const from = Deno.env.get('EMAIL_FROM')?.trim()
+  if (!from) throw new Error('email not sent: the EMAIL_FROM function secret is not set')
+  return from
+}
 
 export async function sendEmail(email: Email): Promise<void> {
   const sink = Deno.env.get('EMAIL_SINK_URL')
@@ -30,7 +34,7 @@ export async function sendEmail(email: Email): Promise<void> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: FROM(),
+          from: sender(),
           to: [email.to],
           subject: email.subject,
           html: email.html,

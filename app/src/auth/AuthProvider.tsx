@@ -52,6 +52,7 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [expired, setExpired] = useState<SignInStamp | null>(null)
   /** True while the person's own Sign out is in flight, so it is not mistaken for an expiry. */
   const signingOut = useRef(false)
+  const [deliberate, setDeliberate] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -71,6 +72,7 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       if (event === 'SIGNED_OUT') {
         const last = readStamp()
         if (!signingOut.current && last) setExpired(last)
+        setDeliberate(signingOut.current)
         clearStamp()
         signingOut.current = false
         queryClient.removeQueries({ queryKey: ['me'] })
@@ -126,7 +128,7 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     if (session === null) {
       return expired
         ? { status: 'expired', email: expired.email, name: expired.name, dismiss }
-        : { status: 'signed-out' }
+        : { status: 'signed-out', deliberate }
     }
     if (me.isPending) return { status: 'loading' }
     if (me.isError) return { status: 'error', error: me.error, retry: refetchMe, signOut }
@@ -140,20 +142,22 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       twoStep: me.data.twoStep,
       signOut,
     }
-  }, [session, expired, dismiss, me.isPending, me.isError, me.error, me.data, refetchMe, signOut])
+  }, [session, expired, deliberate, dismiss, me.isPending, me.isError, me.error, me.data, refetchMe, signOut])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 function MockAuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState(readMockRole)
+  const [deliberate, setDeliberate] = useState(false)
 
   const value = useMemo<AuthState>(() => {
     const signOut = async () => {
       writeMockRole(null)
+      setDeliberate(true)
       setRole(null)
     }
-    if (!role) return { status: 'signed-out' }
+    if (!role) return { status: 'signed-out', deliberate }
     const user = MOCK_USERS[role]
     const restaurants =
       role === 'manager' ? MOCK_RESTAURANTS.filter((r) => r.id === user.home_restaurant_id) : MOCK_RESTAURANTS
@@ -165,7 +169,7 @@ function MockAuthProvider({ children }: { children: ReactNode }) {
       twoStep: TWO_STEP_OFF,
       signOut,
     }
-  }, [role])
+  }, [role, deliberate])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

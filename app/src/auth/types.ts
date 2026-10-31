@@ -22,7 +22,8 @@ export type AuthState =
   /** No VITE_SUPABASE_* in this build. */
   | { status: 'unconfigured' }
   | { status: 'loading' }
-  | { status: 'signed-out' }
+  /** `deliberate`: they just signed out, so signing back in starts at home, not on the page they left. */
+  | { status: 'signed-out'; deliberate?: boolean }
   /**
    * The session ended without the person signing out: the 12-hour cap, or a
    * revoked refresh token. The current route stays put and the signed-out

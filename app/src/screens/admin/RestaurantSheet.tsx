@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from '../../components/Button'
+import { Button, ButtonLink } from '../../components/Button'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { useDeleteRestaurant, useSetArchived, type AdminRestaurant } from './useRestaurants'
@@ -69,11 +69,15 @@ export function RestaurantSheet({ restaurant: r, onClose }: { restaurant: AdminR
       </>
     ) : (
       <>
-        {r.archived ? (
+        {r.archived && (
           <Button onClick={() => setArchived(false)} loading={archive.isPending}>
             Restore restaurant
           </Button>
-        ) : (
+        )}
+        <ButtonLink variant="secondary" to={`/admin/restaurants/${r.id}/edit`}>
+          Edit restaurant
+        </ButtonLink>
+        {!r.archived && (
           <Button variant="secondary" onClick={() => setStep('archive')}>
             Archive restaurant
           </Button>

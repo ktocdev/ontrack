@@ -1,8 +1,7 @@
 /**
  * Restaurant accent colors. Every restaurant has one, shown as the square
- * before its name, so no two may look alike. The database refuses an exact
- * repeat (restaurants_color_unique); this module catches near ones, which is
- * what the Add restaurant form warns about.
+ * before its name. The database refuses an exact repeat
+ * (restaurants_color_unique); two that only look alike are allowed.
  *
  * The presets live in tokens.css (--preset-*), so they are read from the page
  * rather than copied here. Brand green and urgent orange are reserved: a
@@ -25,9 +24,6 @@ export const PRESETS: Preset[] = [
 /** Tokens no restaurant may imitate. */
 const RESERVED_TOKENS = ['--brand-fill', '--urgent']
 
-/** Below this RGB distance two squares are hard to tell apart at 10px. */
-export const TOO_CLOSE = 60
-
 export function isHex(value: string) {
   return /^#[0-9a-f]{6}$/i.test(value)
 }
@@ -37,22 +33,6 @@ export function normalizeHex(value: string) {
   const v = value.trim()
   const withHash = v.startsWith('#') ? v : `#${v}`
   return isHex(withHash) ? withHash.toLowerCase() : v
-}
-
-function rgb(hex: string): [number, number, number] {
-  const n = parseInt(hex.slice(1), 16)
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
-}
-
-export function distance(a: string, b: string) {
-  const [r1, g1, b1] = rgb(a)
-  const [r2, g2, b2] = rgb(b)
-  return Math.hypot(r1 - r2, g1 - g2, b1 - b2)
-}
-
-/** True when `hex` is within TOO_CLOSE of any color in `taken`. */
-export function tooClose(hex: string, taken: string[]) {
-  return taken.some((t) => isHex(t) && distance(hex, t) < TOO_CLOSE)
 }
 
 /** Read a token's value from the page (theme-independent tokens only). */
