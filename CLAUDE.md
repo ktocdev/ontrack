@@ -133,7 +133,22 @@ A screen that needs real data can only render against the stack, which runs in C
 
 ## Current phase: 2 · Tickets, the manager loop
 
-The plan's Phase 2 section says what ships. Phase 1, below, is done and stays as the record of how it was split.
+The plan's Phase 2 section says what ships and what it has to work around.
+
+Done when a manager at Federale's Logan Square creates a ticket with a photo on a phone, it appears in the database with the right restaurant, and a second manager at Porter cannot see it. Ops sees tickets only through the database until Phase 3.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-24 | Plan update and this split |
+| OT-25 | Default categories in a migration (the hosted project has none); Open tickets list, search, Front / Back segments, empty and no-results states, the ticket card |
+| OT-26 | Create ticket: area and category, then the form with the equipment picker; the save-failed state |
+| OT-27 | Ticket detail: header, description, equipment card, thread with system events, text composer |
+| OT-28 | Photos: resize to 1600 px, add on the form and in the composer, thumbnails in the thread |
+| OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
+| OT-30 | In-house tab: list, check off, delete while open |
+| OT-31 | Turn off or delete a category; the done test as one flow; the phase note |
+
+## Phase 1, for the record
 
 Done when an admin invites a manager from a phone, the manager sets up the account from the email on another phone, and the RLS tests show the manager sees only their restaurant. Granting `see_costs` to that manager in Roles & rights changes what the database returns, with no app change.
 
