@@ -96,6 +96,8 @@ Password change re-checks the current password by signing in on a separate throw
 
 Ticket photos live under `<ticket id>/` in `ticket-photos`, and the file follows its note: `can_see_ticket_photo()` keeps a photo on an internal note from anyone who can't read the note, since listing the ticket's folder would otherwise reach it. Messages with photos go through `post_ticket_update`, so a failure leaves neither. Leadership writes nothing in a thread.
 
+In-house tasks are added by insert and changed only through `set_inhouse_fix_done` and `delete_inhouse_fix`. Unlike the archive and delete reference, these two are `security definer` and check `can('create_tickets')` themselves, because a manager can't write `audit_log` and a delete the API could reach directly would skip the log. A delete removes the row, only while the task is open.
+
 Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
 
 Avatars: initials follow the boards, with the color from the role and from the invite state on pending and expired rows. `group_settings` also holds the group-wide profile photo switch; off is enforced in the `avatars` storage policies and on `profiles.avatar_path`, not only by hiding the buttons, and a person can still remove their own photo, so their own stays readable to them because Storage reads a file to remove it. It covers profile photos only, not ticket or equipment photos. Every avatar goes through `useAvatarUrl`, which returns nothing when off. A signed URL already handed out works until it expires, within the hour.

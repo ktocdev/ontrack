@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Oct 31, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains) and the Phase 2 pull requests
+Oct 28, 2026 · Katie · updated Nov 1, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains) and the Phase 2 pull requests
 
 ## How to read this
 
@@ -18,7 +18,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
-| 2 · Tickets, the manager loop | In progress | OT-24 plan update, then OT-25 to OT-32 (see Phase 2) |
+| 2 · Tickets, the manager loop | In progress | OT-24 plan update, then OT-25 to OT-33 (see Phase 2) |
 
 Phase 0 notes:
 
@@ -102,7 +102,7 @@ Decided Oct 30, 2026, after restaurants got archive and delete in OT-9. Each pha
 | Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | 6; categories later, not scheduled |
 | Tickets | None (closing ends a ticket) | Never | |
 | Walkthroughs, ticket updates, service records, invoices | None (they are the record) | Never; edits are logged | |
-| In-house fixes and tasks | None | While still open | 6 |
+| In-house fixes and tasks | None | While still open | 2 (OT-30) |
 
 ## Phase 0 · Foundation
 
@@ -194,7 +194,9 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 - **Photos go up after the ticket they belong to,** whose folder and policies they need. If they fail, the ticket stands and the message says to add them in an update. In an update the files go first, so a failure posts nothing. A file uploaded just before a failed post stays in Storage unreferenced, which only people who can see the ticket can reach.
 - **Tapping a photo opens it large, and picked photos show in a tray with Remove.** Neither has a board. An update or new ticket takes up to 6 photos.
 - **Nothing adds equipment until Phase 4.** On the live app the picker is empty and every category says 0 items, so tickets there have no equipment. The seeded stack shows the full boards.
-- **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data.
+- **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data. That empty list says "Nothing to fix right now", which has no board.
+- **A checked-off in-house task offers no Delete,** though the board draws it, since the rule is delete while open and the database refuses it. Unchecking brings the task back, and it can be deleted then.
+- **Deleting an in-house task removes the row,** as the board's "permanent" says, and the audit log keeps who deleted what. Each task now carries its area, because Front and Back can't be read from a quarterly task's label; a task with none shows only under All. Phase 6 sets the area when it creates a task, and adds the write that Convert to ticket needs.
 - **The QR buttons wait for Phase 4,** since a scan would have nothing to open: Scan an equipment QR code on Create ticket, and Scan a QR code with its sentence on the empty Open tickets screen. These are the planned differences from those boards.
 - **Save-failed uses Log service's board.** The only Error-Save-Failed board is drawn on Log service, so Create ticket takes its banner and its Report a problem link. It says what went wrong and keeps everything typed.
 - **A manager with more than one restaurant** has no board: they get a Restaurant picker on Create ticket, and the restaurant's name on each Open tickets card.
