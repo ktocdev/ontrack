@@ -18,7 +18,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
-| 2 · Tickets, the manager loop | In progress | OT-24 plan update, then OT-25 to OT-33 (see Phase 2) |
+| 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-33 (see Phase 2) |
 
 Phase 0 notes:
 
@@ -35,6 +35,13 @@ Phase 1 note (Oct 30, 2026):
 - **OT-23 (Oct 31, 2026):** the fixes that testing led to were tried on the live app and work: Edit restaurant, no near-color warning, signing back in after Sign out goes home, a refresh says Loading, and no fallback email sender.
 - **What the client should try:** accept an invite on a phone, sign in, and look at Profile. Change a password, or turn on 2-step verification from Profile. Screens past that are placeholders until Phase 2, and Four Corners has no accounts yet, so this waits until its first admin is chosen (see Open items).
 - **How the done test went:** an invite went out and the account was set up from the email on a second phone, against the live app. Turning on See costs for that manager saved as an override, but changes nothing a person can see yet: no screen shows costs until the Closed ticket in Phase 2, and the live project has no cost records. That the database then returns costs is proven on the seeded data, in `e2e/stack/people.spec.ts` and pgTAP, as are the manager seeing only their restaurant and the refusals behind 2-step and the photo switch.
+
+Phase 2 note (Nov 1, 2026):
+
+- **What changed:** a manager can report a problem from a phone and follow it to closed. Open tickets has search and Front / Back. Create ticket goes from area and category to a form with equipment, urgency and photos, shrunk to 1600 px in the browser. A ticket has its thread with system events and a composer. Edit changes the title, description, equipment and urgency, and closes with an optional comment. A closed ticket is read-only and can be reopened within 30 days with a reason; after that it offers a new ticket linked to the old one. The ellipsis menu beside the search leads to a list of closed tickets. The In-house tab checks tasks off and deletes them while open. Cost and contractor show on a closed ticket only with See costs.
+- **What the client should try:** sign in as a manager on a phone, create a ticket with a photo, post an update, then close and reopen it. Ops can't see tickets in the app until Phase 3, and Four Corners has no accounts yet, so this also waits until its first admin is chosen (see Open items).
+- **What can't be tried on the live app yet:** nothing adds equipment until Phase 4, so the picker is empty there, and nothing adds in-house tasks until Phase 6, so the In-house tab is empty. Nothing notifies anyone until Phase 3. The seeded stack shows the full boards.
+- **How the done test went:** `e2e/stack/done-phase-2.spec.ts` runs it on Chromium and WebKit against the seeded stack: Maya at Logan Square creates a ticket with a photo, the database has it at her restaurant with the photo under the ticket, and a manager at Porter can't find it in the list, by search or by link, or read it or sign its photo through the API. It was then tried on a real phone against the live app (Nov 1, 2026): a manager at Logan Square created a ticket with a photo, a manager at Porter did not see it in the list or by search, and the table editor showed the right restaurant. The iPhone part waits for BrowserStack, as in Phases 0 and 1.
 
 ## Decisions
 
@@ -194,6 +201,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 - **Photos go up after the ticket they belong to,** whose folder and policies they need. If they fail, the ticket stands and the message says to add them in an update. In an update the files go first, so a failure posts nothing. A file uploaded just before a failed post stays in Storage unreferenced, which only people who can see the ticket can reach.
 - **Tapping a photo opens it large, and picked photos show in a tray with Remove.** Neither has a board. An update or new ticket takes up to 6 photos.
 - **Nothing adds equipment until Phase 4.** On the live app the picker is empty and every category says 0 items, so tickets there have no equipment. The seeded stack shows the full boards.
+- **The done test's second manager is seeded.** The boards have nobody at Porter but an expired invite, so the seed adds Dana Ortiz as its manager. That person shows on Users, which the board doesn't draw. On the live app, the same test needs a real invite to a manager at Porter.
 - **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data. That empty list says "Nothing to fix right now", which has no board.
 - **A checked-off in-house task offers no Delete,** though the board draws it, since the rule is delete while open and the database refuses it. Unchecking brings the task back, and it can be deleted then.
 - **Deleting an in-house task removes the row,** as the board's "permanent" says, and the audit log keeps who deleted what. Each task now carries its area, because Front and Back can't be read from a quarterly task's label; a task with none shows only under All. Phase 6 sets the area when it creates a task, and adds the write that Convert to ticket needs.
@@ -215,6 +223,8 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - Closed tab grouped by month with totals; closed ticket detail
 - Reopened ticket: the Start work sheet (note, assigns to you, In progress) and the Close again sheet (required reply to the manager, back to Closed)
 - Push notifications: subscribe on install, store per device, Edge Function `send-push` fired by database triggers for new ticket, assignment, status change, new update visible to the restaurant, reopen. Email fallback for anyone with no subscription. A Notifications section on Profile to turn each kind on or off
+- One lasting link per ticket, `/t/<id>`, which opens the right screen for whoever taps it, since `/tickets/:id` is for managers only. A signed-out person goes through sign-in and back, and the link grants nothing: someone who can't see the ticket gets the same refusal as today. Push and email notifications use it, built from the group's own address
+- Share link on a ticket, in the ellipsis menu from OT-33: the phone's share sheet (Messages, Copy and so on), or on a computer it copies the link and confirms. No board draws it
 - Empty states for the dashboard and Closed tab; loading skeleton for the card feed
 
 **Screens from the design:** Ops · Dashboard, Ticket detail, Closed tab, Reopened ticket; Empty · Ops dashboard, Ops closed tab; Loading · card feed skeleton; Error · something went wrong
@@ -233,6 +243,7 @@ Every unit has a page, a QR label, and a history. This closes the loop that EcoT
 - Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print
 - Domain (done Oct 30, 2026): `fourcorners.ontrack-app.app` connected to the production Worker and set as Supabase Auth's site URL, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
 - QR: each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
+- Share link on a unit, in the same ellipsis menu as a ticket, using `/e/<id>`
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
 - Empty states: no equipment, no tickets on a unit, no service yet, QR not recognized; equipment loading skeletons
 
@@ -252,6 +263,7 @@ Every repair gets a cost, a contractor and an invoice, and the spend views on eq
 - Service record: invoice card (view, download, replace, missing state), cost breakdown, details; Edit service record with delete
 - Contractor directory: search, trade chips, sort by spend or last used, preferred stars, insurance-expiring flags, one-tap call and email
 - Contractor detail: spend, visits, last visit, details, Visits and Invoices tabs; Add and Edit contractor with the preferred switch
+- Share link on a contractor, in the same ellipsis menu as a ticket, using `/c/<id>`, which refuses anyone without `see_contractors`
 - Invoices tab: by month, missing-invoice filter and count, sort, rows linking to service records
 - Spend views in Postgres feeding the ticket total, unit lifetime and yearly cost, contractor spend and visits, and the Closed tab month totals
 - Empty states: contractor directory, contractor search; the Add contractor link from Log service
@@ -358,6 +370,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | iPhone push only works when the app is installed to the home screen | The ops team may open it in Safari and wonder why nothing buzzes | Install prompt on first sign-in with a two-step picture; email fallback until a subscription exists; a Profile row that shows whether push is on |
 | RLS policies get complex with per-person rights overrides | A bug here leaks another restaurant's data | Every rule goes through one `can()` function with pgTAP tests per role; never a second code path in the app |
 | Supabase free tier pauses after a week idle | A paused project during the pilot looks like a crash | Move to Pro ($25 a month) before handing the app to the client |
+| An iPhone may open a link in Safari and not the installed app | Safari has its own sign-in, so a shared link, a notification's email link or a QR scan could ask for a password first, and Phase 4's done test expects a scan to open the installed app. Not yet tried on an iPhone | Check on BrowserStack during Phase 3, before Phase 4 relies on it; signing in on the way still lands on the right page |
 | QR labels bake in the domain | Reprinting labels is a real cost once they are on units | `fourcorners.ontrack-app.app` is connected (Oct 30, 2026), so print from that; use a short path like `/e/` so labels stay small |
 | Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | SPF, DKIM and DMARC are set on `ontrack-app.app`, and a real invite reached a Gmail inbox (Oct 30, 2026). Four Corners uses Gmail only; test another provider when a group uses one |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
@@ -389,6 +402,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there
 - [x] How a manager finds a closed ticket: an ellipsis menu beside the search on Open tickets opens a simple list, in OT-33 (Nov 1, 2026)
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
+- [x] Sharing a link to a ticket, a unit or a contractor: lasting links that work for every role, then Share link in the ellipsis menu, across Phases 3, 4 and 5 (Nov 1, 2026)
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default

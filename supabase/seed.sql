@@ -35,7 +35,9 @@ insert into seed_people values
   ('22222222-2222-4222-8222-000000000003', 'Bert Velilla',        'bert.velilla@example.com', '(312) 555-0103', 'ops',        '[]'),
   ('22222222-2222-4222-8222-000000000004', 'Chris Novak',         'chris.novak@example.com',  '(312) 555-0104', 'ops',        '[]'),
   ('22222222-2222-4222-8222-000000000005', 'Lee Chen',            'lee.chen@example.com',     null,             'leadership', '[]'),
-  ('22222222-2222-4222-8222-000000000006', 'Four Corners Admin',  'admin@example.com',        null,             'admin',      '[]');
+  ('22222222-2222-4222-8222-000000000006', 'Four Corners Admin',  'admin@example.com',        null,             'admin',      '[]'),
+  -- Not on the boards: Phase 2's done test needs a manager at Porter.
+  ('22222222-2222-4222-8222-000000000007', 'Dana Ortiz',          'dana.ortiz@example.com',   '(312) 555-0107', 'manager',    '["11111111-1111-4111-8111-000000000003"]');
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,

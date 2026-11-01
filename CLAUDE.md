@@ -104,7 +104,7 @@ Avatars: initials follow the boards, with the color from the role and from the i
 
 `group_settings` cannot be written through the API, so nothing skips the log: `save_group_name` and `set_profile_photos` check for an admin and write `audit_log`.
 
-Seeded sign-ins (local only, password `ontrack-demo-2026`; admin@ also needs a code for the authenticator secret `JBSWY3DPEHPK3PXP`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
+Seeded sign-ins (local only, password `ontrack-demo-2026`; admin@ also needs a code for the authenticator secret `JBSWY3DPEHPK3PXP`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), dana.ortiz@ (manager, Porter), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
 
 ## Archive and delete
 
@@ -135,9 +135,13 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 2 · Tickets, the manager loop
+## Current phase: 3 · Ops dashboard and ticket work
 
-The plan's Phase 2 section says what ships and what it has to work around.
+The plan's Phase 3 section says what ships. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager assigns it, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. The pull requests are not split yet; that comes first.
+
+## Phase 2, for the record
+
+The plan's Phase 2 section says what shipped and what it works around.
 
 Done when a manager at Federale's Logan Square creates a ticket with a photo on a phone, it appears in the database with the right restaurant, and a second manager at Porter cannot see it. Ops sees tickets only through the database until Phase 3.
 
