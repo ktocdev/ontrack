@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { bigPhoto, signIn, tokenFor } from './helpers'
 
 /**
  * Ticket photos against the seed, with real files in the local stack's storage.
@@ -9,20 +9,6 @@ import { signIn, tokenFor } from './helpers'
 const SUPABASE = process.env.VITE_SUPABASE_URL ?? 'http://127.0.0.1:54321'
 const KEY = process.env.VITE_SUPABASE_ANON_KEY ?? ''
 const T1045 = '66666666-6666-4666-8666-000000001045'
-
-/** A real PNG drawn in the browser, far larger than the app should ever upload. */
-async function bigPhoto(page: Page, name = 'big.png') {
-  const dataUrl = await page.evaluate(() => {
-    const canvas = document.createElement('canvas')
-    canvas.width = 2400
-    canvas.height = 1800
-    const c = canvas.getContext('2d')!
-    c.fillStyle = '#336699'
-    c.fillRect(0, 0, 2400, 1800)
-    return canvas.toDataURL('image/png')
-  })
-  return { name, mimeType: 'image/png', buffer: Buffer.from(dataUrl.split(',')[1]!, 'base64') }
-}
 
 const pick = async (page: Page, name?: string) =>
   page.getByLabel('Choose photos').setInputFiles(await bigPhoto(page, name))

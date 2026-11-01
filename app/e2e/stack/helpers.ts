@@ -49,6 +49,20 @@ export async function passTwoStep(page: Page, secret = ADMIN_SECRET) {
   await page.getByRole('button', { name: 'Verify', exact: true }).click()
 }
 
+/** A real PNG drawn in the browser, far larger than the app should ever upload. */
+export async function bigPhoto(page: Page, name = 'big.png') {
+  const dataUrl = await page.evaluate(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 2400
+    canvas.height = 1800
+    const c = canvas.getContext('2d')!
+    c.fillStyle = '#336699'
+    c.fillRect(0, 0, 2400, 1800)
+    return canvas.toDataURL('image/png')
+  })
+  return { name, mimeType: 'image/png', buffer: Buffer.from(dataUrl.split(',')[1]!, 'base64') }
+}
+
 /** Sign in through the real form and wait for the role's home screen. */
 export async function signIn(page: Page, email: string, password = SEED_PASSWORD) {
   await page.goto('/sign-in')
