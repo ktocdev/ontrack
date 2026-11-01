@@ -47,11 +47,13 @@ select throws_ok($$
 $$, '42501', null, 'the touch gives a manager no new way to change the ticket');
 
 -- Closed: the trigger stays out of tickets_guard's way.
+select pg_temp.login('bert.velilla@example.com');
 select lives_ok(format($$
   insert into public.ticket_updates (ticket_id, author_id, body) values ('%s', '%s', 'One more thing')
-$$, :t1028, :maya), 'a message on a closed ticket does not trip the read-only guard');
+$$, :t1028, :bert), 'a message from Ops on a closed ticket does not trip the read-only guard');
 select is((select updated_at from public.tickets where id = (:t1028)::uuid), '2026-01-01'::timestamptz, 'and does not move it');
 
+select pg_temp.login('maya.reyes@example.com');
 select throws_ok(format($$
   insert into public.ticket_updates (ticket_id, author_id, body) values ('%s', '%s', repeat('x', 4001))
 $$, :t1042, :maya), '23514', null, 'a message over 4000 characters is refused');
