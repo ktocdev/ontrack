@@ -223,6 +223,8 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - Closed tab grouped by month with totals; closed ticket detail
 - Reopened ticket: the Start work sheet (note, assigns to you, In progress) and the Close again sheet (required reply to the manager, back to Closed)
 - Push notifications: subscribe on install, store per device, Edge Function `send-push` fired by database triggers for new ticket, assignment, status change, new update visible to the restaurant, reopen. Email fallback for anyone with no subscription. A Notifications section on Profile to turn each kind on or off
+- One lasting link per ticket, `/t/<id>`, which opens the right screen for whoever taps it, since `/tickets/:id` is for managers only. A signed-out person goes through sign-in and back, and the link grants nothing: someone who can't see the ticket gets the same refusal as today. Push and email notifications use it, built from the group's own address
+- Share link on a ticket, in the ellipsis menu from OT-33: the phone's share sheet (Messages, Copy and so on), or on a computer it copies the link and confirms. No board draws it
 - Empty states for the dashboard and Closed tab; loading skeleton for the card feed
 
 **Screens from the design:** Ops · Dashboard, Ticket detail, Closed tab, Reopened ticket; Empty · Ops dashboard, Ops closed tab; Loading · card feed skeleton; Error · something went wrong
@@ -241,6 +243,7 @@ Every unit has a page, a QR label, and a history. This closes the loop that EcoT
 - Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print
 - Domain (done Oct 30, 2026): `fourcorners.ontrack-app.app` connected to the production Worker and set as Supabase Auth's site URL, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
 - QR: each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
+- Share link on a unit, in the same ellipsis menu as a ticket, using `/e/<id>`
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
 - Empty states: no equipment, no tickets on a unit, no service yet, QR not recognized; equipment loading skeletons
 
@@ -260,6 +263,7 @@ Every repair gets a cost, a contractor and an invoice, and the spend views on eq
 - Service record: invoice card (view, download, replace, missing state), cost breakdown, details; Edit service record with delete
 - Contractor directory: search, trade chips, sort by spend or last used, preferred stars, insurance-expiring flags, one-tap call and email
 - Contractor detail: spend, visits, last visit, details, Visits and Invoices tabs; Add and Edit contractor with the preferred switch
+- Share link on a contractor, in the same ellipsis menu as a ticket, using `/c/<id>`, which refuses anyone without `see_contractors`
 - Invoices tab: by month, missing-invoice filter and count, sort, rows linking to service records
 - Spend views in Postgres feeding the ticket total, unit lifetime and yearly cost, contractor spend and visits, and the Closed tab month totals
 - Empty states: contractor directory, contractor search; the Add contractor link from Log service
@@ -366,6 +370,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | iPhone push only works when the app is installed to the home screen | The ops team may open it in Safari and wonder why nothing buzzes | Install prompt on first sign-in with a two-step picture; email fallback until a subscription exists; a Profile row that shows whether push is on |
 | RLS policies get complex with per-person rights overrides | A bug here leaks another restaurant's data | Every rule goes through one `can()` function with pgTAP tests per role; never a second code path in the app |
 | Supabase free tier pauses after a week idle | A paused project during the pilot looks like a crash | Move to Pro ($25 a month) before handing the app to the client |
+| An iPhone may open a link in Safari and not the installed app | Safari has its own sign-in, so a shared link, a notification's email link or a QR scan could ask for a password first, and Phase 4's done test expects a scan to open the installed app. Not yet tried on an iPhone | Check on BrowserStack during Phase 3, before Phase 4 relies on it; signing in on the way still lands on the right page |
 | QR labels bake in the domain | Reprinting labels is a real cost once they are on units | `fourcorners.ontrack-app.app` is connected (Oct 30, 2026), so print from that; use a short path like `/e/` so labels stay small |
 | Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | SPF, DKIM and DMARC are set on `ontrack-app.app`, and a real invite reached a Gmail inbox (Oct 30, 2026). Four Corners uses Gmail only; test another provider when a group uses one |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
@@ -397,7 +402,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there
 - [x] How a manager finds a closed ticket: an ellipsis menu beside the search on Open tickets opens a simple list, in OT-33 (Nov 1, 2026)
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
-- [ ] Sharing a link to a ticket, a unit or a contractor. The installed app has no address bar, so nobody can copy one (raised Nov 1, 2026). Today's links are per role: `/tickets/:id` is manager only, so a manager's link would refuse Ops
+- [x] Sharing a link to a ticket, a unit or a contractor: lasting links that work for every role, then Share link in the ellipsis menu, across Phases 3, 4 and 5 (Nov 1, 2026)
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default
