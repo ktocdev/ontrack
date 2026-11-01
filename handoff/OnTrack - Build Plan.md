@@ -187,6 +187,8 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 - **The equipment card on a ticket isn't a link until Phase 4,** when the unit has a page to open.
 - **A ticket's thread rereads every 30 seconds** while it is on screen and when the app comes back to the front, so a reply turns up without a reload. Live updates can wait for push in Phase 3, if the delay matters.
 - **The database still accepts a message on a closed ticket.** The closed screen has no composer. OT-29 decides whether the database should refuse it too.
+- **Photos go up after the ticket they belong to,** whose folder and policies they need. If they fail, the ticket stands and the message says to add them in an update. In an update the files go first, so a failure posts nothing. A file uploaded just before a failed post stays in Storage unreferenced, which only people who can see the ticket can reach.
+- **Tapping a photo opens it large, and picked photos show in a tray with Remove.** Neither has a board. An update or new ticket takes up to 6 photos.
 - **Nothing adds equipment until Phase 4.** On the live app the picker is empty and every category says 0 items, so tickets there have no equipment. The seeded stack shows the full boards.
 - **Nothing adds in-house tasks until Phase 6.** Walkthroughs create them, so the In-house tab stays empty on the live app, and OT-30 is proven on seeded data.
 - **The QR buttons wait for Phase 4,** since a scan would have nothing to open: Scan an equipment QR code on Create ticket, and Scan a QR code with its sentence on the empty Open tickets screen. These are the planned differences from those boards.
@@ -378,6 +380,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
 - [ ] Turn off or delete a category, following the archive and delete rule. It has no board, and is saved for later, not scheduled. `categories` has no `active` column yet, so this starts with one. Today the write policy lets anyone with `edit_equipment` change the group-wide list through the API, though no screen does; decide whether that should be admin only when this is built
+- [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default

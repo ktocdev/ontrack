@@ -25,6 +25,8 @@ export type ThreadItem =
   | {
       type: 'message'
       key: string
+      /** The update it came from, which its photos hang on. */
+      updateId: string
       who: string
       when: string
       text: string
@@ -94,6 +96,7 @@ export function threadItems(updates: Update[], me: string, names: Map<string, st
     items.push({
       type: 'message',
       key: `${u.id}-message`,
+      updateId: u.id,
       who: mine ? 'You' : u.author ? `${name}, ${ROLE_WORD[u.author.role]}` : name,
       when: when === 'just now' ? 'Just now' : when,
       text: u.body ?? '',

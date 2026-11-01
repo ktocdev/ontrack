@@ -82,8 +82,8 @@ test('a failed post keeps what was written', async ({ page }) => {
   const field = page.getByRole('textbox', { name: 'Write an update for Ops' })
   await field.fill('This should stay')
 
-  await page.route('**/rest/v1/ticket_updates*', (route) =>
-    route.request().method() === 'POST' ? route.fulfill({ status: 500, json: { message: 'nope' } }) : route.continue(),
+  await page.route('**/rest/v1/rpc/post_ticket_update*', (route) =>
+    route.fulfill({ status: 500, json: { message: 'nope' } }),
   )
   await page.getByRole('button', { name: 'Post update' }).click()
   await expect(page.getByRole('alert')).toContainText("Couldn't post that yet.")

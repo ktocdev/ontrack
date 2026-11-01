@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { AddPhotoButton, PhotoTray } from '../../components/Photo'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
@@ -13,12 +14,14 @@ import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ReportSheet } from '../profile/ReportSheet'
 import { AREA_LABEL } from './tickets'
 import { useCreateTicket, useTicketForm, type Urgency } from './useCreateTicket'
+import { usePickedPhotos } from './usePhotos'
 
 /**
  * Manager · Create ticket: form (design/screens/Create-Form), with the failed save
  * from Error-Save-Failed: what was typed stays, a banner says so and the screen goes
  * back up to it. Equipment is what this restaurant has in this category, and tapping
- * the chosen unit again clears it. Add photo comes with OT-28.
+ * the chosen unit again clears it. Photos go up after the ticket, whose folder they
+ * need, so if they fail the ticket still stands and the message says so.
  */
 export function CreateFormScreen() {
   const { categoryId = '' } = useParams()
@@ -71,6 +74,7 @@ function CreateForm({
   const [urgency, setUrgency] = useState<Urgency>('normal')
   const [equipmentId, setEquipmentId] = useState<string | null>(null)
   const [reporting, setReporting] = useState(false)
+  const picked = usePickedPhotos()
   const banner = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -90,10 +94,15 @@ function CreateForm({
         description: description.trim(),
         urgency,
         createdBy: user.id,
+        photos: picked.photos,
       },
       {
         onSuccess: (ticket) => {
-          toast.show(`${ticket.display_id} created.`)
+          toast.show(
+            ticket.photosFailed
+              ? `${ticket.displayId} created, but its photos didn't upload. Add them in an update.`
+              : `${ticket.displayId} created.`,
+          )
           navigate('/tickets')
         },
       },
@@ -122,7 +131,16 @@ function CreateForm({
             </div>
           )}
           <Input label="Title" maxLength={140} value={title} onChange={(e) => setTitle(e.target.value)} />
-          <Textarea label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <div className="flex flex-none flex-col gap-1.5">
+            <Textarea label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
+            {picked.error && (
+              <span role="alert" className="text-13 font-semibold text-danger">
+                {picked.error}
+              </span>
+            )}
+            <AddPhotoButton disabled={picked.reading} onFiles={(files) => void picked.add(files)} />
+          </div>
           <ChoiceChips<Urgency>
             label="Urgency"
             value={urgency}
@@ -158,7 +176,7 @@ function CreateForm({
           )}
         </ScreenBody>
         <ScreenFooter>
-          <Button type="submit" loading={create.isPending} disabled={!title.trim()}>
+          <Button type="submit" loading={create.isPending} disabled={!title.trim() || picked.reading}>
             Submit ticket
           </Button>
         </ScreenFooter>

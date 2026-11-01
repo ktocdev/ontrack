@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase, type Enums } from '../../lib/supabase'
+import { uploadPhotos, type PickedPhoto } from './usePhotos'
 
 /**
  * Create ticket: the categories with how many units each has at the restaurant,
@@ -63,6 +64,25 @@ export type NewTicket = {
   description: string
   urgency: Urgency
   createdBy: string
+  photos: PickedPhoto[]
+}
+
+/**
+ * Files need the ticket to exist first, since their folder and policies follow it. So
+ * a failure here leaves a ticket without its photos: that report still matters, and
+ * it is what the person gets told.
+ */
+async function addPhotos(ticketId: string, t: NewTicket) {
+  if (t.photos.length === 0) return true
+  try {
+    const paths = await uploadPhotos(ticketId, t.photos)
+    const { error } = await requireSupabase()
+      .from('ticket_photos')
+      .insert(paths.map((path) => ({ ticket_id: ticketId, path, created_by: t.createdBy })))
+    return !error
+  } catch {
+    return false
+  }
 }
 
 export function useCreateTicket() {
@@ -82,10 +102,10 @@ export function useCreateTicket() {
           // Assigned by tickets_guard; the type wants one anyway.
           number: 0,
         })
-        .select('display_id')
+        .select('id, display_id')
         .single()
       if (error) throw error
-      return data
+      return { displayId: data.display_id, photosFailed: !(await addPhotos(data.id, t)) }
     },
     onSuccess: () =>
       Promise.all([

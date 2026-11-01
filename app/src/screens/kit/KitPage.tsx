@@ -17,6 +17,7 @@ import {
 import { Chip, ChoiceChips } from '../../components/Chip'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
+import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { TicketCard } from '../../components/TicketCard'
 import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
@@ -350,8 +351,16 @@ export function KitPage() {
                   Thanks. Lunch rush ends at 2, so that window works.
                 </ThreadMessage>
               </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <PhotoThumb alt="A photo on a message" />
+                <PhotoThumb alt="A photo on your own message" tinted />
+                <PhotoThumb alt="A photo on the ticket" size="ticket" />
+                <PhotoTray photos={[]} reading onRemove={() => undefined} />
+                <AddPhotoButton onFiles={() => undefined} />
+              </div>
               <div className="overflow-hidden rounded-card border border-border">
                 <Composer
+                  leading={<AddPhotoButton variant="icon" onFiles={() => undefined} />}
                   label="Write an update"
                   placeholder="Write an update…"
                   value={draft}
