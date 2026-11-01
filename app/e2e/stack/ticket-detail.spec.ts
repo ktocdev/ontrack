@@ -71,7 +71,8 @@ test('a manager posts an update, it joins the thread and moves the ticket up the
   await expect(log.getByText('Just now').last()).toBeVisible()
 
   await page.getByRole('link', { name: 'Back to open tickets' }).click()
-  const first = page.getByRole('link', { name: /^OT-/ }).first()
+  // Reopened tickets stay on top, and other tests leave some at this restaurant.
+  const first = page.getByRole('link', { name: /^OT-/ }).filter({ hasNotText: 'Reopened' }).first()
   await expect(first).toContainText('OT-1045')
   await expect(first).toContainText(/Updated (just now|\dm ago)/)
 })

@@ -148,6 +148,12 @@ export const IconImage = (p: IconProps) => (
     <path d="m21 16-5-5-9 9" />
   </svg>
 )
+export const IconReopen = (p: IconProps) => (
+  <svg {...base({ size: 20, ...p }, 2.2)}>
+    <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+    <path d="M3 3v5h5" />
+  </svg>
+)
 export const IconQr = (p: IconProps) => (
   <svg {...base({ size: 22, ...p }, 2, false)}>
     <path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8" />

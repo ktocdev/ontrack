@@ -176,7 +176,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   { path: '/tickets/in-house', ...placeholder('In-house tasks', 'Phase 2') },
-                  { path: '/tickets/:id/edit', ...placeholder('Edit ticket', 'Phase 2') },
                   { path: '/walkthrough', ...placeholder('Walkthrough', 'Phase 6a') },
                   { path: '/equipment', ...placeholder('Equipment', 'Phase 4') },
                 ],
@@ -194,6 +193,12 @@ export const router = createBrowserRouter([
                     path: '/tickets/:id',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/TicketScreen')).TicketScreen,
+                    }),
+                  },
+                  {
+                    path: '/tickets/:id/edit',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/EditTicketScreen')).EditTicketScreen,
                     }),
                   },
                 ],

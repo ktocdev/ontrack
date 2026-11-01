@@ -65,6 +65,7 @@ import {
   IconHelpCircle,
   IconPlus,
   IconQr,
+  IconReopen,
   IconSearchOff,
   IconSignOut,
   IconUserPlus,
@@ -338,6 +339,13 @@ export function KitPage() {
                 ]}
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
+              <Notice tone="waiting">
+                <b>Reopened and sent to Bert Velilla.</b> It&apos;s back on the Ops list.
+              </Notice>
+              <Button variant="tall" icon={<IconReopen size={20} />}>
+                Reopen ticket
+              </Button>
+              <AddPhotoButton variant="dashed" onFiles={() => undefined} />
               <div className="flex flex-col rounded-card border border-border px-3 py-1">
                 <ThreadEvent text="Bert Velilla assigned · status In progress" when="9:40 AM" />
                 <ThreadMessage

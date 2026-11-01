@@ -1371,6 +1371,9 @@ isOneToOne: false
 "remember_device":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"reopen_ticket":
+{ Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
+                           },
 "save_group_name":
 { Args: { "p_name": string,"p_short_name": string }; Returns: undefined
                            },

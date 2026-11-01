@@ -107,7 +107,8 @@ export function AddPhotoButton({
   disabled = false,
   onFiles,
 }: {
-  variant?: 'text' | 'icon'
+  /** 'dashed' is the full-width outline on Edit ticket. */
+  variant?: 'text' | 'icon' | 'dashed'
   disabled?: boolean
   onFiles: (files: File[]) => void
 }) {
@@ -128,6 +129,16 @@ export function AddPhotoButton({
           className="flex h-11 w-11 flex-none items-center justify-center rounded-full text-text-secondary transition-colors not-disabled:hover:bg-surface-hover not-disabled:active:bg-surface-muted active:duration-0 disabled:opacity-50"
         >
           <IconCamera size={22} />
+        </button>
+      ) : variant === 'dashed' ? (
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => input.current?.click()}
+          className="mt-1 flex min-h-tap flex-none items-center justify-center gap-1.5 rounded-control border border-dashed border-border-muted text-13 font-semibold text-brand transition-colors not-disabled:hover:text-brand-strong not-disabled:active:bg-surface-muted active:duration-0 disabled:opacity-50"
+        >
+          <IconCamera size={17} />
+          Add photo
         </button>
       ) : (
         <button
