@@ -18,7 +18,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
-| 2 · Tickets, the manager loop | Built; the done test passes on the seeded stack, the try on a real phone is still to do | OT-24 plan update, then OT-25 to OT-33 (see Phase 2) |
+| 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-33 (see Phase 2) |
 
 Phase 0 notes:
 
@@ -41,7 +41,7 @@ Phase 2 note (Nov 1, 2026):
 - **What changed:** a manager can report a problem from a phone and follow it to closed. Open tickets has search and Front / Back. Create ticket goes from area and category to a form with equipment, urgency and photos, shrunk to 1600 px in the browser. A ticket has its thread with system events and a composer. Edit changes the title, description, equipment and urgency, and closes with an optional comment. A closed ticket is read-only and can be reopened within 30 days with a reason; after that it offers a new ticket linked to the old one. The ellipsis menu beside the search leads to a list of closed tickets. The In-house tab checks tasks off and deletes them while open. Cost and contractor show on a closed ticket only with See costs.
 - **What the client should try:** sign in as a manager on a phone, create a ticket with a photo, post an update, then close and reopen it. Ops can't see tickets in the app until Phase 3, and Four Corners has no accounts yet, so this also waits until its first admin is chosen (see Open items).
 - **What can't be tried on the live app yet:** nothing adds equipment until Phase 4, so the picker is empty there, and nothing adds in-house tasks until Phase 6, so the In-house tab is empty. Nothing notifies anyone until Phase 3. The seeded stack shows the full boards.
-- **How the done test went:** `e2e/stack/done-phase-2.spec.ts` runs it on Chromium and WebKit against the seeded stack: Maya at Logan Square creates a ticket with a photo, the database has it at her restaurant with the photo under the ticket, and a manager at Porter can't find it in the list, by search or by link, or read it or sign its photo through the API. The same test on a real phone against the live app is still to do, and the iPhone part waits for BrowserStack, as in Phases 0 and 1.
+- **How the done test went:** `e2e/stack/done-phase-2.spec.ts` runs it on Chromium and WebKit against the seeded stack: Maya at Logan Square creates a ticket with a photo, the database has it at her restaurant with the photo under the ticket, and a manager at Porter can't find it in the list, by search or by link, or read it or sign its photo through the API. It was then tried on a real phone against the live app (Nov 1, 2026): a manager at Logan Square created a ticket with a photo, a manager at Porter did not see it in the list or by search, and the table editor showed the right restaurant. The iPhone part waits for BrowserStack, as in Phases 0 and 1.
 
 ## Decisions
 
@@ -397,6 +397,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there
 - [x] How a manager finds a closed ticket: an ellipsis menu beside the search on Open tickets opens a simple list, in OT-33 (Nov 1, 2026)
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
+- [ ] Sharing a link to a ticket, a unit or a contractor. The installed app has no address bar, so nobody can copy one (raised Nov 1, 2026). Today's links are per role: `/tickets/:id` is manager only, so a manager's link would refuse Ops
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default
