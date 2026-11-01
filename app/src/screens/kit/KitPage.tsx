@@ -18,6 +18,7 @@ import { Chip, ChoiceChips } from '../../components/Chip'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
+import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
@@ -396,6 +397,29 @@ export function KitPage() {
                 who="Not yet assigned"
                 when="Created 3h ago"
               />
+              <TaskList>
+                <TaskRow
+                  title="Replace 2 bulbs over booths 4–6"
+                  meta="Oct walkthrough · FOH › Electrical › Light bulbs"
+                  done={false}
+                  onToggle={() => toast.show('Row checked.')}
+                  onDelete={() => toast.show('Row deleted.')}
+                />
+                <TaskRow
+                  title="Clear boxes from utility closet"
+                  meta="Q4 task · Organize utility areas"
+                  restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                  done={false}
+                  onToggle={() => toast.show('Row checked.')}
+                  onDelete={() => toast.show('Row deleted.')}
+                />
+                <TaskRow
+                  title="Re-glue trim on pass shelf"
+                  meta="Oct walkthrough · BOH › Electrical › Feature · Completed"
+                  done
+                  onToggle={() => toast.show('Row unchecked.')}
+                />
+              </TaskList>
               <ListCard>
                 <ListRow
                   leading={<Avatar name="Sam Patel" role="manager" />}

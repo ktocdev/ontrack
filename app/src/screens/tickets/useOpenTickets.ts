@@ -47,8 +47,7 @@ export function useOpenTickets(restaurantIds: string[]) {
           .from('inhouse_fixes')
           .select('id', { count: 'exact', head: true })
           .in('restaurant_id', restaurantIds)
-          .is('done_at', null)
-          .is('deleted_at', null),
+          .is('done_at', null),
       ])
       if (tickets.error) throw tickets.error
       if (inHouse.error) throw inHouse.error

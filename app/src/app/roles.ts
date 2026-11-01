@@ -39,7 +39,7 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
     label: 'Manager',
     items: [
       { to: '/tickets/new', label: 'Create ticket', icon: IconPlusSquare },
-      { to: '/tickets', label: 'Open tickets', icon: IconList, end: true },
+      { to: '/tickets', label: 'Open tickets', icon: IconList, end: true, also: '/tickets/in-house' },
       { to: '/walkthrough', label: 'Walkthrough', icon: IconClipboardCheck },
       { to: '/equipment', label: 'Equipment', icon: IconWrench },
     ],
