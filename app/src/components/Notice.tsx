@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { IconCheck, IconWarning } from './icons'
+import { IconCheck, IconStatusWaiting, IconWarning } from './icons'
 
 /**
  * Inline confirmation inside a form ("Profile saved."): brand-tint-soft
@@ -7,7 +7,27 @@ import { IconCheck, IconWarning } from './icons'
  * Announced through role="status". For a message that outlives the screen,
  * use the toast instead.
  */
-export function Notice({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function Notice({
+  tone = 'brand',
+  children,
+  className = '',
+}: {
+  /** 'waiting' is for something now with someone else (Reopened and sent to Bert). */
+  tone?: 'brand' | 'waiting'
+  children: ReactNode
+  className?: string
+}) {
+  if (tone === 'waiting') {
+    return (
+      <div
+        role="status"
+        className={`flex flex-none items-start gap-2.5 rounded-input bg-status-waiting-bg px-3 py-2.5 text-13 leading-[1.45] text-status-waiting-text ${className}`}
+      >
+        <IconStatusWaiting size={18} className="mt-px flex-none" />
+        <span>{children}</span>
+      </div>
+    )
+  }
   return (
     <div
       role="status"

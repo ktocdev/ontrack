@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AddPhotoButton, PhotoTray } from '../../components/Photo'
-import { useNavigate, useParams, useSearchParams } from 'react-router'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { RadioRow } from '../../components/Card'
@@ -67,12 +67,21 @@ function CreateForm({
 }) {
   const { user } = useUser()
   const navigate = useNavigate()
+  // Create ticket from this, on a ticket closed too long ago to reopen.
+  const from = useLocation().state as {
+    parentTicketId?: string
+    title?: string
+    description?: string | null
+    equipmentId?: string | null
+  } | null
   const toast = useToast()
   const create = useCreateTicket()
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const [title, setTitle] = useState(from?.title ?? '')
+  const [description, setDescription] = useState(from?.description ?? '')
   const [urgency, setUrgency] = useState<Urgency>('normal')
-  const [equipmentId, setEquipmentId] = useState<string | null>(null)
+  const [equipmentId, setEquipmentId] = useState<string | null>(
+    equipment.some((e) => e.id === from?.equipmentId) ? (from?.equipmentId ?? null) : null,
+  )
   const [reporting, setReporting] = useState(false)
   const picked = usePickedPhotos()
   const banner = useRef<HTMLDivElement>(null)
@@ -95,6 +104,7 @@ function CreateForm({
         urgency,
         createdBy: user.id,
         photos: picked.photos,
+        parentTicketId: from?.parentTicketId ?? null,
       },
       {
         onSuccess: (ticket) => {

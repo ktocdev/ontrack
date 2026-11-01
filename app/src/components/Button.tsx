@@ -14,6 +14,7 @@ import { ButtonSpinner } from './Skeleton'
  *  ghost-danger      ghost with danger text      (Remove photo)
  *  medium    48px primary with 15px text         (Invite people, empty and error screens)
  *  done      medium once its work is done        (Request sent)
+ *  tall      52px secondary with 16px bold text  (Reopen ticket)
  */
 export type ButtonVariant =
   | 'primary'
@@ -26,6 +27,7 @@ export type ButtonVariant =
   | 'ghost-danger'
   | 'medium'
   | 'done'
+  | 'tall'
 
 /*
  * Hover and pressed colors are prefixed not-disabled so a disabled or loading
@@ -44,6 +46,7 @@ const VARIANT: Record<ButtonVariant, string> = {
   medium:
     'min-h-[48px] rounded-input bg-brand-fill px-5 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
   done: 'min-h-[48px] rounded-input bg-brand-tint px-5 text-15 font-bold text-brand-strong disabled:cursor-default disabled:opacity-100',
+  tall: 'min-h-[52px] rounded-input border border-border-strong bg-surface px-4 text-16 font-bold text-text not-disabled:hover:border-border-muted not-disabled:active:bg-surface-muted',
   small:
     'min-h-[44px] rounded-input border border-border-strong bg-surface px-4 text-14 font-semibold text-text not-disabled:hover:border-border-muted not-disabled:active:border-border-muted not-disabled:active:bg-surface-muted',
   'secondary-danger':
@@ -59,7 +62,7 @@ const BASE =
   'inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors active:duration-0 disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-progress'
 
 /** Primary, secondary and danger fill the width unless the caller sets its own (w-auto). */
-const FULL_WIDTH: ButtonVariant[] = ['primary', 'secondary', 'danger', 'secondary-danger']
+const FULL_WIDTH: ButtonVariant[] = ['primary', 'secondary', 'tall', 'danger', 'secondary-danger']
 
 export function buttonClasses(variant: ButtonVariant, className = '') {
   const width = FULL_WIDTH.includes(variant) && !/(^|\s)w-/.test(className) ? 'w-full' : ''

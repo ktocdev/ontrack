@@ -65,6 +65,8 @@ export type NewTicket = {
   urgency: Urgency
   createdBy: string
   photos: PickedPhoto[]
+  /** The old ticket this one follows from. */
+  parentTicketId?: string | null
 }
 
 /**
@@ -99,6 +101,7 @@ export function useCreateTicket() {
           description: t.description || null,
           urgency: t.urgency,
           created_by: t.createdBy,
+          parent_ticket_id: t.parentTicketId ?? null,
           // Assigned by tickets_guard; the type wants one anyway.
           number: 0,
         })

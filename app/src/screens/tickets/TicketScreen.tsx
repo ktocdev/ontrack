@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
@@ -13,6 +14,7 @@ import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { IconChevronLeft, IconEdit, IconWrench } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useAvatarUrl } from '../profile/useProfile'
+import { ClosedTicketScreen } from './ClosedTicketScreen'
 import { threadItems, type ThreadItem } from './thread'
 import { scheduledLabel } from './tickets'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
@@ -22,8 +24,8 @@ import { usePostUpdate, useTicket } from './useTicket'
  * Manager · Ticket (design/screens/Ticket): the header with the status, the title and
  * where it is, the description, its photos and equipment, then the updates and the
  * composer. The equipment card opens the unit once Phase 4 builds that page. A photo
- * opens large when tapped, which has no board. Closed tickets get their own screen in OT-29; until then this one drops the
- * composer and Edit for them.
+ * opens large when tapped, which has no board. A closed ticket has its own screen,
+ * which stays up after reopening it until the person leaves.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
@@ -38,6 +40,8 @@ export function TicketScreen() {
   const picked = usePickedPhotos()
   const urls = useSignedPhotos(data?.photos.map((p) => p.path) ?? [])
   const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
+  const queryClient = useQueryClient()
+  const [reopened, setReopened] = useState<{ note: string; shown: NonNullable<typeof data> } | null>(null)
 
   if (isPending) {
     return (
@@ -49,9 +53,24 @@ export function TicketScreen() {
   const ticket = data?.ticket
   if (!ticket) return <NotFoundScreen />
 
+  if (reopened || ticket.status === 'closed') {
+    const shown = reopened?.shown ?? data
+    return (
+      <ClosedTicketScreen
+        ticket={shown.ticket!}
+        updates={shown.updates}
+        photos={shown.photos}
+        reopened={reopened?.note ?? null}
+        onReopened={(note) => {
+          setReopened({ note, shown: data })
+          void queryClient.invalidateQueries({ queryKey: ['ticket', id] })
+        }}
+      />
+    )
+  }
+
   const items = threadItems(data.updates, user.id, data.names)
   const count = items.filter((i) => i.type === 'message').length
-  const closed = ticket.status === 'closed'
 
   const send = () =>
     post.mutate(
@@ -89,15 +108,13 @@ export function TicketScreen() {
             }
           />
         </div>
-        {!closed && (
-          <Link
-            to={`/tickets/${ticket.id}/edit`}
-            className="flex min-h-tap flex-none items-center gap-1.5 px-2.5 text-15 font-semibold no-underline"
-          >
-            <IconEdit size={17} />
-            Edit
-          </Link>
-        )}
+        <Link
+          to={`/tickets/${ticket.id}/edit`}
+          className="flex min-h-tap flex-none items-center gap-1.5 px-2.5 text-15 font-semibold no-underline"
+        >
+          <IconEdit size={17} />
+          Edit
+        </Link>
       </div>
 
       <ScreenBody ref={body} className="gap-3 pb-4 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
@@ -180,50 +197,46 @@ export function TicketScreen() {
         </div>
       </ScreenBody>
 
-      {!closed && (
-        <>
-          {post.isError && (
-            <div className="flex-none px-3 pb-2">
-              <ErrorBanner title="Couldn't post that yet.">
-                Check your connection and try again. Your update is still here.
-              </ErrorBanner>
-            </div>
-          )}
-          <Composer
-            label="Write an update for Ops"
-            placeholder="Write an update…"
-            maxLength={4000}
-            value={draft}
-            onChange={(value) => {
-              if (post.isError) post.reset()
-              setDraft(value)
-            }}
-            onSend={send}
-            busy={post.isPending || picked.reading}
-            canSendEmpty={picked.photos.length > 0}
-            leading={
-              <AddPhotoButton
-                variant="icon"
-                disabled={post.isPending || picked.reading}
-                onFiles={(files) => {
-                  if (post.isError) post.reset()
-                  void picked.add(files)
-                }}
-              />
-            }
-            above={
-              <>
-                <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
-                {picked.error && (
-                  <span role="alert" className="text-13 font-semibold text-danger">
-                    {picked.error}
-                  </span>
-                )}
-              </>
-            }
-          />
-        </>
+      {post.isError && (
+        <div className="flex-none px-3 pb-2">
+          <ErrorBanner title="Couldn't post that yet.">
+            Check your connection and try again. Your update is still here.
+          </ErrorBanner>
+        </div>
       )}
+      <Composer
+        label="Write an update for Ops"
+        placeholder="Write an update…"
+        maxLength={4000}
+        value={draft}
+        onChange={(value) => {
+          if (post.isError) post.reset()
+          setDraft(value)
+        }}
+        onSend={send}
+        busy={post.isPending || picked.reading}
+        canSendEmpty={picked.photos.length > 0}
+        leading={
+          <AddPhotoButton
+            variant="icon"
+            disabled={post.isPending || picked.reading}
+            onFiles={(files) => {
+              if (post.isError) post.reset()
+              void picked.add(files)
+            }}
+          />
+        }
+        above={
+          <>
+            <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
+            {picked.error && (
+              <span role="alert" className="text-13 font-semibold text-danger">
+                {picked.error}
+              </span>
+            )}
+          </>
+        }
+      />
       <PhotoViewer src={viewing?.src ?? null} alt={viewing?.alt ?? ''} onClose={() => setViewing(null)} />
     </Screen>
   )

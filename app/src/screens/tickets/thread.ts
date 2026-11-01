@@ -36,7 +36,7 @@ export type ThreadItem =
       avatarPath: string | null
     }
 
-const ROLE_WORD: Record<Author['role'], string> = {
+export const ROLE_WORD: Record<Author['role'], string> = {
   manager: 'Manager',
   ops: 'Ops',
   admin: 'Admin',
