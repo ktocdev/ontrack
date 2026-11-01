@@ -157,6 +157,7 @@ Done when a manager at Federale's Logan Square creates a ticket with a photo on 
 | OT-31 | The done test as one flow; the phase note |
 | OT-32 | From trying OT-26 live: Open tickets loads in the empty layout when it found nothing last time, so it doesn't jump |
 | OT-33 | From OT-29's open questions: an ellipsis menu beside the search on Open tickets with View Closed Tickets, opening a simple list; Title on Edit ticket |
+| OT-34 | From trying Phase 2 live: no scrollbar on the message field at one line |
 
 ## Phase 1, for the record
 
