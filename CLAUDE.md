@@ -104,7 +104,7 @@ Avatars: initials follow the boards, with the color from the role and from the i
 
 `group_settings` cannot be written through the API, so nothing skips the log: `save_group_name` and `set_profile_photos` check for an admin and write `audit_log`.
 
-Seeded sign-ins (local only, password `ontrack-demo-2026`; admin@ also needs a code for the authenticator secret `JBSWY3DPEHPK3PXP`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
+Seeded sign-ins (local only, password `ontrack-demo-2026`; admin@ also needs a code for the authenticator secret `JBSWY3DPEHPK3PXP`): maya.reyes@ (manager, Logan Square, has see_costs and edit_equipment overrides), ari.kim@ (manager, Ranalli's), dana.ortiz@ (manager, Porter), bert.velilla@ and chris.novak@ (ops), lee.chen@ (leadership), admin@ (admin), all `@example.com`.
 
 ## Archive and delete
 
