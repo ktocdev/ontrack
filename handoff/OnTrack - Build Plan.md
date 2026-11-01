@@ -177,7 +177,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 | OT-28 | Photos: resize to 1600 px, add on the form and in the composer, thumbnails in the thread |
 | OT-29 | Edit and close, Closed ticket, the Reopen sheet, cost shown only with `see_costs` |
 | OT-30 | In-house tab: list, check off, delete while open |
-| OT-33 | From OT-29's open questions: a Closed tickets link at the bottom of Open tickets opening a simple list; Title on Edit ticket |
+| OT-33 | From OT-29's open questions: an ellipsis menu beside the search on Open tickets with View Closed Tickets, opening a simple list; Title on Edit ticket |
 | OT-31 | The done test as one flow; the phase note |
 | OT-32 | From trying OT-26 live: Open tickets loads in the empty layout when it found nothing last time, so it doesn't jump |
 
@@ -189,7 +189,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 - **A ticket's thread rereads every 30 seconds** while it is on screen and when the app comes back to the front, so a reply turns up without a reload. Live updates can wait for push in Phase 3, if the delay matters.
 - **A closed ticket takes no message or photo from a manager,** in the database as well as on screen. Ops keeps the right, for what Phase 3 builds.
 - **Edit ticket adds Title to its board** (decided Nov 1, 2026, built in OT-33), alongside description, equipment, a photo and urgency. The closing comment is optional, as the board has it. Urgency adds Low, which Create offers.
-- **Reaching a closed ticket:** the board's only way is Equipment Tickets in Phase 4, and a ticket with no equipment would have none. Closing offers View closed ticket, and OT-33 adds a link at the bottom of Open tickets to a simple list of closed tickets (decided Nov 1, 2026). That list has no board.
+- **Reaching a closed ticket:** the board's only way is Equipment Tickets in Phase 4, and a ticket with no equipment would have none. Closing offers View closed ticket, and OT-33 adds an ellipsis menu to the right of the search on Open tickets, with View Closed Tickets opening a simple list (decided Nov 1, 2026). With nothing open there is no search, so the menu sits beside the title. It has room for more items later. Neither the menu nor the list has a board. The list shows the latest 100.
 - **The boards' notification promises wait for Phase 3:** "You'll get a notification when work starts" and "Ops has been notified" are left off, since nothing notifies yet.
 - **Photos go up after the ticket they belong to,** whose folder and policies they need. If they fail, the ticket stands and the message says to add them in an update. In an update the files go first, so a failure posts nothing. A file uploaded just before a failed post stays in Storage unreferenced, which only people who can see the ticket can reach.
 - **Tapping a photo opens it large, and picked photos show in a tray with Remove.** Neither has a board. An update or new ticket takes up to 6 photos.
@@ -387,7 +387,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
 - [ ] Turn off or delete a category, following the archive and delete rule. It has no board, and is saved for later, not scheduled. `categories` has no `active` column yet, so this starts with one. Today the write policy lets anyone with `edit_equipment` change the group-wide list through the API, though no screen does; decide whether that should be admin only when this is built
 - [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there
-- [x] How a manager finds a closed ticket: a link at the bottom of Open tickets opens a simple list, in OT-33 (Nov 1, 2026)
+- [x] How a manager finds a closed ticket: an ellipsis menu beside the search on Open tickets opens a simple list, in OT-33 (Nov 1, 2026)
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
 - [ ] Label stock size for the QR sheets
 - [ ] Whether SMS 2-step is wanted, given its per-message cost

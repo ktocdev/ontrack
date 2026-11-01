@@ -21,7 +21,7 @@ async function newTicket(page: Page, title: string) {
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
 }
 
-test('a manager edits a ticket: description, urgency and equipment', async ({ page }, testInfo) => {
+test('a manager edits a ticket: title, description, urgency and equipment', async ({ page }, testInfo) => {
   const title = `Edit me ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, 'ari.kim@example.com')
   await newTicket(page, title)
@@ -31,6 +31,10 @@ test('a manager edits a ticket: description, urgency and equipment', async ({ pa
   await expect(page.getByText('Back of House', { exact: true })).toBeVisible()
   await testInfo.attach('edit', { body: await page.screenshot(), contentType: 'image/png' })
 
+  await expect(page.getByLabel('Title')).toHaveValue(title)
+  await page.getByLabel('Title').fill('   ')
+  await expect(page.getByRole('button', { name: 'Save changes' })).toBeDisabled()
+  await page.getByLabel('Title').fill(`${title} renamed`)
   await page.getByLabel('Description').fill('Bin is leaking badly.')
   await page.getByRole('radiogroup', { name: 'Urgency' }).getByRole('radio', { name: 'Urgent' }).click()
   await page.getByRole('button', { name: 'Change', exact: true }).click()
@@ -41,6 +45,7 @@ test('a manager edits a ticket: description, urgency and equipment', async ({ pa
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   await expect(page.getByRole('status').filter({ hasText: 'Changes saved.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: `${title} renamed` })).toBeVisible()
   await expect(page.getByText('Bin is leaking badly.')).toBeVisible()
   await expect(page.getByText('URGENT')).toBeVisible()
   await expect(page.getByText(unit, { exact: true })).toBeVisible()
@@ -61,6 +66,7 @@ test('a manager closes a ticket, sees its screen, and reopens it with a reason',
 
   await expect(page.getByText('Your comment: "Tightened the drain line."')).toBeVisible()
   await expect(page.getByLabel('Description')).toBeDisabled()
+  await expect(page.getByLabel('Title')).toBeDisabled()
   await expect(page.getByRole('button', { name: 'Save changes' })).toHaveCount(0)
   await testInfo.attach('just-closed', { body: await page.screenshot(), contentType: 'image/png' })
 

@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
 import { RadioRow } from '../../components/Card'
-import { Textarea } from '../../components/Field'
+import { Input, Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
 import { AddPhotoButton, PhotoTray } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
@@ -24,10 +24,10 @@ import { useTicket } from './useTicket'
 
 /**
  * Manager · Edit / close ticket (design/screens/Edit-Ticket). Description, equipment,
- * a photo and urgency, as the board has them, then Close ticket with a confirm sheet.
- * After closing it stays here with the fields off, as the board draws it; this also
- * offers View closed ticket, since no list leads to one until Phase 4. A ticket that
- * was already closed has nothing to edit and goes to its own screen.
+ * a photo and urgency, as the board has them, plus Title, which it leaves out, then
+ * Close ticket with a confirm sheet. After closing it stays here with the fields off,
+ * as the board draws it; this also offers View closed ticket. A ticket that was already
+ * closed has nothing to edit and goes to its own screen.
  */
 export function EditTicketScreen() {
   const { id = '' } = useParams()
@@ -67,6 +67,7 @@ function EditForm({
   const picked = usePickedPhotos()
   const units = useTicketForm(ticket.category_id, ticket.restaurant_id)
 
+  const [title, setTitle] = useState(ticket.title)
   const [description, setDescription] = useState(ticket.description ?? '')
   const [urgency, setUrgency] = useState<TicketEdits['urgency']>(ticket.urgency)
   const [equipmentId, setEquipmentId] = useState(ticket.equipment_id)
@@ -86,6 +87,7 @@ function EditForm({
   const submit = () =>
     save.mutate(
       {
+        title: title.trim(),
         description: description.trim(),
         urgency,
         ...(equipmentId !== ticket.equipment_id ? { equipmentId } : {}),
@@ -148,6 +150,13 @@ function EditForm({
             <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{ticket.category.name}</span>
           </div>
         )}
+        <Input
+          label="Title"
+          maxLength={140}
+          value={title}
+          disabled={closed}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <Textarea
           label="Description"
           value={description}
@@ -223,7 +232,7 @@ function EditForm({
           </>
         ) : (
           <>
-            <Button loading={save.isPending} disabled={picked.reading} onClick={submit}>
+            <Button loading={save.isPending} disabled={!title.trim() || picked.reading} onClick={submit}>
               Save changes
             </Button>
             <Button variant="secondary" onClick={() => setClosing(true)}>

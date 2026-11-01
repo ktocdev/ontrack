@@ -18,6 +18,7 @@ import { Chip, ChoiceChips } from '../../components/Chip'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
+import { OverflowMenu } from '../../components/Menu'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
@@ -227,6 +228,7 @@ export function KitPage() {
                 </Button>
               </div>
               <div className="flex items-center gap-2">
+                <OverflowMenu label="More options" items={[{ to: '/kit', label: 'A menu item' }]} />
                 <IconButton label="Back">
                   <IconChevronLeft />
                 </IconButton>
