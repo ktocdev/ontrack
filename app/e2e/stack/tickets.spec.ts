@@ -90,6 +90,7 @@ test('with nothing open it says so and offers Create ticket, without a QR button
   await expect(page.getByRole('searchbox')).toHaveCount(0)
   await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' })).toHaveCount(0)
   await expect(page.getByText(/QR/)).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'More ticket options' })).toBeVisible()
   await testInfo.attach('empty', { body: await page.screenshot(), contentType: 'image/png' })
   await page.getByRole('link', { name: 'Create ticket' }).first().click()
   await expect(page).toHaveURL(/\/tickets\/new$/)
@@ -165,4 +166,57 @@ test('View as shows that person’s tickets, and none of them are links', async 
   await expect(page.getByText('OT-1044')).toHaveCount(0) // Porter's, which the admin could read
   await expect(page.getByRole('link', { name: /^OT-/ })).toHaveCount(0)
   await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' }).getByRole('link')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'More ticket options' })).toHaveCount(0)
+})
+
+test('the menu beside the search leads to closed tickets, and back', async ({ page }, testInfo) => {
+  await signIn(page, 'maya.reyes@example.com')
+  await page.getByRole('button', { name: 'More ticket options' }).click()
+  await page.waitForTimeout(200)
+  await testInfo.attach('menu', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.getByRole('menuitem', { name: 'View Closed Tickets' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Closed tickets' })).toBeVisible()
+  await expect(cards(page).first()).toBeVisible()
+  await expect(page.getByRole('link', { name: /OT-1042/ })).toHaveCount(0) // still open
+  const order = await cards(page).allTextContents()
+  const newer = order.findIndex((t) => t.includes('OT-1028'))
+  const older = order.findIndex((t) => t.includes('OT-0911'))
+  expect(newer).toBeGreaterThanOrEqual(0)
+  expect(newer).toBeLessThan(older)
+  await expect(cards(page).nth(newer)).toContainText('Closed by Bert Velilla')
+  await page.waitForTimeout(300)
+  await testInfo.attach('closed-list', { body: await page.screenshot(), contentType: 'image/png' })
+
+  await cards(page).nth(newer).click()
+  await expect(page.getByRole('heading', { name: 'Closed ticket', exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'Back to closed tickets' }).click()
+  await expect(page.getByRole('heading', { name: 'Closed tickets' })).toBeVisible()
+  await page.getByRole('link', { name: 'Back to open tickets' }).click()
+  await expect(page.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
+})
+
+test('closed tickets at another restaurant stay out', async ({ page }) => {
+  await signIn(page, 'ari.kim@example.com')
+  await page.goto('/tickets/closed')
+  await expect(page.getByRole('link', { name: /OT-1019/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /OT-1028/ })).toHaveCount(0)
+})
+
+test('with no closed tickets it says so, and a failed load offers Try again', async ({ page }) => {
+  await signIn(page, 'maya.reyes@example.com')
+  await page.route('**/rest/v1/tickets*', (route) => route.fulfill({ json: [] }))
+  await page.goto('/tickets/closed')
+  await expect(page.getByRole('heading', { name: 'No closed tickets yet' })).toBeVisible()
+
+  await page.unroute('**/rest/v1/tickets*')
+  let fail = true
+  await page.route('**/rest/v1/tickets*', (route) =>
+    fail ? route.fulfill({ status: 500, json: { message: 'nope' } }) : route.continue(),
+  )
+  await page.reload()
+  await expect(page.getByRole('heading', { name: "We couldn't load your closed tickets" })).toBeVisible()
+  fail = false
+  await page.getByRole('button', { name: 'Try again' }).click()
+  await expect(cards(page).first()).toBeVisible()
 })

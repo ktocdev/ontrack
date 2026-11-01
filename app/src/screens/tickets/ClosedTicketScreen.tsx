@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { Textarea } from '../../components/Field'
@@ -22,7 +22,8 @@ import type { useTicket } from './useTicket'
  * from this. Contractor and Cost appear only if the database returns them, which takes
  * see_costs. After reopening it stays put with a banner and the new step, as the board
  * draws it; TicketScreen holds what it showed so the refreshed ticket doesn't replace it.
- * The board's promise of a notification when work starts waits for Phase 3.
+ * The board's promise of a notification when work starts waits for Phase 3. Opened from
+ * the Closed tickets list (?from=closed), the back arrow returns there.
  */
 type Data = NonNullable<ReturnType<typeof useTicket>['data']>
 type Ticket = NonNullable<Data['ticket']>
@@ -43,6 +44,8 @@ export function ClosedTicketScreen({
   reopened: string | null
   onReopened: (note: string) => void
 }) {
+  const [params] = useSearchParams()
+  const fromList = params.get('from') === 'closed'
   const facts = useClosedFacts(ticket.id).data
   const reopen = useReopenTicket(ticket.id)
   const picked = usePickedPhotos()
@@ -80,8 +83,8 @@ export function ClosedTicketScreen({
         }`}
       >
         <Link
-          to="/tickets"
-          aria-label="Back to open tickets"
+          to={fromList ? '/tickets/closed' : '/tickets'}
+          aria-label={fromList ? 'Back to closed tickets' : 'Back to open tickets'}
           className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
         >
           <IconChevronLeft size={22} />

@@ -4,6 +4,7 @@ import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { SearchField } from '../../components/Field'
+import { OverflowMenu } from '../../components/Menu'
 import { CountBadge } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
@@ -21,8 +22,10 @@ import { expectNothingOpen, useOpenTickets } from './useOpenTickets'
  * the title and the empty state; the In-house tab stays if tasks are waiting there.
  * It loads in whichever of those layouts it found last time on this device.
  * A manager with more than one restaurant sees which one each card is for. The
- * boards' QR buttons wait for Phase 4, when a scan has something to open. Under
- * View as, nothing here leads anywhere or changes anything.
+ * boards' QR buttons wait for Phase 4, when a scan has something to open. The menu
+ * beside the search, which no board draws, leads to closed tickets; with nothing open
+ * there is no search, so it sits beside the title. Under View as, nothing here leads
+ * anywhere or changes anything.
  */
 type Area = 'all' | 'foh' | 'boh'
 
@@ -44,6 +47,9 @@ export function OpenTicketsScreen() {
   const waitingForEmpty = isPending && expectEmpty
   const noResults = !noneAtAll && found.length === 0 && search.trim() !== ''
   const inHouseCount = data?.inHouseCount ?? 0
+  const menu = viewingAs ? null : (
+    <OverflowMenu label="More ticket options" items={[{ to: '/tickets/closed', label: 'View Closed Tickets' }]} />
+  )
 
   return (
     <Screen>
@@ -61,7 +67,11 @@ export function OpenTicketsScreen() {
         }
         topRight={<ProfileLink />}
         action={
-          noResults ? <span className="self-end pb-1 text-13 text-text-muted">{all.length} open</span> : undefined
+          noResults ? (
+            <span className="self-end pb-1 text-13 text-text-muted">{all.length} open</span>
+          ) : noneAtAll ? (
+            menu
+          ) : undefined
         }
       >
         {!noResults && !isError && !waitingForEmpty && (!noneAtAll || inHouseCount > 0) && (
@@ -93,13 +103,17 @@ export function OpenTicketsScreen() {
         )}
         {!noneAtAll && !isError && !waitingForEmpty && (
           <>
-            <SearchField
-              label="Search tickets"
-              placeholder="Search tickets or equipment"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onClear={() => setSearch('')}
-            />
+            <div className="flex items-center gap-2">
+              <SearchField
+                label="Search tickets"
+                placeholder="Search tickets or equipment"
+                className="min-w-0 flex-1"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onClear={() => setSearch('')}
+              />
+              {menu}
+            </div>
             <Segmented
               size="sm"
               label="Area"

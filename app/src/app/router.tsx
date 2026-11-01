@@ -189,6 +189,12 @@ export const router = createBrowserRouter([
                 element: <BareShell />,
                 children: [
                   {
+                    path: '/tickets/closed',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/ClosedTicketsScreen')).ClosedTicketsScreen,
+                    }),
+                  },
+                  {
                     path: '/tickets/new/:categoryId',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/CreateFormScreen')).CreateFormScreen,

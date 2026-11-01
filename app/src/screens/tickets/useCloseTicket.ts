@@ -10,6 +10,7 @@ import { uploadPhotos, type PickedPhoto } from './usePhotos'
  */
 
 export type TicketEdits = {
+  title: string
   description: string
   urgency: 'low' | 'normal' | 'urgent'
   /** Only present when it changed. */
@@ -26,6 +27,7 @@ export function useSaveTicket(ticketId: string) {
       const { error } = await sb
         .from('tickets')
         .update({
+          title: e.title,
           description: e.description || null,
           urgency: e.urgency,
           ...(e.equipmentId !== undefined ? { equipment_id: e.equipmentId } : {}),
