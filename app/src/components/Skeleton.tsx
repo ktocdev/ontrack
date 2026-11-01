@@ -64,11 +64,11 @@ export function ButtonSpinner({ size = 18 }: { size?: number }) {
 }
 
 /** Ops dashboard: a feed of ticket cards. */
-export function CardFeedSkeleton({ count = 4 }: { count?: number }) {
+export function CardFeedSkeleton({ count = 4, label = 'Loading open tickets' }: { count?: number; label?: string }) {
   const titles = ['78%', '62%', '84%', '58%', '70%']
   const metas = ['46%', '52%', '40%', '56%', '48%']
   return (
-    <LoadingRegion label="Loading open tickets" className="flex flex-col gap-2.5">
+    <LoadingRegion label={label} className="flex flex-col gap-2.5">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}

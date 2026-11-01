@@ -175,7 +175,12 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/tickets/CreateAreaScreen')).CreateAreaScreen,
                     }),
                   },
-                  { path: '/tickets/in-house', ...placeholder('In-house tasks', 'Phase 2') },
+                  {
+                    path: '/tickets/in-house',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/InHouseScreen')).InHouseScreen,
+                    }),
+                  },
                   { path: '/walkthrough', ...placeholder('Walkthrough', 'Phase 6a') },
                   { path: '/equipment', ...placeholder('Equipment', 'Phase 4') },
                 ],

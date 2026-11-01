@@ -338,12 +338,13 @@ update public.tickets set walkthrough_id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000002
   where id = '66666666-6666-4666-8666-000000001041';
 alter table public.tickets enable trigger tickets_updated_at;
 
-insert into public.inhouse_fixes (restaurant_id, walkthrough_id, title, origin_label, done_at, done_by, created_by, created_at) values
-  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Replace 2 bulbs over booths 4–6',          'Oct walkthrough · FOH › Electrical › Light bulbs',            null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days'),
-  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Tighten wobbly 2-top at table 14',         'Oct walkthrough · FOH › Aesthetics › Surfaces and seating',   null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days'),
-  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Replaced cracked cover plate by mop sink',  'Oct walkthrough · BOH › Electrical › Outlets',                null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days'),
-  ('11111111-1111-4111-8111-000000000001', null,                                   'Clear boxes from utility closet',           'Q4 task · Organize utility areas',                            null, null, '22222222-2222-4222-8222-000000000001', now() - interval '2 days'),
-  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005', 'Touch up scuffed baseboard by restrooms',  'Sep walkthrough · FOH › Aesthetics › Paint',                  null, null, '22222222-2222-4222-8222-000000000001', '2026-09-24 17:00-05'),
-  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Re-glue trim on pass shelf',                'Oct walkthrough · BOH › Electrical › Feature',                now() - interval '1 day', '22222222-2222-4222-8222-000000000001', '22222222-2222-4222-8222-000000000001', now() - interval '3 days');
+-- Newest first gives the board's order.
+insert into public.inhouse_fixes (restaurant_id, walkthrough_id, title, origin_label, area, done_at, done_by, created_by, created_at) values
+  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Replace 2 bulbs over booths 4–6', 'Oct walkthrough · FOH › Electrical › Light bulbs', 'foh', null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days'),
+  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Tighten wobbly 2-top at table 14', 'Oct walkthrough · FOH › Aesthetics › Surfaces and seating', 'foh', null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days 1 minute'),
+  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Replaced cracked cover plate by mop sink', 'Oct walkthrough · BOH › Electrical › Outlets', 'boh', null, null, '22222222-2222-4222-8222-000000000001', now() - interval '3 days 2 minutes'),
+  ('11111111-1111-4111-8111-000000000001', null, 'Clear boxes from utility closet', 'Q4 task · Organize utility areas', 'boh', null, null, '22222222-2222-4222-8222-000000000001', now() - interval '4 days'),
+  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005', 'Touch up scuffed baseboard by restrooms', 'Sep walkthrough · FOH › Aesthetics › Paint', 'foh', null, null, '22222222-2222-4222-8222-000000000001', '2026-09-24 17:00-05'),
+  ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Re-glue trim on pass shelf', 'Oct walkthrough · BOH › Electrical › Feature', 'boh', now() - interval '1 day', '22222222-2222-4222-8222-000000000001', '22222222-2222-4222-8222-000000000001', now() - interval '3 days');
 
 commit;

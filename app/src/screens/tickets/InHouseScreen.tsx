@@ -1,0 +1,242 @@
+import { useState } from 'react'
+import { ProfileLink } from '../../app/ProfileLink'
+import { useUser } from '../../auth/context'
+import { Button } from '../../components/Button'
+import { EmptyState } from '../../components/EmptyState'
+import { SearchField } from '../../components/Field'
+import { ErrorBanner, Notice } from '../../components/Notice'
+import { CountBadge } from '../../components/Pill'
+import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
+import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
+import { Segmented } from '../../components/Segmented'
+import { ConfirmSheet } from '../../components/Sheet'
+import { CardFeedSkeleton } from '../../components/Skeleton'
+import { TaskList, TaskRow } from '../../components/TaskRow'
+import { useToast } from '../../components/Toast'
+import { IconChevronDown, IconTrash, IconWarning } from '../../components/icons'
+import { matchesSearch } from './tickets'
+import { useDeleteTask, useInHouse, useSetTaskDone } from './useInHouse'
+import { useOpenTickets } from './useOpenTickets'
+
+/**
+ * Manager · In-house tasks (design/screens/Main-InHouse). What the restaurant fixes
+ * itself, with search and Front / Back whose counts follow the search. Checking a task
+ * moves it to Closed, and unchecking brings it back. The board also draws Delete on a
+ * closed row, but a checked-off task is a record, so only an open one offers it. Under
+ * View as the boxes only show their state.
+ */
+type Area = 'all' | 'foh' | 'boh'
+
+const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
+
+export function InHouseScreen() {
+  const { restaurants, viewingAs } = useUser()
+  const ids = restaurants.map((r) => r.id)
+  const { data, isPending, isError, refetch } = useInHouse(ids)
+  const openTickets = useOpenTickets(ids)
+  const setDone = useSetTaskDone(ids)
+  const remove = useDeleteTask()
+  const toast = useToast()
+  const [search, setSearch] = useState('')
+  const [area, setArea] = useState<Area>('all')
+  const [deleting, setDeleting] = useState<{ id: string; title: string } | null>(null)
+  const [deleted, setDeleted] = useState(false)
+
+  const only = restaurants.length === 1 ? restaurants[0] : undefined
+  const placeOf = new Map(restaurants.map((r) => [r.id, r]))
+  const all = data ?? []
+  const found = all.filter((t) => matchesSearch(search, [t.title, t.origin_label]))
+  const count = (a: Area) => found.filter((t) => !t.done_at && (a === 'all' || t.area === a)).length
+  const shown = area === 'all' ? found : found.filter((t) => t.area === area)
+  const open = shown.filter((t) => !t.done_at)
+  const closed = shown.filter((t) => t.done_at)
+  const searching = search.trim() !== ''
+
+  const toggle = (id: string, done: boolean) => {
+    setDeleted(false)
+    setDone.mutate(
+      { id, done },
+      { onError: () => toast.show('Couldn’t save that. Check your connection and try again.') },
+    )
+  }
+  const confirmDelete = () => {
+    if (!deleting) return
+    remove.mutate(deleting.id, {
+      onSuccess: () => {
+        setDeleting(null)
+        setDeleted(true)
+      },
+    })
+  }
+
+  const row = (t: (typeof all)[number]) => (
+    <TaskRow
+      key={t.id}
+      title={t.title}
+      meta={[t.origin_label, t.done_at && 'Completed'].filter(Boolean).join(' · ')}
+      done={!!t.done_at}
+      restaurant={only ? undefined : placeOf.get(t.restaurant_id)}
+      onToggle={viewingAs ? undefined : () => toggle(t.id, !t.done_at)}
+      onDelete={
+        viewingAs || t.done_at
+          ? undefined
+          : () => {
+              setDeleted(false)
+              setDeleting({ id: t.id, title: t.title })
+            }
+      }
+    />
+  )
+
+  return (
+    <Screen>
+      <ScreenHeader
+        title="In-house tasks"
+        topLeft={
+          only ? (
+            <RestaurantName name={only.name} color={only.color} />
+          ) : (
+            <span className="flex items-center gap-1.5 text-14 font-semibold">
+              <AllRestaurantsSquare colors={restaurants.map((r) => r.color)} />
+              {restaurants.length} restaurants
+            </span>
+          )
+        }
+        topRight={<ProfileLink />}
+      >
+        <UnderlineTabs
+          size="lg"
+          label="Ticket or in-house view"
+          className="-mt-1"
+          items={[
+            {
+              to: '/tickets',
+              end: true,
+              label: (
+                <>
+                  Tickets <CountBadge count={openTickets.data?.tickets.length ?? 0} />
+                </>
+              ),
+            },
+            {
+              to: '/tickets/in-house',
+              label: (
+                <>
+                  In-house <CountBadge count={all.filter((t) => !t.done_at).length} active />
+                </>
+              ),
+            },
+          ]}
+        />
+        {!isError && (
+          <>
+            <SearchField
+              label="Search in-house tasks"
+              placeholder="Search in-house tasks"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch('')}
+            />
+            <Segmented
+              size="sm"
+              label="Area"
+              value={area}
+              onChange={setArea}
+              options={[
+                { value: 'all', label: `All · ${count('all')}` },
+                { value: 'foh', label: `Front · ${count('foh')}` },
+                { value: 'boh', label: `Back · ${count('boh')}` },
+              ]}
+            />
+          </>
+        )}
+      </ScreenHeader>
+
+      {isError ? (
+        <EmptyState
+          tone="neutral"
+          titleSize={20}
+          icon={<IconWarning size={30} />}
+          title="We couldn't load your in-house tasks"
+          body="Check your connection and try again."
+        >
+          <Button variant="small" className="w-full" onClick={() => void refetch()}>
+            Try again
+          </Button>
+        </EmptyState>
+      ) : (
+        <ScreenBody className="gap-2.5 pb-4 pt-1">
+          {isPending ? (
+            <CardFeedSkeleton label="Loading in-house tasks" />
+          ) : (
+            <>
+              <div className="flex flex-none items-baseline justify-between">
+                <span className={SECTION}>To fix · {open.length}</span>
+                {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
+              </div>
+              {open.length > 0 ? (
+                <TaskList>{open.map(row)}</TaskList>
+              ) : (
+                <div className="flex-none rounded-input border border-border bg-surface px-4 py-[18px] text-14 leading-[1.45] text-text-secondary">
+                  {searching
+                    ? `No tasks to fix match "${search.trim()}".`
+                    : closed.length > 0
+                      ? 'Nothing left to fix. Checked-off tasks are under Closed.'
+                      : 'Nothing to fix right now.'}
+                </div>
+              )}
+              {closed.length > 0 && (
+                <details className="group mt-1 flex-none">
+                  <summary className="flex min-h-tap cursor-pointer list-none items-center justify-between group-open:mb-1 [&::-webkit-details-marker]:hidden">
+                    <span className={SECTION}>Closed · {closed.length}</span>
+                    <IconChevronDown
+                      size={16}
+                      strokeWidth={2.2}
+                      className="text-text-secondary group-open:rotate-180"
+                    />
+                  </summary>
+                  <TaskList>{closed.map(row)}</TaskList>
+                </details>
+              )}
+              {deleted && <Notice>In-house task deleted.</Notice>}
+            </>
+          )}
+        </ScreenBody>
+      )}
+
+      <ConfirmSheet
+        open={deleting !== null}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            remove.reset()
+            setDeleting(null)
+          }
+        }}
+        title="Delete this in-house task?"
+        icon={
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-status-open-bg text-danger">
+            <IconTrash size={24} />
+          </span>
+        }
+        description={
+          <span className="flex flex-col gap-2">
+            <span>"{deleting?.title}" will be removed.</span>
+            <b className="text-danger">This is permanent and cannot be undone.</b>
+          </span>
+        }
+      >
+        {remove.isError && (
+          <ErrorBanner title="Couldn't delete this yet.">
+            It may have just been checked off, or your connection dropped. Try again.
+          </ErrorBanner>
+        )}
+        <Button variant="danger" loading={remove.isPending} onClick={confirmDelete}>
+          Delete
+        </Button>
+        <Button variant="secondary" onClick={() => setDeleting(null)}>
+          Cancel
+        </Button>
+      </ConfirmSheet>
+    </Screen>
+  )
+}

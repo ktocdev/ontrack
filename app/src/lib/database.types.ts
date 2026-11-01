@@ -185,14 +185,14 @@ isOneToOne: false
                   ]
                 },"inhouse_fixes": {
                   Row: {
-                    "check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"deleted_at": string | null,"done_at": string | null,"done_by": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null
+                    "area": Database["public"]['Enums']["area"] | null,"check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"done_at": string | null,"done_by": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"deleted_at"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id": string,"title": string,"walkthrough_id"?: string | null
+                    "area"?: Database["public"]['Enums']["area"] | null,"check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id": string,"title": string,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"deleted_at"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id"?: string,"title"?: string,"walkthrough_id"?: string | null
+                    "area"?: Database["public"]['Enums']["area"] | null,"check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id"?: string,"title"?: string,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1329,6 +1329,9 @@ isOneToOne: false
 "can_see_ticket_photo":
 { Args: { "p_name": string }; Returns: boolean
                            },
+"delete_inhouse_fix":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "delete_restaurant":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -1382,6 +1385,9 @@ isOneToOne: false
                            },
 "service_record_restaurant":
 { Args: { "srid": string }; Returns: string
+                           },
+"set_inhouse_fix_done":
+{ Args: { "p_done": boolean,"p_id": string }; Returns: undefined
                            },
 "set_person_access":
 { Args: { "p_restaurants": (string)[],"p_role": Database["public"]['Enums']["app_role"],"p_user": string }; Returns: undefined

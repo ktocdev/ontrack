@@ -85,6 +85,11 @@ export const IconStorefront = (p: IconProps) => (
 )
 
 // Chrome
+export const IconTrash = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+  </svg>
+)
 export const IconChevronLeft = (p: IconProps) => (
   <svg {...base({ size: 22, ...p })}>
     <path d="m15 18-6-6 6-6" />
