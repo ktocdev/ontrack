@@ -43,7 +43,7 @@ test('Ops sees the open work under each restaurant, with the details on each car
   await expect(card(page, 'OT-1044')).toContainText('Open')
   await expect(card(page, 'OT-1044')).not.toContainText('Unassigned')
   await expect(card(page, 'OT-1042')).toContainText('Walkthrough')
-  await expect(card(page, 'OT-1042').getByTitle('You are working on this')).toHaveText('You')
+  await expect(card(page, 'OT-1042').getByTitle(/is working on this/)).toHaveCount(0) // Bert's own
   await expect(page.getByTitle('Chris Novak is working on this').first()).toHaveText('Chris Novak')
 
   await page.waitForTimeout(300)
@@ -114,7 +114,7 @@ test('View as shows that person’s dashboard, and none of it is a link', async 
   await page.goto('/admin/users/22222222-2222-4222-8222-000000000003/view')
   await expect(page.getByText('Viewing as Bert Velilla')).toBeVisible()
   await expect(page.getByText('OT-1042')).toBeVisible()
-  await expect(page.getByTitle('You are working on this').first()).toBeVisible()
+  await expect(page.getByTitle('Chris Novak is working on this').first()).toBeVisible()
   await expect(cards(page)).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'More ticket options' })).toHaveCount(0)
 })

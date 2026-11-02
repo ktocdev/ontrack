@@ -20,7 +20,7 @@ import { useRestaurantScope } from './useRestaurantScope'
  * goes from one restaurant to the next through the day. Under each label, urgent is
  * always on top, then Front of House before Back, then the oldest, and the time on a
  * card is how long ago it was opened, so the order can be read. Nobody assigns a ticket: it is picked up by
- * marking it In progress, and a badge says who is on it. Closed tickets are in the menu
+ * marking it In progress, and a badge says who else is on it. Closed tickets are in the menu
  * by the title, as on a manager's Open tickets. The filter sheet comes in OT-38. Under
  * View as, nothing leads anywhere.
  */
@@ -113,11 +113,7 @@ export function OpsDashboardScreen() {
                     ]
                       .filter(Boolean)
                       .join(' · ')}
-                    worker={
-                      t.assignee && t.assignee_id
-                        ? { name: t.assignee.full_name, mine: t.assignee_id === user.id }
-                        : null
-                    }
+                    worker={t.assignee_id === user.id ? null : t.assignee?.full_name}
                   />
                 ))}
               </section>

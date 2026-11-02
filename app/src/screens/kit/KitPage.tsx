@@ -415,7 +415,7 @@ export function KitPage() {
                 urgent
                 walkthrough
                 meta="BOH · Refrigeration · 1h ago"
-                worker={{ name: 'Bert Velilla', mine: false }}
+                worker="Bert Velilla"
               />
               <TaskList>
                 <TaskRow
