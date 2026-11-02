@@ -238,7 +238,12 @@ export const router = createBrowserRouter([
               },
               {
                 element: <BareShell />,
-                children: [{ path: '/ops/tickets/:id', ...placeholder('Ticket', 'Phase 3', 'OT-39 builds this.') }],
+                children: [
+                  {
+                    path: '/ops/tickets/:id',
+                    lazy: async () => ({ Component: (await import('../screens/ops/OpsTicketScreen')).OpsTicketScreen }),
+                  },
+                ],
               },
             ],
           },
