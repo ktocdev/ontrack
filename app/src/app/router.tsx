@@ -230,7 +230,10 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/ops/OpsDashboardScreen')).OpsDashboardScreen,
                     }),
                   },
-                  { path: '/ops/closed', ...placeholder('Closed', 'Phase 3', 'OT-41 builds this.') },
+                  {
+                    path: '/ops/closed',
+                    lazy: async () => ({ Component: (await import('../screens/ops/OpsClosedScreen')).OpsClosedScreen }),
+                  },
                   { path: '/ops/walkthroughs', ...placeholder('Walkthroughs', 'Phase 6b') },
                   { path: '/ops/equipment', ...placeholder('Equipment', 'Phase 4') },
                   { path: '/ops/contractors', ...placeholder('Contractors', 'Phase 5') },

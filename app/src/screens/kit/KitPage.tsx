@@ -15,6 +15,7 @@ import {
   RowIcon,
 } from '../../components/Card'
 import { Chip, ChoiceChips } from '../../components/Chip'
+import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
@@ -435,6 +436,26 @@ export function KitPage() {
                 items={kitOrderIds.map((id) => KIT_RESTAURANTS.find((r) => r.id === id)!)}
                 onChange={setKitOrderIds}
               />
+              <MonthHeading label="October · 10 closed" total="$2,663.60" />
+              <Card className="overflow-hidden rounded-input">
+                <ClosedTicketRow
+                  to="#"
+                  title="Door gasket torn"
+                  displayId="OT-0988"
+                  restaurant={KIT_RESTAURANTS[0]}
+                  date="Oct 14"
+                  cost="$245.00"
+                  reopened
+                />
+                <ClosedTicketRow
+                  to="#"
+                  title="Booth 12 upholstery torn"
+                  displayId="OT-1028"
+                  restaurant={KIT_RESTAURANTS[0]}
+                  date="Oct 15"
+                  cost="$420.00"
+                />
+              </Card>
               <OpsTicketCard
                 to="#"
                 displayId="OT-0988"

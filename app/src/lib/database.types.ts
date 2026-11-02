@@ -1329,6 +1329,11 @@ isOneToOne: false
 "can_see_ticket_photo":
 { Args: { "p_name": string }; Returns: boolean
                            },
+"closed_by_month":
+{ Args: { "p_restaurant_ids": (string)[],"p_time_zone": string }; Returns: {
+              "closed_count": number,"month": string,"total_cents": number
+            }[]
+                           },
 "delete_inhouse_fix":
 { Args: { "p_id": string }; Returns: undefined
                            },

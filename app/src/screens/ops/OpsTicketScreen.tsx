@@ -24,6 +24,7 @@ import { threadItems } from '../tickets/thread'
 import { useCloseTicket } from '../tickets/useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
 import { usePostUpdate } from '../tickets/useTicket'
+import { OpsClosedTicketScreen } from './OpsClosedTicketScreen'
 import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
 
 /**
@@ -34,7 +35,7 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * to later phases stay off: the equipment card and the walkthrough open nothing yet, and
  * Service & cost waits for Phase 5. Updates go to the restaurant unless the toggle says
  * internal, and Close ticket takes an optional comment, then goes back to the dashboard.
- * A closed or reopened ticket's own screen comes in OT-41 and OT-42.
+ * A closed ticket has its own screen. A reopened ticket's comes in OT-42.
  */
 const OPTIONS: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled']
 
@@ -87,6 +88,7 @@ export function OpsTicketScreen() {
   }
   const ticket = data?.ticket
   if (!ticket) return <NotFoundScreen />
+  if (ticket.status === 'closed') return <OpsClosedTicketScreen ticket={ticket} data={data} />
 
   const failed = () => toast.show('Couldn’t change that. Check your connection and try again.')
   const pick = (status: PillStatus) => {
@@ -129,7 +131,6 @@ export function OpsTicketScreen() {
   const items = threadItems(data.updates, user.id, data.names)
   const count = items.filter((i) => i.type === 'message').length
   const onTicket = data.photos.filter((p) => !p.update_id)
-  const closed = ticket.status === 'closed'
   const othersTicket = !!ticket.assignee_id && ticket.assignee_id !== user.id
   const onIt = ticket.assignee_id === user.id ? 'You' : (ticket.assignee?.full_name ?? 'Nobody yet')
   const label =
@@ -188,7 +189,7 @@ export function OpsTicketScreen() {
           valueLabel={label}
           options={OPTIONS}
           busy={setStatus.isPending || take.isPending}
-          onPick={viewingAs || closed ? undefined : pick}
+          onPick={viewingAs ? undefined : pick}
           actions={[
             ...(othersTicket
               ? [{ label: 'Take this over', onSelect: () => take.mutate(undefined, { onError: failed }) }]
@@ -262,7 +263,7 @@ export function OpsTicketScreen() {
           </ErrorBanner>
         </div>
       )}
-      {!closed && !viewingAs && (
+      {!viewingAs && (
         <Composer
           label={internal ? 'Write an internal note, only Ops can see it' : 'Write an update the restaurant can see'}
           placeholder={internal ? 'Write an internal note…' : 'Write an update…'}

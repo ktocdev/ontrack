@@ -130,10 +130,12 @@ test('a failed change says so and leaves the status', async ({ page }) => {
   await expect(statusButton(page)).toContainText('Open')
 })
 
-test('a closed ticket can’t change here, and a ticket out of scope isn’t there', async ({ page }) => {
+test('a closed ticket has no controls, and a ticket that isn’t there says so', async ({ page }) => {
   await signIn(page, BERT)
   await page.goto('/ops/tickets/66666666-6666-4666-8666-000000001028')
-  await expect(statusButton(page)).toBeDisabled()
+  await expect(page.getByRole('heading', { name: 'Booth 12 upholstery torn' })).toBeVisible()
+  await expect(statusButton(page)).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Post update' })).toHaveCount(0)
   await page.goto('/ops/tickets/not-a-ticket')
   await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
 })
