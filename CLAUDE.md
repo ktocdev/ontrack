@@ -152,7 +152,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
-| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's dashboard card |
+| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
