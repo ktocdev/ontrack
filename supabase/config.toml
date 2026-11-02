@@ -394,6 +394,8 @@ APP_URL = "http://localhost:4174"
 EMAIL_SINK_URL = "http://supabase_inbucket_ontrack:8025"
 # Local only, like the seed's passwords: a throwaway pair (app/scripts/vapid.mjs). Its public half is in
 # app/playwright.stack.config.ts. Pushes go to the stack's gateway, which answers 404, so a device reads as gone.
+# Also local only: the database calls send-push with this, and seed.sql puts the same value in its vault.
+SEND_PUSH_SECRET = "local-send-push-secret"
 PUSH_SINK_URL = "http://supabase_kong_ontrack:8000/push"
 VAPID_KEYS = '{"publicKey":{"key_ops":["verify"],"ext":true,"kty":"EC","x":"LvoWgNmoEjG2eIhaPGmX07pPTAHwsk_-GqG5pDNRJFU","y":"pwnAERub30EZo0UPeXYEY_fAZQ3cObCB1BjW720zIL8","crv":"P-256"},"privateKey":{"key_ops":["sign"],"ext":true,"kty":"EC","x":"LvoWgNmoEjG2eIhaPGmX07pPTAHwsk_-GqG5pDNRJFU","y":"pwnAERub30EZo0UPeXYEY_fAZQ3cObCB1BjW720zIL8","crv":"P-256","d":"gq-MaEgEFZu-5wfwRpU0MA1iqeXU_CIm4-lB7EV9IHQ"}}'
 
@@ -408,6 +410,9 @@ verify_jwt = false
 [functions.send-email]
 verify_jwt = false
 [functions.test-push]
+verify_jwt = false
+# Called by the database, with its own shared secret.
+[functions.send-push]
 verify_jwt = false
 
 [analytics]

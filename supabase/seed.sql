@@ -148,6 +148,7 @@ insert into public.contractors (id, name, trade, contact_name, phone, email, pre
 alter table public.tickets disable trigger tickets_log_events;
 alter table public.tickets disable trigger tickets_guard;
 alter table public.ticket_updates disable trigger ticket_updates_touch_ticket;
+alter table public.ticket_updates disable trigger notify_on_ticket_update;
 
 -- Shorthands used below
 -- FLS 0001  FWL 0002  POR 0003  RLS 0004
@@ -229,6 +230,7 @@ where t.status = 'closed' and not exists (select 1 from public.ticket_updates u 
 alter table public.tickets enable trigger tickets_log_events;
 alter table public.tickets enable trigger tickets_guard;
 alter table public.ticket_updates enable trigger ticket_updates_touch_ticket;
+alter table public.ticket_updates enable trigger notify_on_ticket_update;
 
 -- ---------------------------------------------------------------------------
 -- Service records, line items, invoices
@@ -348,5 +350,9 @@ insert into public.inhouse_fixes (restaurant_id, walkthrough_id, title, origin_l
   ('11111111-1111-4111-8111-000000000001', null, 'Clear boxes from utility closet', 'Q4 task · Organize utility areas', 'boh', null, null, '22222222-2222-4222-8222-000000000001', now() - interval '4 days'),
   ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005', 'Touch up scuffed baseboard by restrooms', 'Sep walkthrough · FOH › Aesthetics › Paint', 'foh', null, null, '22222222-2222-4222-8222-000000000001', '2026-09-24 17:00-05'),
   ('11111111-1111-4111-8111-000000000001', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'Re-glue trim on pass shelf', 'Oct walkthrough · BOH › Electrical › Feature', 'boh', now() - interval '1 day', '22222222-2222-4222-8222-000000000001', '22222222-2222-4222-8222-000000000001', now() - interval '3 days');
+
+-- How the database calls send-push on the local stack; the secret matches config.toml.
+select vault.create_secret('http://supabase_kong_ontrack:8000/functions/v1/send-push', 'send_push_url');
+select vault.create_secret('local-send-push-secret', 'send_push_secret');
 
 commit;
