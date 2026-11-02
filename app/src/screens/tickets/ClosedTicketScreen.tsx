@@ -9,6 +9,7 @@ import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
+import { TicketMenu } from '../../components/TicketMenu'
 import { IconChevronLeft, IconPlus, IconReopen } from '../../components/icons'
 import { longDate, money, reopenDaysLeft, timeline, timeToClose } from './closed'
 import { Fact, Step } from './ClosedParts'
@@ -79,7 +80,7 @@ export function ClosedTicketScreen({
   return (
     <Screen>
       <div
-        className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-5 pt-[calc(12px+var(--safe-top))] transition-shadow ${
+        className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 pt-[calc(12px+var(--safe-top))] transition-shadow ${
           scrolled ? 'shadow-scrolled' : ''
         }`}
       >
@@ -96,6 +97,7 @@ export function ClosedTicketScreen({
           </span>
           <h1 className="font-display text-20 font-bold">Closed ticket</h1>
         </div>
+        <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />
       </div>
 
       <ScreenBody className="gap-3 pb-5 pt-4" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>

@@ -10,6 +10,7 @@ import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { Spinner } from '../../components/Skeleton'
 import { Composer } from '../../components/Thread'
+import { TicketMenu } from '../../components/TicketMenu'
 import { IconChevronLeft, IconEdit, IconWrench } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ClosedTicketScreen } from './ClosedTicketScreen'
@@ -98,7 +99,7 @@ export function TicketScreen() {
         >
           <IconChevronLeft size={22} />
         </Link>
-        <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="font-mono text-13 text-text-secondary">{ticket.display_id}</span>
           <StatusPill
             status={ticket.status}
@@ -114,6 +115,7 @@ export function TicketScreen() {
           <IconEdit size={17} />
           Edit
         </Link>
+        <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />
       </div>
 
       <ScreenBody ref={body} className="gap-3 pb-4 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>

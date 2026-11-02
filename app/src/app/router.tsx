@@ -7,6 +7,7 @@ import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErr
 import { LinkExpiredScreen } from '../screens/invite/LinkExpiredScreen'
 import { CenteredLoading, CheckingInvite } from '../screens/loading/CenteredLoading'
 import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
+import { TicketLinkScreen } from '../screens/tickets/TicketLinkScreen'
 import { BareShell, Shell } from './Shell'
 
 /**
@@ -129,6 +130,7 @@ export const router = createBrowserRouter([
         element: <RequireAuth />,
         children: [
           { path: '/', element: <RoleHome /> },
+          { path: '/t/:id', element: <BareShell />, children: [{ index: true, element: <TicketLinkScreen /> }] },
           {
             path: '/profile',
             element: <BareShell />,

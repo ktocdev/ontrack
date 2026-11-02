@@ -53,7 +53,7 @@ on a phone and matches its PNG, in light and dark mode.
 
 ## App frame
 
-- Routes follow the design's href links: manager `/tickets`, `/tickets/new`, `/walkthrough`, `/equipment`; ops `/ops`, `/ops/walkthroughs`, `/ops/equipment`, `/ops/contractors`; admin `/admin/users`, `/admin/roles`, `/admin/tickets`, `/admin/restaurants`; leadership `/lead`, `/lead/restaurants`, `/lead/walkthroughs`, `/lead/contractors`; everyone `/profile`; public `/sign-in`, `/kit`. `src/app/roles.ts` is the one place these live.
+- Routes follow the design's href links: manager `/tickets`, `/tickets/new`, `/walkthrough`, `/equipment`; ops `/ops`, `/ops/walkthroughs`, `/ops/equipment`, `/ops/contractors`; admin `/admin/users`, `/admin/roles`, `/admin/tickets`, `/admin/restaurants`; leadership `/lead`, `/lead/restaurants`, `/lead/walkthroughs`, `/lead/contractors`; everyone `/profile` and a ticket's lasting link `/t/<id>`; public `/sign-in`, `/kit`. `src/app/roles.ts` is the one place these live.
 - Every signed-in route sits under `RequireAuth` then `RequireRole`, and renders inside `Shell` (tab bar) or `BareShell` (detail screens). Screens use `Screen`, `ScreenHeader`, `ScreenBody`, `BackBar` from `components/Screen.tsx`.
 - `useUser()` gives the profile, the restaurants in scope and whether that scope is all restaurants. Data hooks are one TanStack Query hook per screen over the typed client in `lib/supabase.ts`; after a schema change, copy the CI artifact (`database-types`) into `lib/database.types.ts` exactly as generated (Prettier skips it; CI fails if it drifts).
 - `/kit` is public and shows every component in both themes plus the loading and error boards under `/kit/loading/*` and `/kit/errors/*`. A new component goes there first.
@@ -158,6 +158,8 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
 | OT-51 | From feedback: a reopened ticket is on the dashboard and not in Closed tickets; the Ops message box hidden until Add update; no "Nobody has this yet" note |
 | OT-52 | From feedback: a reopened ticket acts like a new one apart from its badge, with nobody on it and no date |
+| OT-55 | Security audit of what Phase 3 added: policies and functions since OT-22, internal notes and their photos, Ops and manager scope, links, push and `send-push` |
+| OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

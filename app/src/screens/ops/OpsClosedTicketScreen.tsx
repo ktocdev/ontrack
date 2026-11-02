@@ -6,6 +6,7 @@ import { PhotoThumb, PhotoViewer } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
+import { TicketMenu } from '../../components/TicketMenu'
 import { IconChevronLeft } from '../../components/icons'
 import { money, timeline } from '../tickets/closed'
 import { Fact, Step } from '../tickets/ClosedParts'
@@ -54,6 +55,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
         </Link>
         <span className="flex-1 font-mono text-13 text-text-secondary">{ticket.display_id}</span>
         <StatusPill status="closed" className="mr-2" />
+        <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />
       </div>
 
       <ScreenBody className="gap-3 pb-5 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
