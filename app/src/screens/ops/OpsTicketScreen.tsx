@@ -1,22 +1,29 @@
-import { useState, type ReactNode } from 'react'
-import { Link, useParams } from 'react-router'
+import { useRef, useState, type ReactNode } from 'react'
+import { Link, useNavigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
-import { Input } from '../../components/Field'
-import { PhotoThumb, PhotoViewer } from '../../components/Photo'
+import { Input, Textarea } from '../../components/Field'
+import { ErrorBanner } from '../../components/Notice'
+import { AddPhotoButton, PhotoThumb, PhotoTray, PhotoViewer } from '../../components/Photo'
 import { statusLabel, UrgentTag, type PillStatus } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { Spinner } from '../../components/Skeleton'
 import { StatusMenu } from '../../components/StatusMenu'
+import { Composer, VisibilityToggle } from '../../components/Thread'
 import { useToast } from '../../components/Toast'
 import { IconChevronLeft, IconClipboardCheck, IconWrench } from '../../components/icons'
+import type { TicketStatus } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { longDate } from '../tickets/closed'
 import { scheduledLabel } from '../tickets/tickets'
-import { useSignedPhotos } from '../tickets/usePhotos'
+import { ThreadFeed } from '../tickets/ThreadFeed'
+import { threadItems } from '../tickets/thread'
+import { useCloseTicket } from '../tickets/useCloseTicket'
+import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
+import { usePostUpdate } from '../tickets/useTicket'
 import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
 
 /**
@@ -25,8 +32,9 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * decides that: In progress puts you on it, back to Open takes the person off. Take this
  * over is for one a colleague has. Scheduled asks for its date, which has no board. Links
  * to later phases stay off: the equipment card and the walkthrough open nothing yet, and
- * Service & cost waits for Phase 5. The thread and closing come in OT-40, and a closed or
- * reopened ticket's own screen in OT-41 and OT-42.
+ * Service & cost waits for Phase 5. Updates go to the restaurant unless the toggle says
+ * internal, and Close ticket takes an optional comment, then goes back to the dashboard.
+ * A closed or reopened ticket's own screen comes in OT-41 and OT-42.
  */
 const OPTIONS: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled']
 
@@ -56,7 +64,16 @@ export function OpsTicketScreen() {
   const take = useTakeTicket(id)
   const toast = useToast()
   const urls = useSignedPhotos(data?.photos.map((p) => p.path) ?? [])
-  const [viewing, setViewing] = useState<string | null>(null)
+  const post = usePostUpdate(id)
+  const close = useCloseTicket(id)
+  const picked = usePickedPhotos()
+  const navigate = useNavigate()
+  const body = useRef<HTMLDivElement>(null)
+  const [draft, setDraft] = useState('')
+  const [internal, setInternal] = useState(false)
+  const [closing, setClosing] = useState(false)
+  const [comment, setComment] = useState('')
+  const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
   const [scheduling, setScheduling] = useState(false)
   const [date, setDate] = useState('')
   const [scrolled, setScrolled] = useState(false)
@@ -77,7 +94,7 @@ export function OpsTicketScreen() {
       setDate(ticket.scheduled_for ?? '')
       setScheduling(true)
     } else if (status !== ticket.status && status !== 'fixed') {
-      setStatus.mutate({ status: status as (typeof OPTIONS)[number] & typeof ticket.status }, { onError: failed })
+      setStatus.mutate({ status: status as TicketStatus }, { onError: failed })
     }
   }
   const saveDate = () =>
@@ -89,6 +106,29 @@ export function OpsTicketScreen() {
       },
     )
 
+  const send = () =>
+    post.mutate(
+      { body: draft.trim(), photos: picked.photos, internal },
+      {
+        onSuccess: () => {
+          setDraft('')
+          picked.clear()
+          // After the refreshed thread has drawn.
+          requestAnimationFrame(() => body.current?.scrollTo({ top: body.current.scrollHeight }))
+        },
+      },
+    )
+  const confirmClose = () =>
+    close.mutate(comment.trim(), {
+      onSuccess: () => {
+        toast.show(`${ticket.display_id} closed.`)
+        navigate('/ops')
+      },
+    })
+
+  const items = threadItems(data.updates, user.id, data.names)
+  const count = items.filter((i) => i.type === 'message').length
+  const onTicket = data.photos.filter((p) => !p.update_id)
   const closed = ticket.status === 'closed'
   const othersTicket = !!ticket.assignee_id && ticket.assignee_id !== user.id
   const onIt = ticket.assignee_id === user.id ? 'You' : (ticket.assignee?.full_name ?? 'Nobody yet')
@@ -115,7 +155,11 @@ export function OpsTicketScreen() {
         {ticket.urgency === 'urgent' && <UrgentTag className="mr-2" />}
       </div>
 
-      <ScreenBody className="gap-3.5 pb-4 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
+      <ScreenBody
+        ref={body}
+        className="gap-3.5 pb-4 pt-3.5"
+        onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}
+      >
         <div className="flex flex-none flex-col gap-2">
           <h1 className="font-display text-24 font-bold leading-[1.2] tracking-[-0.02em] [overflow-wrap:anywhere]">
             {ticket.title}
@@ -145,11 +189,12 @@ export function OpsTicketScreen() {
           options={OPTIONS}
           busy={setStatus.isPending || take.isPending}
           onPick={viewingAs || closed ? undefined : pick}
-          action={
-            othersTicket
-              ? { label: 'Take this over', onSelect: () => take.mutate(undefined, { onError: failed }) }
-              : undefined
-          }
+          actions={[
+            ...(othersTicket
+              ? [{ label: 'Take this over', onSelect: () => take.mutate(undefined, { onError: failed }) }]
+              : []),
+            { label: 'Close ticket', onSelect: () => setClosing(true) },
+          ]}
         />
 
         {ticket.status === 'open' && !ticket.assignee_id && !viewingAs && (
@@ -170,9 +215,9 @@ export function OpsTicketScreen() {
           </>
         )}
 
-        {data.photos.length > 0 && (
+        {onTicket.length > 0 && (
           <div className="flex flex-none flex-wrap gap-2">
-            {data.photos.map((p) => {
+            {onTicket.map((p) => {
               const src = urls.data?.get(p.path)
               return (
                 <PhotoThumb
@@ -180,7 +225,7 @@ export function OpsTicketScreen() {
                   size="ticket"
                   src={src}
                   alt="Photo on this ticket"
-                  onOpen={() => src && setViewing(src)}
+                  onOpen={() => src && setViewing({ src, alt: 'Photo on this ticket' })}
                 />
               )
             })}
@@ -205,7 +250,77 @@ export function OpsTicketScreen() {
             </Card>
           </>
         )}
+
+        <SectionLabel className="-mb-0.5">Updates · {count}</SectionLabel>
+        <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />
       </ScreenBody>
+
+      {post.isError && (
+        <div className="flex-none px-3 pb-2">
+          <ErrorBanner title="Couldn't post that yet.">
+            Check your connection and try again. Your update is still here.
+          </ErrorBanner>
+        </div>
+      )}
+      {!closed && !viewingAs && (
+        <Composer
+          label={internal ? 'Write an internal note, only Ops can see it' : 'Write an update the restaurant can see'}
+          placeholder={internal ? 'Write an internal note…' : 'Write an update…'}
+          maxLength={4000}
+          value={draft}
+          onChange={(value) => {
+            if (post.isError) post.reset()
+            setDraft(value)
+          }}
+          onSend={send}
+          busy={post.isPending || picked.reading}
+          canSendEmpty={picked.photos.length > 0}
+          leading={
+            <AddPhotoButton
+              variant="icon"
+              disabled={post.isPending || picked.reading}
+              onFiles={(files) => {
+                if (post.isError) post.reset()
+                void picked.add(files)
+              }}
+            />
+          }
+          above={
+            <>
+              <VisibilityToggle internal={internal} onChange={setInternal} />
+              <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
+              {picked.error && (
+                <span role="alert" className="text-13 font-semibold text-danger">
+                  {picked.error}
+                </span>
+              )}
+            </>
+          }
+        />
+      )}
+
+      <Sheet
+        open={closing}
+        onOpenChange={(open) => {
+          if (!open) close.reset()
+          setClosing(open)
+        }}
+        title={`Close ${ticket.display_id}?`}
+        description="The restaurant sees this as closed, with your comment."
+      >
+        <Textarea label="Comment" optional value={comment} onChange={(e) => setComment(e.target.value)} />
+        {close.isError && (
+          <span role="alert" className="text-13 font-semibold text-danger">
+            That didn&apos;t go through. Check your connection and try again.
+          </span>
+        )}
+        <Button loading={close.isPending} onClick={confirmClose}>
+          Close ticket
+        </Button>
+        <Button variant="secondary" onClick={() => setClosing(false)}>
+          Cancel
+        </Button>
+      </Sheet>
 
       <Sheet
         open={scheduling}
@@ -224,7 +339,7 @@ export function OpsTicketScreen() {
           Cancel
         </Button>
       </Sheet>
-      <PhotoViewer src={viewing} alt="Photo on this ticket" onClose={() => setViewing(null)} />
+      <PhotoViewer src={viewing?.src ?? null} alt={viewing?.alt ?? ''} onClose={() => setViewing(null)} />
     </Screen>
   )
 }

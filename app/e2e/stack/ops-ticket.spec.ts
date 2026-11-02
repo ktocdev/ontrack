@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { bigPhoto, signIn, tokenFor } from './helpers'
 
 /**
  * Ops · Ticket against the seed. Status changes happen on OT-1047, an open ticket at
@@ -44,7 +44,7 @@ test('the ticket shows what the board does, without what later phases build', as
   await expect(page.getByText('OT-1042')).toBeVisible()
   await expect(page.getByText('URGENT')).toBeVisible()
   await expect(page.getByText('Federale’s Logan Square')).toBeVisible()
-  await expect(page.getByText('Maya Reyes')).toBeVisible()
+  await expect(page.getByText('Reporter', { exact: true }).locator('..')).toContainText('Maya Reyes')
   await expect(page.getByText(/^From \w+ walkthrough$/)).toBeVisible()
   await expect(page.getByText('Oct 19, 2026 - 9:12 AM')).toBeVisible()
   await expect(page.getByText('Reading 46°F')).toBeVisible()
@@ -136,4 +136,100 @@ test('a closed ticket can’t change here, and a ticket out of scope isn’t the
   await expect(statusButton(page)).toBeDisabled()
   await page.goto('/ops/tickets/not-a-ticket')
   await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
+})
+
+test('the thread shows updates and internal notes, tagged', async ({ page }, testInfo) => {
+  await signIn(page, BERT)
+  await page.goto(`/ops/tickets/${T1042}`)
+  const log = page.getByRole('log', { name: 'Ticket updates' })
+  await expect(page.getByText(/^Updates · \d+$/)).toBeVisible()
+  await expect(log.getByText(/^Opened by Maya Reyes · /)).toBeVisible()
+  await expect(log.getByText(/^You took this · status In progress · /)).toBeVisible()
+  await expect(log.getByText('Coldline quoted $185')).toBeVisible()
+  await expect(log.getByText('Ops only')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Visible to restaurant' })).toBeVisible()
+  await page.waitForTimeout(300)
+  await testInfo.attach('thread', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' })
+})
+
+test('an update reaches the restaurant, and an internal note does not', async ({ page, browser }, testInfo) => {
+  const stamp = `${testInfo.project.name} ${Date.now() % 100000}`
+  const visible = `Tech booked for two ${stamp}`
+  const note = `Quote looks high ${stamp}`
+  await signIn(page, BERT)
+  await page.goto(`/ops/tickets/${T1047}`)
+  const log = page.getByRole('log', { name: 'Ticket updates' })
+
+  await page.getByRole('textbox', { name: 'Write an update the restaurant can see' }).fill(visible)
+  await page.getByRole('button', { name: 'Post update' }).click()
+  await expect(log.getByText(visible)).toBeVisible()
+
+  await page.getByRole('button', { name: 'Visible to restaurant' }).click()
+  await page.getByRole('textbox', { name: 'Write an internal note, only Ops can see it' }).fill(note)
+  await page.getByLabel('Choose photos').setInputFiles(await bigPhoto(page))
+  await expect(page.getByRole('list', { name: 'Photos to send' }).getByRole('img')).toHaveCount(1)
+  await page.waitForTimeout(200)
+  await testInfo.attach('internal', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.getByRole('button', { name: 'Post update' }).click()
+  await expect(log.getByText(note)).toBeVisible()
+  await expect(log.getByRole('img', { name: 'Photo from You' }).last()).toBeVisible()
+  // It stays on internal after posting.
+  await expect(page.getByRole('button', { name: 'Internal note · Ops only' })).toBeVisible()
+
+  const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+  const dana = await context.newPage()
+  await signIn(dana, 'dana.ortiz@example.com')
+  await dana.goto(`/tickets/${T1047}`)
+  const hers = dana.getByRole('log', { name: 'Ticket updates' })
+  await expect(hers.getByText(visible)).toBeVisible()
+  await expect(hers.getByText(note)).toHaveCount(0)
+  await expect(hers.getByText('Ops only')).toHaveCount(0)
+  await context.close()
+})
+
+test('a post that fails keeps what was written', async ({ page }) => {
+  await signIn(page, BERT)
+  await page.goto(`/ops/tickets/${T1047}`)
+  await page.route('**/rest/v1/rpc/post_ticket_update', (route) =>
+    route.fulfill({ status: 500, json: { message: 'nope' } }),
+  )
+  const box = page.getByRole('textbox', { name: 'Write an update the restaurant can see' })
+  await box.fill('Still here')
+  await page.getByRole('button', { name: 'Post update' }).click()
+  await expect(page.getByRole('alert')).toContainText("Couldn't post that yet.")
+  await expect(box).toHaveValue('Still here')
+})
+
+test('Ops closes a ticket with a comment, and the restaurant sees it', async ({ page, browser }, testInfo) => {
+  // Its own ticket, since a closed one doesn't come back.
+  const title = `Close from Ops ${testInfo.project.name} ${Date.now() % 100000}`
+  const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+  const dana = await context.newPage()
+  await signIn(dana, 'dana.ortiz@example.com')
+  await dana.goto('/tickets/new')
+  await dana.getByRole('link', { name: /^Refrigeration/ }).click()
+  await dana.getByLabel('Title').fill(title)
+  await dana.getByRole('button', { name: 'Submit ticket' }).click()
+  await dana.getByRole('link', { name: new RegExp(title) }).click()
+  await expect(dana.getByRole('heading', { name: title })).toBeVisible()
+  const ticketUrl = new URL(dana.url()).pathname
+
+  await signIn(page, BERT)
+  await page.getByRole('link', { name: new RegExp(title) }).click()
+  await statusButton(page).click()
+  await page.getByRole('menuitem', { name: 'Close ticket' }).click()
+  const sheet = page.getByRole('dialog', { name: /^Close OT-\d+\?$/ })
+  await sheet.getByLabel('Comment').fill('Replaced the compressor relay.')
+  await page.waitForTimeout(300)
+  await testInfo.attach('close-sheet', { body: await page.screenshot(), contentType: 'image/png' })
+  await sheet.getByRole('button', { name: 'Close ticket' }).click()
+
+  await expect(page).toHaveURL(/\/ops$/)
+  await expect(page.getByRole('status').filter({ hasText: /OT-\d+ closed\./ })).toBeVisible()
+  await expect(page.getByRole('link', { name: new RegExp(title) })).toHaveCount(0)
+
+  await dana.goto(ticketUrl)
+  await expect(dana.getByRole('heading', { name: 'Closed ticket' })).toBeVisible()
+  await expect(dana.getByText('Replaced the compressor relay.')).toBeVisible()
+  await context.close()
 })

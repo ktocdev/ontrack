@@ -25,7 +25,7 @@ import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
-import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
+import { VisibilityToggle, Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
 import { RadioCard } from '../../components/RadioCard'
@@ -140,6 +140,7 @@ export function KitPage() {
   const toast = useToast()
   const [seg, setSeg] = useState<'all' | 'foh' | 'boh'>('all')
   const [sw, setSw] = useState(true)
+  const [kitInternal, setKitInternal] = useState(false)
   const [kitOrderIds, setKitOrderIds] = useState(['a', 'b', 'c'])
   const [sheet, setSheet] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
@@ -409,12 +410,25 @@ export function KitPage() {
                 selectedId={null}
                 onSelect={() => toast.show('Restaurant picked.')}
               />
+              <VisibilityToggle internal={kitInternal} onChange={setKitInternal} />
+              <ThreadMessage
+                internal
+                mine
+                who="You"
+                when="50m ago"
+                avatar={<Avatar name="Bert Velilla" role="ops" size={30} />}
+              >
+                Coldline quoted $185 for the diagnostic.
+              </ThreadMessage>
               <StatusMenu
                 value="in_progress"
                 valueLabel="In progress"
                 options={['open', 'in_progress', 'waiting_parts', 'scheduled']}
                 onPick={() => toast.show('Status picked.')}
-                action={{ label: 'Take this over', onSelect: () => toast.show('Taken.') }}
+                actions={[
+                  { label: 'Take this over', onSelect: () => toast.show('Taken.') },
+                  { label: 'Close ticket', onSelect: () => toast.show('Closing.') },
+                ]}
               />
               <ReorderList
                 label="Restaurants in order"

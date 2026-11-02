@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase, type TicketStatus } from '../../lib/supabase'
+import { loadThread } from '../tickets/useTicket'
 
 /**
  * Ops · Ticket. RLS decides what comes back: a ticket outside the person's scope is no
@@ -13,22 +14,20 @@ export function useOpsTicket(id: string) {
     refetchInterval: 30_000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
-      const sb = requireSupabase()
-      const [ticket, photos] = await Promise.all([
-        sb
+      const [ticket, thread] = await Promise.all([
+        requireSupabase()
           .from('tickets')
           .select(
             'id, display_id, title, description, status, urgency, source, scheduled_for, created_at, assignee_id, restaurant:restaurants (name, color), category:categories (name, area), equipment (name, brand, serial), walkthrough:walkthroughs (period), opener:profiles!tickets_created_by_fkey (full_name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
           )
           .eq('id', id)
           .maybeSingle(),
-        sb.from('ticket_photos').select('path').eq('ticket_id', id).is('update_id', null).order('created_at'),
+        loadThread(id),
       ])
       // A malformed id in the address is a page that doesn't exist, not a failure.
-      if (ticket.error?.code === '22P02') return { ticket: null, photos: [] }
+      if (ticket.error?.code === '22P02') return { ...thread, ticket: null }
       if (ticket.error) throw ticket.error
-      if (photos.error) throw photos.error
-      return { ticket: ticket.data, photos: photos.data }
+      return { ...thread, ticket: ticket.data }
     },
   })
 }

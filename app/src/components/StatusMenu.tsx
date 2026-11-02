@@ -5,7 +5,7 @@ import { IconCheck, IconChevronDown } from './icons'
 /**
  * The status control on an Ops ticket (design/screens/Ops-Ticket): a 52px field with an
  * 11px label and the current status, dropping a panel of status pills, the current one
- * checked. `action` is one more item under a line. Without onPick it only shows the state.
+ * checked. `actions` are more items under a line. Without onPick it only shows the state.
  */
 const ITEM =
   'flex min-h-tap cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-1.5 text-15 font-medium text-text outline-none data-[highlighted]:bg-surface-hover'
@@ -15,14 +15,14 @@ export function StatusMenu({
   valueLabel,
   options,
   onPick,
-  action,
+  actions = [],
   busy = false,
 }: {
   value: PillStatus
   valueLabel: string
   options: PillStatus[]
   onPick?: (status: PillStatus) => void
-  action?: { label: string; onSelect: () => void }
+  actions?: { label: string; onSelect: () => void }[]
   busy?: boolean
 }) {
   return (
@@ -55,14 +55,12 @@ export function StatusMenu({
               </DropdownMenu.RadioItem>
             ))}
           </DropdownMenu.RadioGroup>
-          {action && (
-            <>
-              <DropdownMenu.Separator className="mx-1 my-1 h-px bg-border" />
-              <DropdownMenu.Item className={`${ITEM} font-semibold`} onSelect={action.onSelect}>
-                {action.label}
-              </DropdownMenu.Item>
-            </>
-          )}
+          {actions.length > 0 && <DropdownMenu.Separator className="mx-1 my-1 h-px bg-border" />}
+          {actions.map((action) => (
+            <DropdownMenu.Item key={action.label} className={`${ITEM} font-semibold`} onSelect={action.onSelect}>
+              {action.label}
+            </DropdownMenu.Item>
+          ))}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
