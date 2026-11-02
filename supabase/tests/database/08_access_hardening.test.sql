@@ -98,8 +98,7 @@ $$, 'admin deactivates Maya');
 select pg_temp.login('maya.reyes@example.com');
 update public.profiles set full_name = 'Still here' where id = auth.uid();
 select throws_ok($$
-  insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
-  values (auth.uid(), 'https://push.example/1', 'k', 'a')
+  select public.save_push_subscription('https://web.push.apple.com/1', 'k', 'a')
 $$, '42501', null, 'a deactivated person cannot register a device');
 select pg_temp.logout();
 select is(
