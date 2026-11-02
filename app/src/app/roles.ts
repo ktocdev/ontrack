@@ -73,6 +73,14 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
   },
 }
 
+/** Where a ticket's lasting link leads for each role; admin and leadership have no ticket screen until Phase 7. */
+export function ticketPath(role: AppRole, id: string) {
+  const safe = encodeURIComponent(id)
+  if (role === 'manager') return `/tickets/${safe}`
+  if (role === 'ops') return `/ops/tickets/${safe}`
+  return null
+}
+
 /** Where "Search equipment" on the 404 screen goes for each role. */
 export const ROLE_EQUIPMENT: Record<AppRole, string> = {
   manager: '/equipment',

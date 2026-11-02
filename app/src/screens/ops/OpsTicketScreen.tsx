@@ -13,6 +13,7 @@ import { Sheet } from '../../components/Sheet'
 import { Spinner } from '../../components/Skeleton'
 import { StatusMenu } from '../../components/StatusMenu'
 import { Composer, VisibilityToggle } from '../../components/Thread'
+import { TicketMenu } from '../../components/TicketMenu'
 import { useToast } from '../../components/Toast'
 import { IconChevronLeft, IconClipboardCheck, IconClose, IconPlus, IconWrench } from '../../components/icons'
 import type { TicketStatus } from '../../lib/supabase'
@@ -158,6 +159,7 @@ export function OpsTicketScreen() {
         </Link>
         <span className="flex-1 font-mono text-13 text-text-secondary">{ticket.display_id}</span>
         {ticket.urgency === 'urgent' && <UrgentTag className="mr-2" />}
+        {!viewingAs && <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />}
       </div>
 
       <ScreenBody
