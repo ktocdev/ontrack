@@ -200,9 +200,7 @@ export function OpsReopenedTicketScreen({
 
       <ScreenFooter>
         {result?.kind === 'started' ? (
-          <Button onClick={onGoToTicket}>
-            Go to ticket
-          </Button>
+          <Button onClick={onGoToTicket}>Go to ticket</Button>
         ) : result?.kind === 'closed' ? (
           <Button variant="secondary" onClick={() => setStarting(true)}>
             Start work anyway
