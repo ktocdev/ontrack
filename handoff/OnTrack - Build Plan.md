@@ -19,7 +19,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
-| 3 · Ops dashboard and ticket work | In progress | OT-36 plan update, then OT-37 to OT-47 (see Phase 3) |
+| 3 · Ops dashboard and ticket work | In progress | OT-36 plan update, then OT-37 to OT-50 (see Phase 3) |
 
 Phase 0 notes:
 
@@ -221,9 +221,9 @@ The ops managers can run their day in the app: see every restaurant's open work,
 
 **Ships**
 
-- Ops dashboard: Open and Closed tabs, the filter sheet (status, urgent, walkthrough only, area, category, sort) with chips, cards with restaurant color squares, walkthrough tags and a badge naming who is working on the ticket; the restaurant picker (All restaurants plus each one) that scopes every Ops screen
+- Ops dashboard: tickets under a label for each restaurant, in an order each person can change, an ellipsis menu leading to closed tickets, the filter sheet (status, urgent, walkthrough only, area, category) with chips, cards with restaurant color squares, walkthrough tags and a badge naming who is working on the ticket; the restaurant picker (All restaurants plus each one) that scopes every Ops screen
 - Ops ticket detail: the status dropdown, description, equipment card, service and cost section (empty until Phase 5), updates thread with the internal-note toggle ("Visible to restaurant"), composer
-- Closed tab grouped by month with totals; closed ticket detail
+- Closed tickets grouped by month with totals; closed ticket detail
 - Reopened ticket: the Start work sheet (note, assigns to you, In progress) and the Close again sheet (required reply to the manager, back to Closed)
 - Push notifications: subscribe on install, store per device, Edge Function `send-push` fired by database triggers for new ticket, status change, new update visible to the restaurant, reopen. Email fallback for anyone with no subscription. A Notifications section on Profile to turn each kind on or off
 - One lasting link per ticket, `/t/<id>`, which opens the right screen for whoever taps it, since `/tickets/:id` is for managers only. A signed-out person goes through sign-in and back, and the link grants nothing: someone who can't see the ticket gets the same refusal as today. Push and email notifications use it, built from the group's own address
@@ -240,22 +240,26 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | --- | --- |
 | OT-36 | Plan update and this split |
 | OT-37 | Ops dashboard: Open tab, All / Mine, the restaurant picker that scopes every Ops screen, cards, empty state, loading skeleton; replaces the ops placeholder in View as |
-| OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category, sort |
+| OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category |
 | OT-39 | Ops ticket detail: header, description, equipment card, the status dropdown, marking In progress puts you on it, the empty service and cost section |
 | OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
-| OT-41 | Closed tab grouped by month with totals, its empty state, closed ticket detail |
-| OT-42 | Reopened ticket: the Start work and Close again sheets |
+| OT-41 | Closed tickets, opened from the dashboard's menu: grouped by month with totals, its empty state, closed ticket detail |
+| OT-42 | Reopened ticket, opened from its card on the dashboard: the Start work and Close again sheets |
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
 | OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
+| OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
+| OT-50 | Change the order of the restaurants on the dashboard by dragging |
 | OT-47 | The done test as one flow; the phase note |
 
 **What this phase has to work around**
 
-- **Nobody assigns a ticket (from feedback, Nov 1, 2026; OT-48).** A ticket is Open until an Ops manager marks it In progress, which puts them on it. Every Ops manager sees every ticket, with a badge naming who is on it. This replaces what the boards draw: the Unassigned pill, the assignee dropdown, All / Mine and the initials in the card's corner. `assignee_id` stays as who is working on it, so the thread and history still say who. Handing over is settled in OT-39: by default, anyone marking a ticket In progress takes it, and moving it back to Open takes the person off.
-- **Open doesn't count reopened tickets,** as the board has it: they show on top of the list, and the Closed tab's badge counts them. The dashboard rereads every 30 seconds, so a new ticket turns up on its own before push arrives. The picker's choice is remembered per person on the device.
+- **Nobody assigns a ticket (from feedback, Nov 1, 2026; OT-48).** A ticket is Open until an Ops manager marks it In progress, which puts them on it. Every Ops manager sees every ticket, with a badge naming anyone else on it; your own tickets have no badge. This replaces what the boards draw: the Unassigned pill, the assignee dropdown, All / Mine and the initials in the card's corner. `assignee_id` stays as who is working on it, so the thread and history still say who. Handing over is settled in OT-39: by default, anyone marking a ticket In progress takes it, and moving it back to Open takes the person off.
+- **The dashboard is grouped by restaurant (from feedback, Nov 1, 2026; OT-49),** since an Ops manager travels between restaurants through the day. Each restaurant has a label with its count, and a restaurant with nothing open is left out. This replaces the boards' single list, their Open and Closed tabs and the badge on Closed, and the restaurant's name on each card. Closed tickets move to an ellipsis menu by the title. A reopened ticket is an ordinary card with its pill, so the boards' tinted card and quoted reason are gone; the reason is on the ticket.
+- **One fixed order under each restaurant (Nov 1, 2026; OT-49):** urgent always on top, then Front of House before Back, then the oldest first. The time on a card is how long ago it was opened, so the order can be read. That makes the filter sheet's Sort options pointless, so OT-38 leaves them out. A manager's Open tickets keeps its own order, reopened first and then the latest activity.
+- **The restaurant order changes by dragging (OT-50),** in a sheet from the same menu, not on the dashboard itself, where dragging would fight with scrolling on a phone. It is saved per person on the device, like the picker's choice. The dashboard rereads every 30 seconds, so a new ticket turns up on its own before push arrives. The picker's choice is remembered per person on the device.
 - **Links to later phases stay off for now.** Log service waits for Phase 5, so the service and cost section stays empty and has no button. The equipment card opens nothing until Phase 4, and From October walkthrough opens nothing until Phase 6. The Equipment, Walkthroughs and Contractors tabs stay placeholders.
 - **Costs are mostly empty until Phase 5.** The Closed tab's month totals and a closed ticket's cost come from service records, which nothing on the live app creates yet, and they need `see_costs`. The seeded stack shows the full boards.
 - **Push needs a change to the service worker.** The one `vite-plugin-pwa` generates today has no push handler, so OT-44 adds one without disturbing the app's update prompt.

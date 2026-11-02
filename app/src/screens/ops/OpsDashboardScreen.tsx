@@ -2,24 +2,27 @@ import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
+import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
-import { TabAlert } from '../../components/Pill'
+import { RestaurantSquare } from '../../components/RestaurantName'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
-import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
+import { groupByRestaurant } from './dashboard'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantScope } from './useRestaurantScope'
 
 /**
- * Ops · Dashboard (design/screens/Ops-Dashboard, Empty-Ops-Dashboard). The open work at
- * the picked restaurants, reopened tickets on top and then most urgent first. As the
- * board counts them, Open leaves out reopened tickets, which the Closed tab's badge
- * counts. Nobody assigns a ticket: it is picked up by marking it In progress, and every
- * Ops manager sees every ticket with a badge saying who is on it, so the board's
- * Unassigned pill and All / Mine are gone. The filter sheet comes in OT-38. Under View
- * as, nothing leads anywhere.
+ * Ops · Dashboard (from design/screens/Ops-Dashboard, Empty-Ops-Dashboard, simplified
+ * from feedback). The open work under each restaurant's label, since an Ops manager
+ * goes from one restaurant to the next through the day. Under each label, urgent is
+ * always on top, then Front of House before Back, then the oldest, and the time on a
+ * card is how long ago it was opened, so the order can be read. Nobody assigns a ticket: it is picked up by
+ * marking it In progress, and a badge says who else is on it. Closed tickets are in the menu
+ * by the title, as on a manager's Open tickets. The filter sheet comes in OT-38. Under
+ * View as, nothing leads anywhere.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
@@ -28,62 +31,23 @@ export function OpsDashboardScreen() {
   const scope = useRestaurantScope()
   const { data, isPending, isError, refetch } = useOpsDashboard(scope.ids)
 
-  const open = data?.open ?? []
-  const reopened = data?.reopened ?? []
-  const nothing = data !== undefined && open.length === 0 && reopened.length === 0
-  const placeOf = new Map(restaurants.map((r) => [r.id, r]))
-
-  const card = (t: (typeof open)[number]) => (
-    <OpsTicketCard
-      key={t.id}
-      to={viewingAs ? undefined : `/ops/tickets/${t.id}`}
-      displayId={t.display_id ?? ''}
-      title={t.title}
-      status={t.status}
-      statusLabel={t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined}
-      urgent={t.urgency === 'urgent'}
-      walkthrough={t.source === 'walkthrough'}
-      restaurant={placeOf.get(t.restaurant_id)}
-      meta={[t.category && AREA_SHORT[t.category.area], t.category?.name, ago(new Date(t.activity), new Date())]
-        .filter(Boolean)
-        .join(' · ')}
-      worker={t.assignee && t.assignee_id ? { name: t.assignee.full_name, mine: t.assignee_id === user.id } : null}
-      reason={data?.reasons.get(t.id)}
-    />
-  )
+  const inScope = scope.selected ? [scope.selected] : restaurants
+  const groups = groupByRestaurant(data ?? [], inScope)
 
   return (
     <Screen>
       <ScreenHeader
         title="Dashboard"
-        className="pb-0!"
         topLeft={
           <RestaurantPicker restaurants={restaurants} selectedId={scope.selected?.id ?? null} onSelect={scope.select} />
         }
         topRight={<ProfileLink />}
-      >
-        <UnderlineTabs
-          label="Ticket status"
-          inert={viewingAs}
-          items={[
-            { to: '/ops', end: true, label: `Open · ${open.length}` },
-            {
-              to: '/ops/closed',
-              label: (
-                <>
-                  Closed
-                  {reopened.length > 0 && (
-                    <TabAlert
-                      count={reopened.length}
-                      label={`${reopened.length} reopened ${reopened.length === 1 ? 'ticket' : 'tickets'}`}
-                    />
-                  )}
-                </>
-              ),
-            },
-          ]}
-        />
-      </ScreenHeader>
+        action={
+          viewingAs ? undefined : (
+            <OverflowMenu label="More ticket options" items={[{ to: '/ops/closed', label: 'View Closed Tickets' }]} />
+          )
+        }
+      />
 
       {isError ? (
         <EmptyState
@@ -97,7 +61,7 @@ export function OpsDashboardScreen() {
             Try again
           </Button>
         </EmptyState>
-      ) : nothing ? (
+      ) : data?.length === 0 ? (
         <EmptyState
           titleSize={22}
           icon={<IconCheckCircle size={30} />}
@@ -118,14 +82,42 @@ export function OpsDashboardScreen() {
           )}
         </EmptyState>
       ) : (
-        <ScreenBody className="gap-2.5 pb-4 pt-3">
+        <ScreenBody className="gap-5 pb-4 pt-1">
           {isPending ? (
             <CardFeedSkeleton />
           ) : (
-            <>
-              {reopened.map(card)}
-              {open.map(card)}
-            </>
+            groups.map(({ restaurant, tickets }) => (
+              <section key={restaurant.id} aria-label={restaurant.name} className="flex flex-none flex-col gap-2.5">
+                <h2 className="eyebrow flex items-center gap-1.5">
+                  <RestaurantSquare color={restaurant.color} />
+                  <span className="min-w-0 truncate">
+                    {restaurant.name} · {tickets.length}
+                  </span>
+                </h2>
+                {tickets.map((t) => (
+                  <OpsTicketCard
+                    key={t.id}
+                    to={viewingAs ? undefined : `/ops/tickets/${t.id}`}
+                    displayId={t.display_id ?? ''}
+                    title={t.title}
+                    status={t.status}
+                    statusLabel={
+                      t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
+                    }
+                    urgent={t.urgency === 'urgent'}
+                    walkthrough={t.source === 'walkthrough'}
+                    meta={[
+                      t.category && AREA_SHORT[t.category.area],
+                      t.category?.name,
+                      ago(new Date(t.created_at), new Date()),
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    worker={t.assignee_id === user.id ? null : t.assignee?.full_name}
+                  />
+                ))}
+              </section>
+            ))
           )}
         </ScreenBody>
       )}
