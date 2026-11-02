@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { requireSupabase } from '../../lib/supabase'
-import { byAttention } from './tickets'
+import { byActivity } from './tickets'
 
 /**
  * Manager · Open tickets. Everything not closed at the restaurants passed in, and
@@ -52,7 +52,7 @@ export function useOpenTickets(restaurantIds: string[]) {
       if (tickets.error) throw tickets.error
       if (inHouse.error) throw inHouse.error
       rememberNothingOpen(restaurantIds, tickets.data.length === 0 && !inHouse.count)
-      return { tickets: [...tickets.data].sort(byAttention), inHouseCount: inHouse.count ?? 0 }
+      return { tickets: [...tickets.data].sort(byActivity), inHouseCount: inHouse.count ?? 0 }
     },
   })
 }

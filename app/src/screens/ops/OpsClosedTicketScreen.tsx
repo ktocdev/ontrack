@@ -19,7 +19,7 @@ import type { useOpsTicket } from './useOpsTicket'
  * how it went, read-only, with the back arrow to Closed tickets. The board leaves out what
  * was wrong, because its flag says that; a closed ticket has no flag, so the description
  * and its photos stay, as on a manager's Closed ticket. Contractor and Cost appear only if
- * the database returns them, which takes see_costs. Start work anyway comes in OT-42.
+ * the database returns them, which takes see_costs.
  */
 type Data = NonNullable<ReturnType<typeof useOpsTicket>['data']>
 type Ticket = NonNullable<Data['ticket']>

@@ -12,7 +12,7 @@ export function Notice({
   children,
   className = '',
 }: {
-  /** 'waiting' is for something now with someone else (Reopened and sent to Bert). */
+  /** 'waiting' is for something now with someone else (Reopened and sent to Ops). */
   tone?: 'brand' | 'waiting'
   children: ReactNode
   className?: string

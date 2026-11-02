@@ -226,6 +226,62 @@ test('a post that fails keeps what was written', async ({ page }) => {
   await expect(box).toHaveValue('Still here')
 })
 
+test('a reopened ticket is an ordinary ticket with its badge, and nobody on it', async ({
+  page,
+  browser,
+  request,
+}, testInfo) => {
+  const title = `Reopen ${testInfo.project.name} ${Date.now() % 100000}`
+  const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+  const dana = await context.newPage()
+  await signIn(dana, 'dana.ortiz@example.com')
+  await dana.goto('/tickets/new')
+  await dana.getByRole('link', { name: /^Refrigeration/ }).click()
+  await dana.getByLabel('Title').fill(title)
+  await dana.getByRole('button', { name: 'Submit ticket' }).click()
+  await dana.getByRole('link', { name: new RegExp(title) }).click()
+  await expect(dana.getByRole('heading', { name: title })).toBeVisible()
+  const ticketUrl = new URL(dana.url()).pathname
+  const id = ticketUrl.split('/').pop()!
+
+  // Bert works on it and closes it, then Dana reopens it.
+  const headers = { apikey: KEY, Authorization: `Bearer ${await tokenFor(request, BERT)}` }
+  const worked = await request.post(`${SUPABASE}/rest/v1/rpc/set_ticket_status`, {
+    headers,
+    data: { p_id: id, p_status: 'in_progress' },
+  })
+  expect(worked.ok()).toBe(true)
+  const closed = await request.patch(`${SUPABASE}/rest/v1/tickets?id=eq.${id}`, {
+    headers,
+    data: { status: 'closed', resolution: 'Swapped the relay.' },
+  })
+  expect(closed.ok()).toBe(true)
+  await dana.goto(ticketUrl)
+  await dana.getByRole('button', { name: 'Reopen ticket' }).click()
+  await dana.getByLabel("What's happening?").fill('It is warm again.')
+  await dana.getByRole('dialog').getByRole('button', { name: 'Reopen ticket' }).click()
+  await expect(dana.getByText(/Reopened and sent to Ops\./)).toBeVisible()
+  await context.close()
+
+  await signIn(page, BERT)
+  const card = page.getByRole('link', { name: new RegExp(title) })
+  await expect(card).toContainText('Reopened')
+  await expect(card.getByTitle(/is working on this/)).toHaveCount(0)
+  await card.click()
+
+  await expect(statusButton(page)).toContainText('Reopened')
+  await expect(onIt(page)).toContainText('Nobody yet')
+  await expect(page.getByRole('log', { name: 'Ticket updates' }).getByText('It is warm again.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Add update' })).toBeVisible()
+  await page.waitForTimeout(300)
+  await testInfo.attach('reopened', { body: await page.screenshot(), contentType: 'image/png' })
+
+  await pick(page, 'In progress')
+  await expect(onIt(page)).toContainText('You')
+  await statusButton(page).click()
+  await expect(page.getByRole('menuitem', { name: 'Close ticket' })).toBeVisible()
+})
+
 test('Ops closes a ticket with a comment, and the restaurant sees it', async ({ page, browser }, testInfo) => {
   // Its own ticket, since a closed one doesn't come back.
   const title = `Close from Ops ${testInfo.project.name} ${Date.now() % 100000}`

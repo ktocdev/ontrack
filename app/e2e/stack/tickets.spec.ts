@@ -5,19 +5,20 @@ import { SEED_PASSWORD, signIn } from './helpers'
 
 const cards = (page: Page) => page.getByRole('link', { name: /^OT-/ })
 
-test('a manager sees their open tickets in the board order, with the reopened one first', async ({
+test('a manager sees their open tickets with the latest activity first, reopened or not', async ({
   page,
 }, testInfo) => {
   await signIn(page, 'maya.reyes@example.com')
   await expect(page.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
   await expect(cards(page)).toHaveCount(5)
-  await expect(cards(page).first()).toContainText('OT-0988')
-  await expect(cards(page).first()).toContainText('Reopened')
-  await expect(cards(page).first()).toContainText('Back of House · Refrigeration · Walk-in Cooler 1')
+  await expect(cards(page).first()).toContainText('OT-1042')
+  await expect(cards(page).first()).toContainText('Walkthrough')
+  await expect(cards(page).first()).toContainText('Updated 1h ago')
   await expect(cards(page).first()).toContainText('Bert Velilla is on it')
-  await expect(cards(page).nth(1)).toContainText('OT-1042')
-  await expect(cards(page).nth(1)).toContainText('Walkthrough')
-  await expect(cards(page).nth(1)).toContainText('Updated 1h ago')
+  await expect(cards(page).nth(1)).toContainText('OT-0988')
+  await expect(cards(page).nth(1)).toContainText('Reopened')
+  await expect(cards(page).nth(1)).toContainText('Back of House · Refrigeration · Walk-in Cooler 1')
+  await expect(cards(page).nth(1)).toContainText('Not picked up yet')
   await expect(cards(page).nth(2)).toContainText('Not picked up yet')
   await expect(cards(page).nth(2)).toContainText('Created 3h ago')
   await expect(cards(page).nth(4)).toContainText(/Scheduled [A-Z][a-z]{2}/)
@@ -29,7 +30,7 @@ test('a manager sees their open tickets in the board order, with the reopened on
   await testInfo.attach('open-tickets', { body: await page.screenshot(), contentType: 'image/png' })
 
   await cards(page).first().click()
-  await expect(page).toHaveURL(/\/tickets\/66666666-6666-4666-8666-000000000988$/)
+  await expect(page).toHaveURL(/\/tickets\/66666666-6666-4666-8666-000000001042$/)
 })
 
 test('another restaurant’s tickets stay out, whatever is searched', async ({ page }) => {
