@@ -1,11 +1,11 @@
 import type { FormEvent, ReactNode } from 'react'
-import { IconArrowRight } from './icons'
+import { IconArrowRight, IconChevronDown, IconEye, IconLockSmall } from './icons'
 
 /**
  * A ticket's thread (design/screens/Ticket). An event is a 12px line with a dot; a
  * message is an avatar and a bubble with a square top-left corner, tinted brand when
- * it is yours. The composer is a growing 44px field and a send button that lights
- * once there is something to send.
+ * it is yours, or gold and tagged when only Ops can read it. The composer is a growing
+ * 44px field and a send button that lights once there is something to send.
  */
 
 export function ThreadEvent({ text, when }: { text: string; when: string }) {
@@ -24,6 +24,7 @@ export function ThreadMessage({
   who,
   when,
   mine = false,
+  internal = false,
   photos,
   children,
 }: {
@@ -31,6 +32,8 @@ export function ThreadMessage({
   who: string
   when: string
   mine?: boolean
+  /** An internal note. */
+  internal?: boolean
   photos?: ReactNode
   children?: ReactNode
 }) {
@@ -39,11 +42,21 @@ export function ThreadMessage({
       {avatar}
       <div
         className={`flex min-w-0 flex-1 flex-col gap-1 rounded-[4px_14px_14px_14px] border px-3 py-2.5 ${
-          mine ? 'border-brand-tint-border bg-brand-tint-soft' : 'border-border bg-surface'
+          internal
+            ? 'border-[var(--reopened-banner-border)] bg-[var(--reopened-banner-bg)]'
+            : mine
+              ? 'border-brand-tint-border bg-brand-tint-soft'
+              : 'border-border bg-surface'
         }`}
       >
         <span className="text-12 font-bold text-text-body">
           {who} <span className="font-medium text-text-muted">· {when}</span>
+          {internal && (
+            <span className="ml-1.5 inline-flex items-center gap-1 rounded-chip bg-status-waiting-bg px-1.5 py-px align-middle text-11 font-bold text-status-waiting-text">
+              <IconLockSmall size={11} />
+              Ops only
+            </span>
+          )}
         </span>
         {children && (
           <span className="whitespace-pre-wrap text-14 leading-[1.45] text-text [overflow-wrap:anywhere]">
@@ -53,6 +66,33 @@ export function ThreadMessage({
         {photos && <div className="mt-0.5 flex flex-wrap gap-2">{photos}</div>}
       </div>
     </div>
+  )
+}
+
+/**
+ * Who an update reaches (Ops-Ticket): a 32px pill inside a 44px tap target. It stays as
+ * set after posting, since an internal note going out by accident is the worse mistake.
+ */
+export function VisibilityToggle({ internal, onChange }: { internal: boolean; onChange: (internal: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={internal}
+      onClick={() => onChange(!internal)}
+      className="-mb-1.5 -mt-1.5 flex min-h-tap flex-none items-center self-start"
+    >
+      <span
+        className={`inline-flex min-h-8 items-center gap-1.5 rounded-pill border px-2.5 text-12 font-semibold ${
+          internal
+            ? 'border-[var(--reopened-banner-border)] bg-[var(--reopened-banner-bg)] text-status-waiting-text'
+            : 'border-border-strong bg-surface text-text-body'
+        }`}
+      >
+        {internal ? <IconLockSmall size={14} /> : <IconEye size={14} />}
+        {internal ? 'Internal note · Ops only' : 'Visible to restaurant'}
+        <IconChevronDown size={12} strokeWidth={2.4} />
+      </span>
+    </button>
   )
 }
 

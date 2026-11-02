@@ -2,7 +2,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
-import { Avatar } from '../../components/Avatar'
 import { Card } from '../../components/Card'
 import { ErrorBanner } from '../../components/Notice'
 import { AddPhotoButton, PhotoThumb, PhotoTray, PhotoViewer } from '../../components/Photo'
@@ -10,12 +9,12 @@ import { StatusPill, UrgentTag } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { Spinner } from '../../components/Skeleton'
-import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
+import { Composer } from '../../components/Thread'
 import { IconChevronLeft, IconEdit, IconWrench } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
-import { useAvatarUrl } from '../profile/useProfile'
 import { ClosedTicketScreen } from './ClosedTicketScreen'
-import { threadItems, type ThreadItem } from './thread'
+import { threadItems } from './thread'
+import { ThreadFeed } from './ThreadFeed'
 import { scheduledLabel } from './tickets'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
 import { usePostUpdate, useTicket } from './useTicket'
@@ -180,21 +179,7 @@ export function TicketScreen() {
         )}
 
         <SectionLabel className="-mb-0.5">Updates · {count}</SectionLabel>
-        <div role="log" aria-label="Ticket updates" className="flex flex-none flex-col">
-          {items.map((item) => (
-            <ThreadRow
-              key={item.key}
-              item={item}
-              paths={
-                item.type === 'message'
-                  ? data.photos.filter((p) => p.update_id === item.updateId).map((p) => p.path)
-                  : []
-              }
-              urls={urls.data}
-              onOpen={setViewing}
-            />
-          ))}
-        </div>
+        <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />
       </ScreenBody>
 
       {post.isError && (
@@ -239,47 +224,5 @@ export function TicketScreen() {
       />
       <PhotoViewer src={viewing?.src ?? null} alt={viewing?.alt ?? ''} onClose={() => setViewing(null)} />
     </Screen>
-  )
-}
-
-type PhotoProps = {
-  paths: string[]
-  urls: Map<string, string> | undefined
-  onOpen: (photo: { src: string; alt: string }) => void
-}
-
-function ThreadRow({ item, ...photos }: { item: ThreadItem } & PhotoProps) {
-  if (item.type === 'event') return <ThreadEvent text={item.text} when={item.when} />
-  return <Message item={item} {...photos} />
-}
-
-function Message({ item, paths, urls, onOpen }: { item: Extract<ThreadItem, { type: 'message' }> } & PhotoProps) {
-  const photo = useAvatarUrl(item.avatarPath)
-  return (
-    <ThreadMessage
-      who={item.who}
-      when={item.when}
-      mine={item.mine}
-      avatar={<Avatar name={item.name} role={item.role} size={30} src={photo.data} />}
-      photos={
-        paths.length > 0
-          ? paths.map((path) => {
-              const src = urls?.get(path)
-              const alt = `Photo from ${item.mine ? 'You' : item.name}`
-              return (
-                <PhotoThumb
-                  key={path}
-                  src={src}
-                  alt={alt}
-                  tinted={item.mine}
-                  onOpen={() => src && onOpen({ src, alt })}
-                />
-              )
-            })
-          : undefined
-      }
-    >
-      {item.text}
-    </ThreadMessage>
   )
 }

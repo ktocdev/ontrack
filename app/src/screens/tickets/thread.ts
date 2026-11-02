@@ -13,6 +13,8 @@ export type Update = {
   id: string
   kind: 'message' | 'created' | 'assigned' | 'status_changed' | 'closed' | 'reopened'
   body: string | null
+  /** Only Ops can read it; the database leaves it out for anyone else. */
+  internal?: boolean
   meta: unknown
   created_at: string
   author: { id: string; full_name: string; role: Author['role']; avatar_path: string | null } | null
@@ -31,6 +33,7 @@ export type ThreadItem =
       when: string
       text: string
       mine: boolean
+      internal: boolean
       name: string
       role: Author['role']
       avatarPath: string | null
@@ -101,6 +104,7 @@ export function threadItems(updates: Update[], me: string, names: Map<string, st
       when: when === 'just now' ? 'Just now' : when,
       text: u.body ?? '',
       mine,
+      internal: !!u.internal,
       name,
       role: u.author?.role ?? 'manager',
       avatarPath: u.author?.avatar_path ?? null,
