@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { requireSupabase } from '../../lib/supabase'
-import { byReopenedThenNewest, monthRange } from './closedMonths'
+import { monthRange } from './closedMonths'
 
 /**
  * Ops · Closed tickets, at the restaurants passed in. The keys sit under 'tickets', so
@@ -21,7 +21,7 @@ export function useClosedMonths(restaurantIds: string[]) {
   })
 }
 
-/** One month's tickets with their costs. A reopened ticket keeps its place in the month it closed. */
+/** One month's closed tickets with their costs, newest first. A reopened ticket is on the dashboard instead. */
 export function useClosedMonth(restaurantIds: string[], month: string, enabled: boolean) {
   return useQuery({
     queryKey: ['tickets', 'ops-closed', restaurantIds, month],
@@ -31,10 +31,12 @@ export function useClosedMonth(restaurantIds: string[], month: string, enabled: 
       const { from, to } = monthRange(month)
       const { data, error } = await sb
         .from('tickets')
-        .select('id, display_id, title, status, restaurant_id, last_closed_at')
+        .select('id, display_id, title, restaurant_id, closed_at')
         .in('restaurant_id', restaurantIds)
-        .gte('last_closed_at', from)
-        .lt('last_closed_at', to)
+        .eq('status', 'closed')
+        .gte('closed_at', from)
+        .lt('closed_at', to)
+        .order('closed_at', { ascending: false })
       if (error) throw error
       const costs = await sb
         .from('v_ticket_costs')
@@ -45,7 +47,7 @@ export function useClosedMonth(restaurantIds: string[], month: string, enabled: 
         )
       if (costs.error) throw costs.error
       const costOf = new Map(costs.data.map((c) => [c.ticket_id, c.total_cents]))
-      return data.sort(byReopenedThenNewest).map((t) => ({ ...t, totalCents: costOf.get(t.id) ?? null }))
+      return data.map((t) => ({ ...t, totalCents: costOf.get(t.id) ?? null }))
     },
   })
 }

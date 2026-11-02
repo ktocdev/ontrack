@@ -156,6 +156,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
+| OT-51 | From feedback: a reopened ticket is on the dashboard and not in Closed tickets; the Ops message box hidden until Add update; no "Nobody has this yet" note |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

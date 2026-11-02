@@ -436,16 +436,15 @@ export function KitPage() {
                 items={kitOrderIds.map((id) => KIT_RESTAURANTS.find((r) => r.id === id)!)}
                 onChange={setKitOrderIds}
               />
-              <MonthHeading label="October · 10 closed" total="$2,663.60" />
+              <MonthHeading label="October · 9 closed" total="$2,418.60" />
               <Card className="overflow-hidden rounded-input">
                 <ClosedTicketRow
                   to="#"
-                  title="Door gasket torn"
-                  displayId="OT-0988"
+                  title="Ice machine scale buildup"
+                  displayId="OT-1036"
                   restaurant={KIT_RESTAURANTS[0]}
-                  date="Oct 14"
-                  cost="$245.00"
-                  reopened
+                  date="Oct 17"
+                  cost="$310.00"
                 />
                 <ClosedTicketRow
                   to="#"

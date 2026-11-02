@@ -22,8 +22,8 @@ select pg_temp.login('bert.velilla@example.com');
 select results_eq(
   format($$ select closed_count, total_cents from public.closed_by_month(array[%L, %L, %L, %L]::uuid[], 'America/Chicago')
             where month = '2026-10-01' $$, :fls, :fwl, :por, :rls),
-  $$ values (10, 266360::bigint) $$,
-  'October as the board has it: 10 closed, with the reopened ticket, for $2,663.60');
+  $$ values (9, 241860::bigint) $$,
+  'October: 9 closed for $2,418.60, without the reopened ticket, which is open work');
 
 select is(
   (select closed_count from public.closed_by_month(array[(:por)::uuid], 'America/Chicago') where month = '2026-10-01'),

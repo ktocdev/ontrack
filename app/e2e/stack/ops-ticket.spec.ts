@@ -70,15 +70,13 @@ test('In progress puts you on it, and back to Open takes you off, on the dashboa
   await signIn(page, BERT)
   await page.goto(`/ops/tickets/${T1047}`)
   await expect(onIt(page)).toContainText('Nobody yet')
-  await expect(page.getByRole('note')).toContainText('Nobody has this yet')
+  await expect(page.getByText('Nobody has this yet')).toHaveCount(0)
 
   await pick(page, 'In progress')
   await expect(statusButton(page)).toContainText('In progress')
   await expect(onIt(page)).toContainText('You')
-  await expect(page.getByRole('note')).toHaveCount(0)
 
   await pick(page, 'Open')
-  await expect(page.getByRole('note')).toBeVisible()
   await expect(onIt(page)).toContainText('Nobody yet')
   await page.getByRole('link', { name: 'Back to dashboard' }).click()
   await expect(page.getByRole('link', { name: /OT-1047/ })).toContainText('Open')
@@ -149,9 +147,30 @@ test('the thread shows updates and internal notes, tagged', async ({ page }, tes
   await expect(log.getByText(/^You took this · status In progress · /)).toBeVisible()
   await expect(log.getByText('Coldline quoted $185')).toBeVisible()
   await expect(log.getByText('Ops only')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Visible to restaurant' })).toBeVisible()
   await page.waitForTimeout(300)
   await testInfo.attach('thread', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' })
+})
+
+test('the message box stays hidden until asked for, and hiding it keeps the draft', async ({ page }, testInfo) => {
+  await signIn(page, BERT)
+  await page.goto(`/ops/tickets/${T1047}`)
+  const box = page.getByRole('textbox', { name: 'Write an update the restaurant can see' })
+  await expect(box).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Visible to restaurant' })).toHaveCount(0)
+  await page.waitForTimeout(300)
+  await testInfo.attach('hidden', { body: await page.screenshot(), contentType: 'image/png' })
+
+  await page.getByRole('button', { name: 'Add update' }).click()
+  await expect(box).toBeFocused()
+  await expect(page.getByRole('button', { name: 'Add update' })).toHaveCount(0)
+  await box.fill('Half a thought')
+  await page.waitForTimeout(300)
+  await testInfo.attach('shown', { body: await page.screenshot(), contentType: 'image/png' })
+
+  await page.getByRole('button', { name: 'Hide message box' }).click()
+  await expect(box).toHaveCount(0)
+  await page.getByRole('button', { name: 'Add update' }).click()
+  await expect(box).toHaveValue('Half a thought')
 })
 
 test('an update reaches the restaurant, and an internal note does not', async ({ page, browser }, testInfo) => {
@@ -162,10 +181,13 @@ test('an update reaches the restaurant, and an internal note does not', async ({
   await page.goto(`/ops/tickets/${T1047}`)
   const log = page.getByRole('log', { name: 'Ticket updates' })
 
+  await page.getByRole('button', { name: 'Add update' }).click()
   await page.getByRole('textbox', { name: 'Write an update the restaurant can see' }).fill(visible)
   await page.getByRole('button', { name: 'Post update' }).click()
   await expect(log.getByText(visible)).toBeVisible()
 
+  // Posting closes the box again.
+  await page.getByRole('button', { name: 'Add update' }).click()
   await page.getByRole('button', { name: 'Visible to restaurant' }).click()
   await page.getByRole('textbox', { name: 'Write an internal note, only Ops can see it' }).fill(note)
   await page.getByLabel('Choose photos').setInputFiles(await bigPhoto(page))
@@ -176,6 +198,7 @@ test('an update reaches the restaurant, and an internal note does not', async ({
   await expect(log.getByText(note)).toBeVisible()
   await expect(log.getByRole('img', { name: 'Photo from You' }).last()).toBeVisible()
   // It stays on internal after posting.
+  await page.getByRole('button', { name: 'Add update' }).click()
   await expect(page.getByRole('button', { name: 'Internal note · Ops only' })).toBeVisible()
 
   const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
@@ -195,6 +218,7 @@ test('a post that fails keeps what was written', async ({ page }) => {
   await page.route('**/rest/v1/rpc/post_ticket_update', (route) =>
     route.fulfill({ status: 500, json: { message: 'nope' } }),
   )
+  await page.getByRole('button', { name: 'Add update' }).click()
   const box = page.getByRole('textbox', { name: 'Write an update the restaurant can see' })
   await box.fill('Still here')
   await page.getByRole('button', { name: 'Post update' }).click()
