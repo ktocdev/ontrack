@@ -1366,7 +1366,7 @@ isOneToOne: false
 { Args: { "p_user": string }; Returns: Json
                            },
 "post_ticket_update":
-{ Args: { "p_body": string,"p_paths"?: (string)[],"p_ticket_id": string }; Returns: string
+{ Args: { "p_body": string,"p_internal"?: boolean,"p_paths"?: (string)[],"p_ticket_id": string }; Returns: string
                            },
 "profile_photos_on":
 { Args: Record<PropertyKey, never>; Returns: boolean
