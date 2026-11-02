@@ -1,9 +1,18 @@
 name: CI
 
+# Nothing here reads the docs or the design export, so a PR of only those runs nothing.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'handoff/**'
+      - 'design/**'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'handoff/**'
+      - 'design/**'
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -47,10 +56,17 @@ jobs:
           path: app/playwright-report
           retention-days: 7
 
+  # One job per browser, each with its own stack, since the flows share a database and
+  # can't run side by side in one. A PR labeled "quick" skips them; main always runs them.
   flows:
-    name: Flows · Playwright against the local stack
+    name: Flows · ${{ matrix.browser }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'quick') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
     steps:
       - uses: actions/checkout@v4
 
@@ -79,18 +95,18 @@ jobs:
         working-directory: app
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium webkit
+        run: npx playwright install --with-deps ${{ matrix.browser }}
         working-directory: app
 
-      - name: Playwright flows (Chromium + WebKit)
-        run: npm run test:e2e:stack
+      - name: Playwright flows
+        run: npm run test:e2e:stack -- --project=${{ matrix.browser }}
         working-directory: app
 
       # Always: the report carries screenshots of screens on real data for design review.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-stack
+          name: playwright-report-stack-${{ matrix.browser }}
           path: app/playwright-report-stack
           retention-days: 7
 

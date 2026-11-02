@@ -186,6 +186,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 | OT-30 | In-house tab: list, check off, delete while open |
 | OT-33 | From OT-29's open questions: an ellipsis menu beside the search on Open tickets with View Closed Tickets, opening a simple list; Title on Edit ticket |
 | OT-34 | From trying Phase 2 live: no scrollbar on the message field at one line |
+| OT-35 | Faster CI: docs-only PRs run nothing, the flows run one job per browser, and a `quick` label skips them on a small fix's PR |
 | OT-31 | The done test as one flow; the phase note |
 | OT-32 | From trying OT-26 live: Open tickets loads in the empty layout when it found nothing last time, so it doesn't jump |
 
