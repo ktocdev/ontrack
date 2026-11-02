@@ -6,6 +6,9 @@ import { signIn, tokenFor } from './helpers'
  * Porter nobody has, which is put back around each test, since other flows read it as open.
  */
 
+// CI runs in UTC, and this reads clock times from the seed.
+test.use({ timezoneId: 'America/Chicago' })
+
 const T1047 = '66666666-6666-4666-8666-000000001047'
 const T1042 = '66666666-6666-4666-8666-000000001042'
 const BERT = 'bert.velilla@example.com'
