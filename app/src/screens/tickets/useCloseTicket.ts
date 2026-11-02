@@ -99,7 +99,7 @@ export function useClosedFacts(ticketId: string) {
         sb
           .from('tickets')
           .select(
-            'created_at, closed_at, resolution, opener:profiles!tickets_created_by_fkey (full_name), closer:profiles!tickets_closed_by_fkey (full_name, role)',
+            'created_at, closed_at, resolution, opener:profiles!tickets_created_by_fkey (full_name), closer:profiles!tickets_closed_by_fkey (id, full_name, role)',
           )
           .eq('id', ticketId)
           .maybeSingle(),

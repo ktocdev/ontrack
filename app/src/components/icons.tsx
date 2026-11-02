@@ -163,6 +163,12 @@ export const IconImage = (p: IconProps) => (
     <path d="m21 16-5-5-9 9" />
   </svg>
 )
+export const IconTray = (p: IconProps) => (
+  <svg {...base({ size: 30, ...p })}>
+    <path d="M3 13h5l1 3h6l1-3h5" />
+    <path d="M5.5 5h13L21 13v6H3v-6z" />
+  </svg>
+)
 export const IconReopen = (p: IconProps) => (
   <svg {...base({ size: 20, ...p }, 2.2)}>
     <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
 import { Card } from '../../components/Card'
@@ -11,6 +11,7 @@ import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components
 import { Sheet } from '../../components/Sheet'
 import { IconChevronLeft, IconPlus, IconReopen } from '../../components/icons'
 import { longDate, money, reopenDaysLeft, timeline, timeToClose } from './closed'
+import { Fact, Step } from './ClosedParts'
 import { ROLE_WORD, type Update } from './thread'
 import { useClosedFacts, useReopenTicket } from './useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
@@ -270,27 +271,5 @@ export function ClosedTicketScreen({
       </Sheet>
       <PhotoViewer src={viewing} alt="Photo on this ticket" onClose={() => setViewing(null)} />
     </Screen>
-  )
-}
-
-function Fact({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3 border-t border-border px-3.5 py-3 text-14 first:border-t-0">
-      <span className="flex-none text-13 text-text-muted">{label}</span>
-      <span className="min-w-0 text-right font-semibold [overflow-wrap:anywhere]">{children}</span>
-    </div>
-  )
-}
-
-function Step({ title, note, when, dot }: { title: string; note: string | null; when: string; dot: string }) {
-  return (
-    <div className="flex gap-3 border-t border-border px-3.5 py-3 first:border-t-0">
-      <span aria-hidden="true" className={`mt-[5px] h-2.5 w-2.5 flex-none rounded-full ${dot}`} />
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-14 font-semibold">{title}</span>
-        {note && <span className="whitespace-pre-wrap text-14 leading-[1.4] text-text-body">{note}</span>}
-        <span className="text-12 text-text-muted">{when}</span>
-      </div>
-    </div>
   )
 }
