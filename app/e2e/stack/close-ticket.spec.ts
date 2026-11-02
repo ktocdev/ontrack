@@ -10,6 +10,13 @@ import { signIn } from './helpers'
 const T0911 = '66666666-6666-4666-8666-000000000911'
 const T1028 = '66666666-6666-4666-8666-000000001028'
 
+const menu = (page: Page) => page.getByRole('button', { name: 'More options for this ticket' })
+
+async function openEdit(page: Page) {
+  await menu(page).click()
+  await page.getByRole('menuitem', { name: 'Edit ticket' }).click()
+}
+
 async function newTicket(page: Page, title: string) {
   await page.goto('/tickets/new')
   await page.getByRole('link', { name: /^Refrigeration/ }).click()
@@ -25,7 +32,7 @@ test('a manager edits a ticket: title, description, urgency and equipment', asyn
   const title = `Edit me ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, 'ari.kim@example.com')
   await newTicket(page, title)
-  await page.getByRole('link', { name: 'Edit', exact: true }).click()
+  await openEdit(page)
   await expect(page.getByRole('heading', { name: 'Edit ticket' })).toBeVisible()
   await expect(page.getByLabel('Description')).toHaveValue('Bin is leaking.')
   await expect(page.getByText('Back of House', { exact: true })).toBeVisible()
@@ -51,11 +58,29 @@ test('a manager edits a ticket: title, description, urgency and equipment', asyn
   await expect(page.getByText(unit, { exact: true })).toBeVisible()
 })
 
+test('a manager closes a ticket from its menu and lands on the closed ticket', async ({ page }, testInfo) => {
+  const title = `Menu close ${testInfo.project.name} ${Date.now() % 100000}`
+  await signIn(page, 'ari.kim@example.com')
+  await newTicket(page, title)
+  await menu(page).click()
+  await page.waitForTimeout(200)
+  await testInfo.attach('menu', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.getByRole('menuitem', { name: 'Close ticket' }).click()
+  const confirm = page.getByRole('dialog', { name: /^Close OT-\d+\?$/ })
+  await confirm.getByLabel('Comment').fill('Fixed it ourselves.')
+  await confirm.getByRole('button', { name: 'Close ticket' }).click()
+
+  await expect(confirm).toHaveCount(0)
+  await expect(page.getByRole('status').filter({ hasText: /OT-\d+ closed\./ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Closed ticket' })).toBeVisible()
+  await expect(page.getByText('Fixed it ourselves.')).toBeVisible()
+})
+
 test('a manager closes a ticket, sees its screen, and reopens it with a reason', async ({ page }, testInfo) => {
   const title = `Close me ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, 'ari.kim@example.com')
   await newTicket(page, title)
-  await page.getByRole('link', { name: 'Edit', exact: true }).click()
+  await openEdit(page)
 
   await page.getByRole('button', { name: 'Close ticket' }).click()
   const confirm = page.getByRole('dialog', { name: /^Close OT-\d+\?$/ })
@@ -77,7 +102,9 @@ test('a manager closes a ticket, sees its screen, and reopens it with a reason',
   await expect(page.getByText('Under a day')).toBeVisible()
   await expect(page.getByText('You can report this to Ops for 30 more days.')).toBeVisible()
   await expect(page.getByRole('textbox', { name: /Write an update/ })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: 'Edit', exact: true })).toHaveCount(0)
+  await menu(page).click()
+  await expect(page.getByRole('menuitem', { name: 'Edit ticket' })).toHaveCount(0)
+  await page.keyboard.press('Escape')
   // Ari has no see_costs.
   await expect(page.getByText('Cost', { exact: true })).toHaveCount(0)
 
