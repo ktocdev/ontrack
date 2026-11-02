@@ -160,6 +160,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-52 | From feedback: a reopened ticket acts like a new one apart from its badge, with nobody on it and no date |
 | OT-55 | Security audit of what Phase 3 added: policies and functions since OT-22, internal notes and their photos, Ops and manager scope, links, push and `send-push` |
 | OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
+| OT-57 | From feedback: Edit, Close and Share in the menu on a manager's ticket, with Close still on Edit ticket |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record
