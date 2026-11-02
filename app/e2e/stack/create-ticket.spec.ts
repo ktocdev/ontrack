@@ -53,7 +53,7 @@ test('a manager picks a category and creates a ticket, and another manager canno
   await expect(page.getByRole('status').filter({ hasText: /OT-\d+ created\./ })).toBeVisible()
   const card = page.getByRole('link', { name: new RegExp(title) })
   await expect(card).toContainText('Back of House · Refrigeration')
-  await expect(card).toContainText('Not yet assigned')
+  await expect(card).toContainText('Not picked up yet')
 
   const rows = async (email: string) => {
     const token = await tokenFor(request, email)

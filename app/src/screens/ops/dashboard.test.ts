@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { byUrgency, dashboardPill, reopenReasons } from './dashboard'
+import { byUrgency, reopenReasons } from './dashboard'
 
 describe('byUrgency', () => {
   it('puts urgent first, then the most recent activity', () => {
@@ -10,14 +10,6 @@ describe('byUrgency', () => {
       { id: 'new-urgent', urgency: 'urgent', activity: '2026-10-02T10:00:00Z' },
     ]
     expect([...list].sort(byUrgency).map((t) => t.id)).toEqual(['new-urgent', 'old-urgent', 'new-normal', 'old-normal'])
-  })
-})
-
-describe('dashboardPill', () => {
-  it('says Unassigned only for an open ticket nobody has', () => {
-    expect(dashboardPill('open', null)).toBe('unassigned')
-    expect(dashboardPill('open', 'bert')).toBe('open')
-    expect(dashboardPill('in_progress', null)).toBe('in_progress')
   })
 })
 

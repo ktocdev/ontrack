@@ -4,7 +4,7 @@ import { ago } from './tickets'
 
 /**
  * Turns a ticket's updates into what the thread shows. System events become one
- * line each, and an assignment and a status change made together become one line,
+ * line each, and someone taking a ticket and a status change made together become one line,
  * as on the board. A closing comment or a reopen reason is the event's line and then
  * a message, since a person wrote it.
  */
@@ -135,7 +135,7 @@ export function threadItems(updates: Update[], me: string, names: Map<string, st
         const to = assigned && metaOf(assigned).to
         const who = assigned && (to ? (to === me ? 'You' : (names.get(to) ?? 'Someone')) : null)
         const parts = [
-          assigned && (who ? `${who} assigned` : 'Unassigned'),
+          assigned && (who ? `${who} took this` : 'Nobody on this now'),
           status && (assigned ? `status ${statusWord(status)}` : `Status ${statusWord(status)}`),
         ].filter(Boolean)
         event(u.id, parts.join(' · '), u.created_at)

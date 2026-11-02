@@ -32,7 +32,7 @@ test('a ticket shows its header, description, equipment and thread, without inte
   const log = page.getByRole('log', { name: 'Ticket updates' })
   await expect(page.getByText('Updates · 3')).toBeVisible()
   await expect(log.getByText(/^Opened by you · Oct 19, 2026, 9:12 AM$/)).toBeVisible()
-  await expect(log.getByText(/^Bert Velilla assigned · status In progress · 9:40 AM$/)).toBeVisible()
+  await expect(log.getByText(/^Bert Velilla took this · status In progress · 9:40 AM$/)).toBeVisible()
   await expect(log.getByText('Bert Velilla, Ops').first()).toBeVisible()
   await expect(log.getByText('You', { exact: false }).first()).toBeVisible()
   await expect(page.getByText('Coldline quoted')).toHaveCount(0) // an internal note
