@@ -12,6 +12,18 @@ test.describe('kit on a phone', () => {
     expect(await documentOverflow(page)).toBeLessThanOrEqual(0)
   })
 
+  test('the message field only scrolls once it has reached its full height', async ({ page }) => {
+    await page.goto('/kit')
+    const field = page.getByRole('textbox', { name: 'Write an update' })
+    await expect(field).toHaveCSS('overflow-y', 'hidden')
+    await field.fill(Array(12).fill('Another line').join('\n'))
+    await expect(field).toHaveCSS('overflow-y', 'auto')
+    await expect(field).toHaveCSS('height', '120px')
+    await field.fill('')
+    await expect(field).toHaveCSS('overflow-y', 'hidden')
+    await expect(field).toHaveCSS('height', '46px')
+  })
+
   test('primary button darkens while pressed', async ({ page }) => {
     await page.goto('/kit')
     const button = page.getByRole('button', { name: 'Primary · 52' })

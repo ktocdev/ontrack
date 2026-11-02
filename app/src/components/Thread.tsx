@@ -88,7 +88,10 @@ export function Composer({
 
   const grow = (el: HTMLTextAreaElement) => {
     el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight + 2, MAX_HEIGHT)}px`
+    const needed = el.scrollHeight + 2
+    el.style.height = `${Math.min(needed, MAX_HEIGHT)}px`
+    // scrollHeight rounds a 22.4px line down, so without this a phone can draw a scrollbar at one line.
+    el.style.overflowY = needed > MAX_HEIGHT ? 'auto' : 'hidden'
   }
   // Grow to fit what's there, including back down to one line once it is sent.
   const setRef = (el: HTMLTextAreaElement | null) => {
