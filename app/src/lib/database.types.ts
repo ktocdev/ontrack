@@ -1409,6 +1409,9 @@ isOneToOne: false
 "set_ticket_status":
 { Args: { "p_id": string,"p_scheduled_for"?: string,"p_status": Database["public"]['Enums']["ticket_status"] }; Returns: undefined
                            },
+"start_ticket_work":
+{ Args: { "p_id": string,"p_note": string }; Returns: undefined
+                           },
 "take_ticket":
 { Args: { "p_id": string }; Returns: undefined
                            },
