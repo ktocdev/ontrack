@@ -109,6 +109,7 @@ export function Composer({
   canSendEmpty = false,
   leading,
   above,
+  autoFocus = false,
 }: {
   value: string
   onChange: (value: string) => void
@@ -123,6 +124,8 @@ export function Composer({
   leading?: ReactNode
   /** Over the field: what has been picked. */
   above?: ReactNode
+  /** It was just opened to write in. */
+  autoFocus?: boolean
 }) {
   const empty = !value.trim() && !canSendEmpty
 
@@ -154,6 +157,7 @@ export function Composer({
         <textarea
           ref={setRef}
           rows={1}
+          autoFocus={autoFocus}
           aria-label={label}
           placeholder={placeholder}
           maxLength={maxLength}

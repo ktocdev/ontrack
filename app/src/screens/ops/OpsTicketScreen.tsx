@@ -14,7 +14,7 @@ import { Spinner } from '../../components/Skeleton'
 import { StatusMenu } from '../../components/StatusMenu'
 import { Composer, VisibilityToggle } from '../../components/Thread'
 import { useToast } from '../../components/Toast'
-import { IconChevronLeft, IconClipboardCheck, IconWrench } from '../../components/icons'
+import { IconChevronLeft, IconClipboardCheck, IconClose, IconPlus, IconWrench } from '../../components/icons'
 import type { TicketStatus } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { longDate } from '../tickets/closed'
@@ -33,8 +33,10 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * decides that: In progress puts you on it, back to Open takes the person off. Take this
  * over is for one a colleague has. Scheduled asks for its date, which has no board. Links
  * to later phases stay off: the equipment card and the walkthrough open nothing yet, and
- * Service & cost waits for Phase 5. Updates go to the restaurant unless the toggle says
- * internal, and Close ticket takes an optional comment, then goes back to the dashboard.
+ * Service & cost waits for Phase 5. Writing back and forth is rare for Ops, so the message
+ * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
+ * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
+ * optional comment, then goes back to the dashboard.
  * A closed ticket has its own screen. A reopened ticket's comes in OT-42.
  */
 const OPTIONS: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled']
@@ -71,6 +73,7 @@ export function OpsTicketScreen() {
   const navigate = useNavigate()
   const body = useRef<HTMLDivElement>(null)
   const [draft, setDraft] = useState('')
+  const [writing, setWriting] = useState(false)
   const [internal, setInternal] = useState(false)
   const [closing, setClosing] = useState(false)
   const [comment, setComment] = useState('')
@@ -115,6 +118,7 @@ export function OpsTicketScreen() {
         onSuccess: () => {
           setDraft('')
           picked.clear()
+          setWriting(false)
           // After the refreshed thread has drawn.
           requestAnimationFrame(() => body.current?.scrollTo({ top: body.current.scrollHeight }))
         },
@@ -198,15 +202,6 @@ export function OpsTicketScreen() {
           ]}
         />
 
-        {ticket.status === 'open' && !ticket.assignee_id && !viewingAs && (
-          <div
-            role="note"
-            className="flex-none rounded-input bg-status-progress-bg px-3 py-2.5 text-13 leading-[1.45] text-status-progress-text"
-          >
-            Nobody has this yet. Setting it to <b>In progress</b> puts you on it.
-          </div>
-        )}
-
         {ticket.description && (
           <>
             <SectionLabel className="-mb-0.5">Description</SectionLabel>
@@ -252,7 +247,19 @@ export function OpsTicketScreen() {
           </>
         )}
 
-        <SectionLabel className="-mb-0.5">Updates · {count}</SectionLabel>
+        <div className="-mb-2.5 flex min-h-tap flex-none items-center justify-between gap-3 pt-1">
+          <h2 className="eyebrow">Updates · {count}</h2>
+          {!writing && !viewingAs && (
+            <button
+              type="button"
+              onClick={() => setWriting(true)}
+              className="-mr-1 flex min-h-tap flex-none items-center gap-1 px-1 text-14 font-semibold text-brand"
+            >
+              <IconPlus size={16} strokeWidth={2.4} />
+              Add update
+            </button>
+          )}
+        </div>
         <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />
       </ScreenBody>
 
@@ -263,8 +270,9 @@ export function OpsTicketScreen() {
           </ErrorBanner>
         </div>
       )}
-      {!viewingAs && (
+      {writing && !viewingAs && (
         <Composer
+          autoFocus
           label={internal ? 'Write an internal note, only Ops can see it' : 'Write an update the restaurant can see'}
           placeholder={internal ? 'Write an internal note…' : 'Write an update…'}
           maxLength={4000}
@@ -288,7 +296,20 @@ export function OpsTicketScreen() {
           }
           above={
             <>
-              <VisibilityToggle internal={internal} onChange={setInternal} />
+              <div className="flex items-center justify-between">
+                <VisibilityToggle internal={internal} onChange={setInternal} />
+                <button
+                  type="button"
+                  aria-label="Hide message box"
+                  onClick={() => {
+                    post.reset()
+                    setWriting(false)
+                  }}
+                  className="-my-1.5 flex h-11 w-11 flex-none items-center justify-center rounded-control text-text-secondary transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
+                >
+                  <IconClose size={20} />
+                </button>
+              </div>
               <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
               {picked.error && (
                 <span role="alert" className="text-13 font-semibold text-danger">

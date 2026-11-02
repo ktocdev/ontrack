@@ -12,7 +12,7 @@ test.use({ timezoneId: 'America/Chicago' })
 
 const BERT = 'bert.velilla@example.com'
 const T1028 = '66666666-6666-4666-8666-000000001028'
-const OCTOBER = { month: '2026-10-01', closed_count: 10, total_cents: 266360 }
+const OCTOBER = { month: '2026-10-01', closed_count: 9, total_cents: 241860 }
 const MAY = { month: '2026-05-01', closed_count: 1, total_cents: 3850 }
 
 const row = (page: Page, id: string) => page.getByRole('link', { name: new RegExp(id) })
@@ -48,25 +48,26 @@ test('an empty month says so, then opens the month before with its total and cos
   await page.waitForTimeout(300)
   await testInfo.attach('empty', { body: await page.screenshot(), contentType: 'image/png' })
 
-  await page.getByRole('button', { name: /^See October.* · 10 closed$/ }).click()
+  await page.getByRole('button', { name: /^See October.* · 9 closed$/ }).click()
   await expect(page.getByRole('heading', { name: 'Nothing closed this month' })).toHaveCount(0)
   const october = page.getByRole('region', { name: /^October/ })
-  await expect(october.getByText(/^October.* · 10 closed$/)).toBeVisible()
-  await expect(october.getByText('$2,663.60')).toBeVisible()
+  await expect(october.getByText(/^October.* · 9 closed$/)).toBeVisible()
+  await expect(october.getByText('$2,418.60')).toBeVisible()
 
-  // The reopened ticket first, tagged, in the month it closed; then the newest; four to start.
+  // The newest first, four to start.
   await expect(october.getByRole('link')).toHaveCount(4)
-  await expect(october.getByRole('link').first()).toContainText('OT-0988')
-  await expect(row(page, 'OT-0988')).toContainText('Reopened')
-  await expect(row(page, 'OT-0988')).toContainText('$245.00')
+  await expect(october.getByRole('link').first()).toContainText('OT-1036')
+  await expect(row(page, 'OT-1036')).toContainText('$310.00')
   await expect(row(page, 'OT-1036')).toContainText('Federale’s West Loop')
   await expect(row(page, 'OT-1036')).toContainText('Oct 17')
   await page.waitForTimeout(300)
   await testInfo.attach('october', { body: await page.screenshot(), contentType: 'image/png' })
 
-  await page.getByRole('button', { name: /^Show 6 more from October/ }).click()
-  await expect(october.getByRole('link')).toHaveCount(10)
+  await page.getByRole('button', { name: /^Show 5 more from October/ }).click()
+  await expect(october.getByRole('link')).toHaveCount(9)
   await expect(page.getByRole('button', { name: /^Show \d+ more/ })).toHaveCount(0)
+  // A reopened ticket is open work: it is on the dashboard, not here.
+  await expect(row(page, 'OT-0988')).toHaveCount(0)
   // A ticket with no service record shows no amount, rather than $0.00.
   await expect(row(page, 'OT-1029')).not.toContainText('$')
 
@@ -101,7 +102,7 @@ test('without see_costs no month or ticket shows money', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Nothing closed this month' })).toBeVisible()
   await expect(page.getByText('$0.00')).toHaveCount(0)
   await page.getByRole('button', { name: /^See October/ }).click()
-  await expect(row(page, 'OT-0988')).toBeVisible()
+  await expect(row(page, 'OT-1036')).toBeVisible()
   await expect(page.getByText(/\$/)).toHaveCount(0)
 })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { byReopenedThenNewest, monthKey, monthName, monthRange, shownMonths, type ClosedMonth } from './closedMonths'
+import { monthKey, monthName, monthRange, shownMonths, type ClosedMonth } from './closedMonths'
 
 const now = new Date(2026, 10, 2, 12)
 const october: ClosedMonth = { month: '2026-10-01', closed_count: 10, total_cents: 266360 }
@@ -44,15 +44,5 @@ describe('the months on Closed tickets', () => {
     const hidden = { ...october, total_cents: null }
     expect(shownMonths([hidden], 0, now).shown[0]!.total_cents).toBeNull()
     expect(shownMonths([], 0, now).shown[0]!.total_cents).toBeNull()
-  })
-
-  it('puts a reopened ticket first, then the newest', () => {
-    const row = (status: string, last_closed_at: string) => ({ status, last_closed_at })
-    const rows = [row('closed', '2026-10-15'), row('reopened', '2026-10-14'), row('closed', '2026-10-17')]
-    expect(rows.sort(byReopenedThenNewest).map((r) => r.last_closed_at)).toEqual([
-      '2026-10-14',
-      '2026-10-17',
-      '2026-10-15',
-    ])
   })
 })

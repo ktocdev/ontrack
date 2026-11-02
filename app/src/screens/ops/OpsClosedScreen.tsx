@@ -143,9 +143,8 @@ function Month({
                 title={t.title}
                 displayId={t.display_id ?? ''}
                 restaurant={restaurants.find((r) => r.id === t.restaurant_id)}
-                date={new Date(t.last_closed_at!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                date={new Date(t.closed_at!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 cost={t.totalCents === null ? undefined : money(t.totalCents)}
-                reopened={t.status !== 'closed'}
               />
             ))}
           </Card>

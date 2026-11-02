@@ -43,12 +43,3 @@ export function shownMonths(months: ClosedMonth[], extra: number, now = new Date
   const shown = thisMonth.closed_count === 0 && opened.length ? opened : [thisMonth, ...opened]
   return { shown, next: earlier[extra] ?? null }
 }
-
-/** Anything reopened first, since it needs Ops again, then the newest. */
-export function byReopenedThenNewest(
-  a: { status: string; last_closed_at: string | null },
-  b: { status: string; last_closed_at: string | null },
-) {
-  const reopened = Number(b.status !== 'closed') - Number(a.status !== 'closed')
-  return reopened || (b.last_closed_at ?? '').localeCompare(a.last_closed_at ?? '')
-}
