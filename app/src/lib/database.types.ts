@@ -449,14 +449,14 @@ isOneToOne: false
                   ]
                 },"notifications": {
                   Row: {
-                    "actor_id": string | null,"body": string | null,"created_at": string,"id": string,"internal": boolean,"kind": string,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string
+                    "actor_id": string | null,"body": string | null,"created_at": string,"id": string,"internal": boolean,"kind": string,"picked_up": boolean,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind": string,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id": string
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind": string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id": string
                   }
                   Update: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind"?: string,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind"?: string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string
                   }
                   Relationships: [
                     {
@@ -1433,6 +1433,7 @@ isOneToOne: false
 "id": string,
 "internal": boolean,
 "kind": string,
+"picked_up": boolean,
 "processed_at": string | null,
 "seq": number,
 "status_to": string | null,

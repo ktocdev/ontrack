@@ -1,7 +1,7 @@
 -- Who gets told what (OT-45). Every thread event writes one outbox row, and
 -- notification_recipients decides who hears, by push and by email.
 begin;
-select plan(24);
+select plan(29);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
@@ -97,6 +97,28 @@ select is(
   (select count(*)::int from public.notifications where ticket_id = (:t1042)::uuid and body is null and status_to = 'open'),
   1, 'a status change that also moves the person is one row');
 
+-- Another Ops manager picking up a ticket reaches Ops by email, and closing it too.
+select pg_temp.login('chris.novak@example.com');
+select public.set_ticket_status((:t1042)::uuid, 'in_progress');
+select is(pg_temp.told((:t1042)::uuid), array['bert:false:true', 'chris:false:true', 'maya:true:true'],
+  'picking up a ticket reaches the other Ops manager by email only');
+select pg_temp.login('chris.novak@example.com');
+select public.set_ticket_status((:t1042)::uuid, 'scheduled', '2030-01-01');
+select is(pg_temp.told((:t1042)::uuid), array['chris:false:true', 'maya:true:true'],
+  'other status changes stay out of the other Ops manager''s inbox');
+select pg_temp.login('bert.velilla@example.com');
+select public.take_ticket((:t1042)::uuid);
+select is(pg_temp.told((:t1042)::uuid), array['bert:false:true', 'chris:false:true'],
+  'taking one over with no status change reaches only Ops, by email');
+select pg_temp.login('chris.novak@example.com');
+update public.tickets set status = 'closed', resolution = 'All done' where id = (:t1042)::uuid;
+select is(pg_temp.told((:t1042)::uuid), array['bert:true:true', 'chris:false:true', 'maya:true:true'],
+  'closing reaches the other Ops manager, who is on it here so also by push');
+select pg_temp.login('chris.novak@example.com');
+insert into public.notification_prefs (user_id, kind, enabled) values (auth.uid(), 'status_change', false);
+select is(pg_temp.told((:t1042)::uuid), array['bert:true:true', 'maya:true:true'],
+  'the status switch stops them too');
+
 -- Reopening: its reason joins the reopen, and it goes to Ops like a new ticket.
 select pg_temp.login('maya.reyes@example.com');
 update public.tickets set status = 'closed', resolution = 'Done' where id = (:t1031)::uuid;
@@ -116,6 +138,7 @@ select is((select body from public.notifications where ticket_id = (:t1031)::uui
 -- Someone deactivated, or no longer covering the restaurant, hears nothing.
 set local role postgres;
 select set_config('request.jwt.claims', '', true);
+delete from public.notification_prefs where kind = 'status_change';
 update public.profiles set deactivated_at = now() where email = 'chris.novak@example.com';
 select is(pg_temp.told((:t1031)::uuid), array['bert:true:true'], 'someone deactivated is not told');
 delete from public.memberships where user_id = (select id from public.profiles where email = 'bert.velilla@example.com');

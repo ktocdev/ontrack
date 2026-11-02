@@ -100,7 +100,8 @@ test('work on a ticket reaches the restaurant, and Ops’s own by email only', a
   expect(started.ok()).toBe(true)
   await eventually(() => sent(request, DANA, id), ['status_change:email', 'status_change:push'])
   await eventually(() => sent(request, BERT, id), ['new_ticket:email', 'status_change:email'])
-  expect(await sent(request, CHRIS, id)).toEqual(['new_ticket:email'])
+  // Another Ops manager hears that it was picked up, by email only.
+  await eventually(() => sent(request, CHRIS, id), ['new_ticket:email', 'status_change:email'])
 
   // An internal note reaches nobody at the restaurant, and the note's author by email.
   const note = await request.post(`${SUPABASE}/rest/v1/rpc/post_ticket_update`, {

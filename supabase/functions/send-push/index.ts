@@ -31,6 +31,7 @@ type Row = {
   body: string | null
   internal: boolean
   status_to: string | null
+  picked_up: boolean
   created_at: string
 }
 
@@ -53,7 +54,7 @@ function describe(n: Row, ticketLabel: string, restaurant: string, actor: string
       return { headline: `Reopened at ${restaurant}`, line: ticketLabel, words }
     case 'status_change':
       return {
-        headline: `${STATUS[n.status_to ?? ''] ?? 'Status changed'} · ${restaurant}`,
+        headline: n.status_to ? `${STATUS[n.status_to] ?? 'Status changed'} · ${restaurant}` : `Picked up · ${restaurant}`,
         line: ticketLabel,
         words,
       }
