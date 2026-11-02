@@ -8,7 +8,7 @@ Mobile-first PWA for equipment and repair tickets across the Four Corners restau
 - **Backend:** Supabase Postgres with row-level security on every table, Supabase Auth (email + password, invite only, TOTP), Supabase Storage, Edge Functions (Deno) only for jobs that need a secret or a server.
 - **Hosting:** Cloudflare Workers with static assets (`app/wrangler.jsonc`), connected through Workers Builds: `main` is production, every other branch gets a preview URL and a PR comment.
 - **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone. Playwright has two suites: `e2e/` runs on the mock build (no backend, runs locally), `e2e/stack/` runs against the seeded local Supabase stack (CI only, since this machine has no Docker).
-- **CI:** `.github/workflows/ci.yml` runs three jobs on every PR and on `main`: the app (lint, format check, typecheck, Vitest, build, mock-build Playwright), the flows (`supabase start`, then `e2e/stack` Playwright against it) and the database (`supabase db start`, pgTAP, `db lint`, type generation, and a diff of the generated types against the committed file). `supabase-deploy.yml` pushes migrations and deploys functions to the hosted project on merge once the Supabase secrets exist.
+- **CI:** `.github/workflows/ci.yml` runs on every PR and on `main`, except when only Markdown, `handoff/` or `design/` changed: the app (lint, format check, typecheck, Vitest, build, mock-build Playwright), the flows (`supabase start`, then `e2e/stack` Playwright against it, one job per browser) and the database (`supabase db start`, pgTAP, `db lint`, type generation, and a diff of the generated types against the committed file). `supabase-deploy.yml` pushes migrations and deploys functions to the hosted project on merge once the Supabase secrets exist.
 
 ## Layout
 
@@ -127,9 +127,10 @@ How to build one (OT-9's restaurants are the reference): a `security invoker` SQ
 
 Inside a phase: migration and policies with pgTAP first, then one TanStack Query hook per screen, then the screens against the design (new components on `/kit` first), then one Playwright flow for the done test in `e2e/stack`, then try the preview URL on a phone.
 
-A screen that needs real data can only render against the stack, which runs in CI. Its `e2e/stack` test attaches screenshots (`testInfo.attach`), and the Flows job always uploads `playwright-report-stack`: download it with `gh run download <run> -n playwright-report-stack` and compare the attachments with the board's PNG.
+A screen that needs real data can only render against the stack, which runs in CI. Its `e2e/stack` test attaches screenshots (`testInfo.attach`), and each Flows job always uploads its report: download it with `gh run download <run> -n playwright-report-stack-chromium` (or `-webkit`) and compare the attachments with the board's PNG.
 
 - Branches are `OT-<n>` (one PR each). Small PRs: one screen or one function. Merge to `main` only when CI is green.
+- A small fix that touches no database, auth or data flow may open with the `quick` label (`gh pr create --label quick`), which skips the Flows jobs on the PR. Run the flows it touches locally first. `main` still runs them after the merge, so check that run. The label must be on the PR when it opens or be followed by a push.
 - Commit messages: imperative, one line of what and why.
 - No restaurant data in the repo; the seed is fictional except restaurant names and colors.
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
@@ -158,6 +159,7 @@ Done when a manager at Federale's Logan Square creates a ticket with a photo on 
 | OT-32 | From trying OT-26 live: Open tickets loads in the empty layout when it found nothing last time, so it doesn't jump |
 | OT-33 | From OT-29's open questions: an ellipsis menu beside the search on Open tickets with View Closed Tickets, opening a simple list; Title on Edit ticket |
 | OT-34 | From trying Phase 2 live: no scrollbar on the message field at one line |
+| OT-35 | Faster CI: docs-only PRs run nothing, the flows run one job per browser, and a `quick` label skips them on a small fix's PR |
 
 ## Phase 1, for the record
 
