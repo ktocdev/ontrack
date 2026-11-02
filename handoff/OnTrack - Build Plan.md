@@ -254,6 +254,8 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
 | OT-51 | From feedback: a reopened ticket is on the dashboard and not in Closed tickets; the Ops message box hidden until Add update; no "Nobody has this yet" note |
 | OT-52 | From feedback: a reopened ticket acts like a new one apart from its badge, with nobody on it and no date |
+| OT-55 | Security audit of what Phase 3 added: policies and functions since OT-22, internal notes and their photos, Ops and manager scope, links, push and `send-push` |
+| OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
 | OT-47 | The done test as one flow; the phase note |
 
 **What this phase has to work around**
@@ -276,6 +278,8 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. A status change or an update the restaurant can see goes to the person who opened the ticket and the person working on it, and never to whoever did it, so a manager hears when work starts. A reopen goes to all those Ops managers, as a new ticket does. An internal note never reaches a manager, and notifies nobody at this stage.
 - **Setup outside the repo:** VAPID keys are new. The private key goes in the hosted project's function secrets, and the public one in the Worker's build variables, so OT-44 lists the steps. The database also needs a way to call `send-push` from a trigger, set up in OT-45.
 - **Playwright can't feel a phone buzz.** The done flow checks that the right people were sent the right notification, and the buzz itself is tried by hand on a real phone. That proves it on Android. iPhone push needs the app installed on a real iPhone, which may be more than BrowserStack can show, so it may wait until someone with an iPhone tries it.
+- **Share link (OT-43)** is on every ticket screen, in a menu on its header, including closed tickets. A phone gets its share sheet and a computer copies the link and confirms; the choice follows whether the device has a coarse pointer, since desktop browsers also offer a share sheet. The message carries the ticket number and title, so whoever shares it decides who reads those.
+- **`send-push` gets its own security check in OT-45,** since it runs with the service key, then the audit (OT-55) and code quality pass (OT-56) come before the done test, so the done test covers their fixes.
 - **`/t/<id>` has no screen to open for admin and leadership until Phase 7,** when their ticket views arrive. Until then they get the no-access screen, whatever the database would let them read.
 - **Roles & rights' "everyone affected is notified" stays off.** Changes to rights aren't among this phase's notifications, so that open item carries on.
 - **View as:** each Ops screen scopes its data from `useUser()` and hides writes when `viewingAs` is set.
