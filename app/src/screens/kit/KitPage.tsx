@@ -405,9 +405,7 @@ export function KitPage() {
                 displayId="OT-0988"
                 title="Door gasket torn"
                 status="reopened"
-                restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
                 meta="BOH · Refrigeration · 2h ago"
-                reason="The gasket is torn again near the bottom hinge."
               />
               <OpsTicketCard
                 to="#"
@@ -416,7 +414,6 @@ export function KitPage() {
                 status="in_progress"
                 urgent
                 walkthrough
-                restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
                 meta="BOH · Refrigeration · 1h ago"
                 worker={{ name: 'Bert Velilla', mine: false }}
               />

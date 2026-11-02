@@ -1,42 +1,41 @@
 import { describe, expect, it } from 'vitest'
-import { byUrgency, reopenReasons } from './dashboard'
+import { byAttention, groupByRestaurant } from './dashboard'
 
-describe('byUrgency', () => {
-  it('puts urgent first, then the most recent activity', () => {
+describe('byAttention', () => {
+  it('puts reopened first, then urgent, then the most recent activity', () => {
     const list = [
-      { id: 'old-normal', urgency: 'normal', activity: '2026-10-01T10:00:00Z' },
-      { id: 'old-urgent', urgency: 'urgent', activity: '2026-10-01T10:00:00Z' },
-      { id: 'new-normal', urgency: 'normal', activity: '2026-10-02T10:00:00Z' },
-      { id: 'new-urgent', urgency: 'urgent', activity: '2026-10-02T10:00:00Z' },
+      { id: 'old-normal', status: 'open', urgency: 'normal', activity: '2026-10-01T10:00:00Z' },
+      { id: 'old-urgent', status: 'open', urgency: 'urgent', activity: '2026-10-01T10:00:00Z' },
+      { id: 'new-normal', status: 'open', urgency: 'normal', activity: '2026-10-02T10:00:00Z' },
+      { id: 'new-urgent', status: 'open', urgency: 'urgent', activity: '2026-10-02T10:00:00Z' },
+      { id: 'reopened', status: 'reopened', urgency: 'normal', activity: '2026-09-01T10:00:00Z' },
     ]
-    expect([...list].sort(byUrgency).map((t) => t.id)).toEqual(['new-urgent', 'old-urgent', 'new-normal', 'old-normal'])
+    expect([...list].sort(byAttention).map((t) => t.id)).toEqual([
+      'reopened',
+      'new-urgent',
+      'old-urgent',
+      'new-normal',
+      'old-normal',
+    ])
   })
 })
 
-describe('reopenReasons', () => {
-  const ticket = { id: 't', reopened_at: '2026-10-20T12:00:00Z' }
-  const row = (body: string | null, created_at: string, ticket_id = 't') => ({
-    ticket_id,
-    kind: 'message',
-    body,
-    created_at,
+describe('groupByRestaurant', () => {
+  const restaurants = [{ id: 'a' }, { id: 'b' }, { id: 'c' }]
+  const tickets = [
+    { id: '1', restaurant_id: 'c' },
+    { id: '2', restaurant_id: 'a' },
+    { id: '3', restaurant_id: 'c' },
+  ]
+
+  it('follows the restaurants’ order, keeps each list’s order, and leaves out the empty', () => {
+    expect(groupByRestaurant(tickets, restaurants).map((g) => [g.restaurant.id, g.tickets.map((t) => t.id)])).toEqual([
+      ['a', ['2']],
+      ['c', ['1', '3']],
+    ])
   })
 
-  it('takes the first words at or after the reopen', () => {
-    const reasons = reopenReasons(
-      [ticket],
-      [
-        row('Before it closed', '2026-10-10T12:00:00Z'),
-        row(null, '2026-10-20T12:00:00Z'),
-        row('It is back', '2026-10-20T12:00:00Z'),
-        row('Ops replied later', '2026-10-20T13:00:00Z'),
-      ],
-    )
-    expect(reasons.get('t')).toBe('It is back')
-  })
-
-  it('has nothing to say with no words, or for another ticket', () => {
-    expect(reopenReasons([ticket], [row('Elsewhere', '2026-10-21T12:00:00Z', 'other')]).has('t')).toBe(false)
-    expect(reopenReasons([{ id: 't', reopened_at: null }], []).has('t')).toBe(false)
+  it('leaves out a restaurant that isn’t in the list', () => {
+    expect(groupByRestaurant(tickets, [{ id: 'a' }]).map((g) => g.restaurant.id)).toEqual(['a'])
   })
 })

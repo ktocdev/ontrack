@@ -1,15 +1,11 @@
-import type { ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Card, CardLink } from './Card'
 import { StatusPill, UrgentTag, WalkthroughTag, type PillStatus } from './Pill'
-import { RestaurantName } from './RestaurantName'
 
 /**
- * A ticket on the Ops dashboard (design/screens/Ops-Dashboard): 12px 14px padding with
- * 6px gaps. The restaurant across from the status pill, a 16px title, a meta line, then
- * any Walkthrough tag and a badge with the name of whoever is working on it. The board
- * draws initials in a circle; a name says more. A reopened ticket is tinted and
- * 12px 16px, and says why it came back in place of the tag and badge. Without `to` it
- * is not a link (View as).
+ * A ticket on the Ops dashboard, under its restaurant's label: 12px 14px padding with
+ * 6px gaps. Any URGENT and the number across from the status pill, a 16px title, a meta
+ * line, then any Walkthrough tag and a badge with the name of whoever is working on it.
+ * Without `to` it is not a link (View as).
  */
 type Props = {
   to?: string
@@ -20,28 +16,10 @@ type Props = {
   statusLabel?: string
   urgent?: boolean
   walkthrough?: boolean
-  restaurant?: { name: string; color: string }
-  /** Area, category and when, after the number. */
+  /** Area, category and when. */
   meta: string
   /** Who is working on it. */
   worker?: { name: string; mine: boolean } | null
-  /** Why it came back, for a reopened ticket. */
-  reason?: string | null
-}
-
-function Shell({ to, reopened, children }: { to?: string; reopened: boolean; children: ReactNode }) {
-  const look = `relative flex flex-none flex-col gap-1.5 rounded-card border text-text no-underline transition-colors hover:text-text ${
-    reopened
-      ? 'border-[var(--reopened-banner-border)] bg-[var(--reopened-banner-bg)] px-4 py-3 hover:border-alert-badge'
-      : 'border-border bg-surface px-3.5 py-3 hover:border-border-muted'
-  }`
-  return to ? (
-    <Link to={to} className={look}>
-      {children}
-    </Link>
-  ) : (
-    <div className={look}>{children}</div>
-  )
 }
 
 export function OpsTicketCard({
@@ -52,30 +30,20 @@ export function OpsTicketCard({
   statusLabel,
   urgent = false,
   walkthrough = false,
-  restaurant,
   meta,
   worker,
-  reason,
 }: Props) {
-  const reopened = status === 'reopened'
-  return (
-    <Shell to={to} reopened={reopened}>
+  const body = (
+    <div className="flex flex-col gap-1.5 px-3.5 py-3">
       <span className="flex items-center gap-2">
         {urgent && <UrgentTag className="flex-none" />}
-        {restaurant && <RestaurantName name={restaurant.name} color={restaurant.color} variant="meta" wrap />}
+        <span className="font-mono text-12 text-text-muted">{displayId}</span>
         <span className="flex-1" />
         <StatusPill status={status} label={statusLabel} />
       </span>
       <span className="text-16 font-semibold [overflow-wrap:anywhere]">{title}</span>
-      {reopened && reason && (
-        <span className="text-13 leading-[1.4] text-[var(--reopened-banner-text)] [overflow-wrap:anywhere]">
-          &quot;{reason}&quot;
-        </span>
-      )}
-      <span className="text-12 text-text-muted">
-        <span className="font-mono">{displayId}</span> · {meta}
-      </span>
-      {!reopened && (walkthrough || worker) && (
+      <span className="text-12 text-text-muted">{meta}</span>
+      {(walkthrough || worker) && (
         <span className="flex items-center justify-between gap-2">
           {walkthrough ? <WalkthroughTag /> : <span />}
           {worker && (
@@ -90,6 +58,13 @@ export function OpsTicketCard({
           )}
         </span>
       )}
-    </Shell>
+    </div>
+  )
+  return to ? (
+    <CardLink to={to} className="flex-none text-text no-underline hover:text-text">
+      {body}
+    </CardLink>
+  ) : (
+    <Card className="flex-none">{body}</Card>
   )
 }

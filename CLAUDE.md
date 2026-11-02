@@ -147,13 +147,15 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category, sort |
 | OT-39 | Ops ticket detail: header, description, equipment card, the status dropdown, marking In progress puts you on it, the empty service and cost section |
 | OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
-| OT-41 | Closed tab grouped by month with totals, its empty state, closed ticket detail |
-| OT-42 | Reopened ticket: the Start work and Close again sheets |
+| OT-41 | Closed tickets, opened from the dashboard's menu: grouped by month with totals, its empty state, closed ticket detail |
+| OT-42 | Reopened ticket, opened from its card on the dashboard: the Start work and Close again sheets |
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
 | OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
+| OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
+| OT-50 | Change the order of the restaurants on the dashboard by dragging |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record
