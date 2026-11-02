@@ -1401,6 +1401,12 @@ isOneToOne: false
 "set_restaurant_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
                            },
+"set_ticket_status":
+{ Args: { "p_id": string,"p_scheduled_for"?: string,"p_status": Database["public"]['Enums']["ticket_status"] }; Returns: undefined
+                           },
+"take_ticket":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "ticket_restaurant":
 { Args: { "tid": string }; Returns: string
                            },

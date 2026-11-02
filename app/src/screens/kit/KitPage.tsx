@@ -22,6 +22,7 @@ import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { ReorderList } from '../../components/ReorderList'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
+import { StatusMenu } from '../../components/StatusMenu'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
@@ -407,6 +408,13 @@ export function KitPage() {
                 ]}
                 selectedId={null}
                 onSelect={() => toast.show('Restaurant picked.')}
+              />
+              <StatusMenu
+                value="in_progress"
+                valueLabel="In progress"
+                options={['open', 'in_progress', 'waiting_parts', 'scheduled']}
+                onPick={() => toast.show('Status picked.')}
+                action={{ label: 'Take this over', onSelect: () => toast.show('Taken.') }}
               />
               <ReorderList
                 label="Restaurants in order"

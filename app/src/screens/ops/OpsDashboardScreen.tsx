@@ -23,7 +23,7 @@ import { useRestaurantScope } from './useRestaurantScope'
  * always on top, then Front of House before Back, then the oldest, and the time on a
  * card is how long ago it was opened, so the order can be read. Nobody assigns a ticket: it is picked up by
  * marking it In progress, and a badge says who else is on it. Closed tickets are in the menu
- * by the title, as on a manager's Open tickets. The filter sheet comes in OT-38. Under
+ * by the title, as on a manager's Open tickets. Under
  * View as, nothing leads anywhere.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
