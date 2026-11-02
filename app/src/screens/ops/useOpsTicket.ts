@@ -57,6 +57,33 @@ export function useSetTicketStatus(id: string) {
   })
 }
 
+/** From reopened or closed to In progress, with a note the restaurant can read. */
+export function useStartWork(id: string) {
+  const refresh = useRefresh(id)
+  return useMutation({
+    mutationFn: async (note: string) => {
+      const { error } = await requireSupabase().rpc('start_ticket_work', { p_id: id, p_note: note })
+      if (error) throw error
+    },
+    onSuccess: refresh,
+  })
+}
+
+/** Back to Closed, with a reply the restaurant can read. */
+export function useCloseAgain(id: string) {
+  const refresh = useRefresh(id)
+  return useMutation({
+    mutationFn: async (reply: string) => {
+      const { error } = await requireSupabase()
+        .from('tickets')
+        .update({ status: 'closed', resolution: reply })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: refresh,
+  })
+}
+
 export function useTakeTicket(id: string) {
   const refresh = useRefresh(id)
   return useMutation({

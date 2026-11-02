@@ -30,6 +30,41 @@ export function money(cents: number) {
   return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 }
 
+/** The latest of a kind of update. */
+function latest(updates: Update[], kind: Update['kind']) {
+  return updates.filter((u) => u.kind === kind).at(-1) ?? null
+}
+
+/**
+ * What a reopened ticket says about itself. The reason is the reopen's own words or the
+ * message posted in the same step, whose photos are the reopen's. They share a timestamp,
+ * so the message can sort either side of the event. Closing clears the ticket's resolution,
+ * so the closing comment comes from the thread.
+ */
+export function reopenStory(updates: Update[]) {
+  const reopen = latest(updates, 'reopened')
+  const closed = latest(updates, 'closed')
+  const written =
+    reopen && !reopen.body
+      ? updates.find(
+          (u) => u.kind === 'message' && u.author?.id === reopen.author?.id && u.created_at >= reopen.created_at,
+        )
+      : reopen
+  return {
+    reason: written?.body ?? null,
+    reasonUpdateId: written?.id ?? null,
+    reopenedBy: reopen?.author?.full_name ?? null,
+    reopenedAt: reopen?.created_at ?? null,
+    closedAt: closed?.created_at ?? null,
+    closingComment: closed?.body ?? null,
+    closer: closed?.author ?? null,
+    daysAfterClosing:
+      reopen && closed
+        ? Math.round((new Date(reopen.created_at).getTime() - new Date(closed.created_at).getTime()) / DAY)
+        : null,
+  }
+}
+
 export type TimelineStep = {
   key: string
   title: string

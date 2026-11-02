@@ -21,6 +21,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
+import { ReopenedFlag } from '../../components/ReopenedFlag'
 import { ReorderList } from '../../components/ReorderList'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
@@ -435,6 +436,10 @@ export function KitPage() {
                 label="Restaurants in order"
                 items={kitOrderIds.map((id) => KIT_RESTAURANTS.find((r) => r.id === id)!)}
                 onChange={setKitOrderIds}
+              />
+              <ReopenedFlag
+                reason="The gasket is torn again near the bottom hinge."
+                by="Maya Reyes · 20m ago · 9 days after closing"
               />
               <MonthHeading label="October · 9 closed" total="$2,418.60" />
               <Card className="overflow-hidden rounded-input">

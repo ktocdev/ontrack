@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useUser } from '../../auth/context'
+import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { PhotoThumb, PhotoViewer } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
-import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
 import { IconChevronLeft } from '../../components/icons'
 import { money, timeline } from '../tickets/closed'
 import { Fact, Step } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
 import { useClosedFacts } from '../tickets/useCloseTicket'
 import { useSignedPhotos } from '../tickets/usePhotos'
+import { StartWorkSheet } from './StartWorkSheet'
 import type { useOpsTicket } from './useOpsTicket'
 
 /**
@@ -19,7 +21,8 @@ import type { useOpsTicket } from './useOpsTicket'
  * how it went, read-only, with the back arrow to Closed tickets. The board leaves out what
  * was wrong, because its flag says that; a closed ticket has no flag, so the description
  * and its photos stay, as on a manager's Closed ticket. Contractor and Cost appear only if
- * the database returns them, which takes see_costs. Start work anyway comes in OT-42.
+ * the database returns them, which takes see_costs. Start work anyway brings it back as
+ * In progress, and the refreshed ticket then shows its ordinary screen.
  */
 type Data = NonNullable<ReturnType<typeof useOpsTicket>['data']>
 type Ticket = NonNullable<Data['ticket']>
@@ -29,6 +32,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
   const facts = useClosedFacts(ticket.id).data
   const paths = data.photos.filter((p) => !p.update_id).map((p) => p.path)
   const urls = useSignedPhotos(paths)
+  const [starting, setStarting] = useState(false)
   const [viewing, setViewing] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
   const steps = timeline(data.updates)
@@ -134,6 +138,19 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
           ))}
         </Card>
       </ScreenBody>
+      <ScreenFooter>
+        <Button variant="secondary" onClick={() => setStarting(true)}>
+          Start work anyway
+        </Button>
+      </ScreenFooter>
+      <StartWorkSheet
+        ticketId={ticket.id}
+        displayId={ticket.display_id ?? ''}
+        reporter={ticket.opener?.full_name}
+        open={starting}
+        onOpenChange={setStarting}
+        onStarted={() => setStarting(false)}
+      />
       <PhotoViewer src={viewing} alt="Photo on this ticket" onClose={() => setViewing(null)} />
     </Screen>
   )

@@ -25,6 +25,7 @@ import { useCloseTicket } from '../tickets/useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
 import { usePostUpdate } from '../tickets/useTicket'
 import { OpsClosedTicketScreen } from './OpsClosedTicketScreen'
+import { OpsReopenedTicketScreen, type ReopenedResult } from './OpsReopenedTicketScreen'
 import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
 
 /**
@@ -37,7 +38,8 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
  * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
  * optional comment, then goes back to the dashboard.
- * A closed ticket has its own screen. A reopened ticket's comes in OT-42.
+ * A closed ticket and a reopened one have their own screens, and a reopened one stays up
+ * after Start work or Close again until the person moves on.
  */
 const OPTIONS: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled']
 
@@ -73,6 +75,7 @@ export function OpsTicketScreen() {
   const navigate = useNavigate()
   const body = useRef<HTMLDivElement>(null)
   const [draft, setDraft] = useState('')
+  const [handled, setHandled] = useState<{ result: ReopenedResult; shown: NonNullable<typeof data> } | null>(null)
   const [writing, setWriting] = useState(false)
   const [internal, setInternal] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -91,6 +94,18 @@ export function OpsTicketScreen() {
   }
   const ticket = data?.ticket
   if (!ticket) return <NotFoundScreen />
+  if (handled || ticket.status === 'reopened') {
+    const shown = handled?.shown ?? data
+    return (
+      <OpsReopenedTicketScreen
+        ticket={shown.ticket!}
+        data={shown}
+        result={handled?.result ?? null}
+        onResult={(result) => setHandled({ result, shown })}
+        onGoToTicket={() => setHandled(null)}
+      />
+    )
+  }
   if (ticket.status === 'closed') return <OpsClosedTicketScreen ticket={ticket} data={data} />
 
   const failed = () => toast.show('Couldn’t change that. Check your connection and try again.')
