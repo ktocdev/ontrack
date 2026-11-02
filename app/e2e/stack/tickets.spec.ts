@@ -14,11 +14,11 @@ test('a manager sees their open tickets in the board order, with the reopened on
   await expect(cards(page).first()).toContainText('OT-0988')
   await expect(cards(page).first()).toContainText('Reopened')
   await expect(cards(page).first()).toContainText('Back of House · Refrigeration · Walk-in Cooler 1')
-  await expect(cards(page).first()).toContainText('Assigned: Bert Velilla')
+  await expect(cards(page).first()).toContainText('Bert Velilla is on it')
   await expect(cards(page).nth(1)).toContainText('OT-1042')
   await expect(cards(page).nth(1)).toContainText('Walkthrough')
   await expect(cards(page).nth(1)).toContainText('Updated 1h ago')
-  await expect(cards(page).nth(2)).toContainText('Not yet assigned')
+  await expect(cards(page).nth(2)).toContainText('Not picked up yet')
   await expect(cards(page).nth(2)).toContainText('Created 3h ago')
   await expect(cards(page).nth(4)).toContainText(/Scheduled [A-Z][a-z]{2}/)
 

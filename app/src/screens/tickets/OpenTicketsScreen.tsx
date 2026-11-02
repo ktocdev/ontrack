@@ -198,7 +198,7 @@ export function OpenTicketsScreen() {
                     .filter(Boolean)
                     .join(' · ')}
                   restaurant={place}
-                  who={t.assignee ? `Assigned: ${t.assignee.full_name}` : 'Not yet assigned'}
+                  who={t.assignee ? `${t.assignee.full_name} is on it` : 'Not picked up yet'}
                   when={activityLine(t)}
                 />
               )

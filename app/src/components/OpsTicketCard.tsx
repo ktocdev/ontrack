@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
-import { Avatar } from './Avatar'
 import { StatusPill, UrgentTag, WalkthroughTag, type PillStatus } from './Pill'
 import { RestaurantName } from './RestaurantName'
 
 /**
  * A ticket on the Ops dashboard (design/screens/Ops-Dashboard): 12px 14px padding with
- * 6px gaps. The restaurant across from the status pill, a 16px title, a meta line, any
- * Walkthrough tag, and who has it in the bottom corner. A reopened ticket is tinted
- * and 12px 16px, and says why it came back in place of the tag and corner. Without
- * `to` it is not a link (View as).
+ * 6px gaps. The restaurant across from the status pill, a 16px title, a meta line, then
+ * any Walkthrough tag and a badge with the name of whoever is working on it. The board
+ * draws initials in a circle; a name says more. A reopened ticket is tinted and
+ * 12px 16px, and says why it came back in place of the tag and badge. Without `to` it
+ * is not a link (View as).
  */
 type Props = {
   to?: string
@@ -23,7 +23,8 @@ type Props = {
   restaurant?: { name: string; color: string }
   /** Area, category and when, after the number. */
   meta: string
-  assignee?: { name: string; mine: boolean; role: 'manager' | 'ops' | 'leadership' | 'admin' } | null
+  /** Who is working on it. */
+  worker?: { name: string; mine: boolean } | null
   /** Why it came back, for a reopened ticket. */
   reason?: string | null
 }
@@ -53,7 +54,7 @@ export function OpsTicketCard({
   walkthrough = false,
   restaurant,
   meta,
-  assignee,
+  worker,
   reason,
 }: Props) {
   const reopened = status === 'reopened'
@@ -71,18 +72,23 @@ export function OpsTicketCard({
           &quot;{reason}&quot;
         </span>
       )}
-      <span className={`text-12 text-text-muted ${assignee && !reopened ? 'pr-9' : ''}`}>
+      <span className="text-12 text-text-muted">
         <span className="font-mono">{displayId}</span> · {meta}
       </span>
-      {walkthrough && !reopened && <WalkthroughTag className="self-start" />}
-      {assignee && !reopened && (
-        <Avatar
-          name={assignee.name}
-          role={assignee.mine ? 'you' : assignee.role}
-          size={28}
-          label={assignee.mine ? 'Assigned to you' : `Assigned to ${assignee.name}`}
-          className="absolute bottom-3 right-3"
-        />
+      {!reopened && (walkthrough || worker) && (
+        <span className="flex items-center justify-between gap-2">
+          {walkthrough ? <WalkthroughTag /> : <span />}
+          {worker && (
+            <span
+              title={worker.mine ? 'You are working on this' : `${worker.name} is working on this`}
+              className={`min-w-0 truncate rounded-pill px-2.5 py-0.5 text-12 font-semibold ${
+                worker.mine ? 'bg-brand-tint text-brand' : 'bg-surface-sunken text-text-body'
+              }`}
+            >
+              {worker.mine ? 'You' : worker.name}
+            </span>
+          )}
+        </span>
       )}
     </Shell>
   )

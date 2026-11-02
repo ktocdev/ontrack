@@ -92,16 +92,7 @@ import { useTheme } from '../../theme/useTheme'
  * the whole row capped at max-w-desktop (1440) and centered.
  */
 
-const STATUSES: PillStatus[] = [
-  'open',
-  'unassigned',
-  'in_progress',
-  'waiting_parts',
-  'scheduled',
-  'reopened',
-  'closed',
-  'fixed',
-]
+const STATUSES: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled', 'reopened', 'closed', 'fixed']
 
 const SECTIONS = {
   type: 'Type',
@@ -352,7 +343,7 @@ export function KitPage() {
               </Button>
               <AddPhotoButton variant="dashed" onFiles={() => undefined} />
               <div className="flex flex-col rounded-card border border-border px-3 py-1">
-                <ThreadEvent text="Bert Velilla assigned · status In progress" when="9:40 AM" />
+                <ThreadEvent text="Bert Velilla took this · status In progress" when="9:40 AM" />
                 <ThreadMessage
                   who="Bert Velilla, Ops"
                   when="1h ago"
@@ -388,7 +379,7 @@ export function KitPage() {
                 status="in_progress"
                 walkthrough
                 place="Back of House · Refrigeration · Walk-in Cooler 1"
-                who="Assigned: Bert Velilla"
+                who="Bert Velilla is on it"
                 when="Updated 1h ago"
               />
               <TicketCard
@@ -398,7 +389,7 @@ export function KitPage() {
                 statusLabel="Scheduled Thu"
                 place="Front of House · Plumbing · Bar sink 2"
                 restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
-                who="Not yet assigned"
+                who="Not picked up yet"
                 when="Created 3h ago"
               />
               <RestaurantPicker
@@ -427,7 +418,7 @@ export function KitPage() {
                 walkthrough
                 restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
                 meta="BOH · Refrigeration · 1h ago"
-                assignee={{ name: 'Bert Velilla', role: 'ops', mine: true }}
+                worker={{ name: 'Bert Velilla', mine: false }}
               />
               <TaskList>
                 <TaskRow

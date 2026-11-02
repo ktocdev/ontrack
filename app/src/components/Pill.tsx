@@ -15,11 +15,10 @@ import {
  * dark theme's 20% tints apply without a second code path.
  */
 
-export type PillStatus = TicketStatus | 'unassigned' | 'fixed'
+export type PillStatus = TicketStatus | 'fixed'
 
 const STATUS: Record<PillStatus, { label: string; cls: string; Icon: (p: { size?: number }) => ReactNode }> = {
   open: { label: 'Open', cls: 'bg-status-open-bg text-status-open-text', Icon: IconStatusOpen },
-  unassigned: { label: 'Unassigned', cls: 'bg-status-open-bg text-status-open-text', Icon: IconStatusOpen },
   in_progress: {
     label: 'In progress',
     cls: 'bg-status-progress-bg text-status-progress-text',

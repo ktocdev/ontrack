@@ -194,7 +194,7 @@ A restaurant manager can report a problem from a phone in under a minute and fol
 **What this phase has to work around**
 
 - **Categories exist only in `seed.sql`, so the hosted project has none, and a ticket requires one.** OT-25 adds the design's list in a migration, and the seed stops inserting its own. Nothing can be created on the live app until that merges.
-- **Open tickets cards always show the assignee.** The board shows a contractor on one card, but managers cannot read service records without `see_costs`, and none exist until Phase 5.
+- **Open tickets cards always say who is on the ticket.** The board shows a contractor on one card, but managers cannot read service records without `see_costs`, and none exist until Phase 5.
 - **The equipment card on a ticket isn't a link until Phase 4,** when the unit has a page to open.
 - **A ticket's thread rereads every 30 seconds** while it is on screen and when the app comes back to the front, so a reply turns up without a reload. Live updates can wait for push in Phase 3, if the delay matters.
 - **A closed ticket takes no message or photo from a manager,** in the database as well as on screen. Ops keeps the right, for what Phase 3 builds.
@@ -221,18 +221,18 @@ The ops managers can run their day in the app: see every restaurant's open work,
 
 **Ships**
 
-- Ops dashboard: Open and Closed tabs, All / Mine segments, the filter sheet (status, urgent, walkthrough only, area, category, sort) with chips, cards with restaurant color squares, walkthrough tags and assignee initials; the restaurant picker (All restaurants plus each one) that scopes every Ops screen
-- Ops ticket detail: status and assignee dropdowns, description, equipment card, service and cost section (empty until Phase 5), updates thread with the internal-note toggle ("Visible to restaurant"), composer
+- Ops dashboard: Open and Closed tabs, the filter sheet (status, urgent, walkthrough only, area, category, sort) with chips, cards with restaurant color squares, walkthrough tags and a badge naming who is working on the ticket; the restaurant picker (All restaurants plus each one) that scopes every Ops screen
+- Ops ticket detail: the status dropdown, description, equipment card, service and cost section (empty until Phase 5), updates thread with the internal-note toggle ("Visible to restaurant"), composer
 - Closed tab grouped by month with totals; closed ticket detail
 - Reopened ticket: the Start work sheet (note, assigns to you, In progress) and the Close again sheet (required reply to the manager, back to Closed)
-- Push notifications: subscribe on install, store per device, Edge Function `send-push` fired by database triggers for new ticket, assignment, status change, new update visible to the restaurant, reopen. Email fallback for anyone with no subscription. A Notifications section on Profile to turn each kind on or off
+- Push notifications: subscribe on install, store per device, Edge Function `send-push` fired by database triggers for new ticket, status change, new update visible to the restaurant, reopen. Email fallback for anyone with no subscription. A Notifications section on Profile to turn each kind on or off
 - One lasting link per ticket, `/t/<id>`, which opens the right screen for whoever taps it, since `/tickets/:id` is for managers only. A signed-out person goes through sign-in and back, and the link grants nothing: someone who can't see the ticket gets the same refusal as today. Push and email notifications use it, built from the group's own address
 - Share link on a ticket, in the ellipsis menu from OT-33: the phone's share sheet (Messages, Copy and so on), or on a computer it copies the link and confirms. No board draws it
 - Empty states for the dashboard and Closed tab; loading skeleton for the card feed
 
 **Screens from the design:** Ops · Dashboard, Ticket detail, Closed tab, Reopened ticket; Empty · Ops dashboard, Ops closed tab; Loading · card feed skeleton; Error · something went wrong
 
-**Done when:** a manager creates a ticket and the ops manager's phone buzzes; the ops manager assigns it, posts an update the manager sees, closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright runs that whole loop on WebKit.
+**Done when:** a manager creates a ticket and the ops manager's phone buzzes; the ops manager marks it In progress, posts an update the manager sees, closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright runs that whole loop on WebKit.
 
 **Pull requests**
 
@@ -240,8 +240,8 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | --- | --- |
 | OT-36 | Plan update and this split |
 | OT-37 | Ops dashboard: Open tab, All / Mine, the restaurant picker that scopes every Ops screen, cards, empty state, loading skeleton; replaces the ops placeholder in View as |
-| OT-38 | Dashboard filter sheet and chips: status, urgent, walkthrough only, area, category, sort |
-| OT-39 | Ops ticket detail: header, description, equipment card, status and assignee dropdowns, In progress assigns to you, the empty service and cost section |
+| OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category, sort |
+| OT-39 | Ops ticket detail: header, description, equipment card, the status dropdown, marking In progress puts you on it, the empty service and cost section |
 | OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
 | OT-41 | Closed tab grouped by month with totals, its empty state, closed ticket detail |
 | OT-42 | Reopened ticket: the Start work and Close again sheets |
@@ -249,16 +249,18 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
 | OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link |
+| OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-47 | The done test as one flow; the phase note |
 
 **What this phase has to work around**
 
-- **Open and All don't count reopened tickets,** as the board has it: they show on top of the list, and the Closed tab's badge counts them. Mine shows a reopened ticket that's yours. The dashboard rereads every 30 seconds, so a new ticket turns up on its own before push arrives. The picker's choice is remembered per person on the device.
+- **Nobody assigns a ticket (from feedback, Nov 1, 2026; OT-48).** A ticket is Open until an Ops manager marks it In progress, which puts them on it. Every Ops manager sees every ticket, with a badge naming who is on it. This replaces what the boards draw: the Unassigned pill, the assignee dropdown, All / Mine and the initials in the card's corner. `assignee_id` stays as who is working on it, so the thread and history still say who. Handing over is settled in OT-39: by default, anyone marking a ticket In progress takes it, and moving it back to Open takes the person off.
+- **Open doesn't count reopened tickets,** as the board has it: they show on top of the list, and the Closed tab's badge counts them. The dashboard rereads every 30 seconds, so a new ticket turns up on its own before push arrives. The picker's choice is remembered per person on the device.
 - **Links to later phases stay off for now.** Log service waits for Phase 5, so the service and cost section stays empty and has no button. The equipment card opens nothing until Phase 4, and From October walkthrough opens nothing until Phase 6. The Equipment, Walkthroughs and Contractors tabs stay placeholders.
 - **Costs are mostly empty until Phase 5.** The Closed tab's month totals and a closed ticket's cost come from service records, which nothing on the live app creates yet, and they need `see_costs`. The seeded stack shows the full boards.
 - **Push needs a change to the service worker.** The one `vite-plugin-pwa` generates today has no push handler, so OT-44 adds one without disturbing the app's update prompt.
 - **`send-push` needs a server-side library that encrypts Web Push and runs on Edge Functions.** OT-44 proves this with a test push to a real phone before any trigger depends on it.
-- **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. An assignment goes to the person assigned. A status change or an update the restaurant can see goes to the person who opened the ticket and the person assigned, and never to whoever did it. A reopen goes to the person assigned, or to all those Ops managers if nobody is. An internal note never reaches a manager, and notifies nobody at this stage.
+- **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. A status change or an update the restaurant can see goes to the person who opened the ticket and the person working on it, and never to whoever did it, so a manager hears when work starts. A reopen goes to whoever last worked on it, or to all those Ops managers if nobody did. An internal note never reaches a manager, and notifies nobody at this stage.
 - **Setup outside the repo:** VAPID keys are new. The private key goes in the hosted project's function secrets, and the public one in the Worker's build variables, so OT-44 lists the steps. The database also needs a way to call `send-push` from a trigger, set up in OT-45.
 - **Playwright can't feel a phone buzz.** The done flow checks that the right people were sent the right notification, and the buzz itself is tried by hand on a real phone. That proves it on Android. iPhone push needs the app installed on a real iPhone, which may be more than BrowserStack can show, so it may wait until someone with an iPhone tries it.
 - **`/t/<id>` has no screen to open for admin and leadership until Phase 7,** when their ticket views arrive. Until then they get the no-access screen, whatever the database would let them read.

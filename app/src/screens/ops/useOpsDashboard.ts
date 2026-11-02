@@ -17,7 +17,7 @@ export function useOpsDashboard(restaurantIds: string[]) {
       const { data, error } = await sb
         .from('tickets')
         .select(
-          'id, display_id, title, status, urgency, source, restaurant_id, assignee_id, updated_at, reopened_at, scheduled_for, category:categories (name, area), assignee:profiles!tickets_assignee_id_fkey (full_name, role)',
+          'id, display_id, title, status, urgency, source, restaurant_id, assignee_id, updated_at, reopened_at, scheduled_for, category:categories (name, area), assignee:profiles!tickets_assignee_id_fkey (full_name)',
         )
         .in('restaurant_id', restaurantIds)
         .neq('status', 'closed')

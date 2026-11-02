@@ -1,6 +1,3 @@
-import type { TicketStatus } from '../../lib/supabase'
-import type { PillStatus } from '../../components/Pill'
-
 /** What the Ops dashboard says about a ticket and how it orders them. */
 
 type Sortable = { urgency: string; activity: string }
@@ -9,11 +6,6 @@ type Sortable = { urgency: string; activity: string }
 export function byUrgency(a: Sortable, b: Sortable) {
   const urgent = Number(b.urgency === 'urgent') - Number(a.urgency === 'urgent')
   return urgent || new Date(b.activity).getTime() - new Date(a.activity).getTime()
-}
-
-/** An open ticket nobody has taken says so; the rest show their status. */
-export function dashboardPill(status: TicketStatus, assigneeId: string | null): PillStatus {
-  return status === 'open' && !assigneeId ? 'unassigned' : status
 }
 
 type ThreadRow = { ticket_id: string; kind: string; body: string | null; created_at: string }

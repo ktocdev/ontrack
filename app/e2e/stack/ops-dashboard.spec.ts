@@ -10,7 +10,6 @@ import { signIn } from './helpers'
 const BERT = 'bert.velilla@example.com'
 const cards = (page: Page) => page.getByRole('link', { name: /OT-\d+/ })
 const card = (page: Page, id: string) => page.getByRole('link', { name: new RegExp(id) })
-const whose = (page: Page) => page.getByRole('radiogroup', { name: 'Whose tickets' })
 
 test('Ops sees the open work: reopened on top, then most urgent, with the boardâ€™s details', async ({
   page,
@@ -30,11 +29,14 @@ test('Ops sees the open work: reopened on top, then most urgent, with the boardâ
   expect(rank).toEqual([...rank].sort())
   expect(rank).toContain(1)
 
-  // An open ticket nobody has says Unassigned.
-  await expect(card(page, 'OT-1044')).toContainText('Unassigned')
+  // Nobody assigns: an open ticket says Open, and every ticket shows who is on it.
+  await expect(card(page, 'OT-1044')).toContainText('Open')
+  await expect(card(page, 'OT-1044')).not.toContainText('Unassigned')
   await expect(card(page, 'OT-1044')).toContainText('Porter')
   await expect(card(page, 'OT-1042')).toContainText('Walkthrough')
-  await expect(card(page, 'OT-1042').getByRole('img', { name: 'Assigned to you' })).toBeVisible()
+  await expect(card(page, 'OT-1042').getByTitle('You are working on this')).toHaveText('You')
+  await expect(page.getByTitle('Chris Novak is working on this').first()).toHaveText('Chris Novak')
+  await expect(page.getByRole('radiogroup', { name: 'Whose tickets' })).toHaveCount(0)
 
   await expect(
     page.getByRole('navigation', { name: 'Ticket status' }).getByLabel(/^\d+ reopened tickets?$/),
@@ -44,15 +46,6 @@ test('Ops sees the open work: reopened on top, then most urgent, with the boardâ
 
   await card(page, 'OT-1042').click()
   await expect(page).toHaveURL(/\/ops\/tickets\/66666666-6666-4666-8666-000000001042$/)
-})
-
-test('Mine shows what is assigned to you', async ({ page }) => {
-  await signIn(page, BERT)
-  await expect(card(page, 'OT-1044')).toBeVisible()
-  await whose(page).getByRole('radio', { name: /^Mine/ }).click()
-  await expect(card(page, 'OT-1042')).toBeVisible()
-  await expect(card(page, 'OT-1044')).toHaveCount(0)
-  await expect(card(page, 'OT-0988')).toBeVisible() // reopened, and Bert's
 })
 
 test('the picker narrows to one restaurant and is remembered', async ({ page }, testInfo) => {
@@ -81,7 +74,6 @@ test('with nothing open it says all caught up and offers closed tickets', async 
   await expect(page.getByRole('heading', { name: 'All caught up' })).toBeVisible()
   await expect(page.getByText(/No open tickets across your \d+ restaurants\./)).toBeVisible()
   await expect(page.getByRole('link', { name: 'Open Â· 0' })).toBeVisible()
-  await expect(whose(page)).toHaveCount(0)
   await page.waitForTimeout(300)
   await testInfo.attach('empty', { body: await page.screenshot(), contentType: 'image/png' })
   await page.getByRole('link', { name: 'View closed tickets' }).click()
@@ -106,7 +98,7 @@ test('View as shows that personâ€™s dashboard, and none of it is a link', async 
   await page.goto('/admin/users/22222222-2222-4222-8222-000000000003/view')
   await expect(page.getByText('Viewing as Bert Velilla')).toBeVisible()
   await expect(page.getByText('OT-1042')).toBeVisible()
-  await expect(page.getByRole('img', { name: 'Assigned to you' }).first()).toBeVisible()
+  await expect(page.getByTitle('You are working on this').first()).toBeVisible()
   await expect(cards(page)).toHaveCount(0)
   await expect(page.getByRole('navigation', { name: 'Ticket status' }).getByRole('link')).toHaveCount(0)
 })

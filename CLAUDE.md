@@ -80,7 +80,7 @@ The JWT carries only the user id. One SQL function `can(action, restaurant_id)` 
 
 Right keys, from the Roles & rights screen: `create_tickets`, `see_all_tickets`, `update_status`, `log_cost`, `see_costs`, `edit_equipment`, `see_contractors`, `set_walkthrough_schedule`, `invite_users`, `manage_rights`. Admin-only actions that are not in the grid (restaurants, memberships) check `is_admin()`.
 
-What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with an optional comment, reopen within 30 days through `reopen_ticket`, which also posts the required reason. A closed ticket takes no message or photo from anyone without `update_status`. Assigning and the other statuses need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
+What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with an optional comment, reopen within 30 days through `reopen_ticket`, which also posts the required reason. A closed ticket takes no message or photo from anyone without `update_status`. Nobody assigns a ticket in the app: `assignee_id` holds who is working on it, set by marking it In progress. Setting it and the other statuses need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
 
 Account creation is invite only at the database level: `handle_new_user` takes role and restaurants from the pending `invites` row whose `token_hash` matches `user_metadata.invite_token` and whose email matches (the accept step of `invite-user` creates the auth user with it, because Supabase Auth's admin API writes `app_metadata` only after the insert, then removes it), or named by `app_metadata.invite_id`, or from `role` and `restaurant_ids` in `app_metadata` (seed, accounts made by hand), and rejects the insert otherwise. Only the service role writes `app_metadata`; an email alone never claims an invite, so the dashboard's Add user no longer creates a profile. Never read privilege from `user_metadata`; clients can write it. The token only proves the link is held; what it grants comes from the invite row. pgTAP inserts into `auth.users` directly, so anything that depends on how Auth creates a user also needs a test in `e2e/stack`. Deactivation (`profiles.deactivated_at`) is enforced inside `has_scope()`, `my_role()` and `can()` and in the own-row write policies, so every policy honors it; the revoke-user function must also ban the auth user so refresh tokens stop working. Keep "Allow new users to sign up" off in the hosted project's Auth settings as defense in depth.
 
@@ -138,14 +138,14 @@ A screen that needs real data can only render against the stack, which runs in C
 
 ## Current phase: 3 · Ops dashboard and ticket work
 
-The plan's Phase 3 section says what ships. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager assigns it, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright checks who was sent what; the buzz itself is tried by hand on a real phone.
+The plan's Phase 3 section says what ships. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager marks it In progress, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright checks who was sent what; the buzz itself is tried by hand on a real phone.
 
 | PR    | Scope |
 | ----- | ----- |
 | OT-36 | Plan update and this split |
 | OT-37 | Ops dashboard: Open tab, All / Mine, the restaurant picker that scopes every Ops screen, cards, empty state, loading skeleton; replaces the ops placeholder in View as |
-| OT-38 | Dashboard filter sheet and chips: status, urgent, walkthrough only, area, category, sort |
-| OT-39 | Ops ticket detail: header, description, equipment card, status and assignee dropdowns, In progress assigns to you, the empty service and cost section |
+| OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category, sort |
+| OT-39 | Ops ticket detail: header, description, equipment card, the status dropdown, marking In progress puts you on it, the empty service and cost section |
 | OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
 | OT-41 | Closed tab grouped by month with totals, its empty state, closed ticket detail |
 | OT-42 | Reopened ticket: the Start work and Close again sheets |
@@ -153,6 +153,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
 | OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link |
+| OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

@@ -38,7 +38,7 @@ describe('the ticket thread', () => {
     )
     expect(items.map((i) => (i.type === 'event' ? [i.text, i.when] : [i.who, i.when, i.mine]))).toEqual([
       ['Opened by you', 'Oct 19, 2026, 9:12 AM'],
-      ['Bert Velilla assigned · status In progress', '9:40 AM'],
+      ['Bert Velilla took this · status In progress', '9:40 AM'],
       ['Bert Velilla, Ops', '1h ago', false],
       ['You', '45m ago', true],
     ])
@@ -59,7 +59,7 @@ describe('the ticket thread', () => {
       names,
       now,
     )
-    expect(items.map((i) => i.type === 'event' && i.text)).toEqual(['Status Waiting on parts', 'Unassigned'])
+    expect(items.map((i) => i.type === 'event' && i.text)).toEqual(['Status Waiting on parts', 'Nobody on this now'])
   })
 
   it('shows what a person wrote with an event as their message', () => {
