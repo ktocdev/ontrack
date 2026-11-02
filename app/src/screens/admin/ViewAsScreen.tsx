@@ -11,6 +11,7 @@ import type { AppRole } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { PlaceholderScreen } from '../placeholder/PlaceholderScreen'
 import { ReportSheet } from '../profile/ReportSheet'
+import { OpsDashboardScreen } from '../ops/OpsDashboardScreen'
 import { OpenTicketsScreen } from '../tickets/OpenTicketsScreen'
 import { useLogViewAs, usePerson } from './useRights'
 
@@ -21,12 +22,8 @@ import { useLogViewAs, usePerson } from './useRights'
  * still answers as the admin. What differs is what useUser() says, which is how
  * screens know whose restaurants to show. A screen that loads data must scope it
  * from useUser(), and one that writes must hide its controls when viewingAs is set.
- * The other home screens are placeholders until their phases replace them here.
+ * Leadership's home is a placeholder until Phase 7 replaces it here.
  */
-const HOME: Record<'ops' | 'leadership', { title: string; phase: string }> = {
-  ops: { title: 'Dashboard', phase: 'Phase 3' },
-  leadership: { title: 'Overview', phase: 'Phase 7' },
-}
 
 export function ViewAsScreen() {
   const { id = '' } = useParams()
@@ -77,8 +74,10 @@ export function ViewAsScreen() {
       <AuthContext.Provider value={viewed}>
         {role === 'manager' ? (
           <OpenTicketsScreen />
+        ) : role === 'ops' ? (
+          <OpsDashboardScreen />
         ) : (
-          <PlaceholderScreen title={HOME[role].title} phase={HOME[role].phase} />
+          <PlaceholderScreen title="Overview" phase="Phase 7" />
         )}
         <TabBar label={tabs.label} items={tabs.items} inert />
       </AuthContext.Provider>

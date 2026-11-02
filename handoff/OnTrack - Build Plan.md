@@ -253,6 +253,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 
 **What this phase has to work around**
 
+- **Open and All don't count reopened tickets,** as the board has it: they show on top of the list, and the Closed tab's badge counts them. Mine shows a reopened ticket that's yours. The dashboard rereads every 30 seconds, so a new ticket turns up on its own before push arrives. The picker's choice is remembered per person on the device.
 - **Links to later phases stay off for now.** Log service waits for Phase 5, so the service and cost section stays empty and has no button. The equipment card opens nothing until Phase 4, and From October walkthrough opens nothing until Phase 6. The Equipment, Walkthroughs and Contractors tabs stay placeholders.
 - **Costs are mostly empty until Phase 5.** The Closed tab's month totals and a closed ticket's cost come from service records, which nothing on the live app creates yet, and they need `see_costs`. The seeded stack shows the full boards.
 - **Push needs a change to the service worker.** The one `vite-plugin-pwa` generates today has no push handler, so OT-44 adds one without disturbing the app's update prompt.

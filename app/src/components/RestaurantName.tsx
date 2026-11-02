@@ -32,10 +32,12 @@ type Props = {
   size?: number
   /** 'label' is the 14px semibold header form; 'meta' the 12px bold form on cards. */
   variant?: 'label' | 'meta' | 'plain'
+  /** A long name takes a second line instead of being cut off. */
+  wrap?: boolean
   className?: string
 }
 
-export function RestaurantName({ name, color, size, variant = 'label', className = '' }: Props) {
+export function RestaurantName({ name, color, size, variant = 'label', wrap = false, className = '' }: Props) {
   const text =
     variant === 'label'
       ? 'text-14 font-semibold text-text'
@@ -46,7 +48,7 @@ export function RestaurantName({ name, color, size, variant = 'label', className
   return (
     <span className={`inline-flex min-w-0 items-center gap-1.5 ${text} ${className}`}>
       <RestaurantSquare color={color} size={sq} />
-      <span className="truncate">{name}</span>
+      <span className={wrap ? 'min-w-0' : 'truncate'}>{name}</span>
     </span>
   )
 }

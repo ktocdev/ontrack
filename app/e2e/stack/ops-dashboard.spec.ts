@@ -1,0 +1,112 @@
+import { expect, test, type Page } from '@playwright/test'
+import { signIn } from './helpers'
+
+/**
+ * Ops · Dashboard against the seed: Bert and Chris cover every restaurant. Other flows
+ * add tickets as they run, so counts here come from what the seed fixes for these
+ * people, or from Porter's and West Loop's lists, which only these specs read.
+ */
+
+const BERT = 'bert.velilla@example.com'
+const cards = (page: Page) => page.getByRole('link', { name: /OT-\d+/ })
+const card = (page: Page, id: string) => page.getByRole('link', { name: new RegExp(id) })
+const whose = (page: Page) => page.getByRole('radiogroup', { name: 'Whose tickets' })
+
+test('Ops sees the open work: reopened on top, then most urgent, with the board’s details', async ({
+  page,
+}, testInfo) => {
+  await signIn(page, BERT)
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+  await expect(page.getByText(/All restaurants \(\d+\)/)).toBeVisible()
+
+  const seeded = card(page, 'OT-0988')
+  await expect(seeded).toContainText('Reopened')
+  await expect(seeded).toContainText('Frost is building on the threshold again')
+  await expect(seeded).toContainText('BOH · Refrigeration · 2h ago')
+
+  // Reopened on top, then urgent, whatever other flows have added.
+  const order = await cards(page).allTextContents()
+  const rank = order.map((t) => (t.includes('Reopened') ? 0 : t.includes('URGENT') ? 1 : 2))
+  expect(rank).toEqual([...rank].sort())
+  expect(rank).toContain(1)
+
+  // An open ticket nobody has says Unassigned.
+  await expect(card(page, 'OT-1044')).toContainText('Unassigned')
+  await expect(card(page, 'OT-1044')).toContainText('Porter')
+  await expect(card(page, 'OT-1042')).toContainText('Walkthrough')
+  await expect(card(page, 'OT-1042').getByRole('img', { name: 'Assigned to you' })).toBeVisible()
+
+  await expect(
+    page.getByRole('navigation', { name: 'Ticket status' }).getByLabel(/^\d+ reopened tickets?$/),
+  ).toBeVisible()
+  await page.waitForTimeout(300)
+  await testInfo.attach('dashboard', { body: await page.screenshot(), contentType: 'image/png' })
+
+  await card(page, 'OT-1042').click()
+  await expect(page).toHaveURL(/\/ops\/tickets\/66666666-6666-4666-8666-000000001042$/)
+})
+
+test('Mine shows what is assigned to you', async ({ page }) => {
+  await signIn(page, BERT)
+  await expect(card(page, 'OT-1044')).toBeVisible()
+  await whose(page).getByRole('radio', { name: /^Mine/ }).click()
+  await expect(card(page, 'OT-1042')).toBeVisible()
+  await expect(card(page, 'OT-1044')).toHaveCount(0)
+  await expect(card(page, 'OT-0988')).toBeVisible() // reopened, and Bert's
+})
+
+test('the picker narrows to one restaurant and is remembered', async ({ page }, testInfo) => {
+  await signIn(page, BERT)
+  await page.getByRole('button', { name: /All restaurants \(\d+\)/ }).click()
+  await page.waitForTimeout(200)
+  await testInfo.attach('picker', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.getByRole('menuitemradio', { name: 'Porter' }).click()
+
+  await expect(card(page, 'OT-1044')).toBeVisible()
+  await expect(card(page, 'OT-1042')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Porter', exact: true })).toBeVisible()
+
+  await page.reload()
+  await expect(card(page, 'OT-1044')).toBeVisible()
+  await expect(card(page, 'OT-1042')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Porter', exact: true }).click()
+  await page.getByRole('menuitemradio', { name: /^All restaurants/ }).click()
+  await expect(card(page, 'OT-1042')).toBeVisible()
+})
+
+test('with nothing open it says all caught up and offers closed tickets', async ({ page }, testInfo) => {
+  await page.route('**/rest/v1/tickets*', (route) => route.fulfill({ json: [] }))
+  await signIn(page, BERT)
+  await expect(page.getByRole('heading', { name: 'All caught up' })).toBeVisible()
+  await expect(page.getByText(/No open tickets across your \d+ restaurants\./)).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Open · 0' })).toBeVisible()
+  await expect(whose(page)).toHaveCount(0)
+  await page.waitForTimeout(300)
+  await testInfo.attach('empty', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.getByRole('link', { name: 'View closed tickets' }).click()
+  await expect(page).toHaveURL(/\/ops\/closed$/)
+  await expect(page.getByRole('link', { name: 'Dashboard', exact: true })).toHaveAttribute('aria-current', 'page')
+})
+
+test('a failed load offers Try again', async ({ page }) => {
+  let fail = true
+  await page.route('**/rest/v1/tickets*', (route) =>
+    fail ? route.fulfill({ status: 500, json: { message: 'nope' } }) : route.continue(),
+  )
+  await signIn(page, BERT)
+  await expect(page.getByRole('heading', { name: "We couldn't load the dashboard" })).toBeVisible()
+  fail = false
+  await page.getByRole('button', { name: 'Try again' }).click()
+  await expect(card(page, 'OT-1042')).toBeVisible()
+})
+
+test('View as shows that person’s dashboard, and none of it is a link', async ({ page }) => {
+  await signIn(page, 'admin@example.com')
+  await page.goto('/admin/users/22222222-2222-4222-8222-000000000003/view')
+  await expect(page.getByText('Viewing as Bert Velilla')).toBeVisible()
+  await expect(page.getByText('OT-1042')).toBeVisible()
+  await expect(page.getByRole('img', { name: 'Assigned to you' }).first()).toBeVisible()
+  await expect(cards(page)).toHaveCount(0)
+  await expect(page.getByRole('navigation', { name: 'Ticket status' }).getByRole('link')).toHaveCount(0)
+})
