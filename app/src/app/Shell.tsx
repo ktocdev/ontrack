@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { Outlet } from 'react-router'
 import { TabBar } from '../components/TabBar'
 import { useUser } from '../auth/context'
+import { syncPush } from '../pwa/push'
 import { ROLE_TABS } from './roles'
 
 /**
@@ -12,6 +13,8 @@ import { ROLE_TABS } from './roles'
 export function Shell() {
   const { user } = useUser()
   const tabs = ROLE_TABS[user.role]
+  // Nothing depends on this working: a device that misses it just tries again next time.
+  useEffect(() => void syncPush().catch(() => undefined), [user.id])
   return (
     <div className="flex h-dvh flex-col bg-bg text-text">
       <Outlet />

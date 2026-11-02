@@ -117,6 +117,8 @@ export default defineConfig(({ mode }) => {
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/e\//], // QR deep links resolve through the app, not the fallback cache
           cleanupOutdatedCaches: true,
+          // Push lives in its own file, so this generated worker and its update prompt stay as they are.
+          importScripts: ['push-sw.js'],
         },
         devOptions: { enabled: false },
       }),
