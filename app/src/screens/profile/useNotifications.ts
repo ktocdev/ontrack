@@ -5,6 +5,7 @@ import { deviceSubscription, turnOffPush, turnOnPush } from '../../pwa/push'
 import type { AppRole } from '../../lib/supabase'
 
 export type NotificationKind = 'new_ticket' | 'reopened' | 'status_change' | 'update'
+type PrefKind = NotificationKind | 'email'
 
 const KIND = {
   new_ticket: { title: 'New tickets', subtitle: 'When a ticket is created at your restaurants' },
@@ -13,7 +14,7 @@ const KIND = {
   update: { title: 'Updates', subtitle: 'When someone posts on a ticket you opened or are on' },
 } satisfies Record<NotificationKind, { title: string; subtitle: string }>
 
-/** What each role is sent, which OT-45 applies. Admin and leadership aren't sent anything yet. */
+/** What each role is sent, which notification_recipients applies. Admin and leadership aren't sent anything yet. */
 const KINDS_FOR: Record<AppRole, NotificationKind[]> = {
   ops: ['new_ticket', 'reopened', 'status_change', 'update'],
   manager: ['status_change', 'update'],
@@ -65,7 +66,7 @@ export function useNotificationPrefs() {
     },
   })
   const set = useMutation({
-    mutationFn: async ({ kind, enabled }: { kind: NotificationKind; enabled: boolean }) => {
+    mutationFn: async ({ kind, enabled }: { kind: PrefKind; enabled: boolean }) => {
       const { error } = await requireSupabase()
         .from('notification_prefs')
         .upsert({ user_id: user.id, kind, enabled, updated_at: new Date().toISOString() })
