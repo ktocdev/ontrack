@@ -90,6 +90,11 @@ export const IconEllipsis = (p: IconProps) => (
     <path d="M5 12h.01M12 12h.01M19 12h.01" />
   </svg>
 )
+export const IconGrip = (p: IconProps) => (
+  <svg {...base(p, 2.6)}>
+    <path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" />
+  </svg>
+)
 export const IconTrash = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />

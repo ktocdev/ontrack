@@ -21,3 +21,12 @@ export function groupByRestaurant<T extends { restaurant_id: string }, R extends
     .map((restaurant) => ({ restaurant, tickets: tickets.filter((t) => t.restaurant_id === restaurant.id) }))
     .filter((group) => group.tickets.length > 0)
 }
+
+/**
+ * The restaurants in the order a person chose. Any they haven't placed, like one added
+ * since, keep the group's order after the rest, and ids no longer in the list drop out.
+ */
+export function inChosenOrder<R extends { id: string }>(restaurants: R[], chosen: string[]) {
+  const placed = chosen.flatMap((id) => restaurants.filter((r) => r.id === id))
+  return [...placed, ...restaurants.filter((r) => !chosen.includes(r.id))]
+}

@@ -26,7 +26,8 @@ export default defineConfig({
   webServer: {
     // The e2e build signs in from a role picker instead of Supabase.
     command: 'npm run build && npm run preview',
-    env: { VITE_E2E_MOCK: '1' },
+    // No backend, whatever a local .env says: real variables outrank that file.
+    env: { VITE_E2E_MOCK: '1', VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' },
     port: PORT,
     reuseExistingServer: !CI,
     timeout: 180_000,

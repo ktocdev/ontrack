@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { byPriority, groupByRestaurant } from './dashboard'
+import { byPriority, groupByRestaurant, inChosenOrder } from './dashboard'
 
 describe('byPriority', () => {
   const ticket = (id: string, urgency: string, area: string | null, created_at: string) => ({
@@ -54,5 +54,22 @@ describe('groupByRestaurant', () => {
 
   it('leaves out a restaurant that isn’t in the list', () => {
     expect(groupByRestaurant(tickets, [{ id: 'a' }]).map((g) => g.restaurant.id)).toEqual(['a'])
+  })
+})
+
+describe('inChosenOrder', () => {
+  const restaurants = [{ id: 'a' }, { id: 'b' }, { id: 'c' }]
+  const ids = (chosen: string[]) => inChosenOrder(restaurants, chosen).map((r) => r.id)
+
+  it('keeps the group’s order with nothing chosen', () => {
+    expect(ids([])).toEqual(['a', 'b', 'c'])
+  })
+
+  it('follows what was chosen', () => {
+    expect(ids(['c', 'a', 'b'])).toEqual(['c', 'a', 'b'])
+  })
+
+  it('puts a restaurant added since after the rest, and drops one that is gone', () => {
+    expect(ids(['c', 'gone', 'a'])).toEqual(['c', 'a', 'b'])
   })
 })
