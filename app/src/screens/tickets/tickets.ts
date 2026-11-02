@@ -37,10 +37,9 @@ export function scheduledLabel(date: string, now = new Date()) {
   return `Scheduled ${day.toLocaleDateString('en-US', format)}`
 }
 
-/** Reopened first, since they came back; then the most recent activity. */
-export function byAttention(a: Times, b: Times) {
-  const reopened = Number(b.status === 'reopened') - Number(a.status === 'reopened')
-  return reopened || new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+/** The most recent activity first. A reopened ticket gets no special place. */
+export function byActivity(a: { updated_at: string }, b: { updated_at: string }) {
+  return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
 }
 
 /** Whether a search matches any of these, ignoring case. */

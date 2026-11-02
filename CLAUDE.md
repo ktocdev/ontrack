@@ -80,7 +80,7 @@ The JWT carries only the user id. One SQL function `can(action, restaurant_id)` 
 
 Right keys, from the Roles & rights screen: `create_tickets`, `see_all_tickets`, `update_status`, `log_cost`, `see_costs`, `edit_equipment`, `see_contractors`, `set_walkthrough_schedule`, `invite_users`, `manage_rights`. Admin-only actions that are not in the grid (restaurants, memberships) check `is_admin()`.
 
-What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with an optional comment, reopen within 30 days through `reopen_ticket`, which also posts the required reason. A closed ticket takes no message or photo from anyone without `update_status`. Nobody assigns a ticket in the app: `assignee_id` holds who is working on it, set through `set_ticket_status` and `take_ticket`, which need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
+What a manager may do to a ticket is enforced by the `tickets_guard` trigger, not by the app: edit text while open, close with an optional comment, reopen within 30 days through `reopen_ticket`, which also posts the required reason. A reopened ticket acts like a new one apart from its badge: the guard takes off the assignee and any date, and Ops has no separate steps for it. A closed ticket takes no message or photo from anyone without `update_status`. Nobody assigns a ticket in the app: `assignee_id` holds who is working on it, set through `set_ticket_status` and `take_ticket`, which need `update_status`. System events in the thread come from the `tickets_log_events` trigger; people insert `message` rows only.
 
 Account creation is invite only at the database level: `handle_new_user` takes role and restaurants from the pending `invites` row whose `token_hash` matches `user_metadata.invite_token` and whose email matches (the accept step of `invite-user` creates the auth user with it, because Supabase Auth's admin API writes `app_metadata` only after the insert, then removes it), or named by `app_metadata.invite_id`, or from `role` and `restaurant_ids` in `app_metadata` (seed, accounts made by hand), and rejects the insert otherwise. Only the service role writes `app_metadata`; an email alone never claims an invite, so the dashboard's Add user no longer creates a profile. Never read privilege from `user_metadata`; clients can write it. The token only proves the link is held; what it grants comes from the invite row. pgTAP inserts into `auth.users` directly, so anything that depends on how Auth creates a user also needs a test in `e2e/stack`. Deactivation (`profiles.deactivated_at`) is enforced inside `has_scope()`, `my_role()` and `can()` and in the own-row write policies, so every policy honors it; the revoke-user function must also ban the auth user so refresh tokens stop working. Keep "Allow new users to sign up" off in the hosted project's Auth settings as defense in depth.
 
@@ -148,7 +148,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-39 | Ops ticket detail: header, description, photos, equipment card, the status dropdown, marking In progress puts you on it, Take this over, a date for Scheduled |
 | OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
 | OT-41 | Closed tickets, opened from the dashboard's menu: grouped by month with totals, its empty state, closed ticket detail |
-| OT-42 | Reopened ticket, opened from its card on the dashboard: the Start work and Close again sheets |
+| OT-42 | Dropped from feedback (Nov 2, 2026): a reopened ticket has no screen or sheets of its own; see OT-52 |
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
@@ -157,6 +157,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
 | OT-51 | From feedback: a reopened ticket is on the dashboard and not in Closed tickets; the Ops message box hidden until Add update; no "Nobody has this yet" note |
+| OT-52 | From feedback: a reopened ticket acts like a new one apart from its badge, with nobody on it and no date |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { activityLine, ago, byAttention, matchesSearch, scheduledLabel } from './tickets'
+import { activityLine, ago, byActivity, matchesSearch, scheduledLabel } from './tickets'
 
 const now = new Date('2026-10-29T12:00:00')
 const before = (ms: number) => new Date(now.getTime() - ms).toISOString()
@@ -40,17 +40,10 @@ describe('ticket times', () => {
 })
 
 describe('finding tickets', () => {
-  it('puts reopened first, then the most recent', () => {
-    const t = (status: 'open' | 'reopened', hours: number) => ({
-      status,
-      created_at: before(99 * HOUR),
-      updated_at: before(hours * HOUR),
-      reopened_at: null,
-    })
-    const reopened = t('reopened', 2)
-    const recent = t('open', 1)
-    const older = t('open', 3)
-    expect([older, recent, reopened].sort(byAttention)).toEqual([reopened, recent, older])
+  it('puts the most recent first, reopened or not', () => {
+    const t = (hours: number) => ({ updated_at: before(hours * HOUR) })
+    const [recent, middle, older] = [t(1), t(2), t(5)]
+    expect([older, recent, middle].sort(byActivity)).toEqual([recent, middle, older])
   })
 
   it('searches any field, ignoring case and empty values', () => {

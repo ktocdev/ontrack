@@ -347,7 +347,7 @@ export function KitPage() {
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
               <Notice tone="waiting">
-                <b>Reopened and sent to Bert Velilla.</b> It&apos;s back on the Ops list.
+                <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list.
               </Notice>
               <Button variant="tall" icon={<IconReopen size={20} />}>
                 Reopen ticket

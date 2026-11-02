@@ -37,7 +37,7 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
  * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
  * optional comment, then goes back to the dashboard.
- * A closed ticket has its own screen. A reopened ticket's comes in OT-42.
+ * A closed ticket has its own screen. A reopened ticket is an ordinary one here.
  */
 const OPTIONS: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled']
 

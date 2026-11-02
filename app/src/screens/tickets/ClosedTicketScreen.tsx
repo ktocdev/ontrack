@@ -109,7 +109,7 @@ export function ClosedTicketScreen({
         </div>
         {reopened !== null && (
           <Notice tone="waiting">
-            <b>Reopened and sent to {ticket.assignee?.full_name ?? 'Ops'}.</b> It&apos;s back on the Ops list.
+            <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list.
           </Notice>
         )}
         <h2 className="-mt-1 font-display text-26 font-bold leading-[1.2] tracking-[-0.02em]">{ticket.title}</h2>
