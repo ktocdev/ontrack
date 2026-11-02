@@ -144,7 +144,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | ----- | ----- |
 | OT-36 | Plan update and this split |
 | OT-37 | Ops dashboard: Open tab, All / Mine, the restaurant picker that scopes every Ops screen, cards, empty state, loading skeleton; replaces the ops placeholder in View as |
-| OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category, sort |
+| OT-38 | Dashboard filter sheet and chips: status (Open, In progress, Waiting on parts, Scheduled), urgent, walkthrough only, area, category |
 | OT-39 | Ops ticket detail: header, description, equipment card, the status dropdown, marking In progress puts you on it, the empty service and cost section |
 | OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
 | OT-41 | Closed tickets, opened from the dashboard's menu: grouped by month with totals, its empty state, closed ticket detail |

@@ -17,8 +17,9 @@ import { useRestaurantScope } from './useRestaurantScope'
 /**
  * Ops · Dashboard (from design/screens/Ops-Dashboard, Empty-Ops-Dashboard, simplified
  * from feedback). The open work under each restaurant's label, since an Ops manager
- * goes from one restaurant to the next through the day. Under each label, reopened
- * tickets come first, then most urgent. Nobody assigns a ticket: it is picked up by
+ * goes from one restaurant to the next through the day. Under each label, urgent is
+ * always on top, then Front of House before Back, then the oldest, and the time on a
+ * card is how long ago it was opened, so the order can be read. Nobody assigns a ticket: it is picked up by
  * marking it In progress, and a badge says who is on it. Closed tickets are in the menu
  * by the title, as on a manager's Open tickets. The filter sheet comes in OT-38. Under
  * View as, nothing leads anywhere.
@@ -108,7 +109,7 @@ export function OpsDashboardScreen() {
                     meta={[
                       t.category && AREA_SHORT[t.category.area],
                       t.category?.name,
-                      ago(new Date(t.activity), new Date()),
+                      ago(new Date(t.created_at), new Date()),
                     ]
                       .filter(Boolean)
                       .join(' · ')}

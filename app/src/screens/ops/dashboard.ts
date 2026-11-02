@@ -1,12 +1,12 @@
 /** How the Ops dashboard orders and groups its tickets. */
 
-type Sortable = { status: string; urgency: string; activity: string }
+type Sortable = { urgency: string; created_at: string; category: { area: string } | null }
 
-/** Reopened first, since they came back; then urgent; then the most recent activity. */
-export function byAttention(a: Sortable, b: Sortable) {
-  const reopened = Number(b.status === 'reopened') - Number(a.status === 'reopened')
+/** Urgent always on top, then Front of House before Back, then whatever has waited longest. */
+export function byPriority(a: Sortable, b: Sortable) {
   const urgent = Number(b.urgency === 'urgent') - Number(a.urgency === 'urgent')
-  return reopened || urgent || new Date(b.activity).getTime() - new Date(a.activity).getTime()
+  const front = Number(b.category?.area === 'foh') - Number(a.category?.area === 'foh')
+  return urgent || front || new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
 }
 
 /**

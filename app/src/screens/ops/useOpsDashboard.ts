@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { requireSupabase } from '../../lib/supabase'
-import { byAttention } from './dashboard'
+import { byPriority } from './dashboard'
 
 /**
  * Ops · Dashboard. Everything not closed at the restaurants passed in. The caller
@@ -16,12 +16,12 @@ export function useOpsDashboard(restaurantIds: string[]) {
       const { data, error } = await requireSupabase()
         .from('tickets')
         .select(
-          'id, display_id, title, status, urgency, source, restaurant_id, assignee_id, updated_at, reopened_at, scheduled_for, category:categories (name, area), assignee:profiles!tickets_assignee_id_fkey (full_name)',
+          'id, display_id, title, status, urgency, source, restaurant_id, assignee_id, created_at, scheduled_for, category:categories (name, area), assignee:profiles!tickets_assignee_id_fkey (full_name)',
         )
         .in('restaurant_id', restaurantIds)
         .neq('status', 'closed')
       if (error) throw error
-      return data.map((t) => ({ ...t, activity: t.reopened_at ?? t.updated_at })).sort(byAttention)
+      return data.sort(byPriority)
     },
   })
 }

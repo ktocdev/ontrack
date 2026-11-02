@@ -29,15 +29,15 @@ test('Ops sees the open work under each restaurant, with the details on each car
   await expect(group(page, 'Porter').getByRole('link', { name: /OT-1044/ })).toBeVisible()
   await expect(group(page, 'Porter').getByRole('link', { name: /OT-1042/ })).toHaveCount(0)
 
-  // Within a restaurant: reopened, then urgent, whatever other flows have added.
+  // Within a restaurant: urgent on top, then Front, then Back, whatever other flows have added.
   const logan = await group(page, 'Federale’s Logan Square').getByRole('link').allTextContents()
-  const rank = logan.map((t) => (t.includes('Reopened') ? 0 : t.includes('URGENT') ? 1 : 2))
+  const rank = logan.map((t) => (t.includes('URGENT') ? 0 : t.includes('FOH') ? 1 : 2))
   expect(rank).toEqual([...rank].sort())
-  expect(rank[0]).toBe(0)
+  expect(new Set(rank)).toEqual(new Set([0, 1, 2]))
 
-  // A reopened ticket is an ordinary card with its pill.
+  // A reopened ticket is an ordinary card with its pill, and says when it was opened.
   await expect(card(page, 'OT-0988')).toContainText('Reopened')
-  await expect(card(page, 'OT-0988')).toContainText('BOH · Refrigeration · 2h ago')
+  await expect(card(page, 'OT-0988')).toContainText(/BOH · Refrigeration · \d+d ago/)
 
   // Nobody assigns: an open ticket says Open, and every ticket shows who is on it.
   await expect(card(page, 'OT-1044')).toContainText('Open')

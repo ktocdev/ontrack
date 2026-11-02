@@ -1,22 +1,39 @@
 import { describe, expect, it } from 'vitest'
-import { byAttention, groupByRestaurant } from './dashboard'
+import { byPriority, groupByRestaurant } from './dashboard'
 
-describe('byAttention', () => {
-  it('puts reopened first, then urgent, then the most recent activity', () => {
+describe('byPriority', () => {
+  const ticket = (id: string, urgency: string, area: string | null, created_at: string) => ({
+    id,
+    urgency,
+    created_at,
+    category: area ? { area } : null,
+  })
+
+  it('puts urgent on top, then Front before Back, then the oldest', () => {
     const list = [
-      { id: 'old-normal', status: 'open', urgency: 'normal', activity: '2026-10-01T10:00:00Z' },
-      { id: 'old-urgent', status: 'open', urgency: 'urgent', activity: '2026-10-01T10:00:00Z' },
-      { id: 'new-normal', status: 'open', urgency: 'normal', activity: '2026-10-02T10:00:00Z' },
-      { id: 'new-urgent', status: 'open', urgency: 'urgent', activity: '2026-10-02T10:00:00Z' },
-      { id: 'reopened', status: 'reopened', urgency: 'normal', activity: '2026-09-01T10:00:00Z' },
+      ticket('back-new', 'normal', 'boh', '2026-10-05T10:00:00Z'),
+      ticket('front-new', 'normal', 'foh', '2026-10-04T10:00:00Z'),
+      ticket('back-old', 'normal', 'boh', '2026-10-01T10:00:00Z'),
+      ticket('urgent-back', 'urgent', 'boh', '2026-10-06T10:00:00Z'),
+      ticket('front-old', 'normal', 'foh', '2026-10-02T10:00:00Z'),
+      ticket('urgent-front', 'urgent', 'foh', '2026-10-07T10:00:00Z'),
     ]
-    expect([...list].sort(byAttention).map((t) => t.id)).toEqual([
-      'reopened',
-      'new-urgent',
-      'old-urgent',
-      'new-normal',
-      'old-normal',
+    expect([...list].sort(byPriority).map((t) => t.id)).toEqual([
+      'urgent-front',
+      'urgent-back',
+      'front-old',
+      'front-new',
+      'back-old',
+      'back-new',
     ])
+  })
+
+  it('counts a ticket with no category after Front', () => {
+    const list = [
+      ticket('none', 'normal', null, '2026-10-01T10:00:00Z'),
+      ticket('front', 'normal', 'foh', '2026-10-02T10:00:00Z'),
+    ]
+    expect([...list].sort(byPriority).map((t) => t.id)).toEqual(['front', 'none'])
   })
 })
 

@@ -16,7 +16,7 @@ type Props = {
   statusLabel?: string
   urgent?: boolean
   walkthrough?: boolean
-  /** Area, category and when. */
+  /** Area, category and how long ago it was opened. */
   meta: string
   /** Who is working on it. */
   worker?: { name: string; mine: boolean } | null
