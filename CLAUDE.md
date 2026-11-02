@@ -30,7 +30,7 @@ app/                 the PWA
 supabase/
   migrations/        one file per change; the first eight are types, org+access (can()), equipment, tickets,
                      service+money, walkthroughs, views, storage
-  functions/         Edge Functions: invite-user, revoke-user, reset-two-step, send-email, test-push, _shared/
+  functions/         Edge Functions: invite-user, revoke-user, reset-two-step, send-email, test-push, send-push, _shared/
   seed.sql           the design's sample data; fixed ids (see the header)
   tests/database/    pgTAP, one file per concern, run by `supabase test db`
   config.toml        local stack; invite-only signup, 12-char passwords, TOTP on
@@ -98,6 +98,8 @@ Ticket photos live under `<ticket id>/` in `ticket-photos`, and the file follows
 
 Push: one `push_subscriptions` row per device, saved through `save_push_subscription`, which hands a device to whoever signed in last. A function posts to the stored endpoint with no further check, so the table's constraint accepts only the browsers' own push services. Keys come from `app/scripts/vapid.mjs`: `VAPID_KEYS` is a function secret and `VITE_VAPID_PUBLIC_KEY` a Worker build variable, and the local pair in `config.toml` is a throwaway. `public/push-sw.js` is imported by the generated service worker. Playwright blocks service workers, so flow tests stub the browser's side, and a push to a real phone is tried by hand.
 
+Notifications: a trigger on `ticket_updates` writes one `notifications` row per event, and `notification_recipients` is the one place that says who gets what, tested in pgTAP. `send-push` is called by the database through `pg_net` with a shared secret, takes nothing from the request, and logs each send in `notification_deliveries`, which `e2e/stack` reads. The vault needs `send_push_url` and `send_push_secret` once per project (the migration's header has the SQL), with the same secret as the `SEND_PUSH_SECRET` function secret; until then rows wait, and any older than a day are dropped.
+
 In-house tasks are added by insert and changed only through `set_inhouse_fix_done` and `delete_inhouse_fix`. Unlike the archive and delete reference, these two are `security definer` and check `can('create_tickets')` themselves, because a manager can't write `audit_log` and a delete the API could reach directly would skip the log. A delete removes the row, only while the task is open.
 
 Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
@@ -153,7 +155,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-42 | Dropped from feedback (Nov 2, 2026): a reopened ticket has no screen or sheets of its own; see OT-52 |
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
-| OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
+| OT-45 | `send-push`: an outbox written by a database trigger for each kind, who gets what, email on by default as well as push, links through `/t/<id>` |
 | OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
@@ -211,7 +213,7 @@ Done when an admin invites a manager from a phone, the manager sets up the accou
 | OT-22 | 2-step audit fixes: signed-out visitors run no database functions, checked in CI |
 | OT-23 | Fixes from trying Phase 1 live: no near-color warning, Edit restaurant, signing back in after Sign out goes home, a refresh says Loading, no fallback email sender |
 
-Email goes through Resend. `EMAIL_FROM` names the sender, on a domain verified with Resend; there is no fallback, so without it sending fails and the function log says why. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM`, `SUPPORT_EMAIL` and `VAPID_KEYS`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite and reset links from there.
+Email goes through Resend. `EMAIL_FROM` names the sender, on a domain verified with Resend; there is no fallback, so without it sending fails and the function log says why. Function secrets live in the hosted project (Edge Functions, Secrets): `RESEND_API_KEY`, `APP_URL`, `EMAIL_FROM`, `SUPPORT_EMAIL`, `VAPID_KEYS` and `SEND_PUSH_SECRET`. Locally, `config.toml` sends mail to the stack's Mailpit inbox (http://127.0.0.1:54324), and `e2e/stack` reads the invite and reset links from there.
 
 Auth's own emails are set per project: `supabase/templates/` is what `config.toml` uses locally, and the hosted project needs the same files pasted in (Authentication, Emails), since no deploy pushes them, along with the 1800-second email OTP expiry and the password-changed notification. The reset template's link carries `token_hash` in its fragment, and the app spends it when `/reset/new` opens, so a mail scanner fetching the link cannot use it up. Only that link opens the new-password form.
 
