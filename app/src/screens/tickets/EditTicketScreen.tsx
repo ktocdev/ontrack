@@ -17,7 +17,8 @@ import { IconChevronLeft } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { longDate } from './closed'
 import { AREA_LABEL, scheduledLabel } from './tickets'
-import { useCloseTicket, useSaveTicket, type TicketEdits } from './useCloseTicket'
+import { CloseTicketSheet } from './CloseTicketSheet'
+import { useSaveTicket, type TicketEdits } from './useCloseTicket'
 import { useTicketForm } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
 import { useTicket } from './useTicket'
@@ -63,7 +64,6 @@ function EditForm({
   const toast = useToast()
   const queryClient = useQueryClient()
   const save = useSaveTicket(ticket.id)
-  const close = useCloseTicket(ticket.id)
   const picked = usePickedPhotos()
   const units = useTicketForm(ticket.category_id, ticket.restaurant_id)
 
@@ -73,7 +73,6 @@ function EditForm({
   const [equipmentId, setEquipmentId] = useState(ticket.equipment_id)
   const [choosing, setChoosing] = useState(false)
   const [closing, setClosing] = useState(false)
-  const [comment, setComment] = useState('')
 
   const closed = closedNote !== null
   const list = units.data?.equipment ?? []
@@ -101,17 +100,6 @@ function EditForm({
         },
       },
     )
-
-  const confirmClose = () => {
-    const note = comment.trim()
-    close.mutate(note, {
-      onSuccess: () => {
-        onClosed(note)
-        setClosing(false)
-        void queryClient.invalidateQueries({ queryKey: ['ticket', ticket.id] })
-      },
-    })
-  }
 
   return (
     <Screen>
@@ -261,34 +249,17 @@ function EditForm({
         <Button onClick={() => setChoosing(false)}>Done</Button>
       </Sheet>
 
-      <Sheet
+      <CloseTicketSheet
+        ticketId={ticket.id}
+        displayId={ticket.display_id ?? ''}
         open={closing}
-        onOpenChange={(open) => {
-          if (!open) close.reset()
-          setClosing(open)
+        onOpenChange={setClosing}
+        onClosed={(note) => {
+          onClosed(note)
+          setClosing(false)
+          void queryClient.invalidateQueries({ queryKey: ['ticket', ticket.id] })
         }}
-        title={`Close ${ticket.display_id}?`}
-        description="Ops will see this ticket as closed."
-      >
-        <Textarea
-          label="Comment"
-          optional
-          placeholder="e.g. Tech replaced the compressor relay, holding 37°F"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        {close.isError && (
-          <span role="alert" className="text-13 font-semibold text-danger">
-            That didn&apos;t go through. Check your connection and try again.
-          </span>
-        )}
-        <Button loading={close.isPending} onClick={confirmClose}>
-          Close ticket
-        </Button>
-        <Button variant="secondary" onClick={() => setClosing(false)}>
-          Cancel
-        </Button>
-      </Sheet>
+      />
     </Screen>
   )
 }

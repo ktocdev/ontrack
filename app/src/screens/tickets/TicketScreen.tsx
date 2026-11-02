@@ -11,9 +11,11 @@ import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { Spinner } from '../../components/Skeleton'
 import { Composer } from '../../components/Thread'
 import { TicketMenu } from '../../components/TicketMenu'
-import { IconChevronLeft, IconEdit, IconWrench } from '../../components/icons'
+import { useToast } from '../../components/Toast'
+import { IconChevronLeft, IconWrench } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ClosedTicketScreen } from './ClosedTicketScreen'
+import { CloseTicketSheet } from './CloseTicketSheet'
 import { threadItems } from './thread'
 import { ThreadFeed } from './ThreadFeed'
 import { scheduledLabel } from './tickets'
@@ -24,8 +26,9 @@ import { usePostUpdate, useTicket } from './useTicket'
  * Manager · Ticket (design/screens/Ticket): the header with the status, the title and
  * where it is, the description, its photos and equipment, then the updates and the
  * composer. The equipment card opens the unit once Phase 4 builds that page. A photo
- * opens large when tapped, which has no board. A closed ticket has its own screen,
- * which stays up after reopening it until the person leaves.
+ * opens large when tapped, which has no board. Edit, Close and Share are in the header's
+ * menu instead of the board's Edit link, which left the header too crowded. A closed ticket
+ * has its own screen, which stays up after reopening it until the person leaves.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
@@ -42,6 +45,8 @@ export function TicketScreen() {
   const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
   const queryClient = useQueryClient()
   const [reopened, setReopened] = useState<{ note: string; shown: NonNullable<typeof data> } | null>(null)
+  const [closing, setClosing] = useState(false)
+  const toast = useToast()
 
   if (isPending) {
     return (
@@ -99,7 +104,7 @@ export function TicketScreen() {
         >
           <IconChevronLeft size={22} />
         </Link>
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="font-mono text-13 text-text-secondary">{ticket.display_id}</span>
           <StatusPill
             status={ticket.status}
@@ -108,15 +113,27 @@ export function TicketScreen() {
             }
           />
         </div>
-        <Link
-          to={`/tickets/${ticket.id}/edit`}
-          className="flex min-h-tap flex-none items-center gap-1.5 px-2.5 text-15 font-semibold no-underline"
-        >
-          <IconEdit size={17} />
-          Edit
-        </Link>
-        <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />
+        <TicketMenu
+          id={ticket.id}
+          displayId={ticket.display_id ?? ''}
+          title={ticket.title}
+          items={[
+            { to: `/tickets/${ticket.id}/edit`, label: 'Edit ticket' },
+            { onSelect: () => setClosing(true), label: 'Close ticket' },
+          ]}
+        />
       </div>
+      <CloseTicketSheet
+        ticketId={ticket.id}
+        displayId={ticket.display_id ?? ''}
+        open={closing}
+        onOpenChange={setClosing}
+        onClosed={() => {
+          setClosing(false)
+          toast.show(`${ticket.display_id} closed.`)
+          void queryClient.invalidateQueries({ queryKey: ['ticket', id] })
+        }}
+      />
 
       <ScreenBody ref={body} className="gap-3 pb-4 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
         <div className="flex flex-none flex-col items-start gap-1.5">

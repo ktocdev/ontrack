@@ -6,7 +6,7 @@ import { IconEllipsis } from './icons'
  * A "more" menu: a 44px framed ellipsis button that drops a list of links or actions, in
  * the restaurant picker's panel (14px radius, 6px padding, 48px rows). No board draws it.
  */
-type MenuItem = { label: string } & ({ to: string } | { onSelect: () => void })
+export type MenuItem = { label: string } & ({ to: string } | { onSelect: () => void })
 
 const ITEM =
   'flex min-h-12 cursor-pointer items-center rounded-control px-2.5 text-15 font-medium text-text outline-none hover:text-text data-[highlighted]:bg-surface-hover'
