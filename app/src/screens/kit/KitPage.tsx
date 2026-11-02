@@ -19,6 +19,8 @@ import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
+import { OpsTicketCard } from '../../components/OpsTicketCard'
+import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
@@ -398,6 +400,34 @@ export function KitPage() {
                 restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
                 who="Not yet assigned"
                 when="Created 3h ago"
+              />
+              <RestaurantPicker
+                restaurants={[
+                  { id: 'a', name: 'Porter', color: 'var(--preset-ocean)' },
+                  { id: 'b', name: 'Corner Bistro', color: 'var(--preset-plum)' },
+                ]}
+                selectedId={null}
+                onSelect={() => toast.show('Restaurant picked.')}
+              />
+              <OpsTicketCard
+                to="#"
+                displayId="OT-0988"
+                title="Door gasket torn"
+                status="reopened"
+                restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                meta="BOH · Refrigeration · 2h ago"
+                reason="The gasket is torn again near the bottom hinge."
+              />
+              <OpsTicketCard
+                to="#"
+                displayId="OT-1042"
+                title="Walk-in cooler not holding temp"
+                status="in_progress"
+                urgent
+                walkthrough
+                restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                meta="BOH · Refrigeration · 1h ago"
+                assignee={{ name: 'Bert Velilla', role: 'ops', mine: true }}
               />
               <TaskList>
                 <TaskRow

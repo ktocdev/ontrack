@@ -224,11 +224,21 @@ export const router = createBrowserRouter([
               {
                 element: <Shell />,
                 children: [
-                  { path: '/ops', ...placeholder('Dashboard', 'Phase 3') },
+                  {
+                    path: '/ops',
+                    lazy: async () => ({
+                      Component: (await import('../screens/ops/OpsDashboardScreen')).OpsDashboardScreen,
+                    }),
+                  },
+                  { path: '/ops/closed', ...placeholder('Closed', 'Phase 3', 'OT-41 builds this.') },
                   { path: '/ops/walkthroughs', ...placeholder('Walkthroughs', 'Phase 6b') },
                   { path: '/ops/equipment', ...placeholder('Equipment', 'Phase 4') },
                   { path: '/ops/contractors', ...placeholder('Contractors', 'Phase 5') },
                 ],
+              },
+              {
+                element: <BareShell />,
+                children: [{ path: '/ops/tickets/:id', ...placeholder('Ticket', 'Phase 3', 'OT-39 builds this.') }],
               },
             ],
           },
