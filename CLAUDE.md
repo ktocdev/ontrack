@@ -138,7 +138,22 @@ A screen that needs real data can only render against the stack, which runs in C
 
 ## Current phase: 3 · Ops dashboard and ticket work
 
-The plan's Phase 3 section says what ships. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager assigns it, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. The pull requests are not split yet; that comes first.
+The plan's Phase 3 section says what ships. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager assigns it, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright checks who was sent what; the buzz itself is tried by hand on a real phone.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-36 | Plan update and this split |
+| OT-37 | Ops dashboard: Open tab, All / Mine, the restaurant picker that scopes every Ops screen, cards, empty state, loading skeleton; replaces the ops placeholder in View as |
+| OT-38 | Dashboard filter sheet and chips: status, urgent, walkthrough only, area, category, sort |
+| OT-39 | Ops ticket detail: header, description, equipment card, status and assignee dropdowns, In progress assigns to you, the empty service and cost section |
+| OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
+| OT-41 | Closed tab grouped by month with totals, its empty state, closed ticket detail |
+| OT-42 | Reopened ticket: the Start work and Close again sheets |
+| OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
+| OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
+| OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
+| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link |
+| OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record
 

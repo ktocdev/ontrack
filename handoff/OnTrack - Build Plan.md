@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Nov 1, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains) and the Phase 2 pull requests
+Oct 28, 2026 · Katie · updated Nov 1, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains), Phase 2 as built and the Phase 3 pull requests
 
 ## How to read this
 
@@ -18,7 +18,8 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Kit pass | Done | OT-4 plan update · OT-5 every kit component gets its full set of states in both themes; the `/kit` page gets a desktop layout |
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
-| 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-33 (see Phase 2) |
+| 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
+| 3 · Ops dashboard and ticket work | In progress | OT-36 plan update, then OT-37 to OT-47 (see Phase 3) |
 
 Phase 0 notes:
 
@@ -232,6 +233,36 @@ The ops managers can run their day in the app: see every restaurant's open work,
 **Screens from the design:** Ops · Dashboard, Ticket detail, Closed tab, Reopened ticket; Empty · Ops dashboard, Ops closed tab; Loading · card feed skeleton; Error · something went wrong
 
 **Done when:** a manager creates a ticket and the ops manager's phone buzzes; the ops manager assigns it, posts an update the manager sees, closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright runs that whole loop on WebKit.
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-36 | Plan update and this split |
+| OT-37 | Ops dashboard: Open tab, All / Mine, the restaurant picker that scopes every Ops screen, cards, empty state, loading skeleton; replaces the ops placeholder in View as |
+| OT-38 | Dashboard filter sheet and chips: status, urgent, walkthrough only, area, category, sort |
+| OT-39 | Ops ticket detail: header, description, equipment card, status and assignee dropdowns, In progress assigns to you, the empty service and cost section |
+| OT-40 | Ops thread: composer with photos, the internal-note toggle, Close ticket with a comment |
+| OT-41 | Closed tab grouped by month with totals, its empty state, closed ticket detail |
+| OT-42 | Reopened ticket: the Start work and Close again sheets |
+| OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
+| OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
+| OT-45 | `send-push`: database triggers for each kind, who gets what, email for anyone with no subscription, links through `/t/<id>` |
+| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link |
+| OT-47 | The done test as one flow; the phase note |
+
+**What this phase has to work around**
+
+- **Links to later phases stay off for now.** Log service waits for Phase 5, so the service and cost section stays empty and has no button. The equipment card opens nothing until Phase 4, and From October walkthrough opens nothing until Phase 6. The Equipment, Walkthroughs and Contractors tabs stay placeholders.
+- **Costs are mostly empty until Phase 5.** The Closed tab's month totals and a closed ticket's cost come from service records, which nothing on the live app creates yet, and they need `see_costs`. The seeded stack shows the full boards.
+- **Push needs a change to the service worker.** The one `vite-plugin-pwa` generates today has no push handler, so OT-44 adds one without disturbing the app's update prompt.
+- **`send-push` needs a server-side library that encrypts Web Push and runs on Edge Functions.** OT-44 proves this with a test push to a real phone before any trigger depends on it.
+- **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. An assignment goes to the person assigned. A status change or an update the restaurant can see goes to the person who opened the ticket and the person assigned, and never to whoever did it. A reopen goes to the person assigned, or to all those Ops managers if nobody is. An internal note never reaches a manager, and notifies nobody at this stage.
+- **Setup outside the repo:** VAPID keys are new. The private key goes in the hosted project's function secrets, and the public one in the Worker's build variables, so OT-44 lists the steps. The database also needs a way to call `send-push` from a trigger, set up in OT-45.
+- **Playwright can't feel a phone buzz.** The done flow checks that the right people were sent the right notification, and the buzz itself is tried by hand on a real phone. That proves it on Android. iPhone push needs the app installed on a real iPhone, which may be more than BrowserStack can show, so it may wait until someone with an iPhone tries it.
+- **`/t/<id>` has no screen to open for admin and leadership until Phase 7,** when their ticket views arrive. Until then they get the no-access screen, whatever the database would let them read.
+- **Roles & rights' "everyone affected is notified" stays off.** Changes to rights aren't among this phase's notifications, so that open item carries on.
+- **View as:** each Ops screen scopes its data from `useUser()` and hides writes when `viewingAs` is set.
 
 ## Phase 4 · Equipment and QR labels · first demo
 
