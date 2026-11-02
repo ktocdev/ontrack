@@ -20,6 +20,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
+import { ReorderList } from '../../components/ReorderList'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
@@ -127,11 +128,18 @@ function Section({ id, children }: { id: SectionId; children: React.ReactNode })
   )
 }
 
+const KIT_RESTAURANTS = [
+  { id: 'a', name: 'Porter', color: 'var(--preset-ocean)' },
+  { id: 'b', name: 'Corner Bistro', color: 'var(--preset-plum)' },
+  { id: 'c', name: 'Northside Grill', color: 'var(--preset-olive)' },
+]
+
 export function KitPage() {
   const { theme } = useTheme()
   const toast = useToast()
   const [seg, setSeg] = useState<'all' | 'foh' | 'boh'>('all')
   const [sw, setSw] = useState(true)
+  const [kitOrderIds, setKitOrderIds] = useState(['a', 'b', 'c'])
   const [sheet, setSheet] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -399,6 +407,11 @@ export function KitPage() {
                 ]}
                 selectedId={null}
                 onSelect={() => toast.show('Restaurant picked.')}
+              />
+              <ReorderList
+                label="Restaurants in order"
+                items={kitOrderIds.map((id) => KIT_RESTAURANTS.find((r) => r.id === id)!)}
+                onChange={setKitOrderIds}
               />
               <OpsTicketCard
                 to="#"

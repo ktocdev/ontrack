@@ -1,3 +1,4 @@
+import { lazy, Suspense, useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
@@ -12,6 +13,7 @@ import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
 import { groupByRestaurant } from './dashboard'
 import { useOpsDashboard } from './useOpsDashboard'
+import { useRestaurantOrder } from './useRestaurantOrder'
 import { useRestaurantScope } from './useRestaurantScope'
 
 /**
@@ -26,12 +28,16 @@ import { useRestaurantScope } from './useRestaurantScope'
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
+const RestaurantOrderSheet = lazy(() => import('./RestaurantOrderSheet'))
+
 export function OpsDashboardScreen() {
   const { user, restaurants, viewingAs } = useUser()
   const scope = useRestaurantScope()
+  const { ordered, reorder } = useRestaurantOrder()
+  const [reordering, setReordering] = useState(false)
   const { data, isPending, isError, refetch } = useOpsDashboard(scope.ids)
 
-  const inScope = scope.selected ? [scope.selected] : restaurants
+  const inScope = scope.selected ? [scope.selected] : ordered
   const groups = groupByRestaurant(data ?? [], inScope)
 
   return (
@@ -39,12 +45,20 @@ export function OpsDashboardScreen() {
       <ScreenHeader
         title="Dashboard"
         topLeft={
-          <RestaurantPicker restaurants={restaurants} selectedId={scope.selected?.id ?? null} onSelect={scope.select} />
+          <RestaurantPicker restaurants={ordered} selectedId={scope.selected?.id ?? null} onSelect={scope.select} />
         }
         topRight={<ProfileLink />}
         action={
           viewingAs ? undefined : (
-            <OverflowMenu label="More ticket options" items={[{ to: '/ops/closed', label: 'View Closed Tickets' }]} />
+            <OverflowMenu
+              label="More ticket options"
+              items={[
+                { to: '/ops/closed', label: 'View Closed Tickets' },
+                ...(restaurants.length > 1
+                  ? [{ onSelect: () => setReordering(true), label: 'Reorder restaurants' }]
+                  : []),
+              ]}
+            />
           )
         }
       />
@@ -120,6 +134,11 @@ export function OpsDashboardScreen() {
             ))
           )}
         </ScreenBody>
+      )}
+      {reordering && (
+        <Suspense fallback={null}>
+          <RestaurantOrderSheet open onOpenChange={setReordering} restaurants={ordered} onChange={reorder} />
+        </Suspense>
       )}
     </Screen>
   )
