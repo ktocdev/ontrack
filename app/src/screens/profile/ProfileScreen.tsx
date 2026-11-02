@@ -13,6 +13,7 @@ import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } 
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 import { useUser } from '../../auth/context'
 import { useProfilePhotosOn } from '../../auth/group'
+import { NotificationsSection } from './NotificationsSection'
 import { PasswordSheet } from './PasswordSheet'
 import { ReportSheet } from './ReportSheet'
 import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
@@ -21,8 +22,8 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  * Profile · Your account (design/screens/Profile), any role. Photo, name and
  * phone are the person's own; email, role and restaurants belong to the admin.
  * Then password, theme, help and sign out, with Save changes fixed at the
- * bottom. Two things the board does not draw come from the build plan: the
- * phone field and the theme control.
+ * bottom. Three things the board does not draw come from the build plan: the
+ * phone field, the theme control and Notifications.
  */
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
@@ -202,6 +203,8 @@ export function ProfileScreen() {
         </ListCard>
 
         {notice && <Notice>{notice}</Notice>}
+
+        <NotificationsSection />
 
         <SectionLabel className="-mb-0.5">Appearance</SectionLabel>
         <ThemeControl />

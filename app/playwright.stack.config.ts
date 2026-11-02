@@ -34,6 +34,10 @@ export default defineConfig({
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
     port: PORT,
     reuseExistingServer: !CI,
+    // The public half of the throwaway pair in supabase/config.toml.
+    env: {
+      VITE_VAPID_PUBLIC_KEY: 'BC76FoDZqBIxtniIWjxpl9O6T0wB8LJP_hqhuaQzUSRVpwnAERub30EZo0UPeXYEY_fAZQ3cObCB1BjW720zIL8',
+    },
     timeout: 180_000,
   },
 })

@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import { forgetPushOnSignOut } from '../pwa/push'
 import { AuthContext } from './context'
 import { MOCK_RESTAURANTS, MOCK_USERS, readMockRole, writeMockRole } from './mock'
 import { clearStamp, isExpired, readStamp, rememberName, stampSignIn, type SignInStamp } from './session'
@@ -116,6 +117,8 @@ function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     signingOut.current = true
     setExpired(null)
+    // While the session can still remove this device's row.
+    await forgetPushOnSignOut()
     await sb.auth.signOut()
   }, [sb])
 
