@@ -479,6 +479,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"notify_problems": {
+                  Row: {
+                    "first_at": string,"last_at": string,"message": string,"times": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "first_at"?: string,"last_at"?: string,"message": string,"times"?: number
+                  }
+                  Update: {
+                    "first_at"?: string,"last_at"?: string,"message"?: string,"times"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"profiles": {
                   Row: {
                     "avatar_path": string | null,"created_at": string,"deactivated_at": string | null,"email": string,"full_name": string,"home_restaurant_id": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
@@ -1484,6 +1498,9 @@ isOneToOne: false
 { Args: { "p_notification": string }; Returns: {
               "email": string,"full_name": string,"push": boolean,"send_email": boolean,"user_id": string
             }[]
+                           },
+"notify_problem":
+{ Args: { "p_message": string }; Returns: undefined
                            },
 "notify_send_push":
 { Args: Record<PropertyKey, never>; Returns: undefined

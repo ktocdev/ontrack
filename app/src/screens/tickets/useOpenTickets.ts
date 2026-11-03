@@ -33,6 +33,8 @@ function rememberNothingOpen(restaurantIds: string[], nothingOpen: boolean) {
 export function useOpenTickets(restaurantIds: string[]) {
   return useQuery({
     queryKey: ['tickets', 'open', restaurantIds],
+    // In case the live connection has dropped.
+    refetchInterval: 30_000,
     queryFn: async () => {
       const sb = requireSupabase()
       const [tickets, inHouse] = await Promise.all([

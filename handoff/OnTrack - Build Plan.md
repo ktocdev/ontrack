@@ -19,7 +19,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
-| 3 · Ops dashboard and ticket work | In progress | OT-36 plan update, then OT-37 to OT-50 (see Phase 3) |
+| 3 · Ops dashboard and ticket work | In progress | Built through OT-45 and OT-57. Next, in order: OT-58, OT-46, OT-55, OT-56, OT-47 (see Phase 3) |
 
 Phase 0 notes:
 
@@ -248,7 +248,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: an outbox written by a database trigger for each kind, who gets what, email on by default as well as push, links through `/t/<id>` |
-| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers |
+| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
@@ -257,7 +257,16 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-55 | Security audit of what Phase 3 added: policies and functions since OT-22, internal notes and their photos, Ops and manager scope, links, push and `send-push` |
 | OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
 | OT-57 | From feedback: Edit, Close and Share in the menu on a manager's ticket, with Close still on Edit ticket |
+| OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
 | OT-47 | The done test as one flow; the phase note |
+
+**What's left, in order (Nov 2, 2026)**
+
+1. **OT-58:** from trying OT-45 live. A failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime.
+2. **OT-46:** the boards' notification promises, the iPhone link check on BrowserStack, the ring on a new ticket's card, and the small notification icon on Android.
+3. **OT-55:** the security audit of what Phase 3 added.
+4. **OT-56:** the code quality pass.
+5. **OT-47:** the done test as one flow, and the phase note.
 
 **What this phase has to work around**
 
@@ -278,6 +287,9 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - **Encrypting Web Push on Edge Functions uses `@negrel/webpush` (JSR),** since `web-push` relies on Node crypto calls. OT-44's `test-push` proves it with a real phone before any trigger depends on it. It posts to the stored endpoint with no further check, so `push_subscriptions` only accepts the browsers' own push services; a new one needs adding to that constraint.
 - **Email is on by default, not a fallback (from feedback, Nov 2, 2026; OT-45).** The ops manager has Claude summarize his work from his inbox, so email goes out as well as push, and Ops managers also get email about their own actions, including their internal notes. They also get email when another Ops manager picks up a ticket (marks it In progress or takes it over) or closes it at a restaurant they cover, also from feedback. Other status changes and updates on other Ops managers' tickets stay out, for now. Someone who only wants email leaves This device off. A better way to make weekly summaries may replace this later. A kind's switch covers both push and email, and there is no email-only setting per kind.
 - **Taking a ticket over with no status change reaches only Ops, by email (OT-45),** so the manager who opened it isn't told, since the work is the same.
+- **A status change goes to the manager who opened the ticket, not every manager at the restaurant (confirmed Nov 2, 2026).**
+- **Lists change as tickets do (from trying OT-45 live; OT-58).** Realtime sends a signal when a ticket changes, RLS decides who gets it, and each screen rereads its usual query. A manager's Open tickets also rereads every 30 seconds now, as the dashboard does, in case the connection drops. Realtime replaces nothing else, and the stack and CI now run with it on.
+- **The small notification icon (OT-46).** Android shows a generic bell in the status bar until a push names a `badge`, a white shape on transparent, so it gets the mark's check. The picture beside the message is the app icon already. An iPhone always shows the app's own icon, and none of this can change that.
 - **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. A status change or an update the restaurant can see goes to the person who opened the ticket and the person working on it, and never to whoever did it, so a manager hears when work starts. A reopen goes to all those Ops managers, as a new ticket does. An internal note never reaches a manager, and notifies nobody at this stage.
 - **Setup outside the repo:** VAPID keys are new, from `node scripts/vapid.mjs`. `VAPID_KEYS` goes in the hosted project's function secrets and `VITE_VAPID_PUBLIC_KEY` in the Worker's build variables, per environment. The database calls `send-push` through `pg_net`, which needs `send_push_url` and `send_push_secret` in its vault and the same secret as the `SEND_PUSH_SECRET` function secret; OT-45 lists the steps.
 - **Playwright can't feel a phone buzz.** The done flow checks that the right people were sent the right notification, and the buzz itself is tried by hand on a real phone. That proves it on Android. iPhone push needs the app installed on a real iPhone, which may be more than BrowserStack can show, so it may wait until someone with an iPhone tries it.

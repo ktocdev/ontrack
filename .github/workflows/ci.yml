@@ -77,7 +77,7 @@ jobs:
       # Auth, REST, storage, Edge Functions, Mailpit and Postgres with the seed;
       # nothing the flows don't use.
       - name: Start the local stack
-        run: supabase start -x studio,imgproxy,logflare,vector,realtime,postgres-meta
+        run: supabase start -x studio,imgproxy,logflare,vector,postgres-meta
 
       - name: Point the app build at it
         run: |

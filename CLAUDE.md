@@ -98,7 +98,9 @@ Ticket photos live under `<ticket id>/` in `ticket-photos`, and the file follows
 
 Push: one `push_subscriptions` row per device, saved through `save_push_subscription`, which hands a device to whoever signed in last. A function posts to the stored endpoint with no further check, so the table's constraint accepts only the browsers' own push services. Keys come from `app/scripts/vapid.mjs`: `VAPID_KEYS` is a function secret and `VITE_VAPID_PUBLIC_KEY` a Worker build variable, and the local pair in `config.toml` is a throwaway. `public/push-sw.js` is imported by the generated service worker. Playwright blocks service workers, so flow tests stub the browser's side, and a push to a real phone is tried by hand.
 
-Notifications: a trigger on `ticket_updates` writes one `notifications` row per event, and `notification_recipients` is the one place that says who gets what, tested in pgTAP: Ops managers' email also covers their own actions, and other Ops managers picking up or closing tickets at their restaurants. `send-push` is called by the database through `pg_net` with a shared secret, takes nothing from the request, and logs each send in `notification_deliveries`, which `e2e/stack` reads. The vault needs `send_push_url` and `send_push_secret` once per project (the migration's header has the SQL), with the same secret as the `SEND_PUSH_SECRET` function secret; until then rows wait, and any older than a day are dropped.
+Notifications: a trigger on `ticket_updates` writes one `notifications` row per event, and `notification_recipients` is the one place that says who gets what, tested in pgTAP: Ops managers' email also covers their own actions, and other Ops managers picking up or closing tickets at their restaurants. `send-push` is called by the database through `pg_net` with a shared secret, takes nothing from the request, and logs each send in `notification_deliveries`, which `e2e/stack` reads. The vault needs `send_push_url` and `send_push_secret` once per project (the migration's header has the SQL), with the same secret as the `SEND_PUSH_SECRET` function secret; until then rows wait, and any older than a day are dropped. A failed call never stops the ticket, so `notify_problems` says why, one row per different problem, and an admin can read it.
+
+Lists keep up through Realtime: `app/LiveTickets.tsx` subscribes to changes on `tickets`, which RLS filters, and rereads the usual queries, with each list's own 30-second reread as a backup. A new thing that lists tickets uses a query key under `tickets`, `ticket` or `ops-ticket`, or adds its own to that file.
 
 In-house tasks are added by insert and changed only through `set_inhouse_fix_done` and `delete_inhouse_fix`. Unlike the archive and delete reference, these two are `security definer` and check `can('create_tickets')` themselves, because a manager can't write `audit_log` and a delete the API could reach directly would skip the log. A delete removes the row, only while the task is open.
 
@@ -156,7 +158,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: an outbox written by a database trigger for each kind, who gets what, email on by default as well as push, links through `/t/<id>` |
-| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers |
+| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
@@ -165,6 +167,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-55 | Security audit of what Phase 3 added: policies and functions since OT-22, internal notes and their photos, Ops and manager scope, links, push and `send-push` |
 | OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
 | OT-57 | From feedback: Edit, Close and Share in the menu on a manager's ticket, with Close still on Edit ticket |
+| OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record
@@ -219,7 +222,7 @@ Auth's own emails are set per project: `supabase/templates/` is what `config.tom
 
 ## Database work
 
-Docker Desktop runs on the dev machine, so the database and the data flows are checked locally before pushing (CI checks them again): `npx -y supabase@2.122.0 start -x studio,imgproxy,logflare,vector,realtime,postgres-meta`, then `npx -y supabase@2.122.0 test db`, then `npm run test:e2e:stack` in `app/` with `VITE_SUPABASE_URL=http://127.0.0.1:54321` and `VITE_SUPABASE_ANON_KEY` set to the `PUBLISHABLE_KEY` the start command prints. `npx -y supabase@2.122.0 db reset` puts the seed back. A new Edge Function, or a change to `config.toml`, needs `supabase stop` and `start` before it is served. Use the same CLI version as CI. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Every new function ends with `revoke all on function … from public, anon`, then its own grants, because Supabase grants `anon` every new function by default; `18_anon_functions.test.sql` fails CI on one left open. Keep the seed in step with the design's sample data.
+Docker Desktop runs on the dev machine, so the database and the data flows are checked locally before pushing (CI checks them again): `npx -y supabase@2.122.0 start -x studio,imgproxy,logflare,vector,postgres-meta`, then `npx -y supabase@2.122.0 test db`, then `npm run test:e2e:stack` in `app/` with `VITE_SUPABASE_URL=http://127.0.0.1:54321` and `VITE_SUPABASE_ANON_KEY` set to the `PUBLISHABLE_KEY` the start command prints. `npx -y supabase@2.122.0 db reset` puts the seed back. A new Edge Function, or a change to `config.toml`, needs `supabase stop` and `start` before it is served. Use the same CLI version as CI. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Every new function ends with `revoke all on function … from public, anon`, then its own grants, because Supabase grants `anon` every new function by default; `18_anon_functions.test.sql` fails CI on one left open. Keep the seed in step with the design's sample data.
 
 ## Commands
 

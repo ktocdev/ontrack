@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router'
 import type { AppRole } from '../lib/supabase'
+import { LiveTickets } from '../app/LiveTickets'
 import { ROLE_HOME, ROLE_LABEL } from '../app/roles'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotConfiguredScreen } from '../screens/errors/NotConfiguredScreen'
@@ -60,7 +61,12 @@ export function RequireAuth({ children }: { children?: ReactNode }) {
         />
       )
     case 'signed-in':
-      return children ?? <Outlet />
+      return (
+        <>
+          <LiveTickets />
+          {children ?? <Outlet />}
+        </>
+      )
   }
 }
 
