@@ -383,6 +383,44 @@ isOneToOne: false
       referencedColumns: ["user_id"]
     }
                   ]
+                },"notification_deliveries": {
+                  Row: {
+                    "channel": string,"created_at": string,"id": string,"kind": string,"notification_id": string,"status": string,"ticket_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "channel": string,"created_at"?: string,"id"?: string,"kind": string,"notification_id": string,"status": string,"ticket_id": string,"user_id": string
+                  }
+                  Update: {
+                    "channel"?: string,"created_at"?: string,"id"?: string,"kind"?: string,"notification_id"?: string,"status"?: string,"ticket_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notification_deliveries_notification_id_fkey"
+      columns: ["notification_id"]
+isOneToOne: false
+      referencedRelation: "notifications"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notification_deliveries_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notification_deliveries_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notification_deliveries_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
                 },"notification_prefs": {
                   Row: {
                     "enabled": boolean,"kind": string,"updated_at": string,"user_id": string
@@ -407,6 +445,38 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    }
+                  ]
+                },"notifications": {
+                  Row: {
+                    "actor_id": string | null,"body": string | null,"created_at": string,"id": string,"internal": boolean,"kind": string,"picked_up": boolean,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind": string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id": string
+                  }
+                  Update: {
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind"?: string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notifications_actor_id_fkey"
+      columns: ["actor_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notifications_actor_id_fkey"
+      columns: ["actor_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "notifications_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
     }
                   ]
                 },"profiles": {
@@ -1355,6 +1425,26 @@ isOneToOne: false
 "can_see_ticket_photo":
 { Args: { "p_name": string }; Returns: boolean
                            },
+"claim_notifications":
+{ Args: { "p_limit"?: number }; Returns: {
+              "actor_id": string | null,
+"body": string | null,
+"created_at": string,
+"id": string,
+"internal": boolean,
+"kind": string,
+"picked_up": boolean,
+"processed_at": string | null,
+"seq": number,
+"status_to": string | null,
+"ticket_id": string
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "notifications"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "closed_by_month":
 { Args: { "p_restaurant_ids": (string)[],"p_time_zone": string }; Returns: {
               "closed_count": number,"month": string,"total_cents": number
@@ -1389,6 +1479,14 @@ isOneToOne: false
                            },
 "new_backup_codes":
 { Args: Record<PropertyKey, never>; Returns: (string)[]
+                           },
+"notification_recipients":
+{ Args: { "p_notification": string }; Returns: {
+              "email": string,"full_name": string,"push": boolean,"send_email": boolean,"user_id": string
+            }[]
+                           },
+"notify_send_push":
+{ Args: Record<PropertyKey, never>; Returns: undefined
                            },
 "path_uuid":
 { Args: { "object_name": string }; Returns: string

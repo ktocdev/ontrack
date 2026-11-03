@@ -8,9 +8,10 @@ import { pushSupport } from '../../pwa/push'
 import { kindsFor, useNotificationPrefs, usePushDevice, useTestPush } from './useNotifications'
 
 /**
- * Profile · Notifications, which no board draws. A switch for this device, a test, and a
- * switch per kind of notification for this person on all their devices. Which kinds show
- * follows who is sent what, and they save as they change.
+ * Profile · Notifications, which no board draws. A switch for this device, a test, one for
+ * email, and one per kind of notification, which covers both. Email and the kinds belong to
+ * the person, on all their devices. Which kinds show follows who is sent what. Someone who
+ * only wants email leaves This device off. They save as they change.
  */
 const WHY_NOT = {
   'not-configured': 'Notifications aren’t set up for this app yet.',
@@ -29,6 +30,8 @@ export function NotificationsSection() {
   const kinds = kindsFor(user.role)
   const isOn = !!device.data
   const busy = on.isPending || off.isPending
+  const emailOn = !prefs.data?.has('email')
+  const offLine = kinds.length && emailOn ? 'Off. You’ll still get email.' : 'Off'
 
   const changeDevice = (next: boolean) => {
     if (next) {
@@ -61,7 +64,7 @@ export function NotificationsSection() {
       <ListCard>
         <ListRow
           title="This device"
-          subtitle={support === 'ready' ? (isOn ? 'On' : 'Off') : WHY_NOT[support]}
+          subtitle={support === 'ready' ? (isOn ? 'On' : offLine) : WHY_NOT[support]}
           trailing={
             support === 'ready' ? (
               <Switch
@@ -81,6 +84,25 @@ export function NotificationsSection() {
               <Button variant="ghost" loading={test.isPending} onClick={sendTest}>
                 Send
               </Button>
+            }
+          />
+        )}
+        {kinds.length > 0 && (
+          <ListRow
+            title="Email"
+            subtitle="The ones below, by email as well"
+            trailing={
+              <Switch
+                label="Email notifications"
+                checked={emailOn}
+                disabled={prefs.isPending || set.isPending}
+                onCheckedChange={(enabled) =>
+                  set.mutate(
+                    { kind: 'email', enabled },
+                    { onError: () => toast.show('Couldn’t save that. Try again.') },
+                  )
+                }
+              />
             }
           />
         )}
