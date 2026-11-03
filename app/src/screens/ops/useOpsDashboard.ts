@@ -5,8 +5,8 @@ import { byPriority } from './dashboard'
 /**
  * Ops · Dashboard. Everything not closed at the restaurants passed in. The caller
  * passes them from the picker, over useUser(), so View as shows the person viewed.
- * Until push arrives in this phase, it rereads every 30 seconds, as a ticket's thread
- * does, so a new ticket turns up on its own.
+ * LiveTickets rereads it as tickets change, and it also rereads every 30 seconds in case
+ * that connection has dropped.
  */
 export function useOpsDashboard(restaurantIds: string[]) {
   return useQuery({
