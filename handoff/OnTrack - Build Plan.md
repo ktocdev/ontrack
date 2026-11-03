@@ -19,7 +19,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
-| 3 · Ops dashboard and ticket work | In progress | Built through OT-45 and OT-57. Next, in order: OT-58, OT-46, OT-55, OT-56, OT-47 (see Phase 3) |
+| 3 · Ops dashboard and ticket work | In progress | Built through OT-45, OT-57 and OT-58. Next, in order: OT-46, OT-59, OT-55, OT-56, OT-47 (see Phase 3) |
 
 Phase 0 notes:
 
@@ -69,7 +69,7 @@ The app talks to Supabase directly and Edge Functions handle only the jobs that 
 | Avatars | Initials follow the boards: the color comes from the role, and pending and expired invites have their own. An admin can turn profile photos off for the whole group | The color says who is talking on a ticket thread and matches the design. The switch is enforced in the database and keeps the files, so it can be reversed |
 | Group name and domains | The group's name is a field in the database, never in the code. Each group gets its own subdomain: `fourcorners.ontrack-app.app`, later `hogsalt.ontrack-app.app` | Another restaurant group may want the app someday, and nothing about Four Corners should have to be edited out of the code when that happens |
 
-One thing stays open until the first demo: whether the group wants Google or Microsoft sign-on later. `fourcorners.ontrack-app.app` is connected, which QR labels need, since they bake the URL in.
+Google sign-in is planned as OT-59 if the group is on Google Workspace, and four questions about it stay open (see Open items). `fourcorners.ontrack-app.app` is connected, which QR labels need, since they bake the URL in.
 
 ## Architecture
 
@@ -248,7 +248,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: an outbox written by a database trigger for each kind, who gets what, email on by default as well as push, links through `/t/<id>` |
-| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android |
+| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android; a clearer name for the device switch, which comes back on after signing back in |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
@@ -258,13 +258,14 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
 | OT-57 | From feedback: Edit, Close and Share in the menu on a manager's ticket, with Close still on Edit ticket |
 | OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
+| OT-59 | Google sign-in, if the group is on Google Workspace: try it on an installed iPhone app first, then Google alongside invites, with no password for people on the company domain |
 | OT-47 | The done test as one flow; the phase note |
 
 **What's left, in order (Nov 2, 2026)**
 
-1. **OT-58:** from trying OT-45 live. A failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime.
-2. **OT-46:** the boards' notification promises, the iPhone link check on BrowserStack, the ring on a new ticket's card, and the small notification icon on Android.
-3. **OT-55:** the security audit of what Phase 3 added.
+1. **OT-46:** the boards' notification promises, the iPhone link check on BrowserStack, the ring on a new ticket's card, the small notification icon on Android, and the device switch's name and coming back after signing back in.
+2. **OT-59:** Google sign-in, once the open questions below are answered.
+3. **OT-55:** the security audit of what Phase 3 added, including Google sign-in.
 4. **OT-56:** the code quality pass.
 5. **OT-47:** the done test as one flow, and the phase note.
 
@@ -289,6 +290,8 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - **Taking a ticket over with no status change reaches only Ops, by email (OT-45),** so the manager who opened it isn't told, since the work is the same.
 - **A status change goes to the manager who opened the ticket, not every manager at the restaurant (confirmed Nov 2, 2026).**
 - **Lists change as tickets do (from trying OT-45 live; OT-58).** Realtime sends a signal when a ticket changes, RLS decides who gets it, and each screen rereads its usual query. A manager's Open tickets also rereads every 30 seconds now, as the dashboard does, in case the connection drops. Realtime replaces nothing else, and the stack and CI now run with it on.
+- **The device switch (from feedback, Nov 2, 2026; OT-46).** "This device" reads as unclear, so it becomes "Push notifications on this device", which still reads right when it is on. Signing out turns it off on purpose, so a shared phone stops getting the last person's tickets, but having to turn it back on is easy to miss. So a phone remembers, per person, that they had it on, and turns it back on when they sign back in. Turning it off yourself stays off, and someone else signing in starts with it off. If the app can't read the subscription, it says so rather than showing Off.
+- **Google sign-in (from feedback, Nov 2, 2026; OT-59),** moved up from Phase 8, since the group has no accounts yet and nobody would have to move over later. The ops manager expects deactivating to happen at Google, but that only stops new sign-ins: a session already open lasts up to 12 hours, since the cap is on the app's side, a password set in OnTrack still works, and push keeps arriving with ticket details. So people on the company domain sign in only with Google and have no password, and Deactivate in OnTrack stays, as the one switch that works at once and stops notifications. A scheduled check of Google's directory that deactivates suspended people could come later, with help from whoever runs their Google admin. Invites stay, since Google says who someone is and the invite says their role and restaurants. That changes `handle_new_user`'s rule that an email alone never claims an invite, so it needs care, and a Google-verified address on the company domain is the only new thing it may trust. 2-step stays required for admins and optional for others, and a remembered phone needs changing, since it now asks for a password sign-in. Google sign-in from an installed iPhone app can finish in Safari rather than the app, so OT-59 tries that first, before building the rest. It comes before the security audit so the audit covers it.
 - **The small notification icon (OT-46).** Android shows a generic bell in the status bar until a push names a `badge`, a white shape on transparent, so it gets the mark's check. The picture beside the message is the app icon already. An iPhone always shows the app's own icon, and none of this can change that.
 - **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. A status change or an update the restaurant can see goes to the person who opened the ticket and the person working on it, and never to whoever did it, so a manager hears when work starts. A reopen goes to all those Ops managers, as a new ticket does. An internal note never reaches a manager, and notifies nobody at this stage.
 - **Setup outside the repo:** VAPID keys are new, from `node scripts/vapid.mjs`. `VAPID_KEYS` goes in the hosted project's function secrets and `VITE_VAPID_PUBLIC_KEY` in the Worker's build variables, per environment. The database calls `send-push` through `pg_net`, which needs `send_push_url` and `send_push_secret` in its vault and the same secret as the `SEND_PUSH_SECRET` function secret; OT-45 lists the steps.
@@ -389,7 +392,7 @@ These come after the group is using the app daily, in whatever order the feedbac
 - **Desktop layouts.** Tablet and desktop up to 1440 px: the tab bar becomes a sidebar, lists become list-plus-detail panes, sheets become dialogs, and the import review becomes a table. The phone layouts stay as the base; this is CSS and a few layout components, not new screens
 - **Offline.** Cache the lists and tickets you have opened; queue new tickets and updates with the Not sent yet card and the Saved-at banner; retry on reconnect; handle a conflict by appending, never overwriting. This is the Error · Offline screen from the design
 - **Reports.** Monthly spend per restaurant and per category as a PDF or CSV for leadership; repeat-repair flags on a unit
-- **Single sign-on** with Google Workspace or Microsoft 365 if the group wants it; Supabase Auth supports both as providers
+- **Microsoft 365 sign-on,** if another group needs it; Google sign-in moved up to OT-59
 - **App Store wrapper** with Capacitor only if someone asks for it; the PWA covers the need
 - **Second restaurant group.** Each group gets its own deployment from the same repo: its own Supabase project, its own Cloudflare Worker on `<group>.ontrack-app.app`, and its own `group_settings` row. No policy changes, and one group's data cannot reach another's, because they share no database. The deploy workflow pushes migrations to each project. The cost is one more Supabase project per group. A shared database with a `group_id` on every table is cheaper to run, but it changes every policy and makes a cross-group leak possible, so it waits until there are enough groups to justify it
 
@@ -464,7 +467,10 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [x] Try the invite flow on two devices, which is the Phase 1 done test as written (Oct 30, 2026)
 - [ ] Notifications for the promises the Roles & rights and User profile boards make ("everyone affected is notified"), left off those screens until Phase 3 has them
 - [ ] View as answers from the admin's own access, scoped by the app. Each screen added from Phase 2 on must scope its data from `useUser()` and hide writes when `viewingAs` is set
-- [ ] Whether the group uses Google Workspace or Microsoft 365, for sign-on later
+- [ ] For Google sign-in (OT-59): is the group on Google Workspace, with addresses on its own domain, not ordinary `@gmail.com` ones? Without that there's no company admin to suspend anyone and no way to limit sign-in to the company
+- [ ] For Google sign-in: who runs the group's Google admin account, to help set up the sign-in connection?
+- [ ] For Google sign-in: does everyone have a work Google account, including every manager, Ops, leadership and any outside people? Anyone without one keeps a password
+- [ ] For Google sign-in: is anyone on an iPhone? If so, the installed-app test decides the approach
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
 - [ ] Turn off or delete a category, following the archive and delete rule. It has no board, and is saved for later, not scheduled. `categories` has no `active` column yet, so this starts with one. Today the write policy lets anyone with `edit_equipment` change the group-wide list through the API, though no screen does; decide whether that should be admin only when this is built
