@@ -1,9 +1,20 @@
 /**
  * A ticket's lasting link, from the current origin, since each group has its own address.
+ * It names the ticket the way people say it (/t/OT-1042), so it can be read out and typed.
  * The link grants nothing: whoever opens it still has to be able to see the ticket.
  */
-export function ticketLink(id: string) {
-  return `${window.location.origin}/t/${id}`
+export function ticketLink(displayId: string) {
+  return `${window.location.origin}/t/${displayId}`
+}
+
+/**
+ * The ticket number in a typed link, forgiving of how a phone keyboard spells it: OT-0123,
+ * ot-123, OT123 and 123 are all ticket 123. Anything else is not a number (an older link
+ * carries the ticket's id).
+ */
+export function ticketNumber(param: string) {
+  const match = /^(?:ot-?)?0*(\d{1,9})$/i.exec(param.trim())
+  return match ? Number(match[1]) : null
 }
 
 /**

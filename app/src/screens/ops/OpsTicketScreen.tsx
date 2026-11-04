@@ -159,7 +159,7 @@ export function OpsTicketScreen() {
         </Link>
         <span className="flex-1 font-mono text-13 text-text-secondary">{ticket.display_id}</span>
         {ticket.urgency === 'urgent' && <UrgentTag className="mr-2" />}
-        {!viewingAs && <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />}
+        {!viewingAs && <TicketMenu displayId={ticket.display_id ?? ''} title={ticket.title} />}
       </div>
 
       <ScreenBody

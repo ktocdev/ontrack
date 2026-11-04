@@ -237,7 +237,7 @@ export function KitPage() {
               </div>
               <div className="flex items-center gap-2">
                 <OverflowMenu label="More options" items={[{ to: '/kit', label: 'A menu item' }]} />
-                <TicketMenu id="kit" displayId="OT-1042" title="Walk-in cooler not holding temp" />
+                <TicketMenu displayId="OT-1042" title="Walk-in cooler not holding temp" />
                 <IconButton label="Back">
                   <IconChevronLeft />
                 </IconButton>

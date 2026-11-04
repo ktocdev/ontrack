@@ -121,7 +121,7 @@ async function deliver(
   const ticketLabel = `${ticket.display_id} · ${ticket.title}`
   const said = describe(n, ticketLabel, restaurant, actorName)
   const date = n.status_to === 'scheduled' && ticket.scheduled_for ? ` for ${ticket.scheduled_for}` : ''
-  const path = `/t/${ticket.id}`
+  const path = `/t/${ticket.display_id ?? ticket.id}`
   const link = `${appUrl.replace(/\/$/, '')}${path}`
 
   const log = (user_id: string, channel: 'push' | 'email', status: 'sent' | 'gone' | 'failed') =>

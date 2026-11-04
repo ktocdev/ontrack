@@ -114,7 +114,6 @@ export function TicketScreen() {
           />
         </div>
         <TicketMenu
-          id={ticket.id}
           displayId={ticket.display_id ?? ''}
           title={ticket.title}
           items={[

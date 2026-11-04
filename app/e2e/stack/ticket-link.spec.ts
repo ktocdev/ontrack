@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { passTwoStep, SEED_PASSWORD, signIn } from './helpers'
 
 /**
- * A ticket's lasting link, /t/<id>, against the seed: OT-1042 is at Federale's Logan
+ * A ticket's lasting link, /t/OT-1042, against the seed: OT-1042 is at Federale's Logan
  * Square, Maya's restaurant. Nothing here changes a ticket.
  */
 
@@ -47,9 +47,27 @@ test('the link grants nothing: another restaurant’s manager is refused', async
   await expect(page.getByText(HEADING)).toHaveCount(0)
 })
 
+test('the number opens the ticket however it is typed, and an older link with the id still does', async ({ page }) => {
+  await signIn(page, 'maya.reyes@example.com')
+  for (const typed of ['OT-1042', 'ot-1042', 'OT-01042', '1042', T1042]) {
+    await page.goto(`/t/${typed}`)
+    await expect(page).toHaveURL(new RegExp(`/tickets/${T1042}$`))
+    await expect(page.getByRole('heading', { name: HEADING })).toBeVisible()
+  }
+})
+
+test('a typed number grants nothing either', async ({ page }) => {
+  await signIn(page, 'dana.ortiz@example.com')
+  await page.goto('/t/OT-1042')
+  await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
+  await expect(page.getByText(HEADING)).toHaveCount(0)
+})
+
 test('a link that is not a ticket says so', async ({ page }) => {
   await signIn(page, 'bert.velilla@example.com')
   await page.goto('/t/not-a-ticket')
+  await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
+  await page.goto('/t/OT-9999')
   await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
 })
 
@@ -88,16 +106,14 @@ test.describe('Share link', () => {
     await page.getByRole('menuitem', { name: 'Share link' }).click()
     await expect(page.getByRole('status').filter({ hasText: 'Link copied.' })).toBeVisible()
     const origin = new URL(page.url()).origin
-    expect(await page.evaluate(() => (window as unknown as { copied?: string }).copied)).toBe(`${origin}/t/${T1042}`)
+    expect(await page.evaluate(() => (window as unknown as { copied?: string }).copied)).toBe(`${origin}/t/OT-1042`)
 
     await page.goto(`/tickets/${CLOSED_1028}`)
     await expect(page.getByRole('heading', { name: 'Closed ticket' })).toBeVisible()
     await menu(page).click()
     await page.getByRole('menuitem', { name: 'Share link' }).click()
     await expect(page.getByRole('status').filter({ hasText: 'Link copied.' })).toBeVisible()
-    expect(await page.evaluate(() => (window as unknown as { copied?: string }).copied)).toBe(
-      `${origin}/t/${CLOSED_1028}`,
-    )
+    expect(await page.evaluate(() => (window as unknown as { copied?: string }).copied)).toBe(`${origin}/t/OT-1028`)
   })
 
   test('on a phone it opens the share sheet, for Ops and on a closed ticket', async ({ page }) => {
@@ -119,7 +135,7 @@ test.describe('Share link', () => {
     await page.getByRole('menuitem', { name: 'Share link' }).click()
     await expect
       .poll(() => page.evaluate(() => (window as unknown as { shared?: ShareData }).shared))
-      .toEqual({ title: `OT-1042 · ${HEADING}`, url: `${new URL(page.url()).origin}/t/${T1042}` })
+      .toEqual({ title: `OT-1042 · ${HEADING}`, url: `${new URL(page.url()).origin}/t/OT-1042` })
     await expect(page.getByRole('status').filter({ hasText: 'Link copied.' })).toHaveCount(0)
 
     await page.goto(`/ops/tickets/${CLOSED_1028}`)

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { shareLink, ticketLink } from './share'
+import { shareLink, ticketLink, ticketNumber } from './share'
 
 function device({ coarse, share }: { coarse: boolean; share?: () => Promise<void> }) {
   vi.stubGlobal('matchMedia', () => ({ matches: coarse }))
@@ -16,8 +16,21 @@ afterEach(() => {
 })
 
 describe('sharing a ticket', () => {
-  it('builds the link from the current address', () => {
-    expect(ticketLink('abc')).toBe(`${window.location.origin}/t/abc`)
+  it('builds the link from the current address and the ticket number', () => {
+    expect(ticketLink('OT-1042')).toBe(`${window.location.origin}/t/OT-1042`)
+  })
+
+  it('reads a ticket number however it was typed', () => {
+    for (const typed of ['OT-0123', 'ot-0123', 'OT-123', 'OT0123', '123', '0123', ' OT-123 ']) {
+      expect(ticketNumber(typed)).toBe(123)
+    }
+    expect(ticketNumber('OT-1042')).toBe(1042)
+  })
+
+  it('leaves anything else alone', () => {
+    for (const typed of ['66666666-6666-4666-8666-000000001042', 'not-a-ticket', 'OT-', '', 'OT-12a', '1234567890']) {
+      expect(ticketNumber(typed)).toBeNull()
+    }
   })
 
   it('opens the share sheet on a phone', async () => {
