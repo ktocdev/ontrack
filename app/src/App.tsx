@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router'
 import { router } from './app/router'
 import { AuthProvider } from './auth/AuthProvider'
 import { ToastProvider } from './components/Toast'
+import { UpdateBar } from './components/UpdateBar'
 import { useAppUpdate } from './pwa/useAppUpdate'
 import { ThemeProvider } from './theme/ThemeProvider'
 
@@ -34,16 +35,5 @@ export default function App() {
 function UpdatePrompt() {
   const update = useAppUpdate()
   if (!update.needRefresh) return null
-  return (
-    <div
-      role="status"
-      className="fixed inset-x-4 z-50 mx-auto flex max-w-[480px] items-center justify-between gap-3 rounded-input bg-brand-strong px-4 py-3 text-on-brand shadow-raised"
-      style={{ bottom: 'calc(84px + max(8px, var(--safe-bottom)))' }}
-    >
-      <span className="text-14 font-semibold">A new version is ready.</span>
-      <button type="button" className="min-h-tap rounded-control px-3 font-bold" onClick={update.applyUpdate}>
-        Update
-      </button>
-    </div>
-  )
+  return <UpdateBar updating={update.updating} onUpdate={update.applyUpdate} />
 }
