@@ -226,7 +226,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - Closed tickets grouped by month with totals; closed ticket detail
 - A reopened ticket is an ordinary ticket with a Reopened badge
 - Push notifications: subscribe on install, store per device, Edge Function `send-push` fired by database triggers for new ticket, status change, new update visible to the restaurant, reopen. Email as well as push, on by default, with its own switch. A Notifications section on Profile to turn each kind on or off
-- One lasting link per ticket, `/t/<id>`, which opens the right screen for whoever taps it, since `/tickets/:id` is for managers only. A signed-out person goes through sign-in and back, and the link grants nothing: someone who can't see the ticket gets the same refusal as today. Push and email notifications use it, built from the group's own address
+- One lasting link per ticket, `/t/OT-1042` (OT-62; it was `/t/<id>` until then, and those links still open), which opens the right screen for whoever taps it, since `/tickets/:id` is for managers only. A signed-out person goes through sign-in and back, and the link grants nothing: someone who can't see the ticket gets the same refusal as today. Push and email notifications use it, built from the group's own address. The number is forgiving to type (`ot-1042`, `OT-01042` and `1042` open the same ticket) and is turned into the ticket under RLS, so it grants no more than the id did
 - Share link on a ticket, in the ellipsis menu from OT-33: the phone's share sheet (Messages, Copy and so on), or on a computer it copies the link and confirms. No board draws it
 - Empty states for the dashboard and Closed tab; loading skeleton for the card feed
 
@@ -302,7 +302,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - **A manager's ticket header has only its menu (from feedback, Nov 2, 2026; OT-57):** Edit ticket, Close ticket and Share link replace the board's Edit link, which left the header crowded. Close ticket stays on Edit ticket too. Closing from the menu stays on the ticket, which becomes its Closed ticket screen.
 - **Share link (OT-43)** is on every ticket screen, in a menu on its header, including closed tickets. A phone gets its share sheet and a computer copies the link and confirms; the choice follows whether the device has a coarse pointer, since desktop browsers also offer a share sheet. The message carries the ticket number and title, so whoever shares it decides who reads those.
 - **`send-push` gets its own security check in OT-45,** since it runs with the service key, then the audit (OT-55) and code quality pass (OT-56) come before the done test, so the done test covers their fixes.
-- **`/t/<id>` has no screen to open for admin and leadership until Phase 7,** when their ticket views arrive. Until then they get the no-access screen, whatever the database would let them read.
+- **`/t/OT-1042` has no screen to open for admin and leadership until Phase 7,** when their ticket views arrive. Until then they get the no-access screen, whatever the database would let them read.
 - **Roles & rights' "everyone affected is notified" stays off.** Changes to rights aren't among this phase's notifications, so that open item carries on.
 - **View as:** each Ops screen scopes its data from `useUser()` and hides writes when `viewingAs` is set.
 
