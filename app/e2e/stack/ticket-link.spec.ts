@@ -14,7 +14,7 @@ const menu = (page: Page) => page.getByRole('button', { name: 'More options for 
 async function signInForm(page: Page, email: string) {
   await expect(page).toHaveURL(/\/sign-in$/)
   await page.getByLabel('Work email').fill(email)
-  await page.getByLabel('Password').fill(SEED_PASSWORD)
+  await page.getByLabel('Password', { exact: true }).fill(SEED_PASSWORD)
   await page.getByRole('button', { name: 'Sign in' }).click()
 }
 

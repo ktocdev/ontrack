@@ -135,9 +135,8 @@ function AccountForm({
             />
             <PasswordRules password={password} />
           </div>
-          <Input
+          <PasswordField
             label="Confirm password"
-            type="password"
             autoComplete="new-password"
             maxLength={MAX_PASSWORD}
             value={confirm}

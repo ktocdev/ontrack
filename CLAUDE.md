@@ -169,6 +169,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-57 | From feedback: Edit, Close and Share in the menu on a manager's ticket, with Close still on Edit ticket |
 | OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
 | OT-59 | Google sign-in, if the group is on Google Workspace: try it on an installed iPhone app first, then Google alongside invites, with no password for people on the company domain |
+| OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

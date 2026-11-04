@@ -101,11 +101,11 @@ test('a reset from the email: new password works, the old one and the link do no
     await page.getByRole('link', { name: 'Sign in' }).click()
     await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
     await page.getByLabel('Work email').fill(EMAIL)
-    await page.getByLabel('Password').fill(SEED_PASSWORD)
+    await page.getByLabel('Password', { exact: true }).fill(SEED_PASSWORD)
     await page.getByRole('button', { name: 'Sign in' }).click()
     await expect(page.getByText("That email and password don't match.")).toBeVisible()
 
-    await page.getByLabel('Password').fill(NEW_PASSWORD)
+    await page.getByLabel('Password', { exact: true }).fill(NEW_PASSWORD)
     await page.getByRole('button', { name: 'Sign in' }).click()
     await expect(page.getByRole('link', { name: 'Your profile' })).toBeVisible()
 

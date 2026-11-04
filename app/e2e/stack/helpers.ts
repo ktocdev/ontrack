@@ -67,7 +67,7 @@ export async function bigPhoto(page: Page, name = 'big.png') {
 export async function signIn(page: Page, email: string, password = SEED_PASSWORD) {
   await page.goto('/sign-in')
   await page.getByLabel('Work email').fill(email)
-  await page.getByLabel('Password').fill(password)
+  await page.getByLabel('Password', { exact: true }).fill(password)
   await page.getByRole('button', { name: 'Sign in' }).click()
   if (email === ADMIN_EMAIL) await passTwoStep(page)
   await expect(page.getByRole('link', { name: 'Your profile' })).toBeVisible()
