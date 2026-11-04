@@ -34,7 +34,7 @@ describe('the ticket thread', () => {
       ],
       'maya',
       names,
-      now,
+      { now },
     )
     expect(items.map((i) => (i.type === 'event' ? [i.text, i.when] : [i.who, i.when, i.mine]))).toEqual([
       ['Opened by you', 'Oct 19, 2026, 9:12 AM'],
@@ -44,8 +44,16 @@ describe('the ticket thread', () => {
     ])
   })
 
+  it('says every Ops manager was told, on Ops only, when a manager opened it', () => {
+    const opened = [update('1', 'created', '09:12', MAYA)]
+    expect(threadItems(opened, 'bert', names, { now, ops: true })[0]).toMatchObject({
+      text: 'Opened by Maya Reyes · all Ops managers notified',
+    })
+    expect(threadItems(opened, 'bert', names, { now })[0]).toMatchObject({ text: 'Opened by Maya Reyes' })
+  })
+
   it('names who did it when it was not you', () => {
-    const [opened] = threadItems([update('1', 'created', '09:12', BERT)], 'maya', names, now)
+    const [opened] = threadItems([update('1', 'created', '09:12', BERT)], 'maya', names, { now })
     expect(opened).toMatchObject({ text: 'Opened by Bert Velilla' })
   })
 
@@ -57,7 +65,7 @@ describe('the ticket thread', () => {
       ],
       'maya',
       names,
-      now,
+      { now },
     )
     expect(items.map((i) => i.type === 'event' && i.text)).toEqual(['Status Waiting on parts', 'Nobody on this now'])
   })
@@ -70,7 +78,7 @@ describe('the ticket thread', () => {
       ],
       'maya',
       names,
-      now,
+      { now },
     )
     expect(items.map((i) => (i.type === 'event' ? i.text : i.text))).toEqual([
       'Status In progress',
@@ -81,7 +89,7 @@ describe('the ticket thread', () => {
   })
 
   it('stands up to someone whose account is gone', () => {
-    const items = threadItems([update('1', 'message', '11:59', null, { body: 'Hello' })], 'maya', names, now)
+    const items = threadItems([update('1', 'message', '11:59', null, { body: 'Hello' })], 'maya', names, { now })
     expect(items[0]).toMatchObject({ who: 'Someone', when: '1m ago', mine: false })
   })
 

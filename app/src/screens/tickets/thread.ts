@@ -6,7 +6,8 @@ import { ago } from './tickets'
  * Turns a ticket's updates into what the thread shows. System events become one
  * line each, and someone taking a ticket and a status change made together become one line,
  * as on the board. A closing comment or a reopen reason is the event's line and then
- * a message, since a person wrote it.
+ * a message, since a person wrote it. On Ops (`ops`), a ticket a manager opened says
+ * every Ops manager was told, as the board does; a manager's board doesn't.
  */
 
 export type Update = {
@@ -81,7 +82,12 @@ function eventTime(d: Date, previous: Date | null) {
   return `${date}, ${clock(d)}`
 }
 
-export function threadItems(updates: Update[], me: string, names: Map<string, string>, now = new Date()): ThreadItem[] {
+export function threadItems(
+  updates: Update[],
+  me: string,
+  names: Map<string, string>,
+  { now = new Date(), ops = false }: { now?: Date; ops?: boolean } = {},
+): ThreadItem[] {
   const items: ThreadItem[] = []
   const isMe = (u: Update) => u.author?.id === me
   const by = (u: Update) => (isMe(u) ? 'you' : (u.author?.full_name ?? 'someone'))
@@ -119,7 +125,11 @@ export function threadItems(updates: Update[], me: string, names: Map<string, st
         message(u)
         break
       case 'created':
-        event(u.id, `Opened by ${by(u)}`, u.created_at)
+        event(
+          u.id,
+          `Opened by ${by(u)}${ops && u.author?.role === 'manager' ? ' · all Ops managers notified' : ''}`,
+          u.created_at,
+        )
         break
       case 'closed':
         event(u.id, `Closed by ${by(u)}`, u.created_at)

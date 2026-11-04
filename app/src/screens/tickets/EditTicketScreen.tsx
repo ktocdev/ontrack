@@ -27,7 +27,8 @@ import { useTicket } from './useTicket'
  * Manager · Edit / close ticket (design/screens/Edit-Ticket). Description, equipment,
  * a photo and urgency, as the board has them, plus Title, which it leaves out, then
  * Close ticket with a confirm sheet. After closing it stays here with the fields off,
- * as the board draws it; this also offers View closed ticket. A ticket that was already
+ * as the board draws it; this also offers View closed ticket. "Ops has been notified"
+ * shows only when someone is on it, since only they are told of a manager's close. A ticket that was already
  * closed has nothing to edit and goes to its own screen.
  */
 export function EditTicketScreen() {
@@ -124,7 +125,12 @@ function EditForm({
       <ScreenBody className="gap-3.5 pb-4 pt-5">
         {closed && (
           <Notice>
-            <b>Ticket closed.</b> {closedNote ? `Your comment: "${closedNote}"` : 'Ops will see it as closed.'}
+            <b>Ticket closed.</b>{' '}
+            {closedNote
+              ? `Your comment: "${closedNote}"`
+              : ticket.assignee
+                ? 'Ops has been notified.'
+                : 'Ops will see it as closed.'}
           </Notice>
         )}
         {save.isError && (

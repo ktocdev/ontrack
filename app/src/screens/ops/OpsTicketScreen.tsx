@@ -133,7 +133,7 @@ export function OpsTicketScreen() {
       },
     })
 
-  const items = threadItems(data.updates, user.id, data.names)
+  const items = threadItems(data.updates, user.id, data.names, { ops: true })
   const count = items.filter((i) => i.type === 'message').length
   const onTicket = data.photos.filter((p) => !p.update_id)
   const othersTicket = !!ticket.assignee_id && ticket.assignee_id !== user.id
