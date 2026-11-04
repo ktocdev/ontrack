@@ -8,7 +8,7 @@ Mobile-first PWA for equipment and repair tickets across the Four Corners restau
 - **Backend:** Supabase Postgres with row-level security on every table, Supabase Auth (email + password, invite only, TOTP), Supabase Storage, Edge Functions (Deno) only for jobs that need a secret or a server.
 - **Hosting:** Cloudflare Workers with static assets (`app/wrangler.jsonc`), connected through Workers Builds: `main` is production, every other branch gets a preview URL and a PR comment.
 - **Tests:** Vitest for logic, pgTAP for RLS policies, Playwright on Chromium and WebKit for flows. WebKit stands in for an iPhone. Playwright has two suites: `e2e/` runs on the mock build (no backend, runs locally), `e2e/stack/` runs against the seeded local Supabase stack (CI only, since this machine has no Docker).
-- **CI:** `.github/workflows/ci.yml` runs on every PR and on `main`, except when only Markdown, `handoff/` or `design/` changed: the app (lint, format check, typecheck, Vitest, build, mock-build Playwright), the flows (`supabase start`, then `e2e/stack` Playwright against it, one job per browser) and the database (`supabase db start`, pgTAP, `db lint`, type generation, and a diff of the generated types against the committed file). `supabase-deploy.yml` pushes migrations and deploys functions to the hosted project on merge once the Supabase secrets exist.
+- **CI:** `.github/workflows/ci.yml` runs on every PR and on `main`, except when only Markdown, `handoff/` or `design/` changed: the app (lint, format check, typecheck, Vitest, build, mock-build Playwright), the flows (`supabase start`, then `e2e/stack` Playwright against it in Playwright's own Docker image on the runner's network, one job per browser) and the database (`supabase db start`, pgTAP, `db lint`, type generation, and a diff of the generated types against the committed file). `supabase-deploy.yml` pushes migrations and deploys functions to the hosted project on merge once the Supabase secrets exist.
 
 ## Layout
 
@@ -174,6 +174,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
 | OT-62 | From feedback (Nov 4, 2026): ticket links by number, `/t/OT-1042`, forgiving to type; older links with the id still open |
 | OT-63 | From feedback (Nov 4, 2026): a shorter header on a manager's Open tickets and In-house: no search and no Front / Back, and the ellipsis menu beside the title |
+| OT-64 | Faster CI: the flows run in Playwright's own Docker image, since installing WebKit's system packages from Ubuntu's mirror took 12 to 22 minutes |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

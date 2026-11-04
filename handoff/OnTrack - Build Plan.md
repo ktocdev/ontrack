@@ -269,6 +269,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
 | OT-62 | From feedback (Nov 4, 2026): ticket links by number, `/t/OT-1042`, forgiving to type; older links with the id still open |
 | OT-63 | From feedback (Nov 4, 2026): a shorter header on a manager's Open tickets and In-house: no search and no Front / Back, and the ellipsis menu beside the title |
+| OT-64 | Faster CI: the flows run in Playwright's own Docker image, since installing WebKit's system packages from Ubuntu's mirror took 12 to 22 minutes |
 | OT-47 | The done test as one flow; the phase note |
 
 **What's left, in order (Nov 4, 2026)**

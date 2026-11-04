@@ -94,13 +94,19 @@ jobs:
       - run: npm ci
         working-directory: app
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
-        working-directory: app
-
+      # The flows run in Playwright's own image, which has the browsers and their system
+      # packages already: installing WebKit's from Ubuntu's mirror once took 12 to 22
+      # minutes. The image's tag follows the version in the lockfile. Host networking
+      # reaches the stack and Mailpit on 127.0.0.1, as on the runner itself.
       - name: Playwright flows
-        run: npm run test:e2e:stack -- --project=${{ matrix.browser }}
         working-directory: app
+        run: |
+          PW=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")
+          docker run --rm --network host --ipc host \
+            -v "$PWD:/app" -w /app \
+            -e CI -e VITE_SUPABASE_URL -e VITE_SUPABASE_ANON_KEY \
+            "mcr.microsoft.com/playwright:v$PW-noble" \
+            npm run test:e2e:stack -- --project=${{ matrix.browser }}
 
       # Always: the report carries screenshots of screens on real data for design review.
       - uses: actions/upload-artifact@v4
