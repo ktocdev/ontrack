@@ -18,7 +18,7 @@ async function openEdit(page: Page) {
 }
 
 async function newTicket(page: Page, title: string) {
-  await page.goto('/tickets/new')
+  await page.goto('/tickets/new?area=boh')
   await page.getByRole('link', { name: /^Refrigeration/ }).click()
   await page.getByLabel('Title').fill(title)
   await page.getByLabel('Description').fill('Bin is leaking.')

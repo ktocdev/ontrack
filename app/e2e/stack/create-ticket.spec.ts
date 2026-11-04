@@ -20,8 +20,7 @@ test('a manager picks a category and creates a ticket, and another manager canno
   await expect(page.getByText(/QR/)).toHaveCount(0)
 
   const area = page.getByRole('radiogroup', { name: 'Area' })
-  await expect(area.getByRole('radio', { name: 'Back of House' })).toHaveAttribute('aria-checked', 'true')
-  await area.getByRole('radio', { name: 'Front of House' }).click()
+  await expect(area.getByRole('radio', { name: 'Front of House' })).toHaveAttribute('aria-checked', 'true')
   await expect(page.getByRole('link', { name: /^POS & tech/ })).toBeVisible()
   await area.getByRole('radio', { name: 'Back of House' }).click()
   await page.waitForTimeout(300)
@@ -54,6 +53,7 @@ test('a manager picks a category and creates a ticket, and another manager canno
   const card = page.getByRole('link', { name: new RegExp(title) })
   await expect(card).toContainText('Back of House · Refrigeration')
   await expect(card).toContainText('Not picked up yet')
+  await expect(card).toContainText('New ticket.')
 
   const rows = async (email: string) => {
     const token = await tokenFor(request, email)
@@ -77,7 +77,7 @@ test('a manager picks a category and creates a ticket, and another manager canno
 test('a failed save keeps everything and says so', async ({ page }, testInfo) => {
   const title = `Hood light out ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, 'ari.kim@example.com')
-  await page.goto('/tickets/new')
+  await page.goto('/tickets/new?area=boh')
   await page.getByRole('link', { name: /^Ventilation/ }).click()
   await page.getByLabel('Title').fill(title)
   await page.getByLabel('Description').fill('Left side of the hood.')
@@ -108,7 +108,6 @@ test('a failed save keeps everything and says so', async ({ page }, testInfo) =>
 test('coming back from the form keeps the area, and a bad category is a 404', async ({ page }) => {
   await signIn(page, 'ari.kim@example.com')
   await page.goto('/tickets/new')
-  await page.getByRole('radio', { name: 'Front of House' }).click()
   await page.getByRole('link', { name: /^Lighting/ }).click()
   await expect(page.getByText('Front of House › Lighting')).toBeVisible()
   await page.getByRole('link', { name: 'Back to categories' }).click()

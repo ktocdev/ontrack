@@ -13,6 +13,8 @@ self.addEventListener('push', (event) => {
       body: note.body || '',
       tag: note.tag,
       icon: '/pwa-192.png',
+      // Android's status bar icon: the check alone, white on transparent (scripts/icons.mjs).
+      badge: '/badge-96.png',
       vibrate: [200, 100, 200],
       data: { url: note.url || '/' },
     }),

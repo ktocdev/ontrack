@@ -25,7 +25,7 @@ import {
  * role, and /admin/roles/edit, where a cell changes with a tap and Save confirms
  * who it affects. Editing has its own route because the board swaps the tab bar
  * for the save buttons. Admin rights are locked, in the database as well. The
- * board says people are notified; that waits for notifications in Phase 3. The
+ * board says people are notified, which stays off: rights changes notify nobody. The
  * group's settings sit under Edit defaults; no board draws them.
  */
 const ROLE_HEAD: Record<AppRole, string> = { manager: 'Mgr', ops: 'Ops', leadership: 'Lead', admin: 'Admin' }

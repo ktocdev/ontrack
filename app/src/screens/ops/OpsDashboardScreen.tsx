@@ -120,6 +120,7 @@ export function OpsDashboardScreen() {
                     }
                     urgent={t.urgency === 'urgent'}
                     walkthrough={t.source === 'walkthrough'}
+                    createdAt={t.created_at}
                     meta={[
                       t.category && AREA_SHORT[t.category.area],
                       t.category?.name,

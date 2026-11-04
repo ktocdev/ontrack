@@ -8,10 +8,12 @@ import { pushSupport } from '../../pwa/push'
 import { kindsFor, useNotificationPrefs, usePushDevice, useTestPush } from './useNotifications'
 
 /**
- * Profile · Notifications, which no board draws. A switch for this device, a test, one for
- * email, and one per kind of notification, which covers both. Email and the kinds belong to
- * the person, on all their devices. Which kinds show follows who is sent what. Someone who
- * only wants email leaves This device off. They save as they change.
+ * Profile · Notifications, which no board draws. A switch for push on this device, a test,
+ * one for email, and one per kind of notification, which covers both. Email and the kinds
+ * belong to the person, on all their devices. Which kinds show follows who is sent what.
+ * Someone who only wants email leaves push off. They save as they change. Push comes back
+ * on after signing back in (pwa/push.ts). If the device can't be read, the row says so
+ * rather than Off.
  */
 const WHY_NOT = {
   'not-configured': 'Notifications aren’t set up for this app yet.',
@@ -32,6 +34,13 @@ export function NotificationsSection() {
   const busy = on.isPending || off.isPending
   const emailOn = !prefs.data?.has('email')
   const offLine = kinds.length && emailOn ? 'Off. You’ll still get email.' : 'Off'
+  const deviceLine = device.isError
+    ? 'Couldn’t check this device. Close and reopen the app to try again.'
+    : device.isPending
+      ? 'Checking…'
+      : isOn
+        ? 'On'
+        : offLine
 
   const changeDevice = (next: boolean) => {
     if (next) {
@@ -63,14 +72,14 @@ export function NotificationsSection() {
       <SectionLabel className="-mb-0.5">Notifications</SectionLabel>
       <ListCard>
         <ListRow
-          title="This device"
-          subtitle={support === 'ready' ? (isOn ? 'On' : offLine) : WHY_NOT[support]}
+          title="Push notifications on this device"
+          subtitle={support === 'ready' ? deviceLine : WHY_NOT[support]}
           trailing={
             support === 'ready' ? (
               <Switch
-                label="Notifications on this device"
+                label="Push notifications on this device"
                 checked={isOn}
-                disabled={busy || device.isPending}
+                disabled={busy || device.isPending || device.isError}
                 onCheckedChange={changeDevice}
               />
             ) : undefined

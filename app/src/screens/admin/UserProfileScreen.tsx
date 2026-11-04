@@ -36,7 +36,7 @@ import {
  * View as, per-person rights, and sign-in. A switch that matches the role's
  * default stores no override, so later changes to the default still reach them.
  * The board's "Signed in on" row and "Last changed" date wait for data Supabase
- * doesn't give the app, and "is notified" waits for notifications. Deactivate and Delete have no board, so they follow the
+ * doesn't give the app, and "is notified" stays off, since rights changes notify nobody. Deactivate and Delete have no board, so they follow the
  * confirm-sheet pattern at the bottom. Admins' rights are locked.
  */
 export function UserProfileScreen() {

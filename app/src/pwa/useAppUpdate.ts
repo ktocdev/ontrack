@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 /** One hourly check per page, even if registration runs twice (StrictMode, hot reload). */
@@ -8,8 +9,12 @@ let onShow: (() => void) | undefined
  * Registers the service worker and exposes whether a newer build is waiting.
  * The worker is built with registerType 'prompt' so a user mid-form is never
  * reloaded under them; the shell shows a small Update affordance instead.
+ * Update waits for the new worker to take over, which can take a few seconds, so
+ * `updating` says it is under way, and the page reloads itself if the worker never
+ * reports back (another tab took it over first, or the message was lost).
  */
 export function useAppUpdate() {
+  const [updating, setUpdating] = useState(false)
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     offlineReady: [offlineReady, setOfflineReady],
@@ -33,7 +38,13 @@ export function useAppUpdate() {
   return {
     needRefresh,
     offlineReady,
-    applyUpdate: () => updateServiceWorker(true),
+    updating,
+    applyUpdate: () => {
+      if (updating) return
+      setUpdating(true)
+      window.setTimeout(() => window.location.reload(), 10_000)
+      void updateServiceWorker(true)
+    },
     dismiss: () => {
       setNeedRefresh(false)
       setOfflineReady(false)

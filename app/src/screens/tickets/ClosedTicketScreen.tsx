@@ -24,7 +24,7 @@ import type { useTicket } from './useTicket'
  * from this. Contractor and Cost appear only if the database returns them, which takes
  * see_costs. After reopening it stays put with a banner and the new step, as the board
  * draws it; TicketScreen holds what it showed so the refreshed ticket doesn't replace it.
- * The board's promise of a notification when work starts waits for Phase 3. Opened from
+ * The banner promises a notification when work starts, as the board does. Opened from
  * the Closed tickets list (?from=closed), the back arrow returns there.
  */
 type Data = NonNullable<ReturnType<typeof useTicket>['data']>
@@ -111,7 +111,8 @@ export function ClosedTicketScreen({
         </div>
         {reopened !== null && (
           <Notice tone="waiting">
-            <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list.
+            <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list. You&apos;ll get a notification when work
+            starts.
           </Notice>
         )}
         <h2 className="-mt-1 font-display text-26 font-bold leading-[1.2] tracking-[-0.02em]">{ticket.title}</h2>
