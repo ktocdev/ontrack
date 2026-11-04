@@ -66,6 +66,7 @@ import { Switch, SwitchRow } from '../../components/Switch'
 import { ThemeControl } from '../../components/ThemeControl'
 import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
+import { UpdateBar } from '../../components/UpdateBar'
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -143,6 +144,8 @@ export function KitPage() {
   const [seg, setSeg] = useState<'all' | 'foh' | 'boh'>('all')
   const [sw, setSw] = useState(true)
   const [kitInternal, setKitInternal] = useState(false)
+  // Opened as the kit loads, so the new-ticket ring shows for its 5 minutes.
+  const [kitOpenedAt] = useState(() => new Date().toISOString())
   const [kitOrderIds, setKitOrderIds] = useState(['a', 'b', 'c'])
   const [sheet, setSheet] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
@@ -349,7 +352,8 @@ export function KitPage() {
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
               <Notice tone="waiting">
-                <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list.
+                <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list. You&apos;ll get a notification when
+                work starts.
               </Notice>
               <Button variant="tall" icon={<IconReopen size={20} />}>
                 Reopen ticket
@@ -473,6 +477,24 @@ export function KitPage() {
                 walkthrough
                 meta="BOH · Refrigeration · 1h ago"
                 worker="Bert Velilla"
+              />
+              <OpsTicketCard
+                to="#"
+                displayId="OT-1051"
+                title="Ice machine leaking"
+                status="open"
+                meta="BOH · Refrigeration · just now"
+                createdAt={kitOpenedAt}
+              />
+              <TicketCard
+                to="#"
+                displayId="OT-1051"
+                title="Ice machine leaking"
+                status="open"
+                place="Back of House · Refrigeration · Ice machine"
+                who="Not picked up yet"
+                when="Created just now"
+                createdAt={kitOpenedAt}
               />
               <TaskList>
                 <TaskRow
@@ -736,6 +758,8 @@ export function KitPage() {
                   <ButtonSpinner /> Saving…
                 </span>
               </div>
+              <UpdateBar fixed={false} updating={false} onUpdate={() => toast.show('Updating.')} />
+              <UpdateBar fixed={false} updating onUpdate={() => undefined} />
               <CardFeedSkeleton count={2} />
               <GroupedListSkeleton rows={2} groups={2} />
               <PeopleListSkeleton count={3} />

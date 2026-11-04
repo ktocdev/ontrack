@@ -200,6 +200,7 @@ export function OpenTicketsScreen() {
                   restaurant={place}
                   who={t.assignee ? `${t.assignee.full_name} is on it` : 'Not picked up yet'}
                   when={activityLine(t)}
+                  createdAt={t.created_at}
                 />
               )
             })
