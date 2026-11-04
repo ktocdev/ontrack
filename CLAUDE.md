@@ -173,6 +173,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-59 | Google sign-in, if the group is on Google Workspace: try it on an installed iPhone app first, then Google alongside invites, with no password for people on the company domain |
 | OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
 | OT-62 | From feedback (Nov 4, 2026): ticket links by number, `/t/OT-1042`, forgiving to type; older links with the id still open |
+| OT-63 | From feedback (Nov 4, 2026): a manager's search starts collapsed behind a search button, on Open tickets and In-house |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record
