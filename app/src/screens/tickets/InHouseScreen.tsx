@@ -3,30 +3,26 @@ import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
-import { SearchField } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
 import { CountBadge } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
-import { Segmented } from '../../components/Segmented'
 import { ConfirmSheet } from '../../components/Sheet'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
 import { IconChevronDown, IconTrash, IconWarning } from '../../components/icons'
-import { matchesSearch } from './tickets'
 import { useDeleteTask, useInHouse, useSetTaskDone } from './useInHouse'
 import { useOpenTickets } from './useOpenTickets'
 
 /**
  * Manager · In-house tasks (design/screens/Main-InHouse). What the restaurant fixes
- * itself, with search and Front / Back whose counts follow the search. Checking a task
- * moves it to Closed, and unchecking brings it back. The board also draws Delete on a
- * closed row, but a checked-off task is a record, so only an open one offers it. Under
- * View as the boxes only show their state.
+ * itself, in one list; the board's search and Front / Back are left out, as on Open
+ * tickets (from feedback, OT-63). Checking a task moves it to Closed, and unchecking
+ * brings it back. The board also draws Delete on a closed row, but a checked-off task
+ * is a record, so only an open one offers it. Under View as the boxes only show their
+ * state.
  */
-type Area = 'all' | 'foh' | 'boh'
-
 const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
 
 export function InHouseScreen() {
@@ -37,20 +33,14 @@ export function InHouseScreen() {
   const setDone = useSetTaskDone(ids)
   const remove = useDeleteTask()
   const toast = useToast()
-  const [search, setSearch] = useState('')
-  const [area, setArea] = useState<Area>('all')
   const [deleting, setDeleting] = useState<{ id: string; title: string } | null>(null)
   const [deleted, setDeleted] = useState(false)
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const placeOf = new Map(restaurants.map((r) => [r.id, r]))
   const all = data ?? []
-  const found = all.filter((t) => matchesSearch(search, [t.title, t.origin_label]))
-  const count = (a: Area) => found.filter((t) => !t.done_at && (a === 'all' || t.area === a)).length
-  const shown = area === 'all' ? found : found.filter((t) => t.area === area)
-  const open = shown.filter((t) => !t.done_at)
-  const closed = shown.filter((t) => t.done_at)
-  const searching = search.trim() !== ''
+  const open = all.filter((t) => !t.done_at)
+  const closed = all.filter((t) => t.done_at)
 
   const toggle = (id: string, done: boolean) => {
     setDeleted(false)
@@ -122,34 +112,12 @@ export function InHouseScreen() {
               to: '/tickets/in-house',
               label: (
                 <>
-                  In-house <CountBadge count={all.filter((t) => !t.done_at).length} active />
+                  In-house <CountBadge count={open.length} active />
                 </>
               ),
             },
           ]}
         />
-        {!isError && (
-          <>
-            <SearchField
-              label="Search in-house tasks"
-              placeholder="Search in-house tasks"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onClear={() => setSearch('')}
-            />
-            <Segmented
-              size="sm"
-              label="Area"
-              value={area}
-              onChange={setArea}
-              options={[
-                { value: 'all', label: `All · ${count('all')}` },
-                { value: 'foh', label: `Front · ${count('foh')}` },
-                { value: 'boh', label: `Back · ${count('boh')}` },
-              ]}
-            />
-          </>
-        )}
       </ScreenHeader>
 
       {isError ? (
@@ -178,11 +146,9 @@ export function InHouseScreen() {
                 <TaskList>{open.map(row)}</TaskList>
               ) : (
                 <div className="flex-none rounded-input border border-border bg-surface px-4 py-[18px] text-14 leading-[1.45] text-text-secondary">
-                  {searching
-                    ? `No tasks to fix match "${search.trim()}".`
-                    : closed.length > 0
-                      ? 'Nothing left to fix. Checked-off tasks are under Closed.'
-                      : 'Nothing to fix right now.'}
+                  {closed.length > 0
+                    ? 'Nothing left to fix. Checked-off tasks are under Closed.'
+                    : 'Nothing to fix right now.'}
                 </div>
               )}
               {closed.length > 0 && (

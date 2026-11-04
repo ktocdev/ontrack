@@ -72,16 +72,14 @@ test('a manager reports a problem with a photo, and a manager elsewhere cannot s
     expect(path.startsWith(`${ticketId}/`)).toBe(true)
     expect(await maya.canSign(path)).toBe(true)
 
-    // Dana at Porter, on their own phone: not in the list, not by search, not by link.
+    // Dana at Porter, on their own phone: not in the list, not by link.
     const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
     const phone = await context.newPage()
     await signIn(phone, DANA)
     await expect(phone.getByText('Porter', { exact: true })).toBeVisible()
     await expect(phone.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
     await expect(phone.getByRole('link', { name: new RegExp(title) })).toHaveCount(0)
-    await phone.getByRole('searchbox', { name: 'Search tickets' }).fill(title)
-    await expect(phone.getByRole('heading', { name: `No open tickets match "${title}"` })).toBeVisible()
-    await testInfo.attach('dana-search', { body: await phone.screenshot(), contentType: 'image/png' })
+    await testInfo.attach('dana-list', { body: await phone.screenshot(), contentType: 'image/png' })
     await phone.goto(`/tickets/${ticketId}`)
     await expect(phone.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
     await expect(phone.getByText(title)).toHaveCount(0)

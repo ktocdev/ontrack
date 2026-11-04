@@ -26,6 +26,10 @@ test('a manager sees their open tickets with the latest activity first, reopened
   const tabs = page.getByRole('navigation', { name: 'Ticket or in-house view' })
   await expect(tabs.getByRole('link', { name: 'Tickets 5' })).toBeVisible()
   await expect(tabs.getByRole('link', { name: 'In-house 5' })).toBeVisible()
+  // No search or Front / Back above the list (OT-63); the menu sits beside the title.
+  await expect(page.getByRole('searchbox')).toHaveCount(0)
+  await expect(page.getByRole('radiogroup', { name: 'Area' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'More ticket options' })).toBeVisible()
   await page.waitForTimeout(300)
   await testInfo.attach('open-tickets', { body: await page.screenshot(), contentType: 'image/png' })
 
@@ -33,51 +37,12 @@ test('a manager sees their open tickets with the latest activity first, reopened
   await expect(page).toHaveURL(/\/tickets\/66666666-6666-4666-8666-000000001042$/)
 })
 
-test('another restaurant’s tickets stay out, whatever is searched', async ({ page }) => {
+test('another restaurant’s tickets stay out', async ({ page }) => {
   await signIn(page, 'ari.kim@example.com')
   await expect(page.getByText('Ranalli’s Logan Square')).toBeVisible()
   await expect(cards(page).first()).toBeVisible()
-  await page.getByRole('searchbox', { name: 'Search tickets' }).fill('Door gasket')
-  await expect(page.getByRole('heading', { name: 'No open tickets match "Door gasket"' })).toBeVisible()
-})
-
-test('Front and Back narrow the list, and their counts follow the search', async ({ page }) => {
-  await signIn(page, 'maya.reyes@example.com')
-  const area = page.getByRole('radiogroup', { name: 'Area' })
-  await expect(area.getByRole('radio', { name: 'All · 5' })).toHaveAttribute('aria-checked', 'true')
-
-  await area.getByRole('radio', { name: 'Front · 2' }).click()
-  await expect(cards(page)).toHaveCount(2)
-  await area.getByRole('radio', { name: 'Back · 3' }).click()
-  await expect(cards(page)).toHaveCount(3)
-  await area.getByRole('radio', { name: 'All · 5' }).click()
-
-  await page.getByRole('searchbox', { name: 'Search tickets' }).fill('cooler')
-  await expect(area.getByRole('radio', { name: 'All · 2' })).toBeVisible()
-  await expect(area.getByRole('radio', { name: 'Front · 0' })).toBeVisible()
-  await expect(cards(page)).toHaveCount(2)
-
-  await area.getByRole('radio', { name: 'Front · 0' }).click()
-  await expect(page.getByRole('heading', { name: 'Nothing open in Front of House' })).toBeVisible()
-  await area.getByRole('radio', { name: 'All · 2' }).click()
-
-  await page.getByRole('searchbox', { name: 'Search tickets' }).fill('1042')
-  await expect(cards(page)).toHaveCount(1)
-})
-
-test('a search with no match says so, and clearing brings the list back', async ({ page }, testInfo) => {
-  await signIn(page, 'maya.reyes@example.com')
-  const search = page.getByRole('searchbox', { name: 'Search tickets' })
-  await search.fill('freezer')
-  await expect(page.getByRole('heading', { name: 'No open tickets match "freezer"' })).toBeVisible()
-  await expect(page.getByText('5 open', { exact: true })).toBeVisible()
-  await expect(page.getByRole('radio', { name: 'All · 0' })).toBeVisible()
-  await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' })).toHaveCount(0)
-  await testInfo.attach('no-results', { body: await page.screenshot(), contentType: 'image/png' })
-
-  await page.getByRole('button', { name: 'Clear search', exact: true }).last().click()
-  await expect(search).toHaveValue('')
-  await expect(cards(page)).toHaveCount(5)
+  await expect(cards(page).filter({ hasText: 'Door gasket' })).toHaveCount(0)
+  await expect(cards(page).filter({ hasText: 'OT-1042' })).toHaveCount(0)
 })
 
 test('with nothing open it says so and offers Create ticket, without a QR button', async ({ page }, testInfo) => {
@@ -88,7 +53,6 @@ test('with nothing open it says so and offers Create ticket, without a QR button
   await signIn(page, 'maya.reyes@example.com')
   await expect(page.getByRole('heading', { name: 'No open tickets' })).toBeVisible()
   await expect(page.getByText('Everything at Federale’s Logan Square is working.')).toBeVisible()
-  await expect(page.getByRole('searchbox')).toHaveCount(0)
   await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' })).toHaveCount(0)
   await expect(page.getByText(/QR/)).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'More ticket options' })).toBeVisible()
@@ -122,14 +86,14 @@ test('it loads in the layout it found last time, so an empty list does not jump'
   await page.getByLabel('Work email').fill('maya.reyes@example.com')
   await page.getByLabel('Password', { exact: true }).fill(SEED_PASSWORD)
   await page.getByRole('button', { name: 'Sign in' }).click()
-  await expect(page.getByRole('searchbox')).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' })).toBeVisible()
   await expect(page.getByText('Loading open tickets')).toBeAttached()
   release()
   await expect(page.getByRole('heading', { name: 'No open tickets' })).toBeVisible()
 
   // It found nothing, so next time it loads with only the title.
   await holdAndReload()
-  await expect(page.getByRole('searchbox')).toHaveCount(0)
+  await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' })).toHaveCount(0)
   await expect(page.getByText('Loading open tickets')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'No open tickets' })).toHaveCount(0)
   release()
@@ -141,7 +105,7 @@ test('it loads in the layout it found last time, so an empty list does not jump'
   release()
   await expect(cards(page)).toHaveCount(5)
   await holdAndReload()
-  await expect(page.getByRole('searchbox')).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Ticket or in-house view' })).toBeVisible()
   await expect(page.getByText('Loading open tickets')).toBeAttached()
   release()
   await expect(cards(page)).toHaveCount(5)
@@ -170,7 +134,7 @@ test('View as shows that person’s tickets, and none of them are links', async 
   await expect(page.getByRole('button', { name: 'More ticket options' })).toHaveCount(0)
 })
 
-test('the menu beside the search leads to closed tickets, and back', async ({ page }, testInfo) => {
+test('the menu beside the title leads to closed tickets, and back', async ({ page }, testInfo) => {
   await signIn(page, 'maya.reyes@example.com')
   await page.getByRole('button', { name: 'More ticket options' }).click()
   await page.waitForTimeout(200)
