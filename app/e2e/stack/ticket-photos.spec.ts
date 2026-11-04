@@ -28,7 +28,7 @@ test('a ticket is created with a photo, shrunk to 1600px, and another manager ca
 }, testInfo) => {
   const title = `Cracked gasket ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, 'ari.kim@example.com')
-  await page.goto('/tickets/new')
+  await page.goto('/tickets/new?area=boh')
   await page.getByRole('link', { name: /^Refrigeration/ }).click()
   await page.getByLabel('Title').fill(title)
 

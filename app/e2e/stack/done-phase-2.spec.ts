@@ -45,6 +45,7 @@ test('a manager reports a problem with a photo, and a manager elsewhere cannot s
     // Maya, from the tab bar.
     await signIn(page, MAYA)
     await page.getByRole('link', { name: 'Create ticket', exact: true }).click()
+    await page.getByRole('radio', { name: 'Back of House' }).click()
     await page.getByRole('link', { name: /^Refrigeration/ }).click()
     await page.getByLabel('Title').fill(title)
     await page.getByLabel('Description').fill('Water under the sink by open.')

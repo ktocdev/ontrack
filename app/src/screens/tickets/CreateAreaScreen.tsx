@@ -14,14 +14,15 @@ import { useCategories } from './useCreateTicket'
  * Manager · Create ticket: area (design/screens/Create-Area). Front or Back of House,
  * then a category with how many units it has here. The area and restaurant live in
  * the address, so coming back from the form keeps them. Someone with more than one
- * restaurant picks which, which has no board. Scan a QR code waits for Phase 4.
+ * restaurant picks which, which has no board. It opens on Front of House, where the
+ * board opens on Back (from feedback, Nov 4, 2026). Scan a QR code waits for Phase 4.
  */
 type Area = 'foh' | 'boh'
 
 export function CreateAreaScreen() {
   const { user, restaurants } = useUser()
   const [params, setParams] = useSearchParams()
-  const area: Area = params.get('area') === 'foh' ? 'foh' : 'boh'
+  const area: Area = params.get('area') === 'boh' ? 'boh' : 'foh'
   const restaurant =
     restaurants.find((r) => r.id === params.get('restaurant')) ??
     restaurants.find((r) => r.id === user.home_restaurant_id) ??

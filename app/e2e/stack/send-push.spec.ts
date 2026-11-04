@@ -41,7 +41,7 @@ async function newTicket(browser: Browser, testInfo: TestInfo, word: string) {
   const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
   const dana = await context.newPage()
   await signIn(dana, DANA)
-  await dana.goto('/tickets/new')
+  await dana.goto('/tickets/new?area=boh')
   await dana.getByRole('link', { name: /^Refrigeration/ }).click()
   await dana.getByLabel('Title').fill(title)
   await dana.getByRole('button', { name: 'Submit ticket' }).click()
