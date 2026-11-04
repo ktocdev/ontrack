@@ -19,7 +19,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
-| 3 · Ops dashboard and ticket work | In progress | Built through OT-46, OT-57, OT-58, OT-61, OT-62 and the OT-55 security audit. Next, in order: OT-56, OT-47, with OT-46's iPhone check by hand; Google sign-in (OT-59) is deferred until the group's IT person is involved (see Phase 3) |
+| 3 · Ops dashboard and ticket work | Built; the done test passes in Playwright, and the buzz on a real phone is tried by hand | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). Left by hand: the buzz on a real Android phone, its notification badge, and the iPhone checks. Google sign-in (OT-59) is deferred until the group's IT person is involved |
 
 Phase 0 notes:
 
@@ -43,6 +43,13 @@ Phase 2 note (Nov 1, 2026):
 - **What the client should try:** sign in as a manager on a phone, create a ticket with a photo, post an update, then close and reopen it. Ops can't see tickets in the app until Phase 3, and Four Corners has no accounts yet, so this also waits until its first admin is chosen (see Open items).
 - **What can't be tried on the live app yet:** nothing adds equipment until Phase 4, so the picker is empty there, and nothing adds in-house tasks until Phase 6, so the In-house tab is empty. Nothing notifies anyone until Phase 3. The seeded stack shows the full boards.
 - **How the done test went:** `e2e/stack/done-phase-2.spec.ts` runs it on Chromium and WebKit against the seeded stack: Maya at Logan Square creates a ticket with a photo, the database has it at her restaurant with the photo under the ticket, and a manager at Porter can't find it in the list, by search or by link, or read it or sign its photo through the API. It was then tried on a real phone against the live app (Nov 1, 2026): a manager at Logan Square created a ticket with a photo, a manager at Porter did not see it in the list or by search, and the table editor showed the right restaurant. The iPhone part waits for a real iPhone, as in Phases 0 and 1.
+
+Phase 3 note (Nov 4, 2026):
+
+- **What changed:** the ops managers can run their day in the app. The dashboard lists every restaurant's open tickets under a label for each, in an order each person can drag, with a picker that scopes every Ops screen and a badge naming anyone else on a ticket. A ticket has a status menu: In progress puts you on it, Take this over is for a colleague's, and Scheduled asks for a date. Ops writes to the restaurant or in internal notes, with photos, and closes with a comment. Closed tickets are grouped by month, with totals for anyone with See costs. A reopened ticket is an ordinary one with a Reopened badge and nobody on it. Each ticket has a lasting link, `/t/OT-1042`, and Share link. Push on each device, email as well on by default, and switches per kind on Profile tell people what happened, and lists change as tickets do. A new ticket has a ring for 5 minutes. From feedback along the way: no assigning, a manager's Open tickets with a shorter header, Show / Hide on passwords, and an Update bar that says it is updating. A security audit (OT-55) and a code quality pass (OT-56) came last.
+- **What the client should try:** the ops manager installs the app on a phone, turns on Push notifications on this device in Profile, and a manager at one restaurant creates a ticket. The phone should buzz within seconds, and the email arrive. Then mark it In progress, post an update, close it with a comment, and have the manager reopen it. This waits until Four Corners has accounts (see Open items).
+- **What can't be tried on the live app yet:** the equipment card and the walkthrough line open nothing until Phases 4 and 6, costs stay empty until Phase 5 logs service, and admin and leadership have no ticket screens until Phase 7, so a ticket link tells them so. Google sign-in waits for the group's IT person.
+- **How the done test went:** `e2e/stack/done-phase-3.spec.ts` runs it on Chromium and WebKit against the seeded stack. Dana at Porter creates a ticket, and Bert is sent a push and an email, and Chris an email. Bert marks it In progress, which puts Bert on it and sends Dana a push. Bert's update reaches Dana's screen and phone. Bert closes it with a comment, and Dana is sent a push. Dana reopens it with a reason, Bert is sent a push and Chris an email, and Bert's dashboard shows it Reopened with nobody on it. Playwright can't feel a buzz, so the flow checks the delivery log, and the push to a real phone is tried by hand: not yet done.
 
 ## Decisions
 
@@ -266,11 +273,9 @@ The ops managers can run their day in the app: see every restaurant's open work,
 
 **What's left, in order (Nov 4, 2026)**
 
-Done: OT-46 (built; its hand checks are below), OT-61, OT-62 and OT-63 from feedback, and the OT-55 security audit (Nov 4, 2026; see the audit note below).
+Done: everything above but OT-38 (saved for later) and OT-59 (deferred), through OT-56's code quality pass and OT-47's done test (Nov 4, 2026; see the Phase 3 note).
 
-1. **OT-56:** the code quality pass (see its note below).
-2. **OT-47:** the done test as one flow, and the phase note.
-3. **By hand, any time before the phase note:** OT-46's iPhone link check on a real iPhone (see the open item), and the notification badge on a real Android phone.
+By hand, on real phones: the buzz from a new ticket on Android, the notification badge there, and OT-46's iPhone link check (see the open item).
 
 **What this phase has to work around**
 
