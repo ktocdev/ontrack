@@ -1433,6 +1433,9 @@ isOneToOne: false
 "can":
 { Args: { "action": string,"rid"?: string }; Returns: boolean
                            },
+"can_post_on_ticket":
+{ Args: { "tid": string }; Returns: boolean
+                           },
 "can_see_ticket":
 { Args: { "tid": string }; Returns: boolean
                            },

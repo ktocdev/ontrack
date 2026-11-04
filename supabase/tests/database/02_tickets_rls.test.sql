@@ -2,7 +2,7 @@
 -- lets a manager change. The Phase 1 done test lives here: a manager sees
 -- only their restaurant.
 begin;
-select plan(25);
+select plan(26);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
@@ -103,9 +103,12 @@ $$, 'manager can close her own ticket');
 select is(
   (select status::text from public.tickets where id = '66666666-6666-4666-8666-000000001039'),
   'closed', 'and it is closed with closed_at set');
-select lives_ok($$
+select throws_ok($$
   update public.tickets set status = 'open' where id = '66666666-6666-4666-8666-000000001039'
-$$, 'manager can reopen within 30 days');
+$$, '42501', null, 'a bare status change does not reopen a ticket (OT-55: a reopen has its reason)');
+select lives_ok($$
+  select public.reopen_ticket('66666666-6666-4666-8666-000000001039', 'Still broken')
+$$, 'manager can reopen within 30 days, with a reason');
 select is(
   (select status::text from public.tickets where id = '66666666-6666-4666-8666-000000001039'),
   'reopened', 'leaving closed always lands on Reopened');
