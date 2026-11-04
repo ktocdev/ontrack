@@ -41,9 +41,3 @@ export function scheduledLabel(date: string, now = new Date()) {
 export function byActivity(a: { updated_at: string }, b: { updated_at: string }) {
   return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
 }
-
-/** Whether a search matches any of these, ignoring case. */
-export function matchesSearch(query: string, fields: (string | null | undefined)[]) {
-  const q = query.trim().toLowerCase()
-  return !q || fields.some((f) => f?.toLowerCase().includes(q))
-}

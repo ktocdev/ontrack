@@ -35,18 +35,8 @@ test('a manager sees the tasks to fix in the board order, and Front and Back nar
   await page.waitForTimeout(300)
   await testInfo.attach('in-house', { body: await page.screenshot(), contentType: 'image/png' })
 
-  const area = page.getByRole('radiogroup', { name: 'Area' })
-  await area.getByRole('radio', { name: 'Front · 3' }).click()
-  await expect(page.getByText('To fix · 3')).toBeVisible()
-  await area.getByRole('radio', { name: 'Back · 2' }).click()
-  await expect(page.getByText('To fix · 2')).toBeVisible()
-  await area.getByRole('radio', { name: 'All · 5' }).click()
-
-  await page.getByRole('searchbox', { name: 'Search in-house tasks' }).fill('booths')
-  await expect(area.getByRole('radio', { name: 'All · 1' })).toBeVisible()
-  await expect(area.getByRole('radio', { name: 'Back · 0' })).toBeVisible()
-  await page.getByRole('searchbox', { name: 'Search in-house tasks' }).fill('freezer')
-  await expect(page.getByText('No tasks to fix match "freezer".')).toBeVisible()
+  await expect(page.getByRole('searchbox')).toHaveCount(0)
+  await expect(page.getByRole('radiogroup', { name: 'Area' })).toHaveCount(0)
 })
 
 test('another restaurant’s manager sees none of them', async ({ page }) => {

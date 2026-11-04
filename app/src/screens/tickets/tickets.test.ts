@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { activityLine, ago, byActivity, matchesSearch, scheduledLabel } from './tickets'
+import { activityLine, ago, byActivity, scheduledLabel } from './tickets'
 
 const now = new Date('2026-10-29T12:00:00')
 const before = (ms: number) => new Date(now.getTime() - ms).toISOString()
@@ -44,12 +44,5 @@ describe('finding tickets', () => {
     const t = (hours: number) => ({ updated_at: before(hours * HOUR) })
     const [recent, middle, older] = [t(1), t(2), t(5)]
     expect([older, recent, middle].sort(byActivity)).toEqual([recent, middle, older])
-  })
-
-  it('searches any field, ignoring case and empty values', () => {
-    expect(matchesSearch('COOLER', ['Door gasket', null, 'Walk-in Cooler 1'])).toBe(true)
-    expect(matchesSearch('1042', ['OT-1042'])).toBe(true)
-    expect(matchesSearch('freezer', ['Door gasket', null])).toBe(false)
-    expect(matchesSearch('   ', ['Door gasket'])).toBe(true)
   })
 })
