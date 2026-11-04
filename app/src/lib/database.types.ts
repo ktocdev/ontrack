@@ -1258,32 +1258,6 @@ isOneToOne: false
       referencedColumns: ["restaurant_id"]
     }
                   ]
-                },"v_closed_by_month": {
-                  Row: {
-                    "closed_count": number | null,"month": string | null,"restaurant_id": string,"total_cents": number | null
-                  }
-                  ComputedFields: never
-                  Relationships: [
-                    {
-      foreignKeyName: "tickets_restaurant_id_fkey"
-      columns: ["restaurant_id"]
-isOneToOne: false
-      referencedRelation: "restaurants"
-      referencedColumns: ["id"]
-    },{
-      foreignKeyName: "tickets_restaurant_id_fkey"
-      columns: ["restaurant_id"]
-isOneToOne: false
-      referencedRelation: "v_restaurant_history"
-      referencedColumns: ["restaurant_id"]
-    },{
-      foreignKeyName: "tickets_restaurant_id_fkey"
-      columns: ["restaurant_id"]
-isOneToOne: false
-      referencedRelation: "v_restaurant_open_counts"
-      referencedColumns: ["restaurant_id"]
-    }
-                  ]
                 },"v_contractor_spend": {
                   Row: {
                     "contractor_id": string | null,"last_visit_on": string | null,"total_cents": number | null,"visits": number | null,"year": number | null

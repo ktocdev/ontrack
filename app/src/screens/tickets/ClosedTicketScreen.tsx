@@ -1,18 +1,19 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
-import { AddPhotoButton, PhotoThumb, PhotoTray, PhotoViewer } from '../../components/Photo'
+import { AddPhotoButton, PhotoTray, PhotoViewer } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { TicketMenu } from '../../components/TicketMenu'
-import { IconChevronLeft, IconPlus, IconReopen } from '../../components/icons'
+import { IconPlus, IconReopen } from '../../components/icons'
 import { longDate, money, reopenDaysLeft, timeline, timeToClose } from './closed'
-import { Fact, Step } from './ClosedParts'
+import { ClosingComment, Fact, Step, Timeline } from './ClosedParts'
+import { TicketBar, TicketPhotos, useScrolled } from './TicketParts'
 import { ROLE_WORD, type Update } from './thread'
 import { useClosedFacts, useReopenTicket } from './useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
@@ -56,7 +57,7 @@ export function ClosedTicketScreen({
   const [asking, setAsking] = useState(false)
   const [note, setNote] = useState('')
   const [viewing, setViewing] = useState<string | null>(null)
-  const [scrolled, setScrolled] = useState(false)
+  const { scrolled, onScroll } = useScrolled()
 
   // Held on arrival: once reopened, the refreshed ticket no longer has these.
   const [held] = useState(() => ({ closedAt: ticket.closed_at }))
@@ -79,18 +80,11 @@ export function ClosedTicketScreen({
 
   return (
     <Screen>
-      <div
-        className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 pt-[calc(12px+var(--safe-top))] transition-shadow ${
-          scrolled ? 'shadow-scrolled' : ''
-        }`}
+      <TicketBar
+        to={fromList ? '/tickets/closed' : '/tickets'}
+        label={fromList ? 'Back to closed tickets' : 'Back to open tickets'}
+        scrolled={scrolled}
       >
-        <Link
-          to={fromList ? '/tickets/closed' : '/tickets'}
-          aria-label={fromList ? 'Back to closed tickets' : 'Back to open tickets'}
-          className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-        >
-          <IconChevronLeft size={22} />
-        </Link>
         <div className="flex min-w-0 flex-1 flex-col gap-px">
           <span className="truncate text-12 font-semibold text-text-secondary">
             {ticket.equipment ? `${ticket.equipment.name} · Tickets` : 'Tickets'}
@@ -98,9 +92,9 @@ export function ClosedTicketScreen({
           <h1 className="font-display text-20 font-bold">Closed ticket</h1>
         </div>
         <TicketMenu displayId={ticket.display_id ?? ''} title={ticket.title} />
-      </div>
+      </TicketBar>
 
-      <ScreenBody className="gap-3 pb-5 pt-4" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
+      <ScreenBody className="gap-3 pb-5 pt-4" onScroll={onScroll}>
         <div className="flex flex-none items-center justify-between gap-2">
           <span className="font-mono text-12 text-text-muted">{ticket.display_id}</span>
           {reopened !== null ? (
@@ -131,22 +125,7 @@ export function ClosedTicketScreen({
             {ticket.description}
           </p>
         )}
-        {paths.length > 0 && (
-          <div className="flex flex-none flex-wrap gap-2">
-            {paths.map((path) => {
-              const src = urls.data?.get(path)
-              return (
-                <PhotoThumb
-                  key={path}
-                  size="ticket"
-                  src={src}
-                  alt="Photo on this ticket"
-                  onOpen={() => src && setViewing(src)}
-                />
-              )
-            })}
-          </div>
-        )}
+        <TicketPhotos paths={paths} urls={urls.data} onOpen={setViewing} />
         <div className="flex flex-none justify-between gap-3 text-12 text-text-muted">
           <span>
             Opened by {ticket.opener?.full_name ?? 'someone'} · {longDate(new Date(ticket.created_at))}
@@ -157,15 +136,11 @@ export function ClosedTicketScreen({
         <SectionLabel className="-mb-0.5">Resolution</SectionLabel>
         <Card className="overflow-hidden">
           {facts?.resolution && (
-            <div className="flex flex-col gap-1 bg-surface-hover px-3.5 py-3">
-              <span className="text-12 font-bold text-text-secondary">
-                Closing comment
-                {facts.closer && ` · ${facts.closer.full_name}, ${ROLE_WORD[facts.closer.role]}`}
-              </span>
-              <span className="whitespace-pre-wrap text-14 leading-[1.45] [overflow-wrap:anywhere]">
-                {facts.resolution}
-              </span>
-            </div>
+            <ClosingComment
+              heading={`Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${ROLE_WORD[facts.closer.role]}` : ''}`}
+            >
+              {facts.resolution}
+            </ClosingComment>
           )}
           {closedAt && (
             <Fact label="Closed by">
@@ -182,21 +157,11 @@ export function ClosedTicketScreen({
           )}
         </Card>
 
-        <SectionLabel className="-mb-0.5">Timeline</SectionLabel>
-        <Card className="overflow-hidden">
-          {steps.map((s) => (
-            <Step
-              key={s.key}
-              title={s.title}
-              note={s.note}
-              when={s.when}
-              dot={s.end ? 'bg-brand' : 'bg-border-muted'}
-            />
-          ))}
+        <Timeline steps={steps}>
           {reopened !== null && (
             <Step title="You reopened this" note={reopened} when="You · Just now" dot="bg-status-waiting-text" />
           )}
-        </Card>
+        </Timeline>
       </ScreenBody>
 
       <ScreenFooter>

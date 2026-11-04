@@ -170,7 +170,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-56 | Code quality pass: the repeated ticket header, the similar closed-ticket screens, `v_closed_by_month` that nothing uses, leftovers from simplifying |
 | OT-57 | From feedback: Edit, Close and Share in the menu on a manager's ticket, with Close still on Edit ticket |
 | OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
-| OT-59 | Google sign-in, if the group is on Google Workspace: try it on an installed iPhone app first, then Google alongside invites, with no password for people on the company domain |
+| OT-59 | Deferred (Nov 4, 2026) until the group's IT person is involved: Google sign-in, with no password for people on the company domain |
 | OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
 | OT-62 | From feedback (Nov 4, 2026): ticket links by number, `/t/OT-1042`, forgiving to type; older links with the id still open |
 | OT-63 | From feedback (Nov 4, 2026): a shorter header on a manager's Open tickets and In-house: no search and no Front / Back, and the ellipsis menu beside the title |

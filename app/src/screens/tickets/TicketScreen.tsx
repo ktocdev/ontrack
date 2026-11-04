@@ -1,10 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { useUser } from '../../auth/context'
-import { Card } from '../../components/Card'
 import { ErrorBanner } from '../../components/Notice'
-import { AddPhotoButton, PhotoThumb, PhotoTray, PhotoViewer } from '../../components/Photo'
+import { AddPhotoButton, PhotoTray, PhotoViewer } from '../../components/Photo'
 import { StatusPill, UrgentTag } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
@@ -12,10 +11,10 @@ import { Spinner } from '../../components/Skeleton'
 import { Composer } from '../../components/Thread'
 import { TicketMenu } from '../../components/TicketMenu'
 import { useToast } from '../../components/Toast'
-import { IconChevronLeft, IconWrench } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ClosedTicketScreen } from './ClosedTicketScreen'
 import { CloseTicketSheet } from './CloseTicketSheet'
+import { EquipmentCard, TicketBar, TicketPhotos, useScrolled } from './TicketParts'
 import { threadItems } from './thread'
 import { ThreadFeed } from './ThreadFeed'
 import { scheduledLabel } from './tickets'
@@ -38,7 +37,7 @@ export function TicketScreen() {
   const { data, isPending } = useTicket(id)
   const post = usePostUpdate(id)
   const [draft, setDraft] = useState('')
-  const [scrolled, setScrolled] = useState(false)
+  const { scrolled, onScroll } = useScrolled()
   const body = useRef<HTMLDivElement>(null)
   const picked = usePickedPhotos()
   const urls = useSignedPhotos(data?.photos.map((p) => p.path) ?? [])
@@ -92,18 +91,7 @@ export function TicketScreen() {
 
   return (
     <Screen>
-      <div
-        className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 pt-[calc(12px+var(--safe-top))] transition-shadow ${
-          scrolled ? 'shadow-scrolled' : ''
-        }`}
-      >
-        <Link
-          to="/tickets"
-          aria-label="Back to open tickets"
-          className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-        >
-          <IconChevronLeft size={22} />
-        </Link>
+      <TicketBar to="/tickets" label="Back to open tickets" scrolled={scrolled}>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="font-mono text-13 text-text-secondary">{ticket.display_id}</span>
           <StatusPill
@@ -121,7 +109,7 @@ export function TicketScreen() {
             { onSelect: () => setClosing(true), label: 'Close ticket' },
           ]}
         />
-      </div>
+      </TicketBar>
       <CloseTicketSheet
         ticketId={ticket.id}
         displayId={ticket.display_id ?? ''}
@@ -134,7 +122,7 @@ export function TicketScreen() {
         }}
       />
 
-      <ScreenBody ref={body} className="gap-3 pb-4 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
+      <ScreenBody ref={body} className="gap-3 pb-4 pt-3.5" onScroll={onScroll}>
         <div className="flex flex-none flex-col items-start gap-1.5">
           {ticket.urgency === 'urgent' && <UrgentTag />}
           <h1 className="font-display text-24 font-bold leading-[1.2] tracking-[-0.02em]">{ticket.title}</h1>
@@ -158,43 +146,13 @@ export function TicketScreen() {
           </>
         )}
 
-        {data.photos.some((p) => !p.update_id) && (
-          <div className="flex flex-none flex-wrap gap-2">
-            {data.photos
-              .filter((p) => !p.update_id)
-              .map((p) => {
-                const src = urls.data?.get(p.path)
-                return (
-                  <PhotoThumb
-                    key={p.path}
-                    size="ticket"
-                    src={src}
-                    alt="Photo on this ticket"
-                    onOpen={() => src && setViewing({ src, alt: 'Photo on this ticket' })}
-                  />
-                )
-              })}
-          </div>
-        )}
+        <TicketPhotos
+          paths={data.photos.filter((p) => !p.update_id).map((p) => p.path)}
+          urls={urls.data}
+          onOpen={(src) => setViewing({ src, alt: 'Photo on this ticket' })}
+        />
 
-        {ticket.equipment && (
-          <>
-            <SectionLabel className="-mb-0.5">Equipment</SectionLabel>
-            <Card className="flex items-center gap-3 rounded-input px-3.5 py-3">
-              <IconWrench size={22} className="flex-none text-brand" />
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="text-15 font-semibold">{ticket.equipment.name}</span>
-                {(ticket.equipment.brand || ticket.equipment.serial) && (
-                  <span className="text-12 text-text-muted">
-                    {ticket.equipment.brand}
-                    {ticket.equipment.brand && ticket.equipment.serial && ' · '}
-                    {ticket.equipment.serial && <span className="font-mono">{ticket.equipment.serial}</span>}
-                  </span>
-                )}
-              </div>
-            </Card>
-          </>
-        )}
+        {ticket.equipment && <EquipmentCard equipment={ticket.equipment} />}
 
         <SectionLabel className="-mb-0.5">Updates · {count}</SectionLabel>
         <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />
