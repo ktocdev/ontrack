@@ -21,6 +21,17 @@ function mark(size, { radius = 8 / 28, pad = 0, transparentBg = false } = {}) {
 </svg>`
 }
 
+/**
+ * The small icon Android shows in the status bar and on a notification (`badge`). It
+ * uses only the alpha, so it is the check alone, white on transparent, filling the
+ * square; without it Android shows a generic bell.
+ */
+function badge(size) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="5 5.5 18 18">
+  <path d="M8 15l4 4 8-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`
+}
+
 await mkdir(out, { recursive: true })
 await writeFile(new URL('favicon.svg', out), mark(28, { transparentBg: true }))
 
@@ -29,6 +40,7 @@ const jobs = [
   ['pwa-512.png', mark(512, { transparentBg: true })],
   ['maskable-512.png', mark(512, { pad: 0.1, radius: 0 })],
   ['apple-touch-icon.png', mark(180, { radius: 0 })],
+  ['badge-96.png', badge(96)],
 ]
 for (const [name, svg] of jobs) {
   await sharp(Buffer.from(svg))
