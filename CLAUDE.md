@@ -158,7 +158,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: an outbox written by a database trigger for each kind, who gets what, email on by default as well as push, links through `/t/<id>` |
-| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android; a clearer name for the device switch, which comes back on after signing back in; from feedback, Update says it is updating, and Create ticket opens on Front of House |
+| OT-46 | Put back the boards' notification promises; check on a real iPhone how it opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android; a clearer name for the device switch, which comes back on after signing back in; from feedback, Update says it is updating, and Create ticket opens on Front of House |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
@@ -170,6 +170,7 @@ The plan's Phase 3 section says what ships. Done when a manager creates a ticket
 | OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
 | OT-59 | Google sign-in, if the group is on Google Workspace: try it on an installed iPhone app first, then Google alongside invites, with no password for people on the company domain |
 | OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
+| OT-62 | From feedback (Nov 4, 2026): ticket links by number, `/t/OT-1042`, forgiving to type; older links with the id still open |
 | OT-47 | The done test as one flow; the phase note |
 
 ## Phase 2, for the record

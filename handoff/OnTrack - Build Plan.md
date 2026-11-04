@@ -25,7 +25,7 @@ Phase 0 notes:
 
 - Production is https://ontrack-app.app (domain bought and connected Oct 2026) and still answers at https://ontrack.katina-sunrise.workers.dev; each branch previews at `https://<branch>-ontrack.katina-sunrise.workers.dev`. `fourcorners.ontrack-app.app` is connected (Oct 30, 2026), and Four Corners installs from there.
 - The hosted Supabase project has the full schema (migrations deploy on merge) and no seed data. One admin account exists, made by hand before OT-7: an `invites` row in the SQL editor, then Authentication, Add user with the same email. An invite is claimed only with its link's token or its id in `app_metadata`, which the dashboard cannot set, so the invite flow (OT-10) is the way to add people; by hand means an `auth.users` insert like the seed's, with `role` in `app_metadata`.
-- Install and dark mode were checked on Android Chrome. The iPhone part of the done test waits for a BrowserStack pass; Playwright WebKit covers it in CI until then.
+- Install and dark mode were checked on Android Chrome. The iPhone part of the done test waits for a try on a real iPhone; Playwright WebKit covers it in CI until then.
 
 Phase 1 note (Oct 30, 2026):
 
@@ -42,7 +42,7 @@ Phase 2 note (Nov 1, 2026):
 - **What changed:** a manager can report a problem from a phone and follow it to closed. Open tickets has search and Front / Back. Create ticket goes from area and category to a form with equipment, urgency and photos, shrunk to 1600 px in the browser. A ticket has its thread with system events and a composer. Edit changes the title, description, equipment and urgency, and closes with an optional comment. A closed ticket is read-only and can be reopened within 30 days with a reason; after that it offers a new ticket linked to the old one. The ellipsis menu beside the search leads to a list of closed tickets. The In-house tab checks tasks off and deletes them while open. Cost and contractor show on a closed ticket only with See costs.
 - **What the client should try:** sign in as a manager on a phone, create a ticket with a photo, post an update, then close and reopen it. Ops can't see tickets in the app until Phase 3, and Four Corners has no accounts yet, so this also waits until its first admin is chosen (see Open items).
 - **What can't be tried on the live app yet:** nothing adds equipment until Phase 4, so the picker is empty there, and nothing adds in-house tasks until Phase 6, so the In-house tab is empty. Nothing notifies anyone until Phase 3. The seeded stack shows the full boards.
-- **How the done test went:** `e2e/stack/done-phase-2.spec.ts` runs it on Chromium and WebKit against the seeded stack: Maya at Logan Square creates a ticket with a photo, the database has it at her restaurant with the photo under the ticket, and a manager at Porter can't find it in the list, by search or by link, or read it or sign its photo through the API. It was then tried on a real phone against the live app (Nov 1, 2026): a manager at Logan Square created a ticket with a photo, a manager at Porter did not see it in the list or by search, and the table editor showed the right restaurant. The iPhone part waits for BrowserStack, as in Phases 0 and 1.
+- **How the done test went:** `e2e/stack/done-phase-2.spec.ts` runs it on Chromium and WebKit against the seeded stack: Maya at Logan Square creates a ticket with a photo, the database has it at her restaurant with the photo under the ticket, and a manager at Porter can't find it in the list, by search or by link, or read it or sign its photo through the API. It was then tried on a real phone against the live app (Nov 1, 2026): a manager at Logan Square created a ticket with a photo, a manager at Porter did not see it in the list or by search, and the table editor showed the right restaurant. The iPhone part waits for a real iPhone, as in Phases 0 and 1.
 
 ## Decisions
 
@@ -116,7 +116,7 @@ Decided Oct 30, 2026, after restaurants got archive and delete in OT-9. Each pha
 
 An empty app that installs on a phone, switches between light and dark, deploys on every merge, and has a database whose permissions are already tested. Nothing a user would call a feature, but every later phase moves faster for it.
 
-**Status:** done in OT-1 to OT-3; the real-iPhone check waits for BrowserStack (see Status above).
+**Status:** done in OT-1 to OT-3; the real-iPhone check waits for a real iPhone (see Status above).
 
 **Ships**
 
@@ -248,7 +248,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-43 | Lasting link `/t/<id>` for every role, and Share link on a ticket |
 | OT-44 | Push on a device: service worker handles push, subscribe per device, the Notifications section on Profile, a test push to your own phone |
 | OT-45 | `send-push`: an outbox written by a database trigger for each kind, who gets what, email on by default as well as push, links through `/t/<id>` |
-| OT-46 | Put back the boards' notification promises; check on BrowserStack how an iPhone opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android; a clearer name for the device switch, which comes back on after signing back in; from feedback, Update says it is updating, and Create ticket opens on Front of House |
+| OT-46 | Put back the boards' notification promises; check on a real iPhone how it opens a link; a temporary ring on a new ticket's card, for Ops and managers; the small notification icon on Android; a clearer name for the device switch, which comes back on after signing back in; from feedback, Update says it is updating, and Create ticket opens on Front of House |
 | OT-48 | Simplify the dashboard from feedback: no assigning, no Unassigned, no All / Mine; a badge names who is working on a ticket |
 | OT-49 | Tickets grouped under a label for each restaurant; Closed moves to an ellipsis menu; a reopened ticket is an ordinary card with its pill |
 | OT-50 | Change the order of the restaurants on the dashboard by dragging |
@@ -260,11 +260,12 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-58 | From trying OT-45 live: a failed call to `send-push` says why in `notify_problems`, and lists change as tickets do, through Realtime |
 | OT-59 | Google sign-in, if the group is on Google Workspace: try it on an installed iPhone app first, then Google alongside invites, with no password for people on the company domain |
 | OT-61 | From feedback (Nov 4, 2026): Show / Hide on every password field, as the setup and reset boards draw it |
+| OT-62 | From feedback (Nov 4, 2026): ticket links by number, `/t/OT-1042`, forgiving to type; older links with the id still open |
 | OT-47 | The done test as one flow; the phase note |
 
 **What's left, in order (Nov 4, 2026)**
 
-1. **OT-46:** built: the boards' notification promises, the ring on a new ticket's card, the small notification icon on Android, the device switch's name and coming back after signing back in, the Update message and Create ticket opening on Front of House. Still to do by hand: the iPhone link check on BrowserStack (see the open item), and the badge on a real Android phone.
+1. **OT-46:** built: the boards' notification promises, the ring on a new ticket's card, the small notification icon on Android, the device switch's name and coming back after signing back in, the Update message and Create ticket opening on Front of House. Still to do by hand: the iPhone link check on a real iPhone (see the open item), and the badge on a real Android phone.
 2. **OT-59:** Google sign-in, once the open questions below are answered.
 3. **OT-55:** the security audit of what Phase 3 added, including Google sign-in.
 4. **OT-56:** the code quality pass.
@@ -299,7 +300,7 @@ The ops managers can run their day in the app: see every restaurant's open work,
 - **The small notification icon (OT-46).** Android shows a generic bell in the status bar until a push names a `badge`, a white shape on transparent, so it gets the mark's check. The picture beside the message is the app icon already. An iPhone always shows the app's own icon, and none of this can change that.
 - **Who gets notified (a default, Nov 1, 2026, until someone asks otherwise):** a new ticket goes to every Ops manager who covers that restaurant, as the board's "all Ops managers notified" says. A status change or an update the restaurant can see goes to the person who opened the ticket and the person working on it, and never to whoever did it, so a manager hears when work starts. A reopen goes to all those Ops managers, as a new ticket does. An internal note never reaches a manager, and notifies nobody at this stage.
 - **Setup outside the repo:** VAPID keys are new, from `node scripts/vapid.mjs`. `VAPID_KEYS` goes in the hosted project's function secrets and `VITE_VAPID_PUBLIC_KEY` in the Worker's build variables, per environment. The database calls `send-push` through `pg_net`, which needs `send_push_url` and `send_push_secret` in its vault and the same secret as the `SEND_PUSH_SECRET` function secret; OT-45 lists the steps.
-- **Playwright can't feel a phone buzz.** The done flow checks that the right people were sent the right notification, and the buzz itself is tried by hand on a real phone. That proves it on Android. iPhone push needs the app installed on a real iPhone, which may be more than BrowserStack can show, so it may wait until someone with an iPhone tries it.
+- **Playwright can't feel a phone buzz.** The done flow checks that the right people were sent the right notification, and the buzz itself is tried by hand on a real phone. That proves it on Android. iPhone push needs the app installed on a real iPhone, so it waits until it is tried on one by hand.
 - **A manager's ticket header has only its menu (from feedback, Nov 2, 2026; OT-57):** Edit ticket, Close ticket and Share link replace the board's Edit link, which left the header crowded. Close ticket stays on Edit ticket too. Closing from the menu stays on the ticket, which becomes its Closed ticket screen.
 - **Share link (OT-43)** is on every ticket screen, in a menu on its header, including closed tickets. A phone gets its share sheet and a computer copies the link and confirms; the choice follows whether the device has a coarse pointer, since desktop browsers also offer a share sheet. The message carries the ticket number and title, so whoever shares it decides who reads those.
 - **`send-push` gets its own security check in OT-45,** since it runs with the service key, then the audit (OT-55) and code quality pass (OT-56) come before the done test, so the done test covers their fixes.
@@ -408,7 +409,7 @@ One person with AI help can move fast on this stack as long as every phase has t
 2. **Data hooks.** One TanStack Query hook per screen's data, typed from the generated Supabase types (CI builds them as the `database-types` artifact), with the seed data as fixtures
 3. **Screens against the design.** Build each screen from its board on the design canvas, in both themes, in the `/kit` page first when a new component is needed. The canvas's sample data and the seed data match on purpose, so a screen is done when it looks like its board
 4. **Flow test.** One Playwright test per phase on Chromium and WebKit, driving the done test end to end against the seeded local stack (`app/e2e/stack`)
-5. **Preview and try on a phone.** Every branch gets a Cloudflare preview URL; open it on a phone (Android today) before merging. A BrowserStack real-iPhone pass before each milestone handed to the client
+5. **Preview and try on a phone.** Every branch gets a Cloudflare preview URL; open it on a phone (Android today) before merging. A pass on a real iPhone before each milestone handed to the client
 
 **Conventions**
 
@@ -446,7 +447,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | iPhone push only works when the app is installed to the home screen | The ops team may open it in Safari and wonder why nothing buzzes | Install prompt on first sign-in with a two-step picture; email fallback until a subscription exists; a Profile row that shows whether push is on |
 | RLS policies get complex with per-person rights overrides | A bug here leaks another restaurant's data | Every rule goes through one `can()` function with pgTAP tests per role; never a second code path in the app |
 | Supabase free tier pauses after a week idle | A paused project during the pilot looks like a crash | Move to Pro ($25 a month) before handing the app to the client |
-| An iPhone may open a link in Safari and not the installed app | Safari has its own sign-in, so a shared link, a notification's email link or a QR scan could ask for a password first, and Phase 4's done test expects a scan to open the installed app. Not yet tried on an iPhone | Check on BrowserStack during Phase 3, before Phase 4 relies on it; signing in on the way still lands on the right page |
+| An iPhone may open a link in Safari and not the installed app | Safari has its own sign-in, so a shared link, a notification's email link or a QR scan could ask for a password first, and Phase 4's done test expects a scan to open the installed app. Not yet tried on an iPhone | Check on a real iPhone during Phase 3, before Phase 4 relies on it; signing in on the way still lands on the right page |
 | QR labels bake in the domain | Reprinting labels is a real cost once they are on units | `fourcorners.ontrack-app.app` is connected (Oct 30, 2026), so print from that; use a short path like `/e/` so labels stay small |
 | Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | SPF, DKIM and DMARC are set on `ontrack-app.app`, and a real invite reached a Gmail inbox (Oct 30, 2026). Four Corners uses Gmail only; test another provider when a group uses one |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
