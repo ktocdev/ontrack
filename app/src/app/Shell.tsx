@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, type ReactNode } from 'react'
 import { Outlet } from 'react-router'
 import { TabBar } from '../components/TabBar'
@@ -11,10 +12,17 @@ import { ROLE_TABS } from './roles'
  * that hide the tab bar render outside this layout.
  */
 export function Shell() {
-  const { user } = useUser()
+  const { user, viewingAs } = useUser()
+  const queryClient = useQueryClient()
   const tabs = ROLE_TABS[user.role]
   // Nothing depends on this working: a device that misses it just tries again next time.
-  useEffect(() => void syncPush().catch(() => undefined), [user.id])
+  // It may turn push back on, so Profile's switch reads the device again after.
+  useEffect(() => {
+    if (viewingAs) return
+    void syncPush(user.id)
+      .catch(() => undefined)
+      .then(() => queryClient.invalidateQueries({ queryKey: ['push-device'] }))
+  }, [user.id, viewingAs, queryClient])
   return (
     <div className="flex h-dvh flex-col bg-bg text-text">
       <Outlet />

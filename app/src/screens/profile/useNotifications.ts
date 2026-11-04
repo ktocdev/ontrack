@@ -28,12 +28,13 @@ export function kindsFor(role: AppRole) {
 
 /** Whether this device gets notifications, and turning that on and off. */
 export function usePushDevice() {
+  const { user } = useUser()
   const queryClient = useQueryClient()
   const key = ['push-device']
   const refresh = () => queryClient.invalidateQueries({ queryKey: key })
   const device = useQuery({ queryKey: key, queryFn: deviceSubscription })
-  const on = useMutation({ mutationFn: turnOnPush, onSettled: refresh })
-  const off = useMutation({ mutationFn: turnOffPush, onSettled: refresh })
+  const on = useMutation({ mutationFn: () => turnOnPush(user.id), onSettled: refresh })
+  const off = useMutation({ mutationFn: () => turnOffPush(user.id), onSettled: refresh })
   return { device, on, off }
 }
 

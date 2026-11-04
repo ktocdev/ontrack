@@ -76,7 +76,8 @@ async function openProfile(page: Page, email: string) {
   await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
 }
 
-const deviceSwitch = (page: Page) => page.getByRole('switch', { name: 'Notifications on this device' })
+const CHRIS = 'chris.novak@example.com'
+const deviceSwitch = (page: Page) => page.getByRole('switch', { name: 'Push notifications on this device' })
 
 test('turning on saves this device, and a test that can’t reach it says so and removes it', async ({
   page,
@@ -116,6 +117,46 @@ test('turning off and signing out each remove this device', async ({ page, reque
   expect(await rows(request, BERT, device.endpoint)).toBe(1)
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/sign-in$/)
+  expect(await rows(request, BERT, device.endpoint)).toBe(0)
+})
+
+test('push comes back on for whoever had it on, after signing back in, and not for anyone else', async ({
+  page,
+  request,
+}) => {
+  const device = fakeDevice()
+  await stubBrowser(page, device)
+  await openProfile(page, BERT)
+  await deviceSwitch(page).click()
+  await expect(deviceSwitch(page)).toBeChecked()
+  await page.getByRole('button', { name: 'Sign out' }).click()
+  await expect(page).toHaveURL(/\/sign-in$/)
+  expect(await rows(request, BERT, device.endpoint)).toBe(0)
+
+  await openProfile(page, BERT)
+  await expect(deviceSwitch(page)).toBeChecked()
+  await expect.poll(() => rows(request, BERT, device.endpoint)).toBe(1)
+  await page.getByRole('button', { name: 'Sign out' }).click()
+  await expect(page).toHaveURL(/\/sign-in$/)
+
+  // Someone else on the same phone starts with it off.
+  await openProfile(page, CHRIS)
+  await expect(page.getByText('Off. You’ll still get email.')).toBeVisible()
+  await expect(deviceSwitch(page)).not.toBeChecked()
+  expect(await rows(request, CHRIS, device.endpoint)).toBe(0)
+  await page.getByRole('button', { name: 'Sign out' }).click()
+  await expect(page).toHaveURL(/\/sign-in$/)
+
+  // Turned off on purpose, it stays off.
+  await openProfile(page, BERT)
+  await expect(deviceSwitch(page)).toBeChecked()
+  await deviceSwitch(page).click()
+  await expect(deviceSwitch(page)).not.toBeChecked()
+  await page.getByRole('button', { name: 'Sign out' }).click()
+  await expect(page).toHaveURL(/\/sign-in$/)
+  await openProfile(page, BERT)
+  await expect(page.getByText('Off. You’ll still get email.')).toBeVisible()
+  await expect(deviceSwitch(page)).not.toBeChecked()
   expect(await rows(request, BERT, device.endpoint)).toBe(0)
 })
 
