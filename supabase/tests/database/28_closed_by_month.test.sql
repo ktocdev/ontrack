@@ -36,8 +36,10 @@ select ok(
   ) m where lead_month is not null),
   'newest month first');
 
--- A ticket closed at 8 PM Chicago on Oct 31 is already November in UTC.
+-- A ticket closed at 8 PM Chicago on Oct 31 is already November in UTC. The guard lets
+-- only the database owner with no signed-in person rewrite when a ticket closed (OT-55).
 reset role;
+select set_config('request.jwt.claims', '', true);
 update public.tickets set last_closed_at = '2026-10-31 20:00-05', closed_at = '2026-10-31 20:00-05'
 where id = '66666666-6666-4666-8666-000000001022';
 select pg_temp.login('bert.velilla@example.com');

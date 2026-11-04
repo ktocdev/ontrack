@@ -4,6 +4,7 @@ import { Button } from '../../components/Button'
 import { Input, PasswordField } from '../../components/Field'
 import { Logo } from '../../components/icons'
 import { useAuth } from '../../auth/context'
+import { safeReturnPath } from '../../auth/returnPath'
 import { MOCK_USERS, writeMockRole } from '../../auth/mock'
 import { canSubmitSignIn, signInErrorMessage } from '../../auth/validation'
 import { supabase, type AppRole } from '../../lib/supabase'
@@ -18,7 +19,8 @@ import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 export function SignInScreen() {
   const auth = useAuth()
   const location = useLocation()
-  const from = (location.state as { from?: string } | null)?.from
+  // Checked again here, since history state is the browser's to keep.
+  const from = safeReturnPath((location.state as { from?: string | null } | null)?.from)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)

@@ -11,6 +11,7 @@ import { CenteredLoading } from '../screens/loading/CenteredLoading'
 import { TwoStepChallengeScreen } from '../screens/twostep/TwoStepChallengeScreen'
 import { TwoStepSetupScreen } from '../screens/twostep/TwoStepSetupScreen'
 import { useAuth } from './context'
+import { safeReturnPath } from './returnPath'
 
 /**
  * Route guards. RequireAuth sits above every signed-in route: it shows the
@@ -48,7 +49,7 @@ export function RequireAuth({ children }: { children?: ReactNode }) {
       return auth.deliberate ? (
         <Navigate to="/sign-in" replace />
       ) : (
-        <Navigate to="/sign-in" replace state={{ from: location.pathname + location.search }} />
+        <Navigate to="/sign-in" replace state={{ from: safeReturnPath(location.pathname + location.search) }} />
       )
     case 'no-profile':
       return (
