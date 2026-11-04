@@ -97,7 +97,7 @@ export function ClosedTicketScreen({
           </span>
           <h1 className="font-display text-20 font-bold">Closed ticket</h1>
         </div>
-        <TicketMenu id={ticket.id} displayId={ticket.display_id ?? ''} title={ticket.title} />
+        <TicketMenu displayId={ticket.display_id ?? ''} title={ticket.title} />
       </div>
 
       <ScreenBody className="gap-3 pb-5 pt-4" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>

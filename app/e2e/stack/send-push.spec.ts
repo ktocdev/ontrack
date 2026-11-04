@@ -85,7 +85,7 @@ test('a new ticket reaches Ops by push and email, with a link, and nobody else',
   const { Text } = (await message.json()) as { Text: string }
   expect(Text).toContain(title)
   expect(Text).toContain('Dana Ortiz')
-  expect(Text).toContain(`/t/${id}`)
+  expect(Text).toContain(`/t/${messages[0]!.Subject.match(/OT-\d+/)![0]}`)
 })
 
 test('work on a ticket reaches the restaurant, and Ops’s own by email only', async ({ browser, request }, testInfo) => {
