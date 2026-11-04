@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
-import { Input } from '../../components/Field'
+import { Input, PasswordField } from '../../components/Field'
 import { Sheet } from '../../components/Sheet'
 import { MIN_PASSWORD } from '../../auth/validation'
 import { useNeedsCode } from '../twostep/useTwoStep'
@@ -93,9 +93,8 @@ export function PasswordSheet({
         className="flex flex-col gap-3.5"
         noValidate
       >
-        <Input
+        <PasswordField
           label="Current password"
-          type="password"
           autoComplete="current-password"
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
@@ -107,9 +106,8 @@ export function PasswordSheet({
                 : undefined
           }
         />
-        <Input
+        <PasswordField
           label="New password"
-          type="password"
           autoComplete="new-password"
           value={next}
           onChange={(e) => setNext(e.target.value)}
@@ -117,9 +115,8 @@ export function PasswordSheet({
           hint={`At least ${MIN_PASSWORD} characters.`}
           error={newError}
         />
-        <Input
+        <PasswordField
           label="Confirm new password"
-          type="password"
           autoComplete="new-password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}

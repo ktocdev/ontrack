@@ -16,7 +16,7 @@ test('ops lands on the dashboard with every restaurant', async ({ page }) => {
 
 const signInForm = async (page: Page) => {
   await page.getByLabel('Work email').fill('maya.reyes@example.com')
-  await page.getByLabel('Password').fill(SEED_PASSWORD)
+  await page.getByLabel('Password', { exact: true }).fill(SEED_PASSWORD)
   await page.getByRole('button', { name: 'Sign in' }).click()
 }
 
@@ -57,11 +57,11 @@ test('a timed-out session returns to its page, also through Not you', async ({ p
 test('a wrong password gets a plain message', async ({ page }) => {
   await page.goto('/sign-in')
   await page.getByLabel('Work email').fill('maya.reyes@example.com')
-  await page.getByLabel('Password').fill('not-the-password-2026')
+  await page.getByLabel('Password', { exact: true }).fill('not-the-password-2026')
   await page.getByRole('button', { name: 'Sign in' }).click()
   await expect(page.getByText("That email and password don't match.", { exact: false })).toBeVisible()
 
   // It's about the last try, so it goes as soon as the person starts another.
-  await page.getByLabel('Password').fill('')
+  await page.getByLabel('Password', { exact: true }).fill('')
   await expect(page.getByText("That email and password don't match.", { exact: false })).toBeHidden()
 })

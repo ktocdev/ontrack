@@ -672,7 +672,7 @@ export function KitPage() {
                 readOnly
                 hint="Managed by your admin."
               />
-              <Input label="Create password" type="password" error="At least 12 characters." />
+              <PasswordField label="Create password" error="At least 12 characters." />
               <Textarea label="Description" placeholder="What is happening?" />
               <Select label="Contractor company" defaultValue="coldline">
                 <option value="coldline">Coldline Refrigeration</option>

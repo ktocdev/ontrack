@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { Button } from '../../components/Button'
-import { Input, PasswordField, PasswordRules } from '../../components/Field'
+import { PasswordField, PasswordRules } from '../../components/Field'
 import { Screen } from '../../components/Screen'
 import { BrandMark, IconCheck } from '../../components/icons'
 import { clearStamp } from '../../auth/session'
@@ -138,9 +138,8 @@ function NewPasswordForm({ email }: { email: string }) {
             <PasswordRules password={password} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Input
+            <PasswordField
               label="Confirm new password"
-              type="password"
               autoComplete="new-password"
               maxLength={MAX_PASSWORD}
               value={confirm}
