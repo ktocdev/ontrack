@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
+import { Card } from '../../components/Card'
+import { SectionLabel } from '../../components/Screen'
+import type { TimelineStep } from './closed'
 
-/** The rows inside a closed ticket's Resolution and Timeline cards, for managers and Ops. */
+/** A closed ticket's Resolution and Timeline cards and their rows, for managers and Ops. */
 
 export function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -21,5 +24,30 @@ export function Step({ title, note, when, dot }: { title: string; note: string |
         <span className="text-12 text-text-muted">{when}</span>
       </div>
     </div>
+  )
+}
+
+/** The closing comment at the top of the Resolution card. */
+export function ClosingComment({ heading, children }: { heading: string; children: string }) {
+  return (
+    <div className="flex flex-col gap-1 bg-surface-hover px-3.5 py-3">
+      <span className="text-12 font-bold text-text-secondary">{heading}</span>
+      <span className="whitespace-pre-wrap text-14 leading-[1.45] [overflow-wrap:anywhere]">{children}</span>
+    </div>
+  )
+}
+
+/** The ticket's life without the chat, with anything after it (a reopen just made) below. */
+export function Timeline({ steps, children }: { steps: TimelineStep[]; children?: ReactNode }) {
+  return (
+    <>
+      <SectionLabel className="-mb-0.5">Timeline</SectionLabel>
+      <Card className="overflow-hidden">
+        {steps.map((s) => (
+          <Step key={s.key} title={s.title} note={s.note} when={s.when} dot={s.end ? 'bg-brand' : 'bg-border-muted'} />
+        ))}
+        {children}
+      </Card>
+    </>
   )
 }

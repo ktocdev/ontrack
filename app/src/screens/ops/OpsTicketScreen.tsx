@@ -1,11 +1,10 @@
 import { useRef, useState, type ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
-import { Card } from '../../components/Card'
 import { Input, Textarea } from '../../components/Field'
 import { ErrorBanner } from '../../components/Notice'
-import { AddPhotoButton, PhotoThumb, PhotoTray, PhotoViewer } from '../../components/Photo'
+import { AddPhotoButton, PhotoTray, PhotoViewer } from '../../components/Photo'
 import { statusLabel, UrgentTag, type PillStatus } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
@@ -15,13 +14,14 @@ import { StatusMenu } from '../../components/StatusMenu'
 import { Composer, VisibilityToggle } from '../../components/Thread'
 import { TicketMenu } from '../../components/TicketMenu'
 import { useToast } from '../../components/Toast'
-import { IconChevronLeft, IconClipboardCheck, IconClose, IconPlus, IconWrench } from '../../components/icons'
+import { IconClipboardCheck, IconClose, IconPlus } from '../../components/icons'
 import type { TicketStatus } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { longDate } from '../tickets/closed'
 import { scheduledLabel } from '../tickets/tickets'
 import { ThreadFeed } from '../tickets/ThreadFeed'
 import { threadItems } from '../tickets/thread'
+import { EquipmentCard, TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
 import { useCloseTicket } from '../tickets/useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
 import { usePostUpdate } from '../tickets/useTicket'
@@ -81,7 +81,7 @@ export function OpsTicketScreen() {
   const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
   const [scheduling, setScheduling] = useState(false)
   const [date, setDate] = useState('')
-  const [scrolled, setScrolled] = useState(false)
+  const { scrolled, onScroll } = useScrolled()
 
   if (isPending) {
     return (
@@ -135,7 +135,6 @@ export function OpsTicketScreen() {
 
   const items = threadItems(data.updates, user.id, data.names, { ops: true })
   const count = items.filter((i) => i.type === 'message').length
-  const onTicket = data.photos.filter((p) => !p.update_id)
   const othersTicket = !!ticket.assignee_id && ticket.assignee_id !== user.id
   const onIt = ticket.assignee_id === user.id ? 'You' : (ticket.assignee?.full_name ?? 'Nobody yet')
   const label =
@@ -145,28 +144,13 @@ export function OpsTicketScreen() {
 
   return (
     <Screen>
-      <div
-        className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 pt-[calc(12px+var(--safe-top))] transition-shadow ${
-          scrolled ? 'shadow-scrolled' : ''
-        }`}
-      >
-        <Link
-          to="/ops"
-          aria-label="Back to dashboard"
-          className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-        >
-          <IconChevronLeft size={22} />
-        </Link>
+      <TicketBar to="/ops" label="Back to dashboard" scrolled={scrolled}>
         <span className="flex-1 font-mono text-13 text-text-secondary">{ticket.display_id}</span>
         {ticket.urgency === 'urgent' && <UrgentTag className="mr-2" />}
         {!viewingAs && <TicketMenu displayId={ticket.display_id ?? ''} title={ticket.title} />}
-      </div>
+      </TicketBar>
 
-      <ScreenBody
-        ref={body}
-        className="gap-3.5 pb-4 pt-3.5"
-        onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}
-      >
+      <ScreenBody ref={body} className="gap-3.5 pb-4 pt-3.5" onScroll={onScroll}>
         <div className="flex flex-none flex-col gap-2">
           <h1 className="font-display text-24 font-bold leading-[1.2] tracking-[-0.02em] [overflow-wrap:anywhere]">
             {ticket.title}
@@ -213,41 +197,13 @@ export function OpsTicketScreen() {
           </>
         )}
 
-        {onTicket.length > 0 && (
-          <div className="flex flex-none flex-wrap gap-2">
-            {onTicket.map((p) => {
-              const src = urls.data?.get(p.path)
-              return (
-                <PhotoThumb
-                  key={p.path}
-                  size="ticket"
-                  src={src}
-                  alt="Photo on this ticket"
-                  onOpen={() => src && setViewing({ src, alt: 'Photo on this ticket' })}
-                />
-              )
-            })}
-          </div>
-        )}
+        <TicketPhotos
+          paths={data.photos.filter((p) => !p.update_id).map((p) => p.path)}
+          urls={urls.data}
+          onOpen={(src) => setViewing({ src, alt: 'Photo on this ticket' })}
+        />
 
-        {ticket.equipment && (
-          <>
-            <SectionLabel className="-mb-0.5">Equipment</SectionLabel>
-            <Card className="flex flex-none items-center gap-3 rounded-input px-3.5 py-3">
-              <IconWrench size={22} className="flex-none text-brand" />
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="text-15 font-semibold">{ticket.equipment.name}</span>
-                {(ticket.equipment.brand || ticket.equipment.serial) && (
-                  <span className="text-12 text-text-muted">
-                    {ticket.equipment.brand}
-                    {ticket.equipment.brand && ticket.equipment.serial && ' · '}
-                    {ticket.equipment.serial && <span className="font-mono">{ticket.equipment.serial}</span>}
-                  </span>
-                )}
-              </div>
-            </Card>
-          </>
-        )}
+        {ticket.equipment && <EquipmentCard equipment={ticket.equipment} />}
 
         <div className="-mb-2.5 flex min-h-tap flex-none items-center justify-between gap-3 pt-1">
           <h2 className="eyebrow">Updates · {count}</h2>

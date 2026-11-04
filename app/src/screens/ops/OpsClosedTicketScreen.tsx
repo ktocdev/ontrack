@@ -1,18 +1,17 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Card } from '../../components/Card'
-import { PhotoThumb, PhotoViewer } from '../../components/Photo'
+import { PhotoViewer } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { TicketMenu } from '../../components/TicketMenu'
-import { IconChevronLeft } from '../../components/icons'
 import { money, timeline } from '../tickets/closed'
-import { Fact, Step } from '../tickets/ClosedParts'
+import { ClosingComment, Fact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
 import { useClosedFacts } from '../tickets/useCloseTicket'
 import { useSignedPhotos } from '../tickets/usePhotos'
+import { TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
 import type { useOpsTicket } from './useOpsTicket'
 
 /**
@@ -31,7 +30,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
   const paths = data.photos.filter((p) => !p.update_id).map((p) => p.path)
   const urls = useSignedPhotos(paths)
   const [viewing, setViewing] = useState<string | null>(null)
-  const [scrolled, setScrolled] = useState(false)
+  const { scrolled, onScroll } = useScrolled()
   const steps = timeline(data.updates)
   const closedOn = facts?.closed_at
     ? new Date(facts.closed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -41,24 +40,13 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
 
   return (
     <Screen>
-      <div
-        className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 pt-[calc(12px+var(--safe-top))] transition-shadow ${
-          scrolled ? 'shadow-scrolled' : ''
-        }`}
-      >
-        <Link
-          to="/ops/closed"
-          aria-label="Back to closed tickets"
-          className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-        >
-          <IconChevronLeft size={22} />
-        </Link>
+      <TicketBar to="/ops/closed" label="Back to closed tickets" scrolled={scrolled}>
         <span className="flex-1 font-mono text-13 text-text-secondary">{ticket.display_id}</span>
         <StatusPill status="closed" className="mr-2" />
         <TicketMenu displayId={ticket.display_id ?? ''} title={ticket.title} />
-      </div>
+      </TicketBar>
 
-      <ScreenBody className="gap-3 pb-5 pt-3.5" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}>
+      <ScreenBody className="gap-3 pb-5 pt-3.5" onScroll={onScroll}>
         <div className="flex flex-none flex-col gap-1">
           <h1 className="font-display text-24 font-bold leading-[1.2] tracking-[-0.02em] [overflow-wrap:anywhere]">
             {ticket.title}
@@ -80,38 +68,22 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
             {ticket.description}
           </p>
         )}
-        {paths.length > 0 && (
-          <div className="flex flex-none flex-wrap gap-2">
-            {paths.map((path) => {
-              const src = urls.data?.get(path)
-              return (
-                <PhotoThumb
-                  key={path}
-                  size="ticket"
-                  src={src}
-                  alt="Photo on this ticket"
-                  onOpen={() => src && setViewing(src)}
-                />
-              )
-            })}
-          </div>
-        )}
+        <TicketPhotos paths={paths} urls={urls.data} onOpen={setViewing} />
 
         {hasResolution && (
           <>
             <SectionLabel className="-mb-0.5">Resolution</SectionLabel>
             <Card className="overflow-hidden">
               {facts?.resolution && (
-                <div className="flex flex-col gap-1 bg-surface-hover px-3.5 py-3">
-                  <span className="text-12 font-bold text-text-secondary">
-                    {facts.closer?.id === user.id
+                <ClosingComment
+                  heading={
+                    facts.closer?.id === user.id
                       ? 'Your closing comment'
-                      : `Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${ROLE_WORD[facts.closer.role]}` : ''}`}
-                  </span>
-                  <span className="whitespace-pre-wrap text-14 leading-[1.45] [overflow-wrap:anywhere]">
-                    {facts.resolution}
-                  </span>
-                </div>
+                      : `Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${ROLE_WORD[facts.closer.role]}` : ''}`
+                  }
+                >
+                  {facts.resolution}
+                </ClosingComment>
               )}
               {facts?.contractor && <Fact label="Contractor">{facts.contractor}</Fact>}
               {hasCost && (
@@ -123,18 +95,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
           </>
         )}
 
-        <SectionLabel className="-mb-0.5">Timeline</SectionLabel>
-        <Card className="overflow-hidden">
-          {steps.map((s) => (
-            <Step
-              key={s.key}
-              title={s.title}
-              note={s.note}
-              when={s.when}
-              dot={s.end ? 'bg-brand' : 'bg-border-muted'}
-            />
-          ))}
-        </Card>
+        <Timeline steps={steps} />
       </ScreenBody>
       <PhotoViewer src={viewing} alt="Photo on this ticket" onClose={() => setViewing(null)} />
     </Screen>
