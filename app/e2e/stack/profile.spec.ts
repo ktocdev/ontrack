@@ -60,7 +60,7 @@ test('a password change works and is changed back', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/sign-in/)
   await page.getByLabel('Work email').fill(email)
-  await page.getByLabel('Password').fill(temp)
+  await page.getByLabel('Password', { exact: true }).fill(temp)
   await page.getByRole('button', { name: 'Sign in' }).click()
   await page.getByRole('link', { name: 'Your profile' }).click()
   await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()

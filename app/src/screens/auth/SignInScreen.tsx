@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation } from 'react-router'
 import { Button } from '../../components/Button'
-import { Input } from '../../components/Field'
+import { Input, PasswordField } from '../../components/Field'
 import { Logo } from '../../components/icons'
 import { useAuth } from '../../auth/context'
 import { MOCK_USERS, writeMockRole } from '../../auth/mock'
@@ -78,9 +78,8 @@ export function SignInScreen() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Input
+            <PasswordField
               label="Password"
-              type="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

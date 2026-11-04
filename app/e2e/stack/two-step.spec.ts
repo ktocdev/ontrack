@@ -62,7 +62,7 @@ async function newPerson(
 async function submitSignIn(page: Page, email: string, password = PASSWORD) {
   await page.goto('/sign-in')
   await page.getByLabel('Work email').fill(email)
-  await page.getByLabel('Password').fill(password)
+  await page.getByLabel('Password', { exact: true }).fill(password)
   await page.getByRole('button', { name: 'Sign in' }).click()
 }
 

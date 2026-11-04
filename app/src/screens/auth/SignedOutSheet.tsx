@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { Button } from '../../components/Button'
-import { Input } from '../../components/Field'
+import { Input, PasswordField } from '../../components/Field'
 import { Screen } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { IconLockSmall } from '../../components/icons'
@@ -60,9 +60,8 @@ export function SignedOutSheet({ open, email, name, onSignIn, onNotMe }: Props) 
     >
       <form onSubmit={submit} onChange={() => setError(null)} className="flex flex-col gap-3.5">
         <Input label="Work email" type="email" value={email} readOnly autoComplete="username" />
-        <Input
+        <PasswordField
           label="Password"
-          type="password"
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

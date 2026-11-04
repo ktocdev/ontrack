@@ -120,7 +120,7 @@ test('it loads in the layout it found last time, so an empty list does not jump'
   // The first time it can't know, so it draws the list.
   await page.goto('/sign-in')
   await page.getByLabel('Work email').fill('maya.reyes@example.com')
-  await page.getByLabel('Password').fill(SEED_PASSWORD)
+  await page.getByLabel('Password', { exact: true }).fill(SEED_PASSWORD)
   await page.getByRole('button', { name: 'Sign in' }).click()
   await expect(page.getByRole('searchbox')).toBeVisible()
   await expect(page.getByText('Loading open tickets')).toBeAttached()
