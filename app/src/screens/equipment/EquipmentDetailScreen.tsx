@@ -26,8 +26,8 @@ import { useEquipmentDetail, useEquipmentService } from './useEquipmentDetail'
  * Tickets, Empty-Ops-Service, Loading-Equipment-Detail). One screen for both roles, each
  * as its boards draw it: Ops gets the restaurant and Installed in the header and the
  * details in a card. The tabs are routes, so Back returns to the tab you were on.
- * Service & cost is there only with see_costs, for a manager too, since the database
- * returns costs on that right alone. Until QR labels (OT-74) the card where the boards
+ * Service & cost is for Ops with see_costs; a manager doesn't need it (from feedback),
+ * though one with see_costs still sees what each closed ticket cost. Until QR labels (OT-74) the card where the boards
  * draw the QR shows the serial number alone. Not built yet: Edit (OT-70), Create ticket
  * for this equipment (OT-71), Log service and a service record's page (Phase 5). A
  * retired unit still opens, from a ticket or a link, with a Retired label. Under View as
@@ -48,10 +48,12 @@ function Detail({ ops }: { ops: boolean }) {
   const { id = '', tab } = useParams()
   const { user, viewingAs } = useUser()
   const seeCosts = useRight('see_costs')
+  // A manager doesn't need a unit's costs (from feedback, Nov 5, 2026), whatever their rights.
+  const showService = ops && !!seeCosts
   const [now] = useState(() => new Date())
   const year = now.getFullYear()
   const { data, isPending, isError, refetch } = useEquipmentDetail(id)
-  const service = useEquipmentService(id, year, !!seeCosts && tab === 'service')
+  const service = useEquipmentService(id, year, showService && tab === 'service')
   const base = ops ? '/ops/equipment' : '/equipment'
   const back = <BackBar to={base} label="Back to equipment" />
 
@@ -84,7 +86,7 @@ function Detail({ ops }: { ops: boolean }) {
       </Screen>
     )
   if (!data) return <NotFoundScreen />
-  if (!TABS.includes(tab as (typeof TABS)[number]) || (tab === 'service' && seeCosts === false))
+  if (!TABS.includes(tab as (typeof TABS)[number]) || (tab === 'service' && (!ops || seeCosts === false)))
     return <Navigate to={`${base}/${id}`} replace />
 
   const { unit, tickets, manualUrl } = data
@@ -150,9 +152,9 @@ function Detail({ ops }: { ops: boolean }) {
             { to: here, label: 'Details', end: true },
             {
               to: `${here}/tickets`,
-              label: <>Tickets {open.length > 0 && <OpenBadge count={open.length} compact={ops} />}</>,
+              label: <>Tickets {open.length > 0 && <OpenBadge count={open.length} compact />}</>,
             },
-            ...(seeCosts ? [{ to: `${here}/service`, label: 'Service & cost' }] : []),
+            ...(showService ? [{ to: `${here}/service`, label: 'Service & cost' }] : []),
           ]}
         />
 

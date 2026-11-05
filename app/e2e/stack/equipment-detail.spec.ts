@@ -34,7 +34,6 @@ test('a manager opens a unit from its ticket and sees its details', async ({ pag
   // The seed names a manual it never uploads, so it can't be signed and shows as its name.
   await expect(details).toContainText('Kolpak-KF7.pdf')
   await expect(tabs(page).getByRole('link', { name: /Tickets \d+ open/ })).toBeVisible()
-  await expect(tabs(page).getByRole('link', { name: 'Service & cost' })).toBeVisible()
   await page.waitForTimeout(300)
   await testInfo.attach('details', { body: await page.screenshot(), contentType: 'image/png' })
 
@@ -59,20 +58,10 @@ test('a manager opens a unit from its ticket and sees its details', async ({ pag
   await page.goBack()
   await expect(page).toHaveURL(new RegExp(`/equipment/${COOLER}/tickets$`))
 
-  // Service & cost, with See costs: totals, the contractor, the log by year.
-  await tabs(page).getByRole('link', { name: 'Service & cost' }).click()
-  await expect(page.getByText('Lifetime cost')).toBeVisible()
-  await expect(page.getByText(/^Visits \d{4}$/)).toBeVisible()
-  const contractors = page.getByRole('region', { name: 'Contractors on this unit' })
-  await expect(contractors).toContainText('Coldline Refrigeration')
-  await expect(contractors).toContainText(/\$822\.40|No visits in \d{4}/)
-  await expect(contractors.getByRole('link', { name: 'Call Coldline Refrigeration' })).toHaveAttribute('href', /^tel:/)
-  const log = page.getByRole('region', { name: 'Service log 2026' })
-  await expect(log).toContainText('Condenser fan motor replaced')
-  await expect(log).toContainText('OT-0911 · In-house')
-  await expect(page.getByRole('region', { name: 'Service log 2025' })).toContainText('Spring PM and door closer')
-  await page.waitForTimeout(300)
-  await testInfo.attach('service', { body: await page.screenshot(), contentType: 'image/png' })
+  // A manager has no Service & cost, even with See costs (from feedback); closed tickets keep their cost.
+  await expect(tabs(page).getByRole('link', { name: 'Service & cost' })).toHaveCount(0)
+  await page.goto(`/equipment/${COOLER}/service`)
+  await expect(page).toHaveURL(new RegExp(`/equipment/${COOLER}$`))
 })
 
 test('without See costs there is no Service & cost, and another restaurant’s unit is not found', async ({ page }) => {
@@ -90,7 +79,7 @@ test('without See costs there is no Service & cost, and another restaurant’s u
   await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
 })
 
-test('Ops sees the restaurant, Installed and the details in a card, and its ticket opens the unit', async ({
+test('Ops sees the restaurant, Installed, the details in a card and Service & cost, and its ticket opens the unit', async ({
   page,
 }, testInfo) => {
   await signIn(page, 'bert.velilla@example.com')
@@ -111,10 +100,26 @@ test('Ops sees the restaurant, Installed and the details in a card, and its tick
     .getByRole('link', { name: /Evaporator fan noisy/ })
     .click()
   await expect(page).toHaveURL(/\/ops\/tickets\/66666666-6666-4666-8666-000000000911$/)
+  await page.goBack()
+
+  // Service & cost, with See costs: totals, the contractor, the log by year.
+  await tabs(page).getByRole('link', { name: 'Service & cost' }).click()
+  await expect(page.getByText('Lifetime cost')).toBeVisible()
+  await expect(page.getByText(/^Visits \d{4}$/)).toBeVisible()
+  const contractors = page.getByRole('region', { name: 'Contractors on this unit' })
+  await expect(contractors).toContainText('Coldline Refrigeration')
+  await expect(contractors).toContainText(/\$822\.40|No visits in \d{4}/)
+  await expect(contractors.getByRole('link', { name: 'Call Coldline Refrigeration' })).toHaveAttribute('href', /^tel:/)
+  const log = page.getByRole('region', { name: 'Service log 2026' })
+  await expect(log).toContainText('Condenser fan motor replaced')
+  await expect(log).toContainText('OT-0911 · In-house')
+  await expect(page.getByRole('region', { name: 'Service log 2025' })).toContainText('Spring PM and door closer')
+  await page.waitForTimeout(300)
+  await testInfo.attach('service', { body: await page.screenshot(), contentType: 'image/png' })
 })
 
 test('a new unit has no tickets and no service yet', async ({ page, request }) => {
-  const token = await tokenFor(request, 'maya.reyes@example.com')
+  const token = await tokenFor(request, 'bert.velilla@example.com')
   const headers = { apikey: KEY, Authorization: `Bearer ${token}`, Prefer: 'return=representation' }
   const added = await request.post(`${SUPABASE}/rest/v1/equipment`, {
     headers,
@@ -128,11 +133,11 @@ test('a new unit has no tickets and no service yet', async ({ page, request }) =
   expect(added.ok()).toBe(true)
   const [{ id }] = (await added.json()) as { id: string }[]
 
-  await signIn(page, 'maya.reyes@example.com')
-  await page.goto(`/equipment/${id}/tickets`)
+  await signIn(page, 'bert.velilla@example.com')
+  await page.goto(`/ops/equipment/${id}/tickets`)
   await expect(page.getByRole('heading', { name: 'No tickets yet' })).toBeVisible()
   await expect(tabs(page).getByRole('link', { name: /open/ })).toHaveCount(0)
-  await page.goto(`/equipment/${id}/service`)
+  await page.goto(`/ops/equipment/${id}/service`)
   await expect(page.getByRole('heading', { name: 'No service logged yet' })).toBeVisible()
   await expect(page.getByText('Warranty: Parts through Oct 2029.')).toBeVisible()
 
