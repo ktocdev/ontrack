@@ -30,8 +30,9 @@ import { useOpsEquipment } from './useOpsEquipment'
  * Ops · Equipment list (from design/screens/Ops-Equipment-List). The units in service
  * at the picker's restaurants, a card per type with one open at a time, each row with
  * its restaurant, brand and serial, this year's spend (only with see_costs) and its
- * open tickets. Search finds a name, brand or serial and opens every card it matches
- * in. The filter sheet has area and type; the picker is the restaurant filter. Under
+ * open tickets. Search finds a name, brand or serial, and both a search and a type
+ * filter open every card they leave. The filter sheet has area and type; the picker is
+ * the restaurant filter. Under
  * View as, nothing leads anywhere and Add equipment is gone.
  */
 export function OpsEquipmentScreen() {
@@ -46,27 +47,32 @@ export function OpsEquipmentScreen() {
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Filters>(NO_FILTERS)
   const [filtering, setFiltering] = useState(false)
-  // One card open at a time; undefined is the first. A search opens every card it matches in.
+  // One card open at a time; undefined is the first. A search or a type filter opens every
+  // card it leaves, and each can still be closed.
   const [openName, setOpenName] = useState<string | null | undefined>(undefined)
-  const [closedInSearch, setClosedInSearch] = useState<string[]>([])
+  const [closed, setClosed] = useState<string[]>([])
 
-  const searching = query.trim() !== ''
+  const expandAll = query.trim() !== '' || filters.types.length > 0
   const units = data ?? []
   const shown = units.filter((u) => matchesFilters(u, filters) && matchesSearch(u, query))
   const groups = groupByType(shown)
   const restaurantOf = new Map(restaurants.map((r) => [r.id, r]))
   const isOpen = (name: string, i: number) =>
-    searching ? !closedInSearch.includes(name) : openName === undefined ? i === 0 : openName === name
+    expandAll ? !closed.includes(name) : openName === undefined ? i === 0 : openName === name
   const toggle = (name: string, i: number) => {
-    if (searching) setClosedInSearch((c) => (c.includes(name) ? c.filter((n) => n !== name) : [...c, name]))
+    if (expandAll) setClosed((c) => (c.includes(name) ? c.filter((n) => n !== name) : [...c, name]))
     else setOpenName(isOpen(name, i) ? null : name)
   }
   const search = (q: string) => {
     setQuery(q)
-    setClosedInSearch([])
+    setClosed([])
+  }
+  const filter = (f: Filters) => {
+    setFilters(f)
+    setClosed([])
   }
   const clearAll = () => {
-    setFilters(NO_FILTERS)
+    filter(NO_FILTERS)
     search('')
   }
 
@@ -77,13 +83,13 @@ export function OpsEquipmentScreen() {
       ? [
           {
             label: filters.area === 'foh' ? 'Front of House' : 'Back of House',
-            remove: () => setFilters({ ...filters, area: null }),
+            remove: () => filter({ ...filters, area: null }),
           },
         ]
       : []),
     ...filters.types.map((t) => ({
       label: t,
-      remove: () => setFilters({ ...filters, types: filters.types.filter((x) => x !== t) }),
+      remove: () => filter({ ...filters, types: filters.types.filter((x) => x !== t) }),
     })),
   ]
   const empty = !isPending && !isError && units.length === 0
@@ -203,7 +209,7 @@ export function OpsEquipmentScreen() {
         open={filtering}
         onOpenChange={setFiltering}
         filters={filters}
-        onChange={setFilters}
+        onChange={filter}
         types={typeNames(units)}
         shown={shown.length}
       />

@@ -72,7 +72,9 @@ test('search finds a name, brand or serial and opens every card it matches in', 
   await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'true')
 })
 
-test('the filter sheet narrows by area and type, and each filter shows as a chip', async ({ page }, testInfo) => {
+test('the filter sheet narrows by area and type, opens the types picked, and each filter shows as a chip', async ({
+  page,
+}, testInfo) => {
   await openEquipment(page)
   await page.getByRole('button', { name: 'Filter', exact: true }).click()
   const sheet = page.getByRole('dialog', { name: 'Filter equipment' })
@@ -90,6 +92,21 @@ test('the filter sheet narrows by area and type, and each filter shows as a chip
   await expect(page.getByRole('region')).toHaveCount(1)
   await expect(row(page, 'Bar sink 2')).toBeVisible()
   await expect(row(page, 'Floor Drain Pump')).toHaveCount(0)
+
+  // A type filter opens its cards, as a search does.
+  await page.getByRole('button', { name: 'Remove Front of House' }).click()
+  await page.getByRole('button', { name: 'Filter · 1' }).click()
+  await page.getByRole('dialog', { name: 'Filter equipment' }).getByRole('button', { name: 'Refrigeration' }).click()
+  await page.getByRole('button', { name: /^Show \d+ items?$/ }).click()
+  await expect(head(page, 'Plumbing')).toHaveAttribute('aria-expanded', 'true')
+  await expect(head(page, 'Refrigeration')).toHaveAttribute('aria-expanded', 'true')
+  await expect(row(page, 'Floor Drain Pump')).toBeVisible()
+  await head(page, 'Plumbing').click()
+  await expect(head(page, 'Plumbing')).toHaveAttribute('aria-expanded', 'false')
+  await page.getByRole('button', { name: 'Remove Refrigeration' }).click()
+  await page.getByRole('button', { name: 'Filter · 1' }).click()
+  await page.getByRole('dialog', { name: 'Filter equipment' }).getByRole('radio', { name: 'Front of House' }).click()
+  await page.getByRole('button', { name: /^Show \d+ items?$/ }).click()
 
   await page.getByRole('button', { name: 'Remove Plumbing' }).click()
   await expect(page.getByRole('button', { name: 'Filter · 1' })).toBeVisible()
