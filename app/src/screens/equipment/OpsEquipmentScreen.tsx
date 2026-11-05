@@ -28,7 +28,8 @@ import { useEquipmentList } from './useEquipmentList'
 
 /**
  * Ops · Equipment list (from design/screens/Ops-Equipment-List). The units in service
- * at the picker's restaurants, a card per type with one open at a time, each row with
+ * at the picker's restaurants, a card per type, all closed on arriving and then one open
+ * at a time (from feedback, Nov 5, 2026), each row with
  * its restaurant, brand and serial, this year's spend (only with see_costs) and its
  * open tickets. Search finds a name, brand or serial, and both a search and a type
  * filter open every card they leave. The filter sheet has area and type; the picker is
@@ -47,9 +48,9 @@ export function OpsEquipmentScreen() {
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Filters>(NO_FILTERS)
   const [filtering, setFiltering] = useState(false)
-  // One card open at a time; undefined is the first. A search or a type filter opens every
-  // card it leaves, and each can still be closed.
-  const [openName, setOpenName] = useState<string | null | undefined>(undefined)
+  // One card open at a time, none to begin with (from feedback). A search or a type filter
+  // opens every card it leaves, and each can still be closed.
+  const [openName, setOpenName] = useState<string | null>(null)
   const [closed, setClosed] = useState<string[]>([])
 
   const expandAll = query.trim() !== '' || filters.types.length > 0
@@ -57,11 +58,10 @@ export function OpsEquipmentScreen() {
   const shown = units.filter((u) => matchesFilters(u, filters) && matchesSearch(u, query))
   const groups = groupByType(shown)
   const restaurantOf = new Map(restaurants.map((r) => [r.id, r]))
-  const isOpen = (name: string, i: number) =>
-    expandAll ? !closed.includes(name) : openName === undefined ? i === 0 : openName === name
-  const toggle = (name: string, i: number) => {
+  const isOpen = (name: string) => (expandAll ? !closed.includes(name) : openName === name)
+  const toggle = (name: string) => {
     if (expandAll) setClosed((c) => (c.includes(name) ? c.filter((n) => n !== name) : [...c, name]))
-    else setOpenName(isOpen(name, i) ? null : name)
+    else setOpenName(isOpen(name) ? null : name)
   }
   const search = (q: string) => {
     setQuery(q)
@@ -176,14 +176,14 @@ export function OpsEquipmentScreen() {
               </Button>
             </div>
           ) : (
-            groups.map((g, i) => (
+            groups.map((g) => (
               <EquipmentGroup
                 key={g.name}
                 name={g.name}
                 count={g.units.length}
                 openCount={g.openCount}
-                open={isOpen(g.name, i)}
-                onToggle={() => toggle(g.name, i)}
+                open={isOpen(g.name)}
+                onToggle={() => toggle(g.name)}
               >
                 {g.units.map((u) => {
                   const r = restaurantOf.get(u.restaurant_id)

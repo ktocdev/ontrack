@@ -26,10 +26,14 @@ test('a card per type, one open at a time, each row with its restaurant, serial,
   await openEquipment(page)
   await expect(page.getByRole('link', { name: 'Add equipment' })).toBeVisible()
 
-  // Back of House types first, the first one open.
+  // Back of House types first, every card closed on arriving.
   const names = await page.getByRole('region').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')))
   expect(names.slice(0, 3)).toEqual(['Cooking', 'Refrigeration', 'Plumbing'])
-  await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'true')
+  for (const name of names) await expect(head(page, name!)).toHaveAttribute('aria-expanded', 'false')
+  await expect(page.getByRole('link', { name: /^Combi Oven/ })).toHaveCount(0)
+
+  // One open at a time.
+  await head(page, 'Cooking').click()
   await expect(row(page, 'Combi Oven')).toBeVisible()
 
   await head(page, 'Refrigeration').click()
@@ -69,7 +73,7 @@ test('search finds a name, brand or serial and opens every card it matches in', 
   await expect(page.getByText('No equipment matches “nothing like this”.')).toBeVisible()
   await page.getByRole('button', { name: 'Clear search' }).last().click()
   await expect(search).toHaveValue('')
-  await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'true')
+  await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'false')
 })
 
 test('the filter sheet narrows by area and type, opens the types picked, and each filter shows as a chip', async ({
