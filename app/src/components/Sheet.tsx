@@ -25,6 +25,11 @@ type Props = {
   icon?: ReactNode
   /** A link beside the title (Clear all on Filter equipment). */
   action?: ReactNode
+  /**
+   * Focus the panel on open rather than its first control, for a tall sheet whose only
+   * button is at the bottom (Photo tips): it then opens at the top, handle and all.
+   */
+  focusPanel?: boolean
 }
 
 export function Sheet({
@@ -38,6 +43,7 @@ export function Sheet({
   modal = false,
   icon,
   action,
+  focusPanel = false,
 }: Props) {
   const hold = modal ? (e: Event) => e.preventDefault() : undefined
   const swipe = useSwipeToClose(() => onOpenChange(false), !modal)
@@ -54,12 +60,24 @@ export function Sheet({
         <Dialog.Overlay className="fixed inset-0 z-30 bg-scrim data-[state=open]:animate-[fade-in_.15s_ease-out]" />
         <Dialog.Content
           ref={swipe}
+          tabIndex={focusPanel ? -1 : undefined}
+          onOpenAutoFocus={
+            focusPanel
+              ? (e) => {
+                  e.preventDefault()
+                  ;(e.currentTarget as HTMLElement).focus({ preventScroll: true })
+                }
+              : undefined
+          }
           onEscapeKeyDown={hold}
           onPointerDownOutside={hold}
           onInteractOutside={hold}
           className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-dialog`}
         >
-          <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-square bg-border-strong lg:hidden" />
+          <span
+            aria-hidden="true"
+            className="h-[5px] w-10 flex-none self-center rounded-square bg-border-strong lg:hidden"
+          />
           {icon}
           {action ? (
             <div className="flex items-center justify-between gap-3">

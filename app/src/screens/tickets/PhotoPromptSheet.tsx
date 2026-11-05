@@ -1,7 +1,8 @@
-import { useRef, type ChangeEvent } from 'react'
+import { useRef, useState, type ChangeEvent } from 'react'
 import { Button } from '../../components/Button'
 import { Sheet } from '../../components/Sheet'
 import { IconCamera } from '../../components/icons'
+import { PhotoTipsLink, PhotoTipsSheet } from './PhotoTips'
 
 /**
  * Add a photo? (from feedback, OT-77; no board). Ops wants a photo on every ticket,
@@ -9,7 +10,8 @@ import { IconCamera } from '../../components/icons'
  * picker on a computer) and the photo joins the form, where the manager sees it and
  * submits again; Proceed without photo creates the ticket as it is. Closing the sheet
  * or the camera leaves the form as it was. The camera input sits outside the sheet so
- * it is still there when the sheet closes and the photo comes back.
+ * it is still there when the sheet closes and the photo comes back. Photo tips opens
+ * in its place, and closing the tips brings it back.
  */
 export function PhotoPromptSheet({
   open,
@@ -23,6 +25,7 @@ export function PhotoPromptSheet({
   onProceed: () => void
 }) {
   const camera = useRef<HTMLInputElement>(null)
+  const [tips, setTips] = useState(false)
   const change = (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
     e.target.value = ''
@@ -31,7 +34,7 @@ export function PhotoPromptSheet({
   return (
     <>
       <Sheet
-        open={open}
+        open={open && !tips}
         onOpenChange={onOpenChange}
         title="Add a photo?"
         description="It is best practice to include a photo with a ticket."
@@ -55,8 +58,10 @@ export function PhotoPromptSheet({
           >
             Proceed without photo
           </Button>
+          <PhotoTipsLink className="self-center" onClick={() => setTips(true)} />
         </div>
       </Sheet>
+      <PhotoTipsSheet open={open && tips} onOpenChange={(o) => setTips(o)} />
       <input
         ref={camera}
         type="file"
