@@ -184,7 +184,14 @@ export const router = createBrowserRouter([
                     }),
                   },
                   { path: '/walkthrough', ...placeholder('Walkthrough', 'Phase 6a') },
-                  { path: '/equipment', ...placeholder('Equipment', 'Phase 4') },
+                  {
+                    path: '/equipment',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentScreen')).EquipmentScreen,
+                    }),
+                  },
+                  { path: '/equipment/new', ...placeholder('Add equipment', 'Phase 4') },
+                  { path: '/equipment/:id', ...placeholder('Equipment details', 'Phase 4') },
                 ],
               },
               {

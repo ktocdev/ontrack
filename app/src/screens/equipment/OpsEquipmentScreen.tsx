@@ -24,7 +24,7 @@ import {
   typeNames,
   type Filters,
 } from './equipment'
-import { useOpsEquipment } from './useOpsEquipment'
+import { useEquipmentList } from './useEquipmentList'
 
 /**
  * Ops · Equipment list (from design/screens/Ops-Equipment-List). The units in service
@@ -40,7 +40,7 @@ export function OpsEquipmentScreen() {
   const scope = useRestaurantScope()
   const { ordered } = useRestaurantOrder()
   const [year] = useState(() => new Date().getFullYear())
-  const { data, isPending, isError, refetch } = useOpsEquipment(scope.ids, year)
+  const { data, isPending, isError, refetch } = useEquipmentList(scope.ids, year)
   const seeCosts = useRight('see_costs')
   const canAdd = useRight('edit_equipment') && !viewingAs
 

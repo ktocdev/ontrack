@@ -20,7 +20,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
 | 3 · Ops dashboard and ticket work | Done, except the real-iPhone checks | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). The buzz and its badge were tried on Android (Nov 5, 2026). Google sign-in (OT-59) is deferred until the group's IT person is involved |
-| 4 · Equipment · first demo | Split into pull requests (Nov 5, 2026); QR labels deferred | OT-65 plan update, then OT-66 to OT-75 (see Phase 4) |
+| 4 · Equipment · first demo | Split into pull requests (Nov 5, 2026); QR labels deferred | OT-65 plan update, then OT-66 to OT-76 (see Phase 4) |
 
 Phase 0 notes:
 
@@ -349,6 +349,7 @@ Every unit has a page, a QR label, and a history (QR labels deferred, Nov 5, 202
 | OT-66 | Equipment backend: Retire / Restore and Delete following the archive and delete rule (a history view, one `security invoker` function per action with its `audit_log` row), a guard so a retired unit or an archived restaurant takes no new ticket, the data plate photo, the list's counts (open tickets per unit and category, this year's spend only with `see_costs`), pgTAP |
 | OT-67 | Ops equipment list: the restaurant picker, search, the filter sheet (area, category), category disclosures with open-ticket badges, rows with restaurant color, brand, serial and this year's spend, empty state, loading skeleton; View as |
 | OT-68 | Manager equipment list: Front / Back and category disclosures, with no search (from feedback, Nov 5, 2026), Add equipment only with `edit_equipment`, empty state; View as |
+| OT-76 | From feedback (Nov 5, 2026): swipe down closes a sheet, on every sheet in the app, when its content is scrolled to the top; past about a third of its height or a quick flick closes it, less springs back. Signed out never closes on a swipe, a swipe from a drag handle in Reorder restaurants keeps reordering, and a computer's centered dialog is unchanged. Tried by hand on Android and the borrowed iPhone |
 | OT-69 | Equipment detail for both roles: the breadcrumb with the restaurant color, Details (serial, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost only with `see_costs`, with its no-service-yet state until Phase 5; a ticket's equipment card now opens its unit |
 | OT-70 | Add and Edit equipment: the form, manual PDF and data plate photo, Retire / Restore and Delete in a sheet with a confirm step; saving opens the new unit |
 | OT-71 | Lasting link `/e/<id>` for every role and Share link on a unit; Create ticket from a unit with the unit filled in |
