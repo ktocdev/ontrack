@@ -154,6 +154,7 @@ The plan's Phase 4 section says what ships and what it works around. Done when a
 | OT-66 | Equipment backend: Retire / Restore and Delete by the archive and delete rule, no new ticket on a retired unit or archived restaurant, the data plate photo, the list's counts and this year's spend (only with `see_costs`), pgTAP |
 | OT-67 | Ops equipment list: restaurant picker, search, filter sheet (area, category), category disclosures with open badges, rows with spend, empty state, loading skeleton; View as |
 | OT-68 | Manager equipment list: Front / Back and category disclosures, no search, Add equipment only with `edit_equipment`, empty state; View as |
+| OT-76 | From feedback (Nov 5, 2026): swipe down closes a sheet, everywhere, when scrolled to the top; never the Signed out sheet, not from a drag handle; tried on real phones |
 | OT-69 | Equipment detail for both roles: breadcrumb, Details, Tickets (closed in a disclosure), Service & cost only with `see_costs`; a ticket's equipment card opens its unit |
 | OT-70 | Add and Edit equipment with manual PDF and data plate photo; Retire / Restore and Delete sheet |
 | OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |
