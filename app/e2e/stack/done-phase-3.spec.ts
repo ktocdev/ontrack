@@ -73,6 +73,7 @@ test('a manager reports a problem, Ops works it to closed, and a reopen comes ba
     await dana.getByLabel('Title').fill(title)
     await dana.getByLabel('Description').fill('Bin is empty and the machine hums.')
     await dana.getByRole('button', { name: 'Submit ticket' }).click()
+    await dana.getByRole('button', { name: 'Proceed without photo' }).click()
     await dana.getByRole('link', { name: new RegExp(title) }).click()
     await expect(dana.getByRole('heading', { name: title })).toBeVisible()
     id = new URL(dana.url()).pathname.split('/').pop()!

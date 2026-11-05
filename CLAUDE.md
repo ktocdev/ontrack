@@ -155,6 +155,7 @@ The plan's Phase 4 section says what ships and what it works around. Done when a
 | OT-67 | Ops equipment list: restaurant picker, search, filter sheet (area, category), category disclosures with open badges, rows with spend, empty state, loading skeleton; View as |
 | OT-68 | Manager equipment list: Front / Back and category disclosures, no search, Add equipment only with `edit_equipment`, empty state; View as |
 | OT-76 | From feedback (Nov 5, 2026): swipe down closes a sheet, everywhere, when scrolled to the top; never the Signed out sheet, not from a drag handle; tried on real phones |
+| OT-77 | From feedback (Nov 5, 2026): Submit ticket with no photo asks first (Add a photo?): Open Camera (primary) or Proceed without photo (danger); a nudge, not enforced |
 | OT-69 | Equipment detail for both roles: breadcrumb, Details, Tickets (closed in a disclosure), Service & cost only with `see_costs`; a ticket's equipment card opens its unit |
 | OT-70 | Add and Edit equipment with manual PDF and data plate photo; Retire / Restore and Delete sheet |
 | OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |

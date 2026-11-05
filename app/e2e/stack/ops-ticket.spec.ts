@@ -239,6 +239,7 @@ test('a reopened ticket is an ordinary ticket with its badge, and nobody on it',
   await dana.getByRole('link', { name: /^Refrigeration/ }).click()
   await dana.getByLabel('Title').fill(title)
   await dana.getByRole('button', { name: 'Submit ticket' }).click()
+  await dana.getByRole('button', { name: 'Proceed without photo' }).click()
   await dana.getByRole('link', { name: new RegExp(title) }).click()
   await expect(dana.getByRole('heading', { name: title })).toBeVisible()
   const ticketUrl = new URL(dana.url()).pathname
@@ -295,6 +296,7 @@ test('Ops closes a ticket with a comment, and the restaurant sees it', async ({ 
   await dana.getByRole('link', { name: /^Refrigeration/ }).click()
   await dana.getByLabel('Title').fill(title)
   await dana.getByRole('button', { name: 'Submit ticket' }).click()
+  await dana.getByRole('button', { name: 'Proceed without photo' }).click()
   await dana.getByRole('link', { name: new RegExp(title) }).click()
   await expect(dana.getByRole('heading', { name: title })).toBeVisible()
   const ticketUrl = new URL(dana.url()).pathname
