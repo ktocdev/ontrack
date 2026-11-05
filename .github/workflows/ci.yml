@@ -1,6 +1,14 @@
 name: CI
 
 # Nothing here reads the docs or the design export, so a PR of only those runs nothing.
+#
+# Minutes are counted on a private repo, and the flows are most of them (Nov 5, 2026):
+# - App and Database run on every PR push and on main.
+# - The flows run once when a PR opens (or reopens, or leaves draft), not again on each
+#   push, since the flows a change touches are run locally first. A "flows" label runs
+#   them now and on every push after it while it stays. A "quick" label skips them.
+# - main runs no flows after a merge, since its PR ran them; "Run workflow" on the
+#   Actions tab runs everything on main by hand.
 on:
   push:
     branches: [main]
@@ -9,18 +17,23 @@ on:
       - 'handoff/**'
       - 'design/**'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
     paths-ignore:
       - '**/*.md'
       - 'handoff/**'
       - 'design/**'
+  workflow_dispatch:
 
+# A label's run has only the flows, so it waits beside the push's checks rather than
+# cancelling them.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.ref }}-${{ github.event.action == 'labeled' && 'label' || 'push' }}
   cancel-in-progress: true
 
 jobs:
   app:
     name: App · typecheck, lint, unit, build, e2e
+    if: ${{ github.event.action != 'labeled' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -57,10 +70,19 @@ jobs:
           retention-days: 7
 
   # One job per browser, each with its own stack, since the flows share a database and
-  # can't run side by side in one. A PR labeled "quick" skips them; main always runs them.
+  # can't run side by side in one. When they run is in the header above.
   flows:
     name: Flows · ${{ matrix.browser }}
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'quick') }}
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'pull_request' &&
+          !github.event.pull_request.draft &&
+          !contains(github.event.pull_request.labels.*.name, 'quick') &&
+          (contains(fromJSON('["opened", "reopened", "ready_for_review"]'), github.event.action) ||
+            (github.event.action == 'labeled' && github.event.label.name == 'flows') ||
+            (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'flows'))))
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -118,6 +140,7 @@ jobs:
 
   db:
     name: Database · migrations, seed, pgTAP
+    if: ${{ github.event.action != 'labeled' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
