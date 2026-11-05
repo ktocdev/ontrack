@@ -61,7 +61,7 @@ test.describe('foundation', () => {
     const secondary = page.getByRole('button', { name: 'Secondary · 48' })
     expect((await primary.boundingBox())!.height).toBeGreaterThanOrEqual(52)
     expect((await secondary.boundingBox())!.height).toBeGreaterThanOrEqual(48)
-    const back = page.getByRole('button', { name: 'Back' })
+    const back = page.getByRole('button', { name: 'Back', exact: true })
     const box = (await back.boundingBox())!
     expect(box.width).toBeGreaterThanOrEqual(44)
     expect(box.height).toBeGreaterThanOrEqual(44)

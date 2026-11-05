@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from 'react'
+import { IconClose, IconFilter } from './icons'
 
 /**
  * Round chips from the design. `filter` is the 36px list filter that goes dark
@@ -77,5 +78,42 @@ export function ChoiceChips<T extends string>({
         })}
       </div>
     </div>
+  )
+}
+
+/**
+ * Filter button beside a search field (Ops equipment): 44px, 12px radius, and
+ * "Filter · 2" on the brand tint while filters are on.
+ */
+export function FilterButton({ count, ...rest }: { count: number } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      className={`flex min-h-tap flex-none items-center gap-1.5 rounded-input border px-3.5 text-14 font-semibold transition-colors active:duration-0 ${
+        count
+          ? 'border-brand bg-brand-tint-soft text-brand-strong'
+          : 'border-border-strong bg-surface text-text hover:border-border-muted active:bg-surface-muted'
+      }`}
+      {...rest}
+    >
+      <IconFilter size={16} />
+      {count ? `Filter · ${count}` : 'Filter'}
+    </button>
+  )
+}
+
+/** A filter that is on, under the search: 32px on the brand tint; tapping it takes the filter off. */
+export function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={`Remove ${label}`}
+      onClick={onRemove}
+      className="relative inline-flex min-h-8 items-center gap-1.5 rounded-pill bg-brand-tint-soft px-2.5 text-13 font-semibold text-brand-strong before:absolute before:inset-x-0 before:-inset-y-1.5 active:bg-brand-tint active:duration-0"
+    >
+      {label}
+      <IconClose size={12} strokeWidth={2.6} />
+    </button>
   )
 }
