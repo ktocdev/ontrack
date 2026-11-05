@@ -122,6 +122,12 @@ export const IconSearch = (p: IconProps) => (
   </svg>
 )
 /** No results: a magnifier with a cross in the lens. */
+/** Filter: three lines, each shorter (the equipment list's Filter button). */
+export const IconFilter = (p: IconProps) => (
+  <svg {...base(p, 2.2, false)}>
+    <path d="M4 6h16M7 12h10M10 18h4" />
+  </svg>
+)
 export const IconSearchOff = (p: IconProps) => (
   <svg {...base({ size: 18, ...p }, 2, false)}>
     <circle cx="11" cy="11" r="7" />

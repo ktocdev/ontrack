@@ -17,10 +17,13 @@ export function RestaurantPicker({
   restaurants,
   selectedId,
   onSelect,
+  heading = 'Show tickets for',
 }: {
   restaurants: Restaurant[]
   selectedId: string | null
   onSelect: (id: string | null) => void
+  /** The panel's eyebrow: what the choice scopes. */
+  heading?: string
 }) {
   const colors = restaurants.map((r) => r.color)
   const selected = restaurants.find((r) => r.id === selectedId)
@@ -40,7 +43,7 @@ export function RestaurantPicker({
           sideOffset={4}
           className="z-30 flex w-[290px] max-w-[calc(100vw-32px)] flex-col rounded-card border border-border bg-surface p-1.5 text-text shadow-raised"
         >
-          <DropdownMenu.Label className="eyebrow px-2.5 pb-1.5 pt-2">Show tickets for</DropdownMenu.Label>
+          <DropdownMenu.Label className="eyebrow px-2.5 pb-1.5 pt-2">{heading}</DropdownMenu.Label>
           <DropdownMenu.RadioGroup
             value={selectedId ?? ALL}
             onValueChange={(value) => onSelect(value === ALL ? null : value)}

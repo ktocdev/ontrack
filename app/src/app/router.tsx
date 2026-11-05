@@ -237,7 +237,14 @@ export const router = createBrowserRouter([
                     lazy: async () => ({ Component: (await import('../screens/ops/OpsClosedScreen')).OpsClosedScreen }),
                   },
                   { path: '/ops/walkthroughs', ...placeholder('Walkthroughs', 'Phase 6b') },
-                  { path: '/ops/equipment', ...placeholder('Equipment', 'Phase 4') },
+                  {
+                    path: '/ops/equipment',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/OpsEquipmentScreen')).OpsEquipmentScreen,
+                    }),
+                  },
+                  { path: '/ops/equipment/new', ...placeholder('Add equipment', 'Phase 4') },
+                  { path: '/ops/equipment/:id', ...placeholder('Equipment details', 'Phase 4') },
                   { path: '/ops/contractors', ...placeholder('Contractors', 'Phase 5') },
                 ],
               },

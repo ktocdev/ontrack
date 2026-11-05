@@ -21,6 +21,8 @@ type Props = {
   modal?: boolean
   /** A badge above the title (the signed-out lock). */
   icon?: ReactNode
+  /** A link beside the title (Clear all on Filter equipment). */
+  action?: ReactNode
 }
 
 export function Sheet({
@@ -33,8 +35,16 @@ export function Sheet({
   surface = false,
   modal = false,
   icon,
+  action,
 }: Props) {
   const hold = modal ? (e: Event) => e.preventDefault() : undefined
+  const heading = (
+    <Dialog.Title
+      className={`font-display text-22 font-bold tracking-[-0.01em] text-text ${hideTitle ? 'sr-only' : ''}`}
+    >
+      {title}
+    </Dialog.Title>
+  )
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -47,11 +57,14 @@ export function Sheet({
         >
           <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-square bg-border-strong lg:hidden" />
           {icon}
-          <Dialog.Title
-            className={`font-display text-22 font-bold tracking-[-0.01em] text-text ${hideTitle ? 'sr-only' : ''}`}
-          >
-            {title}
-          </Dialog.Title>
+          {action ? (
+            <div className="flex items-center justify-between gap-3">
+              {heading}
+              {action}
+            </div>
+          ) : (
+            heading
+          )}
           {description ? (
             <Dialog.Description className="text-14 leading-normal text-text-body">{description}</Dialog.Description>
           ) : (

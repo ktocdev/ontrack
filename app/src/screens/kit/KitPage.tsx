@@ -14,10 +14,11 @@ import {
   RadioRow,
   RowIcon,
 } from '../../components/Card'
-import { Chip, ChoiceChips } from '../../components/Chip'
+import { Chip, ChoiceChips, FilterButton, FilterChip } from '../../components/Chip'
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
+import { EquipmentGroup, EquipmentRow, OpenBadge } from '../../components/Equipment'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
@@ -155,6 +156,7 @@ export function KitPage() {
   const [customAccent, setCustomAccent] = useState('#4d7c0f')
   const [chip, setChip] = useState(true)
   const [radio, setRadio] = useState(0)
+  const [kitGroup, setKitGroup] = useState<string | null>('Refrigeration')
   const [draft, setDraft] = useState('')
   const [urgency, setUrgency] = useState<'low' | 'normal' | 'urgent'>('normal')
   const [password, setPassword] = useState('kitchen4')
@@ -327,6 +329,42 @@ export function KitPage() {
                 <CategoryTile to="#" name="Refrigeration" count={9} />
                 <CategoryTile to="#" name="Dishwashing" count={1} />
               </div>
+              <SectionLabel>Equipment lists</SectionLabel>
+              <EquipmentGroup
+                name="Refrigeration"
+                count={3}
+                openCount={1}
+                open={kitGroup === 'Refrigeration'}
+                onToggle={() => setKitGroup((g) => (g === 'Refrigeration' ? null : 'Refrigeration'))}
+              >
+                <EquipmentRow
+                  to="#"
+                  name="Walk-in Cooler 1"
+                  restaurant={KIT_RESTAURANTS[0]}
+                  brand="Kolpak"
+                  serial="KP-7XW-220418"
+                  spend={{ amount: '$860.90', year: 2026 }}
+                  openCount={1}
+                />
+                <EquipmentRow
+                  to="#"
+                  name="Dining Room Pendants"
+                  restaurant={KIT_RESTAURANTS[1]}
+                  brand="Hubbardton"
+                  serial="HF-PND-4410"
+                  spend={{ amount: null, year: 2026 }}
+                />
+                <EquipmentRow to="#" name="Walk-in Freezer" brand="Kolpak" serial="KP-9FZ-190233" />
+              </EquipmentGroup>
+              <EquipmentGroup
+                name="Plumbing"
+                count={8}
+                openCount={0}
+                open={kitGroup === 'Plumbing'}
+                onToggle={() => setKitGroup((g) => (g === 'Plumbing' ? null : 'Plumbing'))}
+              >
+                <EquipmentRow name="Floor Drain Pump" brand="Zoeller" serial="ZL-M53-70188" />
+              </EquipmentGroup>
               <div
                 role="radiogroup"
                 aria-label="Equipment"
@@ -584,6 +622,15 @@ export function KitPage() {
             </Section>
 
             <Section id="choices">
+              <div className="flex flex-wrap items-center gap-2">
+                <FilterButton count={0} />
+                <FilterButton count={2} />
+                <OpenBadge count={1} />
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <FilterChip label="Back of House" onRemove={() => {}} />
+                <FilterChip label="Refrigeration" onRemove={() => {}} />
+              </div>
               <div className="flex flex-wrap gap-2">
                 <Chip selected={chip} onClick={() => setChip(true)}>
                   All · 42
