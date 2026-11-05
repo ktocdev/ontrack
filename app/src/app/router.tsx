@@ -190,7 +190,6 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/equipment/EquipmentScreen')).EquipmentScreen,
                     }),
                   },
-                  { path: '/equipment/new', ...placeholder('Add equipment', 'Phase 4') },
                 ],
               },
               {
@@ -206,6 +205,18 @@ export const router = createBrowserRouter([
                     path: '/tickets/new/:categoryId',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/CreateFormScreen')).CreateFormScreen,
+                    }),
+                  },
+                  {
+                    path: '/equipment/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentFormScreen')).AddEquipmentScreen,
+                    }),
+                  },
+                  {
+                    path: '/equipment/:id/edit',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentFormScreen')).EditEquipmentScreen,
                     }),
                   },
                   {
@@ -255,13 +266,24 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/equipment/OpsEquipmentScreen')).OpsEquipmentScreen,
                     }),
                   },
-                  { path: '/ops/equipment/new', ...placeholder('Add equipment', 'Phase 4') },
                   { path: '/ops/contractors', ...placeholder('Contractors', 'Phase 5') },
                 ],
               },
               {
                 element: <BareShell />,
                 children: [
+                  {
+                    path: '/ops/equipment/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentFormScreen')).OpsAddEquipmentScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/equipment/:id/edit',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentFormScreen')).OpsEditEquipmentScreen,
+                    }),
+                  },
                   {
                     path: '/ops/equipment/:id/:tab?',
                     lazy: async () => ({

@@ -24,15 +24,18 @@ test('a manager browses Front / Back, then a card per type, with no search', asy
   await expect(page.getByRole('button', { name: 'Scan QR code' })).toHaveCount(0)
   await expect(page.getByRole('link', { name: 'Add equipment' })).toBeVisible()
 
-  // Front of House first, its first type open.
+  // Front of House first, every card closed (from feedback).
   await expect(page.getByRole('radio', { name: 'Front of House' })).toHaveAttribute('aria-checked', 'true')
-  await expect(head(page, 'Lighting')).toHaveAttribute('aria-expanded', 'true')
-  await expect(row(page, 'Patio string lights')).toBeVisible()
+  await expect(head(page, 'Lighting')).toHaveAttribute('aria-expanded', 'false')
+  await expect(row(page, 'Patio string lights')).toHaveCount(0)
   await expect(group(page, 'Cooking')).toHaveCount(0)
+  await head(page, 'Lighting').click()
+  await expect(row(page, 'Patio string lights')).toBeVisible()
 
   await page.getByRole('radio', { name: 'Back of House' }).click()
   await expect(group(page, 'Lighting')).toHaveCount(0)
-  await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'true')
+  await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'false')
+  await head(page, 'Cooking').click()
   await head(page, 'Refrigeration').click()
   await expect(head(page, 'Cooking')).toHaveAttribute('aria-expanded', 'false')
   await expect(head(page, 'Refrigeration')).toContainText(/\d+ open/)
@@ -54,8 +57,8 @@ test('a manager without Add / edit equipment sees only their restaurant and no A
   await openEquipment(page, 'ari.kim@example.com')
   await expect(page.getByRole('link', { name: 'Add equipment' })).toHaveCount(0)
   await page.getByRole('radio', { name: 'Back of House' }).click()
-  // Ranalli's has no cooking equipment, so Refrigeration comes first and is open.
-  await expect(head(page, 'Refrigeration')).toHaveAttribute('aria-expanded', 'true')
+  await expect(head(page, 'Refrigeration')).toHaveAttribute('aria-expanded', 'false')
+  await head(page, 'Refrigeration').click()
   await expect(row(page, 'Ice Machine')).toHaveCount(1)
   await expect(row(page, 'Ice Machine')).toContainText('Manitowoc')
   await expect(row(page, 'Walk-in Cooler 1')).toHaveCount(0)

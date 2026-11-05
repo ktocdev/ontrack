@@ -20,7 +20,7 @@ export function useEquipmentDetail(id: string) {
         sb
           .from('equipment')
           .select(
-            'id, name, brand, model, serial, location_note, installed_on, warranty_note, manual_path, retired_at, restaurant_id, restaurant:restaurants (name, color), category:categories (name, area)',
+            'id, name, brand, model, serial, location_note, installed_on, warranty_note, warranty_until, manual_path, plate_photo_path, retired_at, restaurant_id, restaurant:restaurants (name, color), category:categories (name, area)',
           )
           .eq('id', id)
           .maybeSingle(),
@@ -36,12 +36,15 @@ export function useEquipmentDetail(id: string) {
       if (!unit.data) return null
 
       const closedIds = tickets.data.filter((t) => t.status === 'closed').map((t) => t.id)
-      const [costs, manual] = await Promise.all([
+      const [costs, manual, plate] = await Promise.all([
         closedIds.length
           ? sb.from('v_ticket_costs').select('ticket_id, total_cents').in('ticket_id', closedIds)
           : { data: [], error: null },
         unit.data.manual_path
           ? sb.storage.from('manuals').createSignedUrl(unit.data.manual_path, 3600)
+          : { data: null, error: null },
+        unit.data.plate_photo_path
+          ? sb.storage.from('equipment-photos').createSignedUrl(unit.data.plate_photo_path, 3600)
           : { data: null, error: null },
       ])
       if (costs.error) throw costs.error
@@ -50,6 +53,7 @@ export function useEquipmentDetail(id: string) {
         unit: unit.data,
         // A manual that won't sign still shows its name, as text.
         manualUrl: manual.data?.signedUrl ?? null,
+        plateUrl: plate.data?.signedUrl ?? null,
         tickets: tickets.data.map((t) => ({ ...t, totalCents: costOf.get(t.id) ?? null })),
       }
     },
