@@ -36,9 +36,9 @@ select throws_ok($$
   insert into public.equipment (restaurant_id, category_id, name, created_by)
   values ('11111111-1111-4111-8111-000000000003', '33333333-3333-4333-8333-000000000012', 'Test: elsewhere', '22222222-2222-4222-8222-000000000001')
 $$, '42501', null, 'but not at another restaurant');
-select lives_ok($$
+select throws_ok($$
   update public.equipment set retired_at = now() where name = 'Test: reach-in'
-$$, 'and can retire it');
+$$, '42501', null, 'but retires it only through set_equipment_retired');
 select pg_temp.logout();
 
 select pg_temp.login('bert.velilla@example.com');

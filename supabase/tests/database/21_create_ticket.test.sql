@@ -52,6 +52,7 @@ select is(
 
 -- Retired: refused for new links, and existing ones are left alone.
 select set_config('role', 'postgres', true);
+select set_config('request.jwt.claims', '', true);
 update public.equipment set retired_at = now() where id = (:cooler)::uuid;
 select pg_temp.login('maya.reyes@example.com');
 select throws_ok(format($$
