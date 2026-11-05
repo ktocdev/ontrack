@@ -330,7 +330,7 @@ Every unit has a page, a QR label, and a history (QR labels deferred, Nov 5, 202
 - Equipment detail tabs: Details (serial, QR from OT-74, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `see_costs`
 - Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print waits for OT-74
 - Domain (done Oct 30, 2026): `fourcorners.ontrack-app.app` connected to the production Worker and set as Supabase Auth's site URL, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
-- QR (deferred to OT-74, Nov 5, 2026): each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
+- QR (deferred to OT-74, Nov 5, 2026): each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for the group's label stock, about 2.5 in and adjustable
 - Share link on a unit, in the same ellipsis menu as a ticket, using `/e/<id>`
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
 - Empty states: no equipment, no tickets on a unit, no service yet, QR not recognized; equipment loading skeletons
@@ -354,12 +354,12 @@ Every unit has a page, a QR label, and a history (QR labels deferred, Nov 5, 202
 | OT-71 | Lasting link `/e/<id>` for every role and Share link on a unit; Create ticket from a unit with the unit filled in |
 | OT-72 | Install prompt: the hook from Phase 0 put on a screen, with Android's Install button and iPhone's two-step picture |
 | OT-73 | Security and code quality pass over what Phase 4 added |
-| OT-74 | Deferred (Nov 5, 2026): QR labels. The QR on a unit's Details and Print QR label, the Equipment added + QR label screen and Save & create QR code, the scan button on a manager's list, Loading · QR scan and Error · QR code not recognized, `qr-labels` label sheets, the serial barcode button on the form. Waits on the iPhone link check and the label stock size |
+| OT-74 | Deferred (Nov 5, 2026): QR labels. The QR on a unit's Details and Print QR label, the Equipment added + QR label screen and Save & create QR code, the scan button on a manager's list, Loading · QR scan and Error · QR code not recognized, `qr-labels` label sheets, the serial barcode button on the form. Labels about 2.5 in, adjustable. Waits on the iPhone link check |
 | OT-75 | The done test as one flow; the phase note |
 
 **What this phase has to work around**
 
-- **QR labels are deferred (Nov 5, 2026; OT-74).** Equipment comes first, and how a scan opens the app on an iPhone isn't known yet, nor what label stock Four Corners buys. Until OT-74, a unit's Details tab shows the serial number in the card where the board draws its QR, with no Print QR label; Add equipment's button reads Save equipment and opens the new unit instead of the QR label screen; the subtitle saying a QR label is created when you save is left off; and a manager's list has no scan button. `/e/<id>` ships in OT-71 anyway, for Share link, and is the address labels will encode, so nothing printed later has to change.
+- **QR labels are deferred (Nov 5, 2026; OT-74).** Equipment comes first, and how a scan opens the app on an iPhone isn't known yet, and the labels are about 2.5 in, a size that can be adjusted (from Ops, Nov 5, 2026). Until OT-74, a unit's Details tab shows the serial number in the card where the board draws its QR, with no Print QR label; Add equipment's button reads Save equipment and opens the new unit instead of the QR label screen; the subtitle saying a QR label is created when you save is left off; and a manager's list has no scan button. `/e/<id>` ships in OT-71 anyway, for Share link, and is the address labels will encode, so nothing printed later has to change.
 - **A manager's equipment has no search (from feedback, Nov 5, 2026; OT-68).** A manager browses to a unit by Front / Back and then its category, so the board's search field and its No results board are left off, as on Open tickets (OT-63). The Ops list keeps its search, since it spans every restaurant.
 - **The filter sheet on Ops equipment (OT-67)** has area and category only, since the restaurant picker at the top already scopes every Ops screen, as on the dashboard.
 - **Closed tickets on each unit come back (OT-69).** Phase 3 left off Closed tickets' line saying closed tickets also appear on each unit; it returns once a unit's Tickets tab exists.
@@ -524,6 +524,6 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
 - [x] Sharing a link to a ticket, a unit or a contractor: lasting links that work for every role, then Share link in the ellipsis menu, across Phases 3, 4 and 5 (Nov 1, 2026)
 - [ ] Whether Ops wants a filter sheet on the dashboard. Saved for later, not scheduled (OT-38, see Phase 3)
-- [ ] Label stock size for the QR sheets. Deferred with QR labels (OT-74, Nov 5, 2026)
+- [x] Label stock size for the QR sheets: usually around 2.5 in, and it can be adjusted (Nov 5, 2026, from Ops). OT-74 sizes labels at 2.5 in by default, with the size a setting on the sheet
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default

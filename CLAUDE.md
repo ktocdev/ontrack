@@ -159,7 +159,7 @@ The plan's Phase 4 section says what ships and what it works around. Done when a
 | OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |
 | OT-72 | Install prompt: Android's Install button, iPhone's two-step picture, once after sign-in and as a Profile row |
 | OT-73 | Security and code quality pass over Phase 4 |
-| OT-74 | Deferred (Nov 5, 2026): QR labels, the scan button, QR errors and loading, `qr-labels` sheets; waits on the iPhone link check and the label stock size |
+| OT-74 | Deferred (Nov 5, 2026): QR labels, the scan button, QR errors and loading, `qr-labels` sheets; labels about 2.5 in, adjustable; waits on the iPhone link check |
 | OT-75 | The done test as one flow; the phase note |
 
 ## Phase 3, for the record
