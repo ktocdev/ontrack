@@ -156,6 +156,12 @@ export const IconInfo = (p: IconProps) => (
     <path d="M12 11v5M12 8h.01" />
   </svg>
 )
+/** Paperclip (Add equipment: Manual PDF). */
+export const IconPaperclip = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="m21 11-8.6 8.6a5 5 0 0 1-7-7l8.5-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l8-7.9" />
+  </svg>
+)
 export const IconSearchOff = (p: IconProps) => (
   <svg {...base({ size: 18, ...p }, 2, false)}>
     <circle cx="11" cy="11" r="7" />

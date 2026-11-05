@@ -65,11 +65,14 @@ export function BackBar({
   to,
   label,
   bordered = true,
+  action,
   children,
 }: {
   to: string
   label: string
   bordered?: boolean
+  /** A link at the right end (Edit on a unit's page). */
+  action?: ReactNode
   children?: ReactNode
 }) {
   return (
@@ -85,7 +88,8 @@ export function BackBar({
       >
         <IconChevronLeft />
       </Link>
-      <div className="min-w-0 text-13 font-semibold leading-snug text-text-muted">{children}</div>
+      <div className="min-w-0 flex-1 text-13 font-semibold leading-snug text-text-muted">{children}</div>
+      {action}
     </div>
   )
 }

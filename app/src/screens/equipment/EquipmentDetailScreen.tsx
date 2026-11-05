@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Navigate, useParams } from 'react-router'
+import { Link, Navigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button } from '../../components/Button'
@@ -8,6 +8,7 @@ import { ClosedTicketRow } from '../../components/ClosedTicketRow'
 import { EmptyState } from '../../components/EmptyState'
 import { OpenBadge } from '../../components/Equipment'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
+import { PhotoViewer } from '../../components/Photo'
 import { RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
 import { BackBar, Screen, ScreenBody, SectionLabel, UnderlineTabs } from '../../components/Screen'
 import { DetailSkeleton, MetricsSkeleton } from '../../components/Skeleton'
@@ -28,8 +29,8 @@ import { useEquipmentDetail, useEquipmentService } from './useEquipmentDetail'
  * details in a card. The tabs are routes, so Back returns to the tab you were on.
  * Service & cost is for Ops with see_costs; a manager doesn't need it (from feedback),
  * though one with see_costs still sees what each closed ticket cost. Until QR labels (OT-74) the card where the boards
- * draw the QR shows the serial number alone. Not built yet: Edit (OT-70), Create ticket
- * for this equipment (OT-71), Log service and a service record's page (Phase 5). A
+ * draw the QR shows the serial number alone. Edit is there with Add / edit equipment,
+ * which no manager board draws. Not built yet: Create ticket for this equipment (OT-71), Log service and a service record's page (Phase 5). A
  * retired unit still opens, from a ticket or a link, with a Retired label. Under View as
  * nothing leads anywhere.
  */
@@ -48,6 +49,8 @@ function Detail({ ops }: { ops: boolean }) {
   const { id = '', tab } = useParams()
   const { user, viewingAs } = useUser()
   const seeCosts = useRight('see_costs')
+  const canEdit = useRight('edit_equipment') && !viewingAs
+  const [plateOpen, setPlateOpen] = useState(false)
   // A manager doesn't need a unit's costs (from feedback, Nov 5, 2026), whatever their rights.
   const showService = ops && !!seeCosts
   const [now] = useState(() => new Date())
@@ -89,7 +92,8 @@ function Detail({ ops }: { ops: boolean }) {
   if (!TABS.includes(tab as (typeof TABS)[number]) || (tab === 'service' && (!ops || seeCosts === false)))
     return <Navigate to={`${base}/${id}`} replace />
 
-  const { unit, tickets, manualUrl } = data
+  const { unit, tickets, manualUrl, plateUrl } = data
+  const warranty = unit.warranty_note ?? (unit.warranty_until && `Through ${monthYear(unit.warranty_until)}`)
   const here = `${base}/${unit.id}`
   const open = tickets.filter((t) => t.status !== 'closed').sort(ops ? byPriority : byActivity)
   const closed = tickets
@@ -107,7 +111,20 @@ function Detail({ ops }: { ops: boolean }) {
 
   return (
     <Screen>
-      <BackBar to={base} label="Back to equipment">
+      <BackBar
+        to={base}
+        label="Back to equipment"
+        action={
+          canEdit ? (
+            <Link
+              to={`${here}/edit`}
+              className="flex min-h-tap flex-none items-center px-2 text-16 font-semibold text-brand hover:text-brand-strong"
+            >
+              Edit
+            </Link>
+          ) : undefined
+        }
+      >
         <span className="inline-flex flex-wrap items-center gap-x-1">
           {unit.restaurant && (
             <span className="inline-flex items-center gap-1.5 font-bold text-text">
@@ -233,7 +250,7 @@ function Detail({ ops }: { ops: boolean }) {
             </>
           )
         ) : tab === 'service' ? (
-          <Service unitName={unit.name} warranty={unit.warranty_note} year={year} query={service} />
+          <Service unitName={unit.name} warranty={warranty || null} year={year} query={service} />
         ) : (
           <>
             {unit.serial && (
@@ -262,7 +279,7 @@ function Detail({ ops }: { ops: boolean }) {
               )}
               {unit.location_note && <KeyValueRow label="Location">{unit.location_note}</KeyValueRow>}
               {unit.installed_on && <KeyValueRow label="Installed">{monthYear(unit.installed_on)}</KeyValueRow>}
-              {unit.warranty_note && <KeyValueRow label="Warranty">{unit.warranty_note}</KeyValueRow>}
+              {warranty && <KeyValueRow label="Warranty">{warranty}</KeyValueRow>}
               {unit.manual_path && (
                 <KeyValueRow label="Manual">
                   {manualUrl && !viewingAs ? (
@@ -274,7 +291,23 @@ function Detail({ ops }: { ops: boolean }) {
                   )}
                 </KeyValueRow>
               )}
+              {unit.plate_photo_path && (
+                <KeyValueRow label="Data plate">
+                  {plateUrl ? (
+                    <button type="button" onClick={() => setPlateOpen(true)} className="font-semibold text-brand">
+                      View photo
+                    </button>
+                  ) : (
+                    'Photo on file'
+                  )}
+                </KeyValueRow>
+              )}
             </Details>
+            <PhotoViewer
+              src={plateOpen ? plateUrl : null}
+              alt={`Data plate on ${unit.name}`}
+              onClose={() => setPlateOpen(false)}
+            />
           </>
         )}
       </ScreenBody>

@@ -16,7 +16,7 @@ import { useEquipmentList } from './useEquipmentList'
 /**
  * Manager · Equipment (design/screens/Equipment-List, Empty-Manager-Equipment). The
  * units at the person's restaurants, browsed by Front / Back and then a card per type,
- * one open at a time. There is no search (from feedback, OT-68): a manager finds a
+ * all closed on arriving and then one open at a time (from feedback, Nov 5, 2026). There is no search (from feedback, OT-68): a manager finds a
  * unit by browsing to it, so the board's search field and its no-results board are
  * left off. The board's scan button waits for QR labels (OT-74). It opens on Front of
  * House, as Create ticket does. Add equipment, which no manager board draws, is there
@@ -32,17 +32,17 @@ export function EquipmentScreen() {
   const canAdd = useRight('edit_equipment') && !viewingAs
 
   const [area, setArea] = useState<Area>('foh')
-  // One card open at a time; undefined is the first.
-  const [openName, setOpenName] = useState<string | null | undefined>(undefined)
+  // One card open at a time, none to begin with (from feedback, Nov 5, 2026).
+  const [openName, setOpenName] = useState<string | null>(null)
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const restaurantOf = new Map(restaurants.map((r) => [r.id, r]))
   const units = data ?? []
   const groups = groupByType(units.filter((u) => u.category?.area === area))
-  const isOpen = (name: string, i: number) => (openName === undefined ? i === 0 : openName === name)
+  const isOpen = (name: string) => openName === name
   const pick = (a: Area) => {
     setArea(a)
-    setOpenName(undefined)
+    setOpenName(null)
   }
   const empty = !isPending && !isError && units.length === 0
 
@@ -126,14 +126,14 @@ export function EquipmentScreen() {
               No {area === 'foh' ? 'Front of House' : 'Back of House'} equipment yet.
             </p>
           ) : (
-            groups.map((g, i) => (
+            groups.map((g) => (
               <EquipmentGroup
                 key={g.name}
                 name={g.name}
                 count={g.units.length}
                 openCount={g.openCount}
-                open={isOpen(g.name, i)}
-                onToggle={() => setOpenName(isOpen(g.name, i) ? null : g.name)}
+                open={isOpen(g.name)}
+                onToggle={() => setOpenName(isOpen(g.name) ? null : g.name)}
               >
                 {g.units.map((u) => {
                   const r = only ? undefined : restaurantOf.get(u.restaurant_id)
