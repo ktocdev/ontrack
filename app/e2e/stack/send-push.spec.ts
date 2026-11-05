@@ -45,6 +45,7 @@ async function newTicket(browser: Browser, testInfo: TestInfo, word: string) {
   await dana.getByRole('link', { name: /^Refrigeration/ }).click()
   await dana.getByLabel('Title').fill(title)
   await dana.getByRole('button', { name: 'Submit ticket' }).click()
+  await dana.getByRole('button', { name: 'Proceed without photo' }).click()
   await dana.getByRole('link', { name: new RegExp(title) }).click()
   await expect(dana.getByRole('heading', { name: title })).toBeVisible()
   const id = new URL(dana.url()).pathname.split('/').pop()!

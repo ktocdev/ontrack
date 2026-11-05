@@ -12,6 +12,7 @@ import { Spinner } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ReportSheet } from '../profile/ReportSheet'
+import { PhotoPromptSheet } from './PhotoPromptSheet'
 import { AREA_LABEL } from './tickets'
 import { useCreateTicket, useTicketForm, type Urgency } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
@@ -21,7 +22,8 @@ import { usePickedPhotos } from './usePhotos'
  * from Error-Save-Failed: what was typed stays, a banner says so and the screen goes
  * back up to it. Equipment is what this restaurant has in this category, and tapping
  * the chosen unit again clears it. Photos go up after the ticket, whose folder they
- * need, so if they fail the ticket still stands and the message says so.
+ * need, so if they fail the ticket still stands and the message says so. With no
+ * photo, Submit asks for one first (PhotoPromptSheet, from feedback, OT-77).
  */
 export function CreateFormScreen() {
   const { categoryId = '' } = useParams()
@@ -83,6 +85,7 @@ function CreateForm({
     equipment.some((e) => e.id === from?.equipmentId) ? (from?.equipmentId ?? null) : null,
   )
   const [reporting, setReporting] = useState(false)
+  const [askingForPhoto, setAskingForPhoto] = useState(false)
   const picked = usePickedPhotos()
   const banner = useRef<HTMLDivElement>(null)
 
@@ -94,6 +97,10 @@ function CreateForm({
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
+    if (picked.photos.length === 0) setAskingForPhoto(true)
+    else save()
+  }
+  const save = () =>
     create.mutate(
       {
         restaurantId,
@@ -117,7 +124,6 @@ function CreateForm({
         },
       },
     )
-  }
 
   return (
     <Screen>
@@ -191,6 +197,12 @@ function CreateForm({
           </Button>
         </ScreenFooter>
       </form>
+      <PhotoPromptSheet
+        open={askingForPhoto}
+        onOpenChange={setAskingForPhoto}
+        onFiles={(files) => void picked.add(files)}
+        onProceed={save}
+      />
       <ReportSheet open={reporting} onOpenChange={setReporting} context="Creating a ticket" />
     </Screen>
   )
