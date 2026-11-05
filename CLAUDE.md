@@ -104,7 +104,7 @@ Notifications: a trigger on `ticket_updates` writes one `notifications` row per 
 
 Lists keep up through Realtime: `app/LiveTickets.tsx` subscribes to changes on `tickets`, which RLS filters, and rereads the usual queries, with each list's own 30-second reread as a backup. A new thing that lists tickets uses a query key under `tickets`, `ticket` or `ops-ticket`, or adds its own to that file.
 
-In-house tasks are added by insert and changed only through `set_inhouse_fix_done` and `delete_inhouse_fix`. Unlike the archive and delete reference, these two are `security definer` and check `can('create_tickets')` themselves, because a manager can't write `audit_log` and a delete the API could reach directly would skip the log. A delete removes the row, only while the task is open.
+In-house tasks are added by insert and changed only through `set_inhouse_fix_done` and `delete_inhouse_fix`. Unlike the archive and delete reference, these two are `security definer` and check `can('create_tickets')` themselves, because a manager can't write `audit_log` and a delete the API could reach directly would skip the log. A delete removes the row, only while the task is open. Equipment follows the same shape: `set_equipment_retired` and `delete_equipment` are `security definer` and check `can('edit_equipment')` at the unit's restaurant; `equipment_guard` refuses `retired_at` changed any other way, keeps `created_by`, and lets a unit move restaurants only while `equipment_in_use()` is false. Data plate photos live under `<equipment id>/` in `equipment-photos`, like manuals.
 
 Costs are a separate axis: `service_records`, line items, invoices and the cost views return rows only with `see_costs` at that restaurant. Views are `security_invoker`, so they inherit this.
 

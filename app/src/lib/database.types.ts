@@ -121,14 +121,14 @@ isOneToOne: false
                   ]
                 },"equipment": {
                   Row: {
-                    "brand": string | null,"category_id": string,"created_at": string,"created_by": string | null,"id": string,"installed_on": string | null,"location_note": string | null,"manual_path": string | null,"model": string | null,"name": string,"restaurant_id": string,"retired_at": string | null,"serial": string | null,"updated_at": string,"warranty_note": string | null,"warranty_until": string | null
+                    "brand": string | null,"category_id": string,"created_at": string,"created_by": string | null,"id": string,"installed_on": string | null,"location_note": string | null,"manual_path": string | null,"model": string | null,"name": string,"plate_photo_path": string | null,"restaurant_id": string,"retired_at": string | null,"retired_by": string | null,"serial": string | null,"updated_at": string,"warranty_note": string | null,"warranty_until": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "brand"?: string | null,"category_id": string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"installed_on"?: string | null,"location_note"?: string | null,"manual_path"?: string | null,"model"?: string | null,"name": string,"restaurant_id": string,"retired_at"?: string | null,"serial"?: string | null,"updated_at"?: string,"warranty_note"?: string | null,"warranty_until"?: string | null
+                    "brand"?: string | null,"category_id": string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"installed_on"?: string | null,"location_note"?: string | null,"manual_path"?: string | null,"model"?: string | null,"name": string,"plate_photo_path"?: string | null,"restaurant_id": string,"retired_at"?: string | null,"retired_by"?: string | null,"serial"?: string | null,"updated_at"?: string,"warranty_note"?: string | null,"warranty_until"?: string | null
                   }
                   Update: {
-                    "brand"?: string | null,"category_id"?: string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"installed_on"?: string | null,"location_note"?: string | null,"manual_path"?: string | null,"model"?: string | null,"name"?: string,"restaurant_id"?: string,"retired_at"?: string | null,"serial"?: string | null,"updated_at"?: string,"warranty_note"?: string | null,"warranty_until"?: string | null
+                    "brand"?: string | null,"category_id"?: string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"installed_on"?: string | null,"location_note"?: string | null,"manual_path"?: string | null,"model"?: string | null,"name"?: string,"plate_photo_path"?: string | null,"restaurant_id"?: string,"retired_at"?: string | null,"retired_by"?: string | null,"serial"?: string | null,"updated_at"?: string,"warranty_note"?: string | null,"warranty_until"?: string | null
                   }
                   Relationships: [
                     {
@@ -167,6 +167,18 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "equipment_retired_by_fkey"
+      columns: ["retired_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_retired_by_fkey"
+      columns: ["retired_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
     }
                   ]
                 },"group_settings": {
@@ -722,6 +734,12 @@ isOneToOne: false
       referencedRelation: "equipment"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
+    },{
       foreignKeyName: "service_records_logged_by_fkey"
       columns: ["logged_by"]
 isOneToOne: false
@@ -897,6 +915,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "equipment"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
     },{
       foreignKeyName: "tickets_parent_ticket_id_fkey"
       columns: ["parent_ticket_id"]
@@ -1290,7 +1314,27 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "equipment"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
     }
+                  ]
+                },"v_equipment_history": {
+                  Row: {
+                    "equipment_id": string,"in_use": boolean | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "equipment_id"?: string | null,"in_use"?: never
+                         }
+                        Update: {
+                           "equipment_id"?: string | null,"in_use"?: never
+                         }
+                        Relationships: [
+                    
                   ]
                 },"v_equipment_lifetime": {
                   Row: {
@@ -1304,6 +1348,32 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "equipment"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
+    }
+                  ]
+                },"v_equipment_open_counts": {
+                  Row: {
+                    "equipment_id": string | null,"open_ticket_count": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "tickets_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "tickets_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
     }
                   ]
                 },"v_equipment_spend": {
@@ -1318,6 +1388,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "equipment"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
     }
                   ]
                 },"v_missing_invoices": {
@@ -1441,6 +1517,9 @@ isOneToOne: false
               "closed_count": number,"month": string,"total_cents": number
             }[]
                            },
+"delete_equipment":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "delete_inhouse_fix":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -1449,6 +1528,9 @@ isOneToOne: false
                            },
 "end_sessions":
 { Args: { "p_user": string }; Returns: undefined
+                           },
+"equipment_in_use":
+{ Args: { "p_id": string }; Returns: boolean
                            },
 "equipment_restaurant":
 { Args: { "eid": string }; Returns: string
@@ -1511,6 +1593,9 @@ isOneToOne: false
                            },
 "service_record_restaurant":
 { Args: { "srid": string }; Returns: string
+                           },
+"set_equipment_retired":
+{ Args: { "p_id": string,"p_retired": boolean }; Returns: undefined
                            },
 "set_inhouse_fix_done":
 { Args: { "p_done": boolean,"p_id": string }; Returns: undefined
