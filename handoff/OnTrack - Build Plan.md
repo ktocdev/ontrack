@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Nov 4, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains), Phase 2 as built, the Phase 3 pull requests and the Phase 3 security audit
+Oct 28, 2026 · Katie · updated Nov 5, 2026 with Phase 1 as built (2-step verification, the profile photo switch, the group name as data, per-group domains), Phase 2 and Phase 3 as built, the Phase 3 security audit and the Phase 4 pull requests
 
 ## How to read this
 
@@ -19,7 +19,8 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 1 · Accounts and access | Done, except the real-iPhone check | OT-6 Sign in, signed out, Profile, Help · OT-7 security audit · OT-8 code quality · OT-9 Restaurants · OT-10 invites and the group name as data · OT-11 password reset · OT-15 fixes from trying reset live · OT-12 Roles & rights, User profile, View as · OT-16 reload fix · OT-13 and OT-17 2-step verification · OT-14 and OT-18 group settings and photo messages · OT-20, OT-21 and OT-22 fixes from the 2-step security audit |
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
-| 3 · Ops dashboard and ticket work | Built; the done test passes in Playwright, and the buzz on a real phone is tried by hand | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). Left by hand: the buzz on a real Android phone, its notification badge, and the iPhone checks. Google sign-in (OT-59) is deferred until the group's IT person is involved |
+| 3 · Ops dashboard and ticket work | Done, except the real-iPhone checks | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). The buzz and its badge were tried on Android (Nov 5, 2026). Google sign-in (OT-59) is deferred until the group's IT person is involved |
+| 4 · Equipment · first demo | Split into pull requests (Nov 5, 2026); QR labels deferred | OT-65 plan update, then OT-66 to OT-75 (see Phase 4) |
 
 Phase 0 notes:
 
@@ -49,7 +50,7 @@ Phase 3 note (Nov 4, 2026):
 - **What changed:** the ops managers can run their day in the app. The dashboard lists every restaurant's open tickets under a label for each, in an order each person can drag, with a picker that scopes every Ops screen and a badge naming anyone else on a ticket. A ticket has a status menu: In progress puts you on it, Take this over is for a colleague's, and Scheduled asks for a date. Ops writes to the restaurant or in internal notes, with photos, and closes with a comment. Closed tickets are grouped by month, with totals for anyone with See costs. A reopened ticket is an ordinary one with a Reopened badge and nobody on it. Each ticket has a lasting link, `/t/OT-1042`, and Share link. Push on each device, email as well on by default, and switches per kind on Profile tell people what happened, and lists change as tickets do. A new ticket has a ring for 5 minutes. From feedback along the way: no assigning, a manager's Open tickets with a shorter header, Show / Hide on passwords, and an Update bar that says it is updating. A security audit (OT-55) and a code quality pass (OT-56) came last.
 - **What the client should try:** the ops manager installs the app on a phone, turns on Push notifications on this device in Profile, and a manager at one restaurant creates a ticket. The phone should buzz within seconds, and the email arrive. Then mark it In progress, post an update, close it with a comment, and have the manager reopen it. This waits until Four Corners has accounts (see Open items).
 - **What can't be tried on the live app yet:** the equipment card and the walkthrough line open nothing until Phases 4 and 6, costs stay empty until Phase 5 logs service, and admin and leadership have no ticket screens until Phase 7, so a ticket link tells them so. Google sign-in waits for the group's IT person.
-- **How the done test went:** `e2e/stack/done-phase-3.spec.ts` runs it on Chromium and WebKit against the seeded stack. Dana at Porter creates a ticket, and Bert is sent a push and an email, and Chris an email. Bert marks it In progress, which puts Bert on it and sends Dana a push. Bert's update reaches Dana's screen and phone. Bert closes it with a comment, and Dana is sent a push. Dana reopens it with a reason, Bert is sent a push and Chris an email, and Bert's dashboard shows it Reopened with nobody on it. Playwright can't feel a buzz, so the flow checks the delivery log, and the push to a real phone is tried by hand: not yet done.
+- **How the done test went:** `e2e/stack/done-phase-3.spec.ts` runs it on Chromium and WebKit against the seeded stack. Dana at Porter creates a ticket, and Bert is sent a push and an email, and Chris an email. Bert marks it In progress, which puts Bert on it and sends Dana a push. Bert's update reaches Dana's screen and phone. Bert closes it with a comment, and Dana is sent a push. Dana reopens it with a reason, Bert is sent a push and Chris an email, and Bert's dashboard shows it Reopened with nobody on it. Playwright can't feel a buzz, so the flow checks the delivery log, and the push to a real phone was tried by hand on Android against the live app (Nov 5, 2026): a manager's new ticket buzzed the ops manager's phone, the status bar showed the check rather than a bell, and Push notifications on this device came back on after signing out and in again. iPhone push and the iPhone link check wait for a real iPhone.
 
 ## Decisions
 
@@ -272,11 +273,11 @@ The ops managers can run their day in the app: see every restaurant's open work,
 | OT-64 | Faster CI: the flows run in Playwright's own Docker image, since installing WebKit's system packages from Ubuntu's mirror took 12 to 22 minutes |
 | OT-47 | The done test as one flow; the phase note |
 
-**What's left, in order (Nov 4, 2026)**
+**What's left (Nov 5, 2026)**
 
-Done: everything above but OT-38 (saved for later) and OT-59 (deferred), through OT-56's code quality pass and OT-47's done test (Nov 4, 2026; see the Phase 3 note).
+Done: everything above but OT-38 (saved for later) and OT-59 (deferred), through OT-56's code quality pass and OT-47's done test (Nov 4, 2026; see the Phase 3 note). The buzz from a new ticket and the notification badge were tried by hand on Android (Nov 5, 2026).
 
-By hand, on real phones: the buzz from a new ticket on Android, the notification badge there, and OT-46's iPhone link check (see the open item).
+Left: OT-46's iPhone link check, deferred with QR labels (Nov 5, 2026; see the open item), and iPhone push, which waits for a real iPhone.
 
 **What this phase has to work around**
 
@@ -320,25 +321,54 @@ By hand, on real phones: the buzz from a new ticket on Android, the notification
 
 ## Phase 4 · Equipment and QR labels · first demo
 
-Every unit has a page, a QR label, and a history. This closes the loop that EcoTrak does not have, and it is the milestone to put on the ops team's phones: phases 1 to 4 together are a complete ticketing app with equipment.
+Every unit has a page, a QR label, and a history (QR labels deferred, Nov 5, 2026; see OT-74). This closes the loop that EcoTrak does not have, and it is the milestone to put on the ops team's phones: phases 1 to 4 together are a complete ticketing app with equipment.
 
 **Ships**
 
 - Ops equipment list: search, filter sheet (restaurant, area, category), category disclosures with open-ticket badges, rows with restaurant color, brand, serial and this year's spend
-- Manager equipment list: same list scoped to their restaurant, with Add equipment only when `edit_equipment` is granted
-- Equipment detail tabs: Details (serial, QR, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `see_costs`
-- Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print
+- Manager equipment list: their restaurant's units, browsed by Front / Back and then category, with no search (OT-68), and Add equipment only when `edit_equipment` is granted
+- Equipment detail tabs: Details (serial, QR from OT-74, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost (lifetime and 2026 cost, visits, contractors on this unit, service log). Cost tabs hidden without `see_costs`
+- Add and Edit equipment, Retire equipment; the saved screen with the QR label and Print waits for OT-74
 - Domain (done Oct 30, 2026): `fourcorners.ontrack-app.app` connected to the production Worker and set as Supabase Auth's site URL, before anyone in the group installs the app. An installed app and its sign-in belong to one address, so moving later means everyone reinstalls and signs in again
-- QR: each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
+- QR (deferred to OT-74, Nov 5, 2026): each label encodes `https://fourcorners.ontrack-app.app/e/<id>`, built from the group's own address; the phone's camera opens the unit; a signed-out scan goes to sign-in and back. Label sheets as a PDF from an Edge Function `qr-labels` (per restaurant or selected units), sized for common label stock
 - Share link on a unit, in the same ellipsis menu as a ticket, using `/e/<id>`
 - Create ticket from a unit, with the unit prefilled; the equipment breadcrumb with the restaurant color on every equipment screen
 - Empty states: no equipment, no tickets on a unit, no service yet, QR not recognized; equipment loading skeletons
 
 **Screens from the design:** Ops · Equipment list, Add equipment, Edit equipment, Equipment added + QR label, Equipment details, Equipment tickets, Equipment service history; Manager · Equipment, Equipment details and tickets tabs; Loading · QR scan, equipment list and detail; Empty · manager equipment, equipment tickets, new equipment; Error · QR code not recognized
 
-**Demo milestone.** Seed the four restaurants with their real equipment where it is known, print a label sheet for one restaurant, hand the assistant ops manager and one restaurant manager an install link, and let them run a real ticket for a week. The next-steps slide in the deck becomes the agenda for that conversation.
+**Demo milestone.** Seed the four restaurants with their real equipment where it is known, entered through Add equipment, since importing waits for Phase 7. Hand the assistant ops manager and one restaurant manager an install link, and let them run a real ticket for a week. Printed labels join the demo only if QR labels (OT-74) are back by then; the demo doesn't wait for them. The next-steps slide in the deck becomes the agenda for that conversation.
 
-**Done when:** scanning a printed label on an iPhone opens the unit in the installed app, and a ticket created from it shows up under that unit's Tickets tab and on the Ops dashboard.
+**Done when:** a manager at Logan Square finds a unit by browsing Back of House and its category, creates a ticket from it with the unit filled in, and the ticket shows up under that unit's Tickets tab and on the Ops dashboard; an Ops manager adds a unit, which then shows on that manager's list, and retires it, which takes it off the list and out of the ticket form's picker. Playwright runs it on WebKit. The original test, scanning a printed label on an iPhone, moves to OT-74 with the labels.
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-65 | Plan update and this split; the Phase 3 note from trying push on Android |
+| OT-66 | Equipment backend: Retire / Restore and Delete following the archive and delete rule (a history view, one `security invoker` function per action with its `audit_log` row), a guard so a retired unit or an archived restaurant takes no new ticket, the data plate photo, the list's counts (open tickets per unit and category, this year's spend only with `see_costs`), pgTAP |
+| OT-67 | Ops equipment list: the restaurant picker, search, the filter sheet (area, category), category disclosures with open-ticket badges, rows with restaurant color, brand, serial and this year's spend, empty state, loading skeleton; View as |
+| OT-68 | Manager equipment list: Front / Back and category disclosures, with no search (from feedback, Nov 5, 2026), Add equipment only with `edit_equipment`, empty state; View as |
+| OT-69 | Equipment detail for both roles: the breadcrumb with the restaurant color, Details (serial, brand, model, category, location, installed, warranty, manual), Tickets (open on top, closed in a disclosure), Service & cost only with `see_costs`, with its no-service-yet state until Phase 5; a ticket's equipment card now opens its unit |
+| OT-70 | Add and Edit equipment: the form, manual PDF and data plate photo, Retire / Restore and Delete in a sheet with a confirm step; saving opens the new unit |
+| OT-71 | Lasting link `/e/<id>` for every role and Share link on a unit; Create ticket from a unit with the unit filled in |
+| OT-72 | Install prompt: the hook from Phase 0 put on a screen, with Android's Install button and iPhone's two-step picture |
+| OT-73 | Security and code quality pass over what Phase 4 added |
+| OT-74 | Deferred (Nov 5, 2026): QR labels. The QR on a unit's Details and Print QR label, the Equipment added + QR label screen and Save & create QR code, the scan button on a manager's list, Loading · QR scan and Error · QR code not recognized, `qr-labels` label sheets, the serial barcode button on the form. Waits on the iPhone link check and the label stock size |
+| OT-75 | The done test as one flow; the phase note |
+
+**What this phase has to work around**
+
+- **QR labels are deferred (Nov 5, 2026; OT-74).** Equipment comes first, and how a scan opens the app on an iPhone isn't known yet, nor what label stock Four Corners buys. Until OT-74, a unit's Details tab shows the serial number in the card where the board draws its QR, with no Print QR label; Add equipment's button reads Save equipment and opens the new unit instead of the QR label screen; the subtitle saying a QR label is created when you save is left off; and a manager's list has no scan button. `/e/<id>` ships in OT-71 anyway, for Share link, and is the address labels will encode, so nothing printed later has to change.
+- **A manager's equipment has no search (from feedback, Nov 5, 2026; OT-68).** A manager browses to a unit by Front / Back and then its category, so the board's search field and its No results board are left off, as on Open tickets (OT-63). The Ops list keeps its search, since it spans every restaurant.
+- **The filter sheet on Ops equipment (OT-67)** has area and category only, since the restaurant picker at the top already scopes every Ops screen, as on the dashboard.
+- **Closed tickets on each unit come back (OT-69).** Phase 3 left off Closed tickets' line saying closed tickets also appear on each unit; it returns once a unit's Tickets tab exists.
+- **The Add equipment banner for importing a spreadsheet waits for Phase 7,** when Import equipment is built, so it is left off.
+- **Retire and delete (OT-66, OT-70)** follow the archive and delete rule: a retired unit leaves the lists and the ticket form's picker, keeps its history and opens from a ticket or a link with a Retired label, and can be restored. Delete is offered only while no ticket or service record points to the unit, and is disabled with the reason otherwise. No board draws the sheet, so it follows the restaurant one from OT-9.
+- **The data plate photo** has no column or bucket yet; OT-66 adds it under `equipment-photos/<equipment id>/`, with the same scope rules as manuals, resized to 1600 px like ticket photos.
+- **The install prompt (OT-72)** has no board. Chrome on Android can offer its own install sheet from a button; Safari on an iPhone has no such call, so the app shows the two steps (Share, then Add to Home Screen). It appears once after signing in, on a phone that hasn't installed the app, and stays as a row on Profile until it is installed. It matters most for iPhone, where push works only from the installed app.
+- **The Service & cost tab is mostly empty until Phase 5,** which logs service, so the live app shows the no-service-yet state; the seeded stack shows the full board.
+- **View as:** each equipment screen scopes its data from `useUser()` and hides Add, Edit, Retire and Delete when `viewingAs` is set.
 
 ## Phase 5 · Contractors, service records and invoices
 
@@ -454,10 +484,10 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 
 | Risk | Why it matters | What to do |
 | --- | --- | --- |
-| iPhone push only works when the app is installed to the home screen | The ops team may open it in Safari and wonder why nothing buzzes | Install prompt on first sign-in with a two-step picture; email fallback until a subscription exists; a Profile row that shows whether push is on |
+| iPhone push only works when the app is installed to the home screen | The ops team may open it in Safari and wonder why nothing buzzes | Install prompt with a two-step picture on iPhone (OT-72; the hook has existed since Phase 0, but no screen used it); email on by default; Profile shows whether push is on |
 | RLS policies get complex with per-person rights overrides | A bug here leaks another restaurant's data | Every rule goes through one `can()` function with pgTAP tests per role; never a second code path in the app |
 | Supabase free tier pauses after a week idle | A paused project during the pilot looks like a crash | Move to Pro ($25 a month) before handing the app to the client |
-| An iPhone may open a link in Safari and not the installed app | Safari has its own sign-in, so a shared link, a notification's email link or a QR scan could ask for a password first, and Phase 4's done test expects a scan to open the installed app. Not yet tried on an iPhone | Check on a real iPhone during Phase 3, before Phase 4 relies on it; signing in on the way still lands on the right page |
+| An iPhone may open a link in Safari and not the installed app | Safari has its own sign-in, so a shared link, a notification's email link or a QR scan could ask for a password first. Not yet tried on an iPhone | Deferred with QR labels (Nov 5, 2026): check on a borrowed iPhone before OT-74 builds them, since the answer decides how a scan opens a unit. Signing in on the way still lands on the right page |
 | QR labels bake in the domain | Reprinting labels is a real cost once they are on units | `fourcorners.ontrack-app.app` is connected (Oct 30, 2026), so print from that; use a short path like `/e/` so labels stay small |
 | Resend domain needs DNS records before invite emails land in inboxes | First invites bounce or go to spam | SPF, DKIM and DMARC are set on `ontrack-app.app`, and a real invite reached a Gmail inbox (Oct 30, 2026). Four Corners uses Gmail only; test another provider when a group uses one |
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
@@ -480,7 +510,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [x] Set up `ontrack-app.app` as the Resend sending domain, which replaces the `onboarding@resend.dev` test sender
 - [x] Add the live address to the hosted Supabase project's Auth site and redirect URLs
 - [x] Try the invite flow on two devices, which is the Phase 1 done test as written (Oct 30, 2026)
-- [ ] Notifications for the promises the Roles & rights and User profile boards make ("everyone affected is notified"), left off those screens until Phase 3 has them
+- [ ] Notifications for the promises the Roles & rights and User profile boards make ("everyone affected is notified"). Phase 3 kept them off, since rights changes notify nobody; not scheduled, and those screens stay without the line until someone asks for it
 - [ ] View as answers from the admin's own access, scoped by the app. Each screen added from Phase 2 on must scope its data from `useUser()` and hide writes when `viewingAs` is set
 - [x] For Google sign-in (OT-59): is the group on Google Workspace, with addresses on its own domain, not ordinary `@gmail.com` ones? Yes, on its own domain (Nov 4, 2026, from Ops)
 - [ ] For Google sign-in: who runs the group's Google admin account, to help set up the sign-in connection? An IT person does, not yet involved; Ops was unsure how they would take the change, so Katie will try to reach them, or the other Ops manager first for more background
@@ -494,6 +524,6 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
 - [x] Sharing a link to a ticket, a unit or a contractor: lasting links that work for every role, then Share link in the ellipsis menu, across Phases 3, 4 and 5 (Nov 1, 2026)
 - [ ] Whether Ops wants a filter sheet on the dashboard. Saved for later, not scheduled (OT-38, see Phase 3)
-- [ ] Label stock size for the QR sheets
+- [ ] Label stock size for the QR sheets. Deferred with QR labels (OT-74, Nov 5, 2026)
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default

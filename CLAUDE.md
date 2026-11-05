@@ -144,9 +144,27 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 3 · Ops dashboard and ticket work
+## Current phase: 4 · Equipment · first demo
 
-The plan's Phase 3 section says what ships. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager marks it In progress, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright checks who was sent what; the buzz itself is tried by hand on a real phone.
+The plan's Phase 4 section says what ships and what it works around. Done when a manager at Logan Square finds a unit by browsing Back of House and its category, creates a ticket from it with the unit filled in, and the ticket shows under that unit's Tickets tab and on the Ops dashboard; an Ops manager adds a unit, which shows on that manager's list, and retires it, which takes it off the list and out of the ticket form's picker. QR labels are deferred (OT-74), so until then nothing shows a QR code or a scan button.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-65 | Plan update and this split |
+| OT-66 | Equipment backend: Retire / Restore and Delete by the archive and delete rule, no new ticket on a retired unit or archived restaurant, the data plate photo, the list's counts and this year's spend (only with `see_costs`), pgTAP |
+| OT-67 | Ops equipment list: restaurant picker, search, filter sheet (area, category), category disclosures with open badges, rows with spend, empty state, loading skeleton; View as |
+| OT-68 | Manager equipment list: Front / Back and category disclosures, no search, Add equipment only with `edit_equipment`, empty state; View as |
+| OT-69 | Equipment detail for both roles: breadcrumb, Details, Tickets (closed in a disclosure), Service & cost only with `see_costs`; a ticket's equipment card opens its unit |
+| OT-70 | Add and Edit equipment with manual PDF and data plate photo; Retire / Restore and Delete sheet |
+| OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |
+| OT-72 | Install prompt: Android's Install button, iPhone's two-step picture, once after sign-in and as a Profile row |
+| OT-73 | Security and code quality pass over Phase 4 |
+| OT-74 | Deferred (Nov 5, 2026): QR labels, the scan button, QR errors and loading, `qr-labels` sheets; waits on the iPhone link check and the label stock size |
+| OT-75 | The done test as one flow; the phase note |
+
+## Phase 3, for the record
+
+The plan's Phase 3 section says what shipped and what it works around. Done when a manager creates a ticket and the ops manager's phone buzzes; the ops manager marks it In progress, posts an update the manager sees, and closes it with a comment; the manager reopens it and Ops sees Reopened on the dashboard. Playwright checks who was sent what, and the buzz was tried by hand on Android (Nov 5, 2026); the iPhone checks wait for a real iPhone.
 
 | PR    | Scope |
 | ----- | ----- |
