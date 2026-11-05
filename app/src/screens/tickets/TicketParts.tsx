@@ -1,9 +1,9 @@
 import { useState, type ReactNode, type UIEvent } from 'react'
 import { Link } from 'react-router'
-import { Card } from '../../components/Card'
+import { Card, CardLink } from '../../components/Card'
 import { PhotoThumb } from '../../components/Photo'
 import { SectionLabel } from '../../components/Screen'
-import { IconChevronLeft, IconWrench } from '../../components/icons'
+import { IconChevronLeft, IconChevronRight, IconWrench } from '../../components/icons'
 
 /** The pieces every ticket screen shares, for managers and Ops, open and closed. */
 
@@ -66,28 +66,40 @@ export function TicketPhotos({
   )
 }
 
-/** The unit the ticket is about, under its label. It opens nothing until Phase 4. */
+/** The unit the ticket is about, under its label; it opens the unit's page (none under View as). */
 export function EquipmentCard({
   equipment,
+  to,
 }: {
   equipment: { name: string; brand: string | null; serial: string | null }
+  to?: string
 }) {
+  const body = (
+    <>
+      <IconWrench size={22} className="flex-none text-brand" />
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-15 font-semibold">{equipment.name}</span>
+        {(equipment.brand || equipment.serial) && (
+          <span className="text-12 text-text-muted">
+            {equipment.brand}
+            {equipment.brand && equipment.serial && ' · '}
+            {equipment.serial && <span className="font-mono">{equipment.serial}</span>}
+          </span>
+        )}
+      </div>
+      {to && <IconChevronRight size={18} className="flex-none text-text-muted" />}
+    </>
+  )
   return (
     <>
       <SectionLabel className="-mb-0.5">Equipment</SectionLabel>
-      <Card className="flex flex-none items-center gap-3 rounded-input px-3.5 py-3">
-        <IconWrench size={22} className="flex-none text-brand" />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-15 font-semibold">{equipment.name}</span>
-          {(equipment.brand || equipment.serial) && (
-            <span className="text-12 text-text-muted">
-              {equipment.brand}
-              {equipment.brand && equipment.serial && ' · '}
-              {equipment.serial && <span className="font-mono">{equipment.serial}</span>}
-            </span>
-          )}
-        </div>
-      </Card>
+      {to ? (
+        <CardLink to={to} className="flex-none rounded-input px-3.5 py-3">
+          <span className="flex items-center gap-3">{body}</span>
+        </CardLink>
+      ) : (
+        <Card className="flex flex-none items-center gap-3 rounded-input px-3.5 py-3">{body}</Card>
+      )}
     </>
   )
 }

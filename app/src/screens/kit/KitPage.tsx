@@ -18,7 +18,7 @@ import { Chip, ChoiceChips, FilterButton, FilterChip } from '../../components/Ch
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
-import { EquipmentGroup, EquipmentRow, OpenBadge } from '../../components/Equipment'
+import { EquipmentGroup, EquipmentRow, OpenBadge, OpenNote } from '../../components/Equipment'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
@@ -389,6 +389,7 @@ export function KitPage() {
                 ]}
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
+              <Notice tone="info">Closed tickets also appear on each piece of equipment, with their costs.</Notice>
               <Notice tone="waiting">
                 <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list. You&apos;ll get a notification when
                 work starts.
@@ -626,6 +627,8 @@ export function KitPage() {
                 <FilterButton count={0} />
                 <FilterButton count={2} />
                 <OpenBadge count={1} />
+                <OpenBadge count={1} compact />
+                <OpenNote count={1} />
               </div>
               <div className="flex flex-wrap gap-1.5">
                 <FilterChip label="Back of House" onRemove={() => {}} />

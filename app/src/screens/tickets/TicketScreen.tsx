@@ -24,7 +24,7 @@ import { usePostUpdate, useTicket } from './useTicket'
 /**
  * Manager · Ticket (design/screens/Ticket): the header with the status, the title and
  * where it is, the description, its photos and equipment, then the updates and the
- * composer. The equipment card opens the unit once Phase 4 builds that page. A photo
+ * composer. The equipment card opens the unit's page. A photo
  * opens large when tapped, which has no board. Edit, Close and Share are in the header's
  * menu instead of the board's Edit link, which left the header too crowded. A closed ticket
  * has its own screen, which stays up after reopening it until the person leaves.
@@ -152,7 +152,7 @@ export function TicketScreen() {
           onOpen={(src) => setViewing({ src, alt: 'Photo on this ticket' })}
         />
 
-        {ticket.equipment && <EquipmentCard equipment={ticket.equipment} />}
+        {ticket.equipment && <EquipmentCard equipment={ticket.equipment} to={`/equipment/${ticket.equipment.id}`} />}
 
         <SectionLabel className="-mb-0.5">Updates · {count}</SectionLabel>
         <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />

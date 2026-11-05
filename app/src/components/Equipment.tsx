@@ -9,10 +9,34 @@ import { IconChevronDown, IconChevronRight } from './icons'
  * restaurant and this year's spend; a manager's rows don't.
  */
 
-/** "1 open": open tickets on a category or a unit, in the Open pill's colors. */
-export function OpenBadge({ count }: { count: number }) {
-  return (
+/**
+ * "1 open": open tickets on a category or a unit, in the Open pill's colors. `compact` is
+ * the count alone, beside the Tickets tab on Ops (Ops-Equipment-Details).
+ */
+export function OpenBadge({ count, compact = false }: { count: number; compact?: boolean }) {
+  return compact ? (
+    <span
+      aria-label={`${count} open`}
+      className="min-w-5 rounded-pill bg-status-open-bg px-1.5 py-px text-center text-12 font-bold text-status-open-text"
+    >
+      {count}
+    </span>
+  ) : (
     <span className="whitespace-nowrap rounded-pill bg-status-open-bg px-2 py-1 text-11 font-bold leading-[15px] text-status-open-text">
+      {count} open
+    </span>
+  )
+}
+
+/**
+ * The quieter "1 open" on a unit inside its card: a dot and the words in the Open pill's
+ * text color, no fill, so the card's pill reads as the summary and the rows as detail
+ * (from feedback, Nov 5, 2026).
+ */
+export function OpenNote({ count }: { count: number }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-12 font-semibold text-status-open-text">
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-status-open-text" />
       {count} open
     </span>
   )
@@ -96,7 +120,7 @@ export function EquipmentRow({ to, name, restaurant, brand, serial, spend, openC
                 <span className="text-11 text-text-muted">in {spend.year}</span>
               </>
             ))}
-          {openCount > 0 && <OpenBadge count={openCount} />}
+          {openCount > 0 && <OpenNote count={openCount} />}
         </div>
       )}
       {to && <IconChevronRight size={16} className="flex-none text-text-muted" />}
