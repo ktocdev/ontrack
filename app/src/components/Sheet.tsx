@@ -1,10 +1,12 @@
 import { Dialog } from 'radix-ui'
 import type { ReactNode } from 'react'
+import { useSwipeToClose } from './swipeToClose'
 
 /**
  * Bottom sheet: scrim at 45% text color, panel on the screen background with
  * 22px top corners, a 40×5 handle, a 22px Archivo title, 10px 20px 24px
- * padding plus the home-bar inset. From the lg breakpoint it is a centered
+ * padding plus the home-bar inset. On a phone a swipe down closes it (see
+ * swipeToClose), except a `modal` one. From the lg breakpoint it is a centered
  * 440px dialog with all four corners rounded and no handle.
  */
 type Props = {
@@ -38,6 +40,7 @@ export function Sheet({
   action,
 }: Props) {
   const hold = modal ? (e: Event) => e.preventDefault() : undefined
+  const swipe = useSwipeToClose(() => onOpenChange(false), !modal)
   const heading = (
     <Dialog.Title
       className={`font-display text-22 font-bold tracking-[-0.01em] text-text ${hideTitle ? 'sr-only' : ''}`}
@@ -50,6 +53,7 @@ export function Sheet({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-30 bg-scrim data-[state=open]:animate-[fade-in_.15s_ease-out]" />
         <Dialog.Content
+          ref={swipe}
           onEscapeKeyDown={hold}
           onPointerDownOutside={hold}
           onInteractOutside={hold}
