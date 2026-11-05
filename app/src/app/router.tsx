@@ -191,7 +191,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   { path: '/equipment/new', ...placeholder('Add equipment', 'Phase 4') },
-                  { path: '/equipment/:id', ...placeholder('Equipment details', 'Phase 4') },
                 ],
               },
               {
@@ -207,6 +206,12 @@ export const router = createBrowserRouter([
                     path: '/tickets/new/:categoryId',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/CreateFormScreen')).CreateFormScreen,
+                    }),
+                  },
+                  {
+                    path: '/equipment/:id/:tab?',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentDetailScreen')).EquipmentDetailScreen,
                     }),
                   },
                   {
@@ -251,13 +256,18 @@ export const router = createBrowserRouter([
                     }),
                   },
                   { path: '/ops/equipment/new', ...placeholder('Add equipment', 'Phase 4') },
-                  { path: '/ops/equipment/:id', ...placeholder('Equipment details', 'Phase 4') },
                   { path: '/ops/contractors', ...placeholder('Contractors', 'Phase 5') },
                 ],
               },
               {
                 element: <BareShell />,
                 children: [
+                  {
+                    path: '/ops/equipment/:id/:tab?',
+                    lazy: async () => ({
+                      Component: (await import('../screens/equipment/EquipmentDetailScreen')).OpsEquipmentDetailScreen,
+                    }),
+                  },
                   {
                     path: '/ops/tickets/:id',
                     lazy: async () => ({ Component: (await import('../screens/ops/OpsTicketScreen')).OpsTicketScreen }),

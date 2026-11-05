@@ -18,7 +18,7 @@ export function useOpsTicket(id: string) {
         requireSupabase()
           .from('tickets')
           .select(
-            'id, display_id, title, description, status, urgency, source, scheduled_for, created_at, assignee_id, restaurant:restaurants (name, color), category:categories (name, area), equipment (name, brand, serial), walkthrough:walkthroughs (period), opener:profiles!tickets_created_by_fkey (full_name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
+            'id, display_id, title, description, status, urgency, source, scheduled_for, created_at, assignee_id, restaurant:restaurants (name, color), category:categories (name, area), equipment (id, name, brand, serial), walkthrough:walkthroughs (period), opener:profiles!tickets_created_by_fkey (full_name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
           )
           .eq('id', id)
           .maybeSingle(),

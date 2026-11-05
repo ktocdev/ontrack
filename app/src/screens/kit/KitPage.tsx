@@ -389,6 +389,7 @@ export function KitPage() {
                 ]}
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
+              <Notice tone="info">Closed tickets also appear on each piece of equipment, with their costs.</Notice>
               <Notice tone="waiting">
                 <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list. You&apos;ll get a notification when
                 work starts.
@@ -626,6 +627,7 @@ export function KitPage() {
                 <FilterButton count={0} />
                 <FilterButton count={2} />
                 <OpenBadge count={1} />
+                <OpenBadge count={1} compact />
               </div>
               <div className="flex flex-wrap gap-1.5">
                 <FilterChip label="Back of House" onRemove={() => {}} />

@@ -9,9 +9,19 @@ import { IconChevronDown, IconChevronRight } from './icons'
  * restaurant and this year's spend; a manager's rows don't.
  */
 
-/** "1 open": open tickets on a category or a unit, in the Open pill's colors. */
-export function OpenBadge({ count }: { count: number }) {
-  return (
+/**
+ * "1 open": open tickets on a category or a unit, in the Open pill's colors. `compact` is
+ * the count alone, beside the Tickets tab on Ops (Ops-Equipment-Details).
+ */
+export function OpenBadge({ count, compact = false }: { count: number; compact?: boolean }) {
+  return compact ? (
+    <span
+      aria-label={`${count} open`}
+      className="min-w-5 rounded-pill bg-status-open-bg px-1.5 py-px text-center text-12 font-bold text-status-open-text"
+    >
+      {count}
+    </span>
+  ) : (
     <span className="whitespace-nowrap rounded-pill bg-status-open-bg px-2 py-1 text-11 font-bold leading-[15px] text-status-open-text">
       {count} open
     </span>

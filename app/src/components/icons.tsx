@@ -128,6 +128,34 @@ export const IconFilter = (p: IconProps) => (
     <path d="M4 6h16M7 12h10M10 18h4" />
   </svg>
 )
+/** Ticket stub (Empty · equipment tickets). */
+export const IconTicket = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z" />
+    <path d="M14 6v2M14 11v2M14 16v2" />
+  </svg>
+)
+/** Receipt (Empty · no service yet). */
+export const IconReceipt = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
+    <path d="M9 8h6M9 12h6M9 16h3" />
+  </svg>
+)
+/** A page with a folded corner: an invoice on file (service log). */
+export const IconFile = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+  </svg>
+)
+/** Info in a circle (the note on Closed tickets). */
+export const IconInfo = (p: IconProps) => (
+  <svg {...base(p, 2, false)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5M12 8h.01" />
+  </svg>
+)
 export const IconSearchOff = (p: IconProps) => (
   <svg {...base({ size: 18, ...p }, 2, false)}>
     <circle cx="11" cy="11" r="7" />

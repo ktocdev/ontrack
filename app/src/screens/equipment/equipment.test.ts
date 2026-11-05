@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { filterCount, groupByType, matchesFilters, matchesSearch, typeNames, type Unit } from './equipment'
+import {
+  filterCount,
+  groupByType,
+  matchesFilters,
+  matchesSearch,
+  monthDay,
+  monthYear,
+  typeNames,
+  yearOf,
+  type Unit,
+} from './equipment'
 
 const unit = (name: string, type: string, area: 'foh' | 'boh', sort: number, extra: Partial<Unit> = {}): Unit => ({
   id: name,
@@ -50,5 +60,13 @@ describe('equipment lists', () => {
     expect(units.filter((u) => matchesFilters(u, f)).map((u) => u.name)).toEqual(['Floor Drain Pump'])
     expect(filterCount(f)).toBe(2)
     expect(units.filter((u) => matchesFilters(u, { area: null, types: [] }))).toHaveLength(6)
+  })
+})
+
+describe('equipment dates', () => {
+  it('reads a date column as a local day', () => {
+    expect(monthYear('2022-03-14')).toBe('Mar 2022')
+    expect(monthDay('2026-01-01')).toBe('Jan 1')
+    expect(yearOf('2026-01-01')).toBe(2026)
   })
 })

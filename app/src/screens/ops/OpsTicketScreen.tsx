@@ -33,7 +33,7 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * a ticket, so the board's Assigned dropdown is a line saying who is on it, and the status
  * decides that: In progress puts you on it, back to Open takes the person off. Take this
  * over is for one a colleague has. Scheduled asks for its date, which has no board. Links
- * to later phases stay off: the equipment card and the walkthrough open nothing yet, and
+ * to later phases stay off: the walkthrough opens nothing yet (the equipment card opens the unit), and
  * Service & cost waits for Phase 5. Writing back and forth is rare for Ops, so the message
  * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
  * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
@@ -203,7 +203,12 @@ export function OpsTicketScreen() {
           onOpen={(src) => setViewing({ src, alt: 'Photo on this ticket' })}
         />
 
-        {ticket.equipment && <EquipmentCard equipment={ticket.equipment} />}
+        {ticket.equipment && (
+          <EquipmentCard
+            equipment={ticket.equipment}
+            to={viewingAs ? undefined : `/ops/equipment/${ticket.equipment.id}`}
+          />
+        )}
 
         <div className="-mb-2.5 flex min-h-tap flex-none items-center justify-between gap-3 pt-1">
           <h2 className="eyebrow">Updates · {count}</h2>

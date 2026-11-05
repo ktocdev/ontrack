@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { IconCheck, IconStatusWaiting, IconWarning } from './icons'
+import { IconCheck, IconInfo, IconStatusWaiting, IconWarning } from './icons'
 
 /**
  * Inline confirmation inside a form ("Profile saved."): brand-tint-soft
@@ -12,11 +12,24 @@ export function Notice({
   children,
   className = '',
 }: {
-  /** 'waiting' is for something now with someone else (Reopened and sent to Ops). */
-  tone?: 'brand' | 'waiting'
+  /**
+   * 'waiting' is for something now with someone else (Reopened and sent to Ops); 'info'
+   * is a note that stays on a screen (Closed tickets also appear on each unit).
+   */
+  tone?: 'brand' | 'waiting' | 'info'
   children: ReactNode
   className?: string
 }) {
+  if (tone === 'info') {
+    return (
+      <div
+        className={`flex flex-none items-start gap-2.5 rounded-input bg-brand-tint-soft px-3 py-2.5 text-13 leading-[1.45] text-brand-strong ${className}`}
+      >
+        <IconInfo size={18} className="mt-px flex-none" />
+        <span>{children}</span>
+      </div>
+    )
+  }
   if (tone === 'waiting') {
     return (
       <div

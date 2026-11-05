@@ -13,13 +13,17 @@ import { monthName, shownMonths, type ClosedMonth } from './closedMonths'
 import { useClosedMonth, useClosedMonths } from './useOpsClosed'
 import { useRestaurantOrder } from './useRestaurantOrder'
 import { useRestaurantScope } from './useRestaurantScope'
+import { useRight } from '../../auth/rights'
+import { Notice } from '../../components/Notice'
 
 /**
  * Ops · Closed tickets (design/screens/Ops-Closed, Empty-Ops-Closed), opened from the
  * dashboard's menu instead of the boards' tab, so it has a back arrow and a title of its
  * own. This month comes first, four tickets to a month until Show more, and See <month>
- * adds the month before. The board's lines about each unit's history wait for Phase 4,
- * when there is one to see. View as never reaches this screen.
+ * adds the month before. The board's note that closed tickets also appear on each unit
+ * is back now each unit has a page; the empty board's line that a closed ticket is saved
+ * to its unit's service history is left off, since closing logs no service. View as
+ * never reaches this screen.
  */
 const FIRST_ROWS = 4
 
@@ -32,6 +36,7 @@ export function OpsClosedScreen() {
   const [extra, setExtra] = useState(0)
   const { shown, next } = shownMonths(data ?? [], extra)
   const emptyMonth = shown[0]?.closed_count === 0
+  const seeCosts = useRight('see_costs')
   const seeNext = next && (
     <Button variant="small" className="w-full flex-none" onClick={() => setExtra(extra + 1)}>
       See {monthName(next.month)} · {next.closed_count} closed
@@ -73,6 +78,11 @@ export function OpsClosedScreen() {
         </ScreenBody>
       ) : (
         <ScreenBody className="gap-2.5 pb-4">
+          {!emptyMonth && (
+            <Notice tone="info" className="mt-3.5">
+              Closed tickets also appear on each piece of equipment{seeCosts ? ', with their costs' : ''}.
+            </Notice>
+          )}
           {shown.map((m) => (
             <Month
               // Show more starts over when the picker changes.

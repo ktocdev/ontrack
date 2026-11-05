@@ -57,3 +57,23 @@ export function groupByType(units: Unit[]) {
     return { name, units: inType, openCount: inType.reduce((n, u) => n + u.openCount, 0) }
   })
 }
+
+/** A date column ('2022-03-14') as a local day, so it never shifts a day across time zones. */
+function day(date: string) {
+  const [y, m, d] = date.split('-').map(Number)
+  return new Date(y!, m! - 1, d!)
+}
+
+/** "Mar 2022": when a unit was installed. */
+export function monthYear(date: string) {
+  return day(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+}
+
+/** "Oct 19": a visit in the service log, under its year. */
+export function monthDay(date: string) {
+  return day(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+export function yearOf(date: string) {
+  return day(date).getFullYear()
+}
