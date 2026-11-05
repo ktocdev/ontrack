@@ -160,3 +160,33 @@ test('Open Camera adds the photo to the form, and creates nothing until Submit',
   await expect(page.getByRole('dialog', { name: 'Add a photo?' })).toHaveCount(0)
   expect(created).toHaveLength(1)
 })
+
+test('Photo tips opens from beside Add photo and from the photo prompt', async ({ page }, testInfo) => {
+  await signIn(page, 'ari.kim@example.com')
+  await page.goto('/tickets/new?area=boh')
+  await page.getByRole('link', { name: /^Refrigeration/ }).click()
+  await page.getByLabel('Title').fill('Photo tips check')
+
+  await page.getByRole('button', { name: 'Photo tips' }).click()
+  const tips = page.getByRole('dialog', { name: 'Photo tips' })
+  await expect(tips.getByRole('img', { name: /Example photo/ })).toBeVisible()
+  await expect(tips.getByRole('listitem')).toHaveCount(4)
+  await expect(tips).toContainText('Safety first.')
+  await page.waitForTimeout(250)
+  await testInfo.attach('photo-tips', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.waitForTimeout(150)
+  await testInfo.attach('photo-tips-dark', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.emulateMedia({ colorScheme: 'light' })
+  await tips.getByRole('button', { name: 'Got it' }).click()
+  await expect(tips).toHaveCount(0)
+
+  // From the prompt, the tips take its place, and Got it brings it back.
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  const prompt = page.getByRole('dialog', { name: 'Add a photo?' })
+  await prompt.getByRole('button', { name: 'Photo tips' }).click()
+  await expect(prompt).toHaveCount(0)
+  await page.getByRole('dialog', { name: 'Photo tips' }).getByRole('button', { name: 'Got it' }).click()
+  await expect(prompt).toBeVisible()
+  await expect(page).toHaveURL(/\/tickets\/new\//)
+})

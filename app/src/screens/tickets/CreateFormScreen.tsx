@@ -13,6 +13,7 @@ import { useToast } from '../../components/Toast'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ReportSheet } from '../profile/ReportSheet'
 import { PhotoPromptSheet } from './PhotoPromptSheet'
+import { PhotoTipsLink, PhotoTipsSheet } from './PhotoTips'
 import { AREA_LABEL } from './tickets'
 import { useCreateTicket, useTicketForm, type Urgency } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
@@ -86,6 +87,7 @@ function CreateForm({
   )
   const [reporting, setReporting] = useState(false)
   const [askingForPhoto, setAskingForPhoto] = useState(false)
+  const [tips, setTips] = useState(false)
   const picked = usePickedPhotos()
   const banner = useRef<HTMLDivElement>(null)
 
@@ -155,7 +157,10 @@ function CreateForm({
                 {picked.error}
               </span>
             )}
-            <AddPhotoButton disabled={picked.reading} onFiles={(files) => void picked.add(files)} />
+            <div className="flex items-center justify-between gap-3">
+              <AddPhotoButton disabled={picked.reading} onFiles={(files) => void picked.add(files)} />
+              <PhotoTipsLink onClick={() => setTips(true)} />
+            </div>
           </div>
           <ChoiceChips<Urgency>
             label="Urgency"
@@ -203,6 +208,7 @@ function CreateForm({
         onFiles={(files) => void picked.add(files)}
         onProceed={save}
       />
+      <PhotoTipsSheet open={tips} onOpenChange={setTips} />
       <ReportSheet open={reporting} onOpenChange={setReporting} context="Creating a ticket" />
     </Screen>
   )
