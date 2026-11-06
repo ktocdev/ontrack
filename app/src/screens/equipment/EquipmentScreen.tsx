@@ -16,14 +16,15 @@ import { useEquipmentList } from './useEquipmentList'
 /**
  * Manager · Equipment (design/screens/Equipment-List, Empty-Manager-Equipment). The
  * units at the person's restaurants, browsed by Front / Back and then a card per type,
- * all closed on arriving and then one open at a time (from feedback, Nov 5, 2026). There is no search (from feedback, OT-68): a manager finds a
- * unit by browsing to it, so the board's search field and its no-results board are
- * left off. The board's scan button waits for QR labels (OT-74). It opens on Front of
- * House, as Create ticket does. Add equipment, which no manager board draws, is there
- * only with Add / edit equipment. A manager with more than one restaurant sees which
- * one each unit is at. With Add / edit equipment, the area's retired units sit in a closed
- * Retired card at the bottom, so one can be found and restored (OT-71). Under View as,
- * nothing leads anywhere.
+ * all closed on arriving and then one open at a time (from feedback, Nov 5, 2026).
+ * There is no search (from feedback, OT-68): a manager finds a unit by browsing to it,
+ * so the board's search field and its no-results board are left off. The board's scan
+ * button waits for QR labels (OT-74). It opens on Front of House, as Create ticket
+ * does. Add equipment, which no manager board draws, is there only with Add / edit
+ * equipment. A manager with more than one restaurant sees which one each unit is at.
+ * With Add / edit equipment, the area's retired units sit in a closed Retired card at
+ * the bottom, so one can be found and restored (OT-71). Under View as, nothing leads
+ * anywhere.
  */
 export function EquipmentScreen() {
   const { restaurants, viewingAs } = useUser()
