@@ -21,6 +21,7 @@ import {
   matchesFilters,
   matchesSearch,
   NO_FILTERS,
+  RETIRED_CARD,
   typeNames,
   type Filters,
 } from './equipment'
@@ -33,15 +34,16 @@ import { useEquipmentList } from './useEquipmentList'
  * its restaurant, brand and serial, this year's spend (only with see_costs) and its
  * open tickets. Search finds a name, brand or serial, and both a search and a type
  * filter open every card they leave. The filter sheet has area and type; the picker is
- * the restaurant filter. Under
- * View as, nothing leads anywhere and Add equipment is gone.
+ * the restaurant filter. Retired units sit in a closed Retired card at the bottom, so one
+ * can be found and restored (OT-71); search and the filters reach them too. Under View as,
+ * nothing leads anywhere and Add equipment is gone.
  */
 export function OpsEquipmentScreen() {
   const { restaurants, viewingAs } = useUser()
   const scope = useRestaurantScope()
   const { ordered } = useRestaurantOrder()
   const [year] = useState(() => new Date().getFullYear())
-  const { data, isPending, isError, refetch } = useEquipmentList(scope.ids, year)
+  const { data, isPending, isError, refetch } = useEquipmentList(scope.ids, year, true)
   const seeCosts = useRight('see_costs')
   const canAdd = useRight('edit_equipment') && !viewingAs
 
@@ -54,8 +56,11 @@ export function OpsEquipmentScreen() {
   const [closed, setClosed] = useState<string[]>([])
 
   const expandAll = query.trim() !== '' || filters.types.length > 0
-  const units = data ?? []
-  const shown = units.filter((u) => matchesFilters(u, filters) && matchesSearch(u, query))
+  const all = data ?? []
+  const units = all.filter((u) => !u.retired)
+  const matches = (u: (typeof all)[number]) => matchesFilters(u, filters) && matchesSearch(u, query)
+  const shown = units.filter(matches)
+  const retired = all.filter((u) => u.retired && matches(u))
   const groups = groupByType(shown)
   const restaurantOf = new Map(restaurants.map((r) => [r.id, r]))
   const isOpen = (name: string) => (expandAll ? !closed.includes(name) : openName === name)
@@ -92,7 +97,22 @@ export function OpsEquipmentScreen() {
       remove: () => filter({ ...filters, types: filters.types.filter((x) => x !== t) }),
     })),
   ]
-  const empty = !isPending && !isError && units.length === 0
+  const empty = !isPending && !isError && all.length === 0
+  const row = (u: (typeof all)[number]) => {
+    const r = restaurantOf.get(u.restaurant_id)
+    return (
+      <EquipmentRow
+        key={u.id}
+        to={viewingAs ? undefined : `/ops/equipment/${u.id}`}
+        name={u.name}
+        restaurant={r && { name: r.name, color: r.color }}
+        brand={u.brand}
+        serial={u.serial}
+        spend={seeCosts ? { amount: u.spendCents ? money(u.spendCents) : null, year } : undefined}
+        openCount={u.openCount}
+      />
+    )
+  }
 
   return (
     <Screen>
@@ -168,7 +188,7 @@ export function OpsEquipmentScreen() {
         <ScreenBody className="gap-2.5 pb-4 pt-1">
           {isPending ? (
             <GroupedListSkeleton />
-          ) : groups.length === 0 ? (
+          ) : groups.length + retired.length === 0 ? (
             <div className="px-3 py-7 text-center text-14 leading-normal text-text-body">
               {count ? 'No equipment matches these filters.' : `No equipment matches “${query.trim()}”.`}
               <br />
@@ -177,32 +197,31 @@ export function OpsEquipmentScreen() {
               </Button>
             </div>
           ) : (
-            groups.map((g) => (
-              <EquipmentGroup
-                key={g.name}
-                name={g.name}
-                count={g.units.length}
-                openCount={g.openCount}
-                open={isOpen(g.name)}
-                onToggle={() => toggle(g.name)}
-              >
-                {g.units.map((u) => {
-                  const r = restaurantOf.get(u.restaurant_id)
-                  return (
-                    <EquipmentRow
-                      key={u.id}
-                      to={viewingAs ? undefined : `/ops/equipment/${u.id}`}
-                      name={u.name}
-                      restaurant={r && { name: r.name, color: r.color }}
-                      brand={u.brand}
-                      serial={u.serial}
-                      spend={seeCosts ? { amount: u.spendCents ? money(u.spendCents) : null, year } : undefined}
-                      openCount={u.openCount}
-                    />
-                  )
-                })}
-              </EquipmentGroup>
-            ))
+            <>
+              {groups.map((g) => (
+                <EquipmentGroup
+                  key={g.name}
+                  name={g.name}
+                  count={g.units.length}
+                  openCount={g.openCount}
+                  open={isOpen(g.name)}
+                  onToggle={() => toggle(g.name)}
+                >
+                  {g.units.map(row)}
+                </EquipmentGroup>
+              ))}
+              {retired.length > 0 && (
+                <EquipmentGroup
+                  name="Retired"
+                  count={retired.length}
+                  openCount={0}
+                  open={isOpen(RETIRED_CARD)}
+                  onToggle={() => toggle(RETIRED_CARD)}
+                >
+                  {[...retired].sort((a, b) => a.name.localeCompare(b.name)).map(row)}
+                </EquipmentGroup>
+              )}
+            </>
           )}
         </ScreenBody>
       )}

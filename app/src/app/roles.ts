@@ -81,6 +81,14 @@ export function ticketPath(role: AppRole, id: string) {
   return null
 }
 
+/** Where a unit's lasting link leads for each role; admin and leadership have no equipment screen. */
+export function equipmentPath(role: AppRole, id: string) {
+  const safe = encodeURIComponent(id)
+  if (role === 'manager') return `/equipment/${safe}`
+  if (role === 'ops') return `/ops/equipment/${safe}`
+  return null
+}
+
 /** Where "Search equipment" on the 404 screen goes for each role. */
 export const ROLE_EQUIPMENT: Record<AppRole, string> = {
   manager: '/equipment',

@@ -18,6 +18,7 @@ const unit = (name: string, type: string, area: 'foh' | 'boh', sort: number, ext
   serial: null,
   restaurant_id: 'r1',
   category: { name: type, area, sort_order: sort },
+  retired: false,
   openCount: 0,
   spendCents: null,
   ...extra,

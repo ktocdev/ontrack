@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
-import { Button } from '../../components/Button'
+import { Button, ButtonLink } from '../../components/Button'
 import { Card, KeyValueRow, ListCard } from '../../components/Card'
 import { ClosedTicketRow } from '../../components/ClosedTicketRow'
 import { EmptyState } from '../../components/EmptyState'
@@ -10,10 +10,19 @@ import { OpenBadge } from '../../components/Equipment'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { PhotoViewer } from '../../components/Photo'
 import { RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
-import { BackBar, Screen, ScreenBody, SectionLabel, UnderlineTabs } from '../../components/Screen'
+import { BackBar, Screen, ScreenBody, ScreenFooter, SectionLabel, UnderlineTabs } from '../../components/Screen'
 import { DetailSkeleton, MetricsSkeleton } from '../../components/Skeleton'
 import { TicketCard } from '../../components/TicketCard'
-import { IconChevronDown, IconFile, IconPhone, IconReceipt, IconTicket, IconWarning } from '../../components/icons'
+import { EquipmentMenu } from '../../components/TicketMenu'
+import {
+  IconChevronDown,
+  IconFile,
+  IconPhone,
+  IconPlus,
+  IconReceipt,
+  IconTicket,
+  IconWarning,
+} from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { byPriority } from '../ops/dashboard'
 import { longDate, money } from '../tickets/closed'
@@ -30,9 +39,11 @@ import { useEquipmentDetail, useEquipmentService } from './useEquipmentDetail'
  * Service & cost is for Ops with see_costs; a manager doesn't need it (from feedback),
  * though one with see_costs still sees what each closed ticket cost. Until QR labels (OT-74) the card where the boards
  * draw the QR shows the serial number alone. Edit is there with Add / edit equipment,
- * which no manager board draws. Not built yet: Create ticket for this equipment (OT-71), Log service and a service record's page (Phase 5). A
- * retired unit still opens, from a ticket or a link, with a Retired label. Under View as
- * nothing leads anywhere.
+ * which no manager board draws, and the menu beside it has Share link to /e/<id> (OT-71).
+ * A manager's Create ticket for this equipment opens the form with the unit filled in, and
+ * its Back returns here. Not built yet: Log service and a service record's page (Phase 5).
+ * A retired unit still opens, from a ticket or a link, with a Retired label and no Create
+ * ticket. Under View as nothing leads anywhere.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 const TABS = [undefined, 'tickets', 'service'] as const
@@ -47,9 +58,10 @@ export function OpsEquipmentDetailScreen() {
 
 function Detail({ ops }: { ops: boolean }) {
   const { id = '', tab } = useParams()
-  const { user, viewingAs } = useUser()
+  const { user, restaurants, viewingAs } = useUser()
   const seeCosts = useRight('see_costs')
   const canEdit = useRight('edit_equipment') && !viewingAs
+  const canCreate = useRight('create_tickets') && !viewingAs
   const [plateOpen, setPlateOpen] = useState(false)
   // A manager doesn't need a unit's costs (from feedback, Nov 5, 2026), whatever their rights.
   const showService = ops && !!seeCosts
@@ -95,6 +107,9 @@ function Detail({ ops }: { ops: boolean }) {
   const { unit, tickets, manualUrl, plateUrl } = data
   const warranty = unit.warranty_note ?? (unit.warranty_until && `Through ${monthYear(unit.warranty_until)}`)
   const here = `${base}/${unit.id}`
+  // A manager reports a problem on a unit in service at one of their own restaurants; the
+  // form fills it in.
+  const reportable = !ops && canCreate && !unit.retired_at && restaurants.some((r) => r.id === unit.restaurant_id)
   const open = tickets.filter((t) => t.status !== 'closed').sort(ops ? byPriority : byActivity)
   const closed = tickets
     .filter((t) => t.status === 'closed')
@@ -115,14 +130,19 @@ function Detail({ ops }: { ops: boolean }) {
         to={base}
         label="Back to equipment"
         action={
-          canEdit ? (
-            <Link
-              to={`${here}/edit`}
-              className="flex min-h-tap flex-none items-center px-2 text-16 font-semibold text-brand hover:text-brand-strong"
-            >
-              Edit
-            </Link>
-          ) : undefined
+          viewingAs ? undefined : (
+            <span className="flex flex-none items-center gap-1">
+              {canEdit && (
+                <Link
+                  to={`${here}/edit`}
+                  className="flex min-h-tap flex-none items-center px-2 text-16 font-semibold text-brand hover:text-brand-strong"
+                >
+                  Edit
+                </Link>
+              )}
+              <EquipmentMenu id={unit.id} name={unit.name} />
+            </span>
+          )
         }
       >
         <span className="inline-flex flex-wrap items-center gap-x-1">
@@ -311,6 +331,18 @@ function Detail({ ops }: { ops: boolean }) {
           </>
         )}
       </ScreenBody>
+      {reportable && (
+        <ScreenFooter>
+          <ButtonLink
+            variant="tall"
+            icon={<IconPlus size={20} />}
+            to={`/tickets/new/${unit.category_id}?area=${unit.category?.area ?? 'boh'}&restaurant=${unit.restaurant_id}`}
+            state={{ equipmentId: unit.id, backTo: tab ? `${here}/${tab}` : here }}
+          >
+            Create ticket for this equipment
+          </ButtonLink>
+        </ScreenFooter>
+      )}
     </Screen>
   )
 }

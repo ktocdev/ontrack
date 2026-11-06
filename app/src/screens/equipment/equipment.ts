@@ -9,6 +9,7 @@ export type Unit = {
   serial: string | null
   restaurant_id: string
   category: { name: string; area: Area; sort_order: number } | null
+  retired: boolean
   openCount: number
   /** This year's spend in cents, or null for none (and always null without see_costs). */
   spendCents: number | null
@@ -57,6 +58,9 @@ export function groupByType(units: Unit[]) {
     return { name, units: inType, openCount: inType.reduce((n, u) => n + u.openCount, 0) }
   })
 }
+
+/** The toggle key of the Retired card, which no type's name can match. */
+export const RETIRED_CARD = '\u0000retired'
 
 /** A date column ('2022-03-14') as a local day, so it never shifts a day across time zones. */
 function day(date: string) {
