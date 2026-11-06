@@ -203,8 +203,15 @@ export function useDeleteEquipment() {
       const history = await sb.from('v_equipment_history').select('in_use').eq('equipment_id', unit.id).maybeSingle()
       if (history.error) throw history.error
       if (history.data?.in_use !== false) throw new Error('in use')
-      if (unit.manual_path) await sb.storage.from('manuals').remove([unit.manual_path])
-      if (unit.plate_photo_path) await sb.storage.from('equipment-photos').remove([unit.plate_photo_path])
+      // A file that won't go stops the delete, so nothing is left in a folder with no unit (OT-84).
+      for (const [bucket, path] of [
+        ['manuals', unit.manual_path],
+        ['equipment-photos', unit.plate_photo_path],
+      ] as const) {
+        if (!path) continue
+        const removed = await sb.storage.from(bucket).remove([path])
+        if (removed.error) throw removed.error
+      }
       const { error } = await sb.rpc('delete_equipment', { p_id: unit.id })
       if (error) throw error
     },

@@ -23,9 +23,11 @@ import { useOpenTickets } from './useOpenTickets'
  * itself, in one list; the board's search and Front / Back are left out, as on Open
  * tickets (from feedback, OT-63). Checking a task moves it to Closed, and unchecking
  * brings it back. The board also draws Delete on a closed row, but a checked-off task
- * is a record, so only an open one offers it. Add (OT-83, no board) puts in a task by
- * hand beside the walkthrough's, which carry the Walkthrough tag; a hand-added one says
- * who added it and when. Under View as the boxes only show their state and Add is gone.
+ * is a record, so only a task never checked off offers it: unchecking one is for a
+ * mis-tap and is logged, and it stays on the record (OT-84). Add (OT-83, no board) puts
+ * in a task by hand beside the walkthrough's, which carry the Walkthrough tag; a
+ * hand-added one says who added it and when. Under View as the boxes only show their
+ * state and Add is gone.
  */
 const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
 
@@ -75,7 +77,7 @@ export function InHouseScreen() {
       restaurant={only ? undefined : placeOf.get(t.restaurant_id)}
       onToggle={viewingAs ? undefined : () => toggle(t.id, !t.done_at)}
       onDelete={
-        viewingAs || t.done_at
+        viewingAs || t.first_done_at
           ? undefined
           : () => {
               setDeleted(false)

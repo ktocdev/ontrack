@@ -14,7 +14,7 @@ async function loadTasks(restaurantIds: string[]) {
   const { data, error } = await requireSupabase()
     .from('inhouse_fixes')
     .select(
-      'id, title, origin_label, area, done_at, restaurant_id, created_at, adder:profiles!inhouse_fixes_created_by_fkey (full_name)',
+      'id, title, origin_label, area, done_at, first_done_at, restaurant_id, created_at, adder:profiles!inhouse_fixes_created_by_fkey (full_name)',
     )
     .in('restaurant_id', restaurantIds)
     .order('created_at', { ascending: false })
@@ -41,7 +41,11 @@ export function useSetTaskDone(restaurantIds: string[]) {
       await queryClient.cancelQueries({ queryKey: key })
       const before = queryClient.getQueryData<Task[]>(key)
       queryClient.setQueryData<Task[]>(key, (tasks) =>
-        tasks?.map((t) => (t.id === id ? { ...t, done_at: done ? new Date().toISOString() : null } : t)),
+        tasks?.map((t) => {
+          if (t.id !== id) return t
+          const at = done ? new Date().toISOString() : null
+          return { ...t, done_at: at, first_done_at: t.first_done_at ?? at }
+        }),
       )
       return { before }
     },

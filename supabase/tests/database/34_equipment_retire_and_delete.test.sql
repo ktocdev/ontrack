@@ -88,10 +88,10 @@ select lives_ok($$
           '33333333-3333-4333-8333-000000000012', 'Test: new cooler', '22222222-2222-4222-8222-000000000003', now())
 $$, 'a unit is added with any created_by and retired_at');
 select ok((select created_by = (:maya)::uuid and retired_at is null from public.equipment
-           where id = 'aaaaaaaa-0000-4000-8000-000000000004'),
+           where name = 'Test: new cooler'),
   'but is saved as hers and not retired');
-update public.equipment set created_by = (:bert)::uuid where id = 'aaaaaaaa-0000-4000-8000-000000000004';
-select is((select created_by from public.equipment where id = 'aaaaaaaa-0000-4000-8000-000000000004'),
+update public.equipment set created_by = (:bert)::uuid where name = 'Test: new cooler';
+select is((select created_by from public.equipment where name = 'Test: new cooler'),
   (:maya)::uuid, 'and created_by does not change on an edit');
 select throws_ok(format($$ update public.equipment set plate_photo_path = '%s/plate.jpg' where id = '%s' $$, :e1, :u1),
   '23514', null, 'a data plate photo sits under its own unit');

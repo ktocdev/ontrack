@@ -45,7 +45,9 @@ test('another restaurant’s manager sees none of them', async ({ page }) => {
   await expect(page.getByRole('checkbox')).toHaveCount(0)
 })
 
-test('checking a task moves it to Closed and it stays there, and unchecking brings it back', async ({ page }) => {
+test('checking a task moves it to Closed and it stays there, and unchecking brings it back with no Delete', async ({
+  page,
+}) => {
   await openInHouse(page, 'maya.reyes@example.com')
   const title = 'Tighten wobbly 2-top at table 14'
   await box(page, title).click()
@@ -62,7 +64,8 @@ test('checking a task moves it to Closed and it stays there, and unchecking brin
 
   await box(page, title).click()
   await expect(page.getByText('To fix · 5')).toBeVisible()
-  await expect(trash(page, title)).toBeVisible()
+  // Back in To fix, but it was checked off once, so it stays on the record (OT-84).
+  await expect(trash(page, title)).toHaveCount(0)
 })
 
 test('a save that fails puts the task back and says so', async ({ page }) => {
