@@ -51,7 +51,7 @@ export function ScreenHeader({ title, topLeft, topRight, action, children, class
           {topRight}
         </div>
       )}
-      <div className={`flex items-center justify-between ${topLeft || topRight ? '' : 'mt-5'}`}>
+      <div className={`flex items-center justify-between gap-3 ${topLeft || topRight ? '' : 'mt-5'}`}>
         <h1 className="font-display text-30 font-bold tracking-[-0.02em]">{title}</h1>
         {action}
       </div>

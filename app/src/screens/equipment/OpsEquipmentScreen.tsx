@@ -112,10 +112,11 @@ export function OpsEquipmentScreen() {
             <ButtonLink
               to="/ops/equipment/new"
               variant="compact"
+              aria-label="Add equipment"
               icon={<IconPlus size={18} strokeWidth={2.4} />}
               className="gap-1.5 px-3.5 text-14"
             >
-              Add equipment
+              Add
             </ButtonLink>
           ) : undefined
         }
