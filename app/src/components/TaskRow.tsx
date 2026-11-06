@@ -4,7 +4,7 @@ import { IconTrash } from './icons'
 
 /**
  * A to-do you check off (Main-InHouse): a 22px checkbox, the title in 14px semibold with
- * where it came from under it, and a delete button on the right. A done row strikes its
+ * where it came from under it, after any tag, and a delete button on the right. A done row strikes its
  * title through. With no onDelete the button is left out, and with no onToggle the
  * checkbox only shows the state (View as).
  */
@@ -16,6 +16,7 @@ export function TaskRow({
   title,
   meta,
   done,
+  tag,
   restaurant,
   onToggle,
   onDelete,
@@ -23,6 +24,8 @@ export function TaskRow({
   title: string
   meta: string
   done: boolean
+  /** A chip before the meta line (Walkthrough). */
+  tag?: ReactNode
   /** For a person with more than one restaurant. */
   restaurant?: { name: string; color: string }
   onToggle?: () => void
@@ -44,7 +47,10 @@ export function TaskRow({
           <span className={`font-semibold [overflow-wrap:anywhere] ${done ? 'text-text-secondary line-through' : ''}`}>
             {title}
           </span>
-          <span className="text-12 text-text-muted">{meta}</span>
+          <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-12 text-text-muted">
+            {tag}
+            {meta}
+          </span>
         </span>
       </label>
       {onDelete && (

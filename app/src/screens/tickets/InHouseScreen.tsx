@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
+import { useRight } from '../../auth/rights'
+import { firstName } from '../../auth/session'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { ErrorBanner, Notice } from '../../components/Notice'
-import { CountBadge } from '../../components/Pill'
+import { CountBadge, WalkthroughTag } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
 import { ConfirmSheet } from '../../components/Sheet'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
-import { IconChevronDown, IconTrash, IconWarning } from '../../components/icons'
+import { IconChevronDown, IconPlus, IconTrash, IconWarning } from '../../components/icons'
+import { AddTaskSheet } from './AddTaskSheet'
 import { useDeleteTask, useInHouse, useSetTaskDone } from './useInHouse'
 import { useOpenTickets } from './useOpenTickets'
 
@@ -20,8 +23,9 @@ import { useOpenTickets } from './useOpenTickets'
  * itself, in one list; the board's search and Front / Back are left out, as on Open
  * tickets (from feedback, OT-63). Checking a task moves it to Closed, and unchecking
  * brings it back. The board also draws Delete on a closed row, but a checked-off task
- * is a record, so only an open one offers it. Under View as the boxes only show their
- * state.
+ * is a record, so only an open one offers it. Add (OT-83, no board) puts in a task by
+ * hand beside the walkthrough's, which carry the Walkthrough tag; a hand-added one says
+ * who added it and when. Under View as the boxes only show their state and Add is gone.
  */
 const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
 
@@ -35,6 +39,8 @@ export function InHouseScreen() {
   const toast = useToast()
   const [deleting, setDeleting] = useState<{ id: string; title: string } | null>(null)
   const [deleted, setDeleted] = useState(false)
+  const [adding, setAdding] = useState(false)
+  const canAdd = useRight('create_tickets') && !viewingAs
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const placeOf = new Map(restaurants.map((r) => [r.id, r]))
@@ -63,7 +69,8 @@ export function InHouseScreen() {
     <TaskRow
       key={t.id}
       title={t.title}
-      meta={[t.origin_label, t.done_at && 'Completed'].filter(Boolean).join(' · ')}
+      meta={[t.origin_label ?? added(t), t.done_at && 'Completed'].filter(Boolean).join(' · ')}
+      tag={t.origin_label ? <WalkthroughTag /> : undefined}
       done={!!t.done_at}
       restaurant={only ? undefined : placeOf.get(t.restaurant_id)}
       onToggle={viewingAs ? undefined : () => toggle(t.id, !t.done_at)}
@@ -93,6 +100,19 @@ export function InHouseScreen() {
           )
         }
         topRight={<ProfileLink />}
+        action={
+          canAdd ? (
+            <Button
+              variant="compact"
+              aria-label="Add in-house task"
+              icon={<IconPlus size={18} strokeWidth={2.4} />}
+              className="gap-1.5 px-3.5 text-14"
+              onClick={() => setAdding(true)}
+            >
+              Add
+            </Button>
+          ) : undefined
+        }
       >
         <UnderlineTabs
           size="lg"
@@ -170,6 +190,8 @@ export function InHouseScreen() {
         </ScreenBody>
       )}
 
+      <AddTaskSheet open={adding} onOpenChange={setAdding} />
+
       <ConfirmSheet
         open={deleting !== null}
         onOpenChange={(isOpen) => {
@@ -205,4 +227,11 @@ export function InHouseScreen() {
       </ConfirmSheet>
     </Screen>
   )
+}
+
+/** "Added by Maya · Nov 6": a task put in by hand, with no walkthrough behind it. */
+function added(t: { created_at: string; adder: { full_name: string } | null }) {
+  const day = new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const who = firstName(t.adder?.full_name)
+  return who ? `Added by ${who} · ${day}` : `Added ${day}`
 }

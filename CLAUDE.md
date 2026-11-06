@@ -160,6 +160,7 @@ The plan's Phase 4 section says what ships and what it works around. Done when a
 | OT-80 | Photo tips' example becomes Katie's line drawing of a cooler under a bar, labels as text on top |
 | OT-81 | From feedback (Nov 6, 2026): the equipment lists' header button says Add, with room between it and the title |
 | OT-82 | Faster CI: the App job's Playwright runs in Playwright's own image, as the flows do, since installing the browsers' system packages ran it out of time on OT-81 |
+| OT-83 | From feedback (Nov 6, 2026): a manager adds an in-house task by hand from the In-house tab, which notifies nobody; walkthrough tasks carry the Walkthrough tag |
 | OT-69 | Equipment detail for both roles: breadcrumb, Details, Tickets (closed in a disclosure), Service & cost only with `see_costs`; a ticket's equipment card opens its unit |
 | OT-70 | Add and Edit equipment with manual PDF and data plate photo; Retire / Restore and Delete sheet; a manager's equipment list opens with every card closed (feedback) |
 | OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |
