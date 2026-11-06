@@ -173,3 +173,33 @@ test('a failed add stays on the sheet and says so', async ({ page }) => {
   await sheet.getByRole('button', { name: 'Cancel' }).click()
   await expect(page.getByText('To fix · 5')).toBeVisible()
 })
+
+test('closed tasks from the last 30 days show, and older ones wait behind Show older', async ({ page }, testInfo) => {
+  // The seed's one checked-off task was done yesterday; the response says two months ago,
+  // since the database dates a check-off itself.
+  await page.route('**/rest/v1/inhouse_fixes?*', async (route) => {
+    if (route.request().method() !== 'GET') return route.fallback()
+    const response = await route.fetch()
+    const tasks = (await response.json()) as { title: string; done_at: string | null }[]
+    const old = new Date(Date.now() - 60 * 86_400_000).toISOString()
+    await route.fulfill({
+      response,
+      json: tasks.map((t) => (t.title.startsWith('Re-glue') ? { ...t, done_at: old } : t)),
+    })
+  })
+  await openInHouse(page, 'maya.reyes@example.com')
+  await page.getByText('Closed · 1').click()
+  await expect(box(page, 'Re-glue trim on pass shelf')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Show older (1)' }).click()
+  await expect(page.getByText('Checked off more than 30 days ago')).toBeVisible()
+  await expect(box(page, 'Re-glue trim on pass shelf')).toBeChecked()
+  await page.waitForTimeout(300)
+  await testInfo.attach('show-older', { body: await page.screenshot(), contentType: 'image/png' })
+})
+
+test('a task checked off recently shows under Closed with no Show older', async ({ page }) => {
+  await openInHouse(page, 'maya.reyes@example.com')
+  await page.getByText('Closed · 1').click()
+  await expect(box(page, 'Re-glue trim on pass shelf')).toBeChecked()
+  await expect(page.getByRole('button', { name: /Show older/ })).toHaveCount(0)
+})

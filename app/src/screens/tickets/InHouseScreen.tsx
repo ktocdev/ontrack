@@ -15,6 +15,7 @@ import { TaskList, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
 import { IconChevronDown, IconPlus, IconTrash, IconWarning } from '../../components/icons'
 import { AddTaskSheet } from './AddTaskSheet'
+import { RECENT_DAYS, splitClosed } from './inHouse'
 import { useDeleteTask, useInHouse, useSetTaskDone } from './useInHouse'
 import { useOpenTickets } from './useOpenTickets'
 
@@ -27,7 +28,8 @@ import { useOpenTickets } from './useOpenTickets'
  * mis-tap and is logged, and it stays on the record (OT-84). Add (OT-83, no board) puts
  * in a task by hand beside the walkthrough's, which carry the Walkthrough tag; a
  * hand-added one says who added it and when. Under View as the boxes only show their
- * state and Add is gone.
+ * state and Add is gone. Closed shows what was checked off in the last 30 days, latest
+ * first; older ones wait behind Show older, still there to look at (from feedback, OT-85).
  */
 const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
 
@@ -48,7 +50,9 @@ export function InHouseScreen() {
   const placeOf = new Map(restaurants.map((r) => [r.id, r]))
   const all = data ?? []
   const open = all.filter((t) => !t.done_at)
-  const closed = all.filter((t) => t.done_at)
+  const { recent, older } = splitClosed(all)
+  const closed = [...recent, ...older]
+  const [showOlder, setShowOlder] = useState(false)
 
   const toggle = (id: string, done: boolean) => {
     setDeleted(false)
@@ -183,7 +187,20 @@ export function InHouseScreen() {
                       className="text-text-secondary group-open:rotate-180"
                     />
                   </summary>
-                  <TaskList>{closed.map(row)}</TaskList>
+                  {recent.length > 0 && <TaskList>{recent.map(row)}</TaskList>}
+                  {older.length > 0 &&
+                    (showOlder ? (
+                      <div className="mt-2.5 flex flex-col gap-1.5">
+                        <span className="text-12 text-text-secondary">
+                          Checked off more than {RECENT_DAYS} days ago
+                        </span>
+                        <TaskList>{older.map(row)}</TaskList>
+                      </div>
+                    ) : (
+                      <Button variant="ghost" className="mt-1" onClick={() => setShowOlder(true)}>
+                        Show older ({older.length})
+                      </Button>
+                    ))}
                 </details>
               )}
               {deleted && <Notice>In-house task deleted.</Notice>}
