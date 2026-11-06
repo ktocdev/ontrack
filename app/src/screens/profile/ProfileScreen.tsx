@@ -13,6 +13,7 @@ import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } 
 import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
 import { useUser } from '../../auth/context'
 import { useProfilePhotosOn } from '../../auth/group'
+import { InstallRow } from './InstallRow'
 import { NotificationsSection } from './NotificationsSection'
 import { PasswordSheet } from './PasswordSheet'
 import { ReportSheet } from './ReportSheet'
@@ -23,7 +24,8 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  * phone are the person's own; email, role and restaurants belong to the admin.
  * Then password, theme, help and sign out, with Save changes fixed at the
  * bottom. Three things the board does not draw come from the build plan: the
- * phone field, the theme control and Notifications.
+ * phone field, the theme control and Notifications, and Install the app while this
+ * browser can install it (OT-72).
  */
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
@@ -203,6 +205,8 @@ export function ProfileScreen() {
         </ListCard>
 
         {notice && <Notice>{notice}</Notice>}
+
+        <InstallRow />
 
         <NotificationsSection />
 

@@ -17,6 +17,14 @@ export default defineConfig({
     // The service worker precaches the whole app on every new page; with many
     // workers that crowds out the lazy route chunks. No test needs it.
     serviceWorkers: 'block',
+    // Every test starts on a phone that was already offered the install (OT-72), so its sheet
+    // doesn't cover the screen; e2e/install.spec.ts starts without it.
+    storageState: {
+      cookies: [],
+      origins: [
+        { origin: `http://localhost:${PORT}`, localStorage: [{ name: 'ontrack.install-asked', value: 'e2e' }] },
+      ],
+    },
   },
   projects: [
     { name: 'chromium', use: { ...devices['Pixel 7'] } },

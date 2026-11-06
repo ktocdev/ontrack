@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 /** Chrome and Edge fire this before showing their own install banner. */
 type BeforeInstallPromptEvent = Event & {
@@ -24,46 +24,56 @@ export function isIosSafari(): boolean {
 }
 
 /**
- * Tracks whether the app can be installed from this browser.
- * iPhone has no install event: Safari users add to the home screen by hand,
- * so the state is 'ios-manual' there and the UI shows the two-step picture.
+ * Chrome offers the install once, early in the page's life, often before any screen that
+ * would use it has mounted, so the offer is kept here from the start (listenForInstall, in
+ * main.tsx) and screens read it through useInstallPrompt.
+ */
+let deferred: BeforeInstallPromptEvent | null = null
+let installed = false
+const listeners = new Set<() => void>()
+const changed = () => listeners.forEach((l) => l())
+
+export function listenForInstall() {
+  installed = isStandalone()
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    deferred = e as BeforeInstallPromptEvent
+    changed()
+  })
+  window.addEventListener('appinstalled', () => {
+    installed = true
+    deferred = null
+    changed()
+  })
+}
+
+function current(): InstallState {
+  if (installed || isStandalone()) return 'installed'
+  if (deferred) return 'available'
+  return isIosSafari() ? 'ios-manual' : 'unavailable'
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+/** Chrome's own install sheet, once per offer; the browser decides whether to offer again. */
+async function promptInstall() {
+  const offer = deferred
+  if (!offer) return 'unavailable' as const
+  deferred = null
+  changed()
+  await offer.prompt()
+  return (await offer.userChoice).outcome
+}
+
+/**
+ * Whether the app can be installed from this browser. iPhone has no install event: Safari
+ * users add to the Home Screen by hand, so the state is 'ios-manual' there and the screen
+ * shows the two steps.
  */
 export function useInstallPrompt() {
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null)
-  const [installed, setInstalled] = useState(isStandalone)
-
-  useEffect(() => {
-    const onPrompt = (e: Event) => {
-      e.preventDefault()
-      setDeferred(e as BeforeInstallPromptEvent)
-    }
-    const onInstalled = () => {
-      setInstalled(true)
-      setDeferred(null)
-    }
-    window.addEventListener('beforeinstallprompt', onPrompt)
-    window.addEventListener('appinstalled', onInstalled)
-    return () => {
-      window.removeEventListener('beforeinstallprompt', onPrompt)
-      window.removeEventListener('appinstalled', onInstalled)
-    }
-  }, [])
-
-  const promptInstall = useCallback(async () => {
-    if (!deferred) return 'unavailable' as const
-    await deferred.prompt()
-    const { outcome } = await deferred.userChoice
-    if (outcome === 'accepted') setDeferred(null)
-    return outcome
-  }, [deferred])
-
-  const state: InstallState = installed
-    ? 'installed'
-    : deferred
-      ? 'available'
-      : isIosSafari()
-        ? 'ios-manual'
-        : 'unavailable'
-
+  const state = useSyncExternalStore(subscribe, current, () => 'unavailable' as const)
   return { state, promptInstall }
 }

@@ -18,6 +18,7 @@ import { Chip, ChoiceChips, FilterButton, FilterChip } from '../../components/Ch
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
+import { InstallSheet } from '../../components/InstallSheet'
 import { EquipmentGroup, EquipmentRow, OpenBadge, OpenNote } from '../../components/Equipment'
 import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
@@ -150,6 +151,7 @@ export function KitPage() {
   const [kitOrderIds, setKitOrderIds] = useState(['a', 'b', 'c'])
   const [sheet, setSheet] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
+  const [install, setInstall] = useState<'available' | 'ios-manual' | null>(null)
   const [loading, setLoading] = useState(false)
   const accents = useMemo(() => PRESETS.map((p) => ({ value: presetHex(p.key), label: p.label })), [])
   const [accent, setAccent] = useState(() => presetHex(PRESETS[0]!.key))
@@ -788,7 +790,22 @@ export function KitPage() {
                 <Button variant="secondary" className="w-auto" onClick={() => setSignedOut(true)}>
                   Signed out sheet
                 </Button>
+                <Button variant="secondary" className="w-auto" onClick={() => setInstall('available')}>
+                  Install (Android)
+                </Button>
+                <Button variant="secondary" className="w-auto" onClick={() => setInstall('ios-manual')}>
+                  Install (iPhone)
+                </Button>
               </div>
+              <InstallSheet
+                open={install !== null}
+                onOpenChange={(isOpen) => !isOpen && setInstall(null)}
+                state={install ?? 'available'}
+                onInstall={() => {
+                  setInstall(null)
+                  toast.show('Install sheet would open.')
+                }}
+              />
               <SignedOutSheet
                 open={signedOut}
                 email="maya.reyes@example.com"
