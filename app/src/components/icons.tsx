@@ -411,6 +411,12 @@ export const IconExternal = (p: IconProps) => (
     <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
   </svg>
 )
+/** Safari's Share: an open box with an arrow out of it (Install the app, on an iPhone). */
+export const IconShareIos = (p: IconProps) => (
+  <svg {...base({ size: 20, ...p })}>
+    <path d="M12 3v12M8 7l4-4 4 4M8 10H6.5A1.5 1.5 0 0 0 5 11.5v8A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5v-8a1.5 1.5 0 0 0-1.5-1.5H16" />
+  </svg>
+)
 export const IconCopy = (p: IconProps) => (
   <svg {...base({ size: 16, ...p })}>
     <rect x="8" y="8" width="12" height="12" rx="2" />

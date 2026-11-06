@@ -4,12 +4,14 @@ import { Outlet } from 'react-router'
 import { TabBar } from '../components/TabBar'
 import { useUser } from '../auth/context'
 import { syncPush } from '../pwa/push'
+import { InstallOnce } from '../pwa/InstallOnce'
 import { ROLE_TABS } from './roles'
 
 /**
  * The frame every signed-in screen renders inside: the screen fills the
  * viewport column and the role's tab bar stays at the bottom. Detail screens
- * that hide the tab bar render outside this layout.
+ * that hide the tab bar render outside this layout. The first one opened on a phone that
+ * can install the app offers it, once (OT-72).
  */
 export function Shell() {
   const { user, viewingAs } = useUser()
@@ -27,6 +29,7 @@ export function Shell() {
     <div className="flex h-dvh flex-col bg-bg text-text">
       <Outlet />
       <TabBar label={tabs.label} items={tabs.items} />
+      <InstallOnce skip={!!viewingAs} />
     </div>
   )
 }
