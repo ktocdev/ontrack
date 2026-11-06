@@ -117,7 +117,8 @@ function Form({ ops, editing }: { ops: boolean; editing?: EquipmentToEdit }) {
     save.reset()
     setValues((v) => ({ ...v, [key]: e.target.value }))
   }
-  const inArea = (categories.data ?? []).filter((c) => c.area === area)
+  // A turned-off category isn't offered, except to a unit that already has it (OT-86).
+  const inArea = (categories.data ?? []).filter((c) => c.area === area && (c.active || c.id === editing?.category_id))
   const pickArea = (a: Area) => {
     setArea(a)
     setValues((v) => ({ ...v, categoryId: '' }))

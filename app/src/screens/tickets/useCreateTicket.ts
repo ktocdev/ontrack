@@ -17,7 +17,7 @@ export function useCategories(restaurantId: string | undefined) {
     queryFn: async () => {
       const sb = requireSupabase()
       const [categories, counts] = await Promise.all([
-        sb.from('categories').select('id, name, area').order('sort_order'),
+        sb.from('categories').select('id, name, area').eq('active', true).order('sort_order'),
         sb
           .from('v_category_equipment_counts')
           .select('category_id, equipment_count')
@@ -39,7 +39,7 @@ export function useTicketForm(categoryId: string, restaurantId: string | undefin
     queryFn: async () => {
       const sb = requireSupabase()
       const [category, equipment] = await Promise.all([
-        sb.from('categories').select('id, name, area').eq('id', categoryId).maybeSingle(),
+        sb.from('categories').select('id, name, area').eq('id', categoryId).eq('active', true).maybeSingle(),
         sb
           .from('equipment')
           .select('id, name, serial')

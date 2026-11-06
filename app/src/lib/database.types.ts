@@ -81,14 +81,14 @@ isOneToOne: false
                   ]
                 },"categories": {
                   Row: {
-                    "area": Database["public"]['Enums']["area"],"id": string,"name": string,"sort_order": number
+                    "active": boolean,"area": Database["public"]['Enums']["area"],"id": string,"name": string,"sort_order": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "area": Database["public"]['Enums']["area"],"id"?: string,"name": string,"sort_order"?: number
+                    "active"?: boolean,"area": Database["public"]['Enums']["area"],"id"?: string,"name": string,"sort_order"?: number
                   }
                   Update: {
-                    "area"?: Database["public"]['Enums']["area"],"id"?: string,"name"?: string,"sort_order"?: number
+                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"],"id"?: string,"name"?: string,"sort_order"?: number
                   }
                   Relationships: [
                     
@@ -137,6 +137,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "categories"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "v_category_history"
+      referencedColumns: ["category_id"]
     },{
       foreignKeyName: "equipment_created_by_fkey"
       columns: ["created_by"]
@@ -886,6 +892,12 @@ isOneToOne: false
       referencedRelation: "categories"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "tickets_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "v_category_history"
+      referencedColumns: ["category_id"]
+    },{
       foreignKeyName: "tickets_closed_by_fkey"
       columns: ["closed_by"]
 isOneToOne: false
@@ -1263,6 +1275,12 @@ isOneToOne: false
       referencedRelation: "categories"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "equipment_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "v_category_history"
+      referencedColumns: ["category_id"]
+    },{
       foreignKeyName: "equipment_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
@@ -1281,6 +1299,20 @@ isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     }
+                  ]
+                },"v_category_history": {
+                  Row: {
+                    "category_id": string,"in_use": boolean | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "category_id"?: string | null,"in_use"?: never
+                         }
+                        Update: {
+                           "category_id"?: string | null,"in_use"?: never
+                         }
+                        Relationships: [
+                    
                   ]
                 },"v_contractor_spend": {
                   Row: {
@@ -1477,11 +1509,17 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "add_restaurant":
+            "add_category":
+{ Args: { "p_area": Database["public"]['Enums']["area"],"p_name": string }; Returns: string
+                           },
+"add_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
                            },
 "can":
 { Args: { "action": string,"rid"?: string }; Returns: boolean
+                           },
+"can_edit_categories":
+{ Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "can_post_on_ticket":
 { Args: { "tid": string }; Returns: boolean
@@ -1491,6 +1529,12 @@ isOneToOne: false
                            },
 "can_see_ticket_photo":
 { Args: { "p_name": string }; Returns: boolean
+                           },
+"category_in_use":
+{ Args: { "p_id": string }; Returns: boolean
+                           },
+"category_name_taken":
+{ Args: { "p_area": Database["public"]['Enums']["area"],"p_except": string,"p_name": string }; Returns: boolean
                            },
 "claim_notifications":
 { Args: { "p_limit"?: number }; Returns: {
@@ -1516,6 +1560,9 @@ isOneToOne: false
 { Args: { "p_restaurant_ids": (string)[],"p_time_zone": string }; Returns: {
               "closed_count": number,"month": string,"total_cents": number
             }[]
+                           },
+"delete_category":
+{ Args: { "p_id": string }; Returns: undefined
                            },
 "delete_equipment":
 { Args: { "p_id": string }; Returns: undefined
@@ -1579,6 +1626,9 @@ isOneToOne: false
 "remember_device":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"rename_category":
+{ Args: { "p_id": string,"p_name": string }; Returns: undefined
+                           },
 "reopen_ticket":
 { Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
                            },
@@ -1593,6 +1643,9 @@ isOneToOne: false
                            },
 "service_record_restaurant":
 { Args: { "srid": string }; Returns: string
+                           },
+"set_category_active":
+{ Args: { "p_active": boolean,"p_id": string }; Returns: undefined
                            },
 "set_equipment_retired":
 { Args: { "p_id": string,"p_retired": boolean }; Returns: undefined

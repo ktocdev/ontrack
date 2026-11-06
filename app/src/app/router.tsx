@@ -281,6 +281,12 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
+                    path: '/ops/equipment/categories',
+                    lazy: async () => ({
+                      Component: (await import('../screens/categories/CategoriesScreen')).OpsCategoriesScreen,
+                    }),
+                  },
+                  {
                     path: '/ops/equipment/:id/edit',
                     lazy: async () => ({
                       Component: (await import('../screens/equipment/EquipmentFormScreen')).OpsEditEquipmentScreen,
@@ -322,6 +328,12 @@ export const router = createBrowserRouter([
                     path: '/admin/restaurants',
                     lazy: async () => ({
                       Component: (await import('../screens/admin/RestaurantsScreen')).RestaurantsScreen,
+                    }),
+                  },
+                  {
+                    path: '/admin/restaurants/categories',
+                    lazy: async () => ({
+                      Component: (await import('../screens/categories/CategoriesScreen')).AdminCategoriesScreen,
                     }),
                   },
                 ],

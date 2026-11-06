@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { ButtonLink } from '../../components/Button'
-import { ListCard } from '../../components/Card'
+import { ListCard, ListRowLink } from '../../components/Card'
 import { RoleTag } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { PeopleListSkeleton } from '../../components/Skeleton'
-import { IconPlus } from '../../components/icons'
+import { IconChevronRight, IconPlus } from '../../components/icons'
 import { AdminHeader } from './AdminHeader'
 import { RestaurantSheet } from './RestaurantSheet'
 import { useAdminRestaurants, type AdminRestaurant } from './useRestaurants'
@@ -62,6 +62,15 @@ export function RestaurantsScreen() {
                 </ListCard>
               </>
             )}
+            <SectionLabel className="pb-3">Shared by every restaurant</SectionLabel>
+            <ListCard>
+              <ListRowLink
+                to="/admin/restaurants/categories"
+                title="Categories"
+                subtitle="What tickets and equipment are sorted by"
+                trailing={<IconChevronRight className="text-text-muted" />}
+              />
+            </ListCard>
           </>
         )}
       </ScreenBody>
