@@ -56,11 +56,16 @@ jobs:
       - run: npm test
       - run: npm run build
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium webkit
-
+      # In Playwright's own image, as the flows are: installing the browsers' system
+      # packages from Ubuntu's mirror once ran this job out of time (OT-82).
       - name: Playwright (Chromium + WebKit)
-        run: npm run test:e2e
+        run: |
+          PW=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")
+          docker run --rm --ipc host \
+            -v "$PWD:/app" -w /app \
+            -e CI \
+            "mcr.microsoft.com/playwright:v$PW-noble" \
+            npm run test:e2e
 
       - uses: actions/upload-artifact@v4
         if: failure()
