@@ -28,7 +28,7 @@ export type EquipmentValues = {
 /** What happens to the manual or the photo on save. */
 export type FileChange = { kind: 'keep' } | { kind: 'remove' } | { kind: 'set'; blob: Blob; name: string }
 
-export type Category = { id: string; name: string; area: Area; sort_order: number }
+export type Category = { id: string; name: string; area: Area; sort_order: number; active: boolean }
 
 export function useCategories() {
   return useQuery({
@@ -37,7 +37,7 @@ export function useCategories() {
     queryFn: async (): Promise<Category[]> => {
       const { data, error } = await requireSupabase()
         .from('categories')
-        .select('id, name, area, sort_order')
+        .select('id, name, area, sort_order, active')
         .order('sort_order')
       if (error) throw error
       return data

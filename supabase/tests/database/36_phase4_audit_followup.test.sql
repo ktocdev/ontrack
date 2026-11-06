@@ -41,16 +41,17 @@ select throws_ok($$ insert into public.categories (name, area) values ('Patio', 
   '42501', null, 'nor can leadership');
 
 select pg_temp.login('bert.velilla@example.com');
-select lives_ok($$ insert into public.categories (name, area) values ('Patio', 'foh') $$,
+-- Since OT-86 Ops and admins change categories only through logged functions.
+select lives_ok($$ select public.add_category('Patio', 'foh') $$,
   'Ops adds one');
-select lives_ok(format($$ update public.categories set name = 'Refrigeration & ice' where id = %L $$, :fridge),
+select lives_ok(format($$ select public.rename_category(%L, 'Refrigeration & ice') $$, :fridge),
   'and renames one');
 delete from public.categories where name = 'Patio';
 select is((select count(*)::int from public.categories where name = 'Patio'), 1,
   'but deletes none through the API');
 
 select pg_temp.login('admin@example.com');
-select lives_ok(format($$ update public.categories set name = 'Refrigeration' where id = %L $$, :fridge),
+select lives_ok(format($$ select public.rename_category(%L, 'Refrigeration') $$, :fridge),
   'and an admin can change one too');
 
 -- A unit's id ---------------------------------------------------------------------------
