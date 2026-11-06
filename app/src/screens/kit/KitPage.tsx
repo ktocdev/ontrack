@@ -539,6 +539,7 @@ export function KitPage() {
                 <TaskRow
                   title="Replace 2 bulbs over booths 4–6"
                   meta="Oct walkthrough · FOH › Electrical › Light bulbs"
+                  tag={<WalkthroughTag />}
                   done={false}
                   onToggle={() => toast.show('Row checked.')}
                   onDelete={() => toast.show('Row deleted.')}
@@ -546,7 +547,15 @@ export function KitPage() {
                 <TaskRow
                   title="Clear boxes from utility closet"
                   meta="Q4 task · Organize utility areas"
+                  tag={<WalkthroughTag />}
                   restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                  done={false}
+                  onToggle={() => toast.show('Row checked.')}
+                  onDelete={() => toast.show('Row deleted.')}
+                />
+                <TaskRow
+                  title="Clean the grease under the prep table"
+                  meta="Added by Maya · Nov 6"
                   done={false}
                   onToggle={() => toast.show('Row checked.')}
                   onDelete={() => toast.show('Row deleted.')}
@@ -554,6 +563,7 @@ export function KitPage() {
                 <TaskRow
                   title="Re-glue trim on pass shelf"
                   meta="Oct walkthrough · BOH › Electrical › Feature · Completed"
+                  tag={<WalkthroughTag />}
                   done
                   onToggle={() => toast.show('Row unchecked.')}
                 />

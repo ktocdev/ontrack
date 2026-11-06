@@ -120,3 +120,53 @@ test('a delete that fails stays on the sheet and says why', async ({ page }) => 
   await sheet.getByRole('button', { name: 'Cancel' }).click()
   await expect(box(page, 'Replace 2 bulbs over booths 4–6')).toBeVisible()
 })
+
+test('a manager adds a task by hand, which says who added it, and walkthrough tasks carry the tag', async ({
+  page,
+  browserName,
+}, testInfo) => {
+  const title = `Clean the grease under the prep table ${browserName}`
+  await openInHouse(page, 'maya.reyes@example.com')
+  const first = page.getByRole('checkbox', { name: 'Mark complete: Replace 2 bulbs over booths 4–6' })
+  await expect(first.locator('xpath=..').getByText('Walkthrough', { exact: true })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Add in-house task' }).click()
+  const sheet = page.getByRole('dialog', { name: 'Add in-house task' })
+  await expect(sheet.getByRole('radio', { name: 'Front of House' })).toHaveAttribute('aria-checked', 'true')
+  await sheet.getByRole('button', { name: 'Add task' }).click()
+  await expect(sheet.getByText('Say what needs doing.')).toBeVisible()
+
+  await sheet.getByLabel('Task').fill(title)
+  await sheet.getByRole('radio', { name: 'Back of House' }).click()
+  await page.waitForTimeout(300)
+  await testInfo.attach('add-task-sheet', { body: await page.screenshot(), contentType: 'image/png' })
+  await sheet.getByRole('button', { name: 'Add task' }).click()
+  await expect(sheet).toHaveCount(0)
+
+  await expect(page.getByText('To fix · 6')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'In-house 6' })).toBeVisible()
+  const row = box(page, title).locator('xpath=..')
+  await expect(row.getByText(/^Added by Maya · [A-Z][a-z]{2} \d{1,2}$/)).toBeVisible()
+  await expect(row.getByText('Walkthrough', { exact: true })).toHaveCount(0)
+  await page.waitForTimeout(300)
+  await testInfo.attach('in-house-added', { body: await page.screenshot(), contentType: 'image/png' })
+
+  // Back to the seed's five for the other flows.
+  await trash(page, title).click()
+  await page.getByRole('dialog', { name: 'Delete this in-house task?' }).getByRole('button', { name: 'Delete' }).click()
+  await expect(page.getByText('To fix · 5')).toBeVisible()
+})
+
+test('a failed add stays on the sheet and says so', async ({ page }) => {
+  await openInHouse(page, 'maya.reyes@example.com')
+  await page.route('**/rest/v1/inhouse_fixes*', (route) =>
+    route.request().method() === 'POST' ? route.fulfill({ status: 500, json: { message: 'nope' } }) : route.fallback(),
+  )
+  await page.getByRole('button', { name: 'Add in-house task' }).click()
+  const sheet = page.getByRole('dialog', { name: 'Add in-house task' })
+  await sheet.getByLabel('Task').fill('Wipe down the walk-in door')
+  await sheet.getByRole('button', { name: 'Add task' }).click()
+  await expect(sheet.getByText("Couldn't add this task.")).toBeVisible()
+  await sheet.getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByText('To fix · 5')).toBeVisible()
+})

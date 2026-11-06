@@ -1,7 +1,7 @@
 -- In-house tasks (OT-30): checked off and deleted only through their functions, by
 -- people who can create tickets at that restaurant, and deleted only while open.
 begin;
-select plan(19);
+select plan(23);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
@@ -69,6 +69,23 @@ select lives_ok($$
   insert into public.inhouse_fixes (restaurant_id, title, created_by)
   values ('11111111-1111-4111-8111-000000000001', 'A new task', auth.uid())
 $$, 'a manager can add a task at their restaurant');
+select throws_ok($$
+  insert into public.inhouse_fixes (restaurant_id, title, created_by)
+  values ('11111111-1111-4111-8111-000000000001', '   ', auth.uid())
+$$, '23514', null, 'a blank title is refused');
+select throws_ok($$
+  insert into public.inhouse_fixes (restaurant_id, title, created_by)
+  values ('11111111-1111-4111-8111-000000000001', repeat('x', 141), auth.uid())
+$$, '23514', null, 'and so is one longer than a ticket''s');
+select throws_ok($$
+  insert into public.inhouse_fixes (restaurant_id, title, created_by)
+  values ('11111111-1111-4111-8111-000000000002', 'Not mine', auth.uid())
+$$, '42501', null, 'and none at another restaurant');
+select set_config('role', 'postgres', true);
+-- Rows written in this transaction carry its now().
+select is((select count(*)::int from public.notifications where created_at = now()), 0,
+  'adding a task notifies nobody');
+select pg_temp.login('maya.reyes@example.com');
 
 -- Deleting.
 select throws_ok(
