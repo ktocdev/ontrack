@@ -146,6 +146,10 @@ test('a new unit has no tickets and no service yet', async ({ page, request }) =
 })
 
 test('Closed tickets says closed tickets also appear on each unit', async ({ page }) => {
+  // The note sits above a month with closings, and the seed's are in October 2026, so the
+  // browser is put in that month; otherwise the test turns on whether anything has closed
+  // this month (OT-73).
+  await page.clock.setFixedTime(new Date('2026-10-28T12:00:00'))
   await signIn(page, 'bert.velilla@example.com')
   await page.goto('/ops/closed')
   await expect(page.getByText('Closed tickets also appear on each piece of equipment, with their costs.')).toBeVisible()

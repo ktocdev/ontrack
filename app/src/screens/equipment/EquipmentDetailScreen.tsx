@@ -37,13 +37,14 @@ import { useEquipmentDetail, useEquipmentService } from './useEquipmentDetail'
  * as its boards draw it: Ops gets the restaurant and Installed in the header and the
  * details in a card. The tabs are routes, so Back returns to the tab you were on.
  * Service & cost is for Ops with see_costs; a manager doesn't need it (from feedback),
- * though one with see_costs still sees what each closed ticket cost. Until QR labels (OT-74) the card where the boards
- * draw the QR shows the serial number alone. Edit is there with Add / edit equipment,
- * which no manager board draws, and the menu beside it has Share link to /e/<id> (OT-71).
- * A manager's Create ticket for this equipment opens the form with the unit filled in, and
- * its Back returns here. Not built yet: Log service and a service record's page (Phase 5).
- * A retired unit still opens, from a ticket or a link, with a Retired label and no Create
- * ticket. Under View as nothing leads anywhere.
+ * though one with see_costs still sees what each closed ticket cost. Until QR labels
+ * (OT-74) the card where the boards draw the QR shows the serial number alone. Edit is
+ * there with Add / edit equipment, which no manager board draws, and the menu beside it
+ * has Share link to /e/<id> (OT-71). A manager's Create ticket for this equipment opens
+ * the form with the unit filled in, and its Back returns here. Not built yet: Log
+ * service and a service record's page (Phase 5). A retired unit still opens, from a
+ * ticket or a link, with a Retired label and no Create ticket. Under View as nothing
+ * leads anywhere.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 const TABS = [undefined, 'tickets', 'service'] as const

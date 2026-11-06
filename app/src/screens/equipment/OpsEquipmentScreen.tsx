@@ -30,13 +30,13 @@ import { useEquipmentList } from './useEquipmentList'
 /**
  * Ops · Equipment list (from design/screens/Ops-Equipment-List). The units in service
  * at the picker's restaurants, a card per type, all closed on arriving and then one open
- * at a time (from feedback, Nov 5, 2026), each row with
- * its restaurant, brand and serial, this year's spend (only with see_costs) and its
- * open tickets. Search finds a name, brand or serial, and both a search and a type
- * filter open every card they leave. The filter sheet has area and type; the picker is
- * the restaurant filter. Retired units sit in a closed Retired card at the bottom, so one
- * can be found and restored (OT-71); search and the filters reach them too. Under View as,
- * nothing leads anywhere and Add equipment is gone.
+ * at a time (from feedback, Nov 5, 2026), each row with its restaurant, brand and
+ * serial, this year's spend (only with see_costs) and its open tickets. Search finds a
+ * name, brand or serial, and both a search and a type filter open every card they
+ * leave. The filter sheet has area and type; the picker is the restaurant filter.
+ * Retired units sit in a closed Retired card at the bottom, so one can be found and
+ * restored (OT-71); search and the filters reach them too. Under View as, nothing leads
+ * anywhere and Add equipment is gone.
  */
 export function OpsEquipmentScreen() {
   const { restaurants, viewingAs } = useUser()

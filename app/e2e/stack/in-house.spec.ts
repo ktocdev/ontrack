@@ -82,7 +82,7 @@ test('deleting an open task asks first, then removes it for good', async ({ page
   const token = await tokenFor(request, 'maya.reyes@example.com')
   const added = await request.post(`${SUPABASE}/rest/v1/inhouse_fixes`, {
     headers: { apikey: KEY, Authorization: `Bearer ${token}` },
-    data: { restaurant_id: LOGAN_SQUARE, title, origin_label: 'Oct walkthrough', created_by: MAYA },
+    data: { restaurant_id: LOGAN_SQUARE, title, created_by: MAYA },
   })
   expect(added.ok()).toBe(true)
   await openInHouse(page, 'maya.reyes@example.com')
