@@ -10,7 +10,7 @@ import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { GroupedListSkeleton } from '../../components/Skeleton'
 import { IconPlus, IconWarning, IconWrench } from '../../components/icons'
-import { groupByType, type Area } from './equipment'
+import { groupByType, RETIRED_CARD, type Area } from './equipment'
 import { useEquipmentList } from './useEquipmentList'
 
 /**
@@ -21,15 +21,19 @@ import { useEquipmentList } from './useEquipmentList'
  * left off. The board's scan button waits for QR labels (OT-74). It opens on Front of
  * House, as Create ticket does. Add equipment, which no manager board draws, is there
  * only with Add / edit equipment. A manager with more than one restaurant sees which
- * one each unit is at. Under View as, nothing leads anywhere.
+ * one each unit is at. With Add / edit equipment, the area's retired units sit in a closed
+ * Retired card at the bottom, so one can be found and restored (OT-71). Under View as,
+ * nothing leads anywhere.
  */
 export function EquipmentScreen() {
   const { restaurants, viewingAs } = useUser()
+  const editsEquipment = useRight('edit_equipment') === true
   const { data, isPending, isError, refetch } = useEquipmentList(
     restaurants.map((r) => r.id),
     null,
+    editsEquipment,
   )
-  const canAdd = useRight('edit_equipment') && !viewingAs
+  const canAdd = editsEquipment && !viewingAs
 
   const [area, setArea] = useState<Area>('foh')
   // One card open at a time, none to begin with (from feedback, Nov 5, 2026).
@@ -37,14 +41,31 @@ export function EquipmentScreen() {
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const restaurantOf = new Map(restaurants.map((r) => [r.id, r]))
-  const units = data ?? []
-  const groups = groupByType(units.filter((u) => u.category?.area === area))
+  const all = data ?? []
+  const inArea = all.filter((u) => u.category?.area === area)
+  const groups = groupByType(inArea.filter((u) => !u.retired))
+  const retired = inArea.filter((u) => u.retired).sort((a, b) => a.name.localeCompare(b.name))
   const isOpen = (name: string) => openName === name
+  const toggle = (name: string) => setOpenName(isOpen(name) ? null : name)
   const pick = (a: Area) => {
     setArea(a)
     setOpenName(null)
   }
-  const empty = !isPending && !isError && units.length === 0
+  const empty = !isPending && !isError && all.length === 0
+  const row = (u: (typeof all)[number]) => {
+    const r = only ? undefined : restaurantOf.get(u.restaurant_id)
+    return (
+      <EquipmentRow
+        key={u.id}
+        to={viewingAs ? undefined : `/equipment/${u.id}`}
+        name={u.name}
+        restaurant={r && { name: r.name, color: r.color }}
+        brand={u.brand}
+        serial={u.serial}
+        openCount={u.openCount}
+      />
+    )
+  }
 
   return (
     <Screen>
@@ -122,36 +143,37 @@ export function EquipmentScreen() {
         <ScreenBody className="gap-2.5 pb-4 pt-1">
           {isPending ? (
             <GroupedListSkeleton />
-          ) : groups.length === 0 ? (
-            <p className="px-3 py-7 text-center text-14 leading-normal text-text-body">
-              No {area === 'foh' ? 'Front of House' : 'Back of House'} equipment yet.
-            </p>
           ) : (
-            groups.map((g) => (
-              <EquipmentGroup
-                key={g.name}
-                name={g.name}
-                count={g.units.length}
-                openCount={g.openCount}
-                open={isOpen(g.name)}
-                onToggle={() => setOpenName(isOpen(g.name) ? null : g.name)}
-              >
-                {g.units.map((u) => {
-                  const r = only ? undefined : restaurantOf.get(u.restaurant_id)
-                  return (
-                    <EquipmentRow
-                      key={u.id}
-                      to={viewingAs ? undefined : `/equipment/${u.id}`}
-                      name={u.name}
-                      restaurant={r && { name: r.name, color: r.color }}
-                      brand={u.brand}
-                      serial={u.serial}
-                      openCount={u.openCount}
-                    />
-                  )
-                })}
-              </EquipmentGroup>
-            ))
+            <>
+              {groups.length === 0 && (
+                <p className="px-3 py-7 text-center text-14 leading-normal text-text-body">
+                  No {area === 'foh' ? 'Front of House' : 'Back of House'} equipment yet.
+                </p>
+              )}
+              {groups.map((g) => (
+                <EquipmentGroup
+                  key={g.name}
+                  name={g.name}
+                  count={g.units.length}
+                  openCount={g.openCount}
+                  open={isOpen(g.name)}
+                  onToggle={() => toggle(g.name)}
+                >
+                  {g.units.map(row)}
+                </EquipmentGroup>
+              ))}
+              {retired.length > 0 && (
+                <EquipmentGroup
+                  name="Retired"
+                  count={retired.length}
+                  openCount={0}
+                  open={isOpen(RETIRED_CARD)}
+                  onToggle={() => toggle(RETIRED_CARD)}
+                >
+                  {retired.map(row)}
+                </EquipmentGroup>
+              )}
+            </>
           )}
         </ScreenBody>
       )}

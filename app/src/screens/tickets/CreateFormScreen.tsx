@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AddPhotoButton, PhotoTray } from '../../components/Photo'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
+import { safeReturnPath } from '../../auth/returnPath'
 import { Button } from '../../components/Button'
 import { RadioRow } from '../../components/Card'
 import { ChoiceChips } from '../../components/Chip'
@@ -70,12 +71,14 @@ function CreateForm({
 }) {
   const { user } = useUser()
   const navigate = useNavigate()
-  // Create ticket from this, on a ticket closed too long ago to reopen.
+  // Create ticket from this, on a ticket closed too long ago to reopen, and Create ticket for
+  // this equipment on a unit's page (OT-71), whose Back returns to the unit.
   const from = useLocation().state as {
     parentTicketId?: string
     title?: string
     description?: string | null
     equipmentId?: string | null
+    backTo?: string
   } | null
   const toast = useToast()
   const create = useCreateTicket()
@@ -129,7 +132,11 @@ function CreateForm({
 
   return (
     <Screen>
-      <BackBar to={backTo} label="Back to categories" bordered={false}>
+      <BackBar
+        to={safeReturnPath(from?.backTo) ?? backTo}
+        label={from?.backTo ? 'Back to equipment' : 'Back to categories'}
+        bordered={false}
+      >
         {AREA_LABEL[category.area]} › {category.name}
       </BackBar>
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>

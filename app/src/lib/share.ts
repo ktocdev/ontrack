@@ -8,6 +8,14 @@ export function ticketLink(displayId: string) {
 }
 
 /**
+ * A unit's lasting link, /e/<id>, from the current origin: what Share link sends and what
+ * QR labels will encode (OT-74), so nothing printed later has to change. It grants nothing.
+ */
+export function equipmentLink(id: string) {
+  return `${window.location.origin}/e/${id}`
+}
+
+/**
  * The ticket number in a typed link, forgiving of how a phone keyboard spells it: OT-0123,
  * ot-123, OT123 and 123 are all ticket 123. Anything else is not a number (an older link
  * carries the ticket's id).

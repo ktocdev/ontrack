@@ -20,7 +20,7 @@ export function useEquipmentDetail(id: string) {
         sb
           .from('equipment')
           .select(
-            'id, name, brand, model, serial, location_note, installed_on, warranty_note, warranty_until, manual_path, plate_photo_path, retired_at, restaurant_id, restaurant:restaurants (name, color), category:categories (name, area)',
+            'id, name, brand, model, serial, location_note, installed_on, warranty_note, warranty_until, manual_path, plate_photo_path, retired_at, restaurant_id, category_id, restaurant:restaurants (name, color), category:categories (name, area)',
           )
           .eq('id', id)
           .maybeSingle(),

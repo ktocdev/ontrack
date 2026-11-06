@@ -159,7 +159,11 @@ test('a unit added shows up, and once retired it is off the list', async ({ page
   expect(retired.ok()).toBe(true)
   await page.reload()
   await page.getByRole('searchbox', { name: 'Search equipment' }).fill(name)
-  await expect(page.getByText(`No equipment matches “${name}”.`)).toBeVisible()
+  // Off its type's card, and into Retired, where search still finds it (OT-71).
+  await expect(page.getByRole('region')).toHaveCount(1)
+  await expect(
+    page.getByRole('region', { name: 'Retired', exact: true }).getByRole('link', { name: new RegExp(`^${name}`) }),
+  ).toBeVisible()
 
   const deleted = await request.post(`${SUPABASE}/rest/v1/rpc/delete_equipment`, { headers, data: { p_id: id } })
   expect(deleted.ok()).toBe(true)

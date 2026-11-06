@@ -163,7 +163,7 @@ The plan's Phase 4 section says what ships and what it works around. Done when a
 | OT-83 | From feedback (Nov 6, 2026): a manager adds an in-house task by hand from the In-house tab, which notifies nobody; walkthrough tasks carry the Walkthrough tag |
 | OT-69 | Equipment detail for both roles: breadcrumb, Details, Tickets (closed in a disclosure), Service & cost only with `see_costs`; a ticket's equipment card opens its unit |
 | OT-70 | Add and Edit equipment with manual PDF and data plate photo; Retire / Restore and Delete sheet; a manager's equipment list opens with every card closed (feedback) |
-| OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |
+| OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit; a Retired · N card at the bottom of the equipment list (Ops, and managers with Add / edit equipment), searched too |
 | OT-72 | Install prompt: Android's Install button, iPhone's two-step picture, once after sign-in and as a Profile row |
 | OT-73 | Security and code quality pass over Phase 4 |
 | OT-74 | Deferred (Nov 5, 2026): QR labels, the scan button, QR errors and loading, `qr-labels` sheets; labels about 2.5 in, adjustable; waits on the iPhone link check |

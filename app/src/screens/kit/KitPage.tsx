@@ -27,7 +27,7 @@ import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
-import { TicketMenu } from '../../components/TicketMenu'
+import { EquipmentMenu, TicketMenu } from '../../components/TicketMenu'
 import { VisibilityToggle, Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
@@ -240,6 +240,7 @@ export function KitPage() {
               <div className="flex items-center gap-2">
                 <OverflowMenu label="More options" items={[{ to: '/kit', label: 'A menu item' }]} />
                 <TicketMenu displayId="OT-1042" title="Walk-in cooler not holding temp" />
+                <EquipmentMenu id="kit" name="Walk-in Cooler 1" />
                 <IconButton label="Back">
                   <IconChevronLeft />
                 </IconButton>

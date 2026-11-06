@@ -105,7 +105,9 @@ test('Ops adds a unit with a manual and a data plate photo, edits it, retires, r
   await expect(page.getByText('Retired', { exact: true })).toBeVisible()
   await page.goto('/ops/equipment')
   await page.getByRole('searchbox', { name: 'Search equipment' }).fill(`${name} B`)
-  await expect(page.getByText(/No equipment matches/)).toBeVisible()
+  // Search finds it in the Retired card only (OT-71).
+  await expect(page.getByRole('region')).toHaveCount(1)
+  await expect(page.getByRole('region', { name: 'Retired', exact: true })).toBeVisible()
 
   await page.goto(`/ops/equipment/${id}/edit`)
   await page.getByRole('button', { name: 'Restore this equipment' }).click()
