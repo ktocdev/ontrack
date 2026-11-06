@@ -158,6 +158,7 @@ The plan's Phase 4 section says what ships and what it works around. Done when a
 | OT-77 | From feedback (Nov 5, 2026): Submit ticket with no photo asks first (Add a photo?): Open Camera (primary) or Proceed without photo (danger); a nudge, not enforced |
 | OT-78 | From the Ops manager's guide (Nov 5, 2026): Photo tips beside Add photo and on Add a photo?, four tips and a drawn example (their real photo can't ship in the app) |
 | OT-80 | Photo tips' example becomes Katie's line drawing of a cooler under a bar, labels as text on top |
+| OT-81 | From feedback (Nov 6, 2026): the equipment lists' header button says Add, with room between it and the title |
 | OT-69 | Equipment detail for both roles: breadcrumb, Details, Tickets (closed in a disclosure), Service & cost only with `see_costs`; a ticket's equipment card opens its unit |
 | OT-70 | Add and Edit equipment with manual PDF and data plate photo; Retire / Restore and Delete sheet; a manager's equipment list opens with every card closed (feedback) |
 | OT-71 | Lasting link `/e/<id>` and Share link on a unit; Create ticket from a unit |
