@@ -6,11 +6,13 @@ import { Button, ButtonLink } from '../../components/Button'
 import { FilterButton, FilterChip } from '../../components/Chip'
 import { EmptyState } from '../../components/EmptyState'
 import { EquipmentGroup, EquipmentRow } from '../../components/Equipment'
+import { OverflowMenu } from '../../components/Menu'
 import { SearchField } from '../../components/Field'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { GroupedListSkeleton } from '../../components/Skeleton'
 import { IconPlus, IconWarning, IconWrench } from '../../components/icons'
+import { useCanEditCategories } from '../categories/useCategoryAdmin'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
 import { money } from '../tickets/closed'
@@ -35,8 +37,9 @@ import { useEquipmentList } from './useEquipmentList'
  * name, brand or serial, and both a search and a type filter open every card they
  * leave. The filter sheet has area and type; the picker is the restaurant filter.
  * Retired units sit in a closed Retired card at the bottom, so one can be found and
- * restored (OT-71); search and the filters reach them too. Under View as, nothing leads
- * anywhere and Add equipment is gone.
+ * restored (OT-71); search and the filters reach them too. The menu beside Add opens
+ * Categories for Ops with Add / edit equipment (OT-86). Under View as, nothing leads
+ * anywhere, and Add and the menu are gone.
  */
 export function OpsEquipmentScreen() {
   const { restaurants, viewingAs } = useUser()
@@ -46,6 +49,7 @@ export function OpsEquipmentScreen() {
   const { data, isPending, isError, refetch } = useEquipmentList(scope.ids, year, true)
   const seeCosts = useRight('see_costs')
   const canAdd = useRight('edit_equipment') && !viewingAs
+  const canEditCategories = useCanEditCategories()
 
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Filters>(NO_FILTERS)
@@ -128,16 +132,26 @@ export function OpsEquipmentScreen() {
         }
         topRight={<ProfileLink />}
         action={
-          canAdd ? (
-            <ButtonLink
-              to="/ops/equipment/new"
-              variant="compact"
-              aria-label="Add equipment"
-              icon={<IconPlus size={18} strokeWidth={2.4} />}
-              className="gap-1.5 px-3.5 text-14"
-            >
-              Add
-            </ButtonLink>
+          canAdd || canEditCategories ? (
+            <span className="flex flex-none items-center gap-2">
+              {canAdd && (
+                <ButtonLink
+                  to="/ops/equipment/new"
+                  variant="compact"
+                  aria-label="Add equipment"
+                  icon={<IconPlus size={18} strokeWidth={2.4} />}
+                  className="gap-1.5 px-3.5 text-14"
+                >
+                  Add
+                </ButtonLink>
+              )}
+              {canEditCategories && (
+                <OverflowMenu
+                  label="More options for equipment"
+                  items={[{ to: '/ops/equipment/categories', label: 'Categories' }]}
+                />
+              )}
+            </span>
           ) : undefined
         }
       >
