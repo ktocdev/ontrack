@@ -7,8 +7,7 @@ import example from './photo-tips-example.webp'
  * Photo tips (from the Ops manager's ticket submission guide, OT-78; no board). How to
  * frame a photo so a technician can find the unit: step back for what is around it,
  * and get its ID label and maker in. The guide's example is a real photo of one of the
- * group's bars, which can't ship in the app, so a line drawing made from it stands in.
- * Opened from beside Add photo and from Add a photo?.
+ * group's bars, which can't ship in the app, so a line drawing made from it stands in. * Opened from beside Add photo and from Add a photo?.
  */
 export function PhotoTipsLink({ onClick, className = '' }: { onClick: () => void; className?: string }) {
   return (
@@ -60,29 +59,37 @@ export function PhotoTipsSheet({ open, onOpenChange }: { open: boolean; onOpenCh
 }
 
 /**
- * A line drawing of a cooler under a bar, made for the app from the guide's photo (Nov 5,
- * 2026), with the guide's blue and yellow boxes drawn in. The labels are text on top, so
- * they stay sharp and are read out; the yellow one sits under the B1 label it points at.
- * In dark mode the white drawing is dimmed a little so it doesn't glare. It is shown no
- * taller than about half the screen, so the tips start close below it.
+ * A square line drawing of a cooler under a bar, made for the app from the guide's photo
+ * (Nov 8, 2026). The guide's blue and yellow boxes and their labels are drawn on top, so
+ * the boxes take the theme's colors and the labels stay sharp and are read out: blue over
+ * the room behind, yellow over the cooler's front, its label under B1. The boxes are placed
+ * in percent of the drawing, so moving them means measuring it again. In dark mode the
+ * white drawing is dimmed a little so it doesn't glare. It is shown no taller than about
+ * half the screen, so the tips start close below it.
  */
 function ExamplePhoto() {
   return (
     <figure
-      className="relative mx-auto flex-none overflow-hidden rounded-input border border-border"
-      style={{ width: 'min(100%, calc(44dvh * 896 / 1200))', aspectRatio: '896 / 1200' }}
+      className="relative mx-auto aspect-square flex-none overflow-hidden rounded-input border border-border"
+      style={{ width: 'min(100%, 44dvh)' }}
     >
       <img
         src={example}
-        width={896}
-        height={1200}
-        alt="Example photo: a cooler under a bar, with the room behind it in the frame and its ID label, B1, on the front"
+        width={1000}
+        height={1000}
+        alt="Example photo: a cooler under a bar, with the room and windows behind it in the frame and its ID label, B1, on the front"
         className="h-full w-full dark:brightness-85"
       />
-      <Label className="top-[14%] bg-info">Show where it is</Label>
-      <Label className="top-[74%] bg-status-waiting-text">ID + maker in frame</Label>
+      <Box className="top-[1%] left-[1%] h-[30.5%] w-[98%] border-info bg-info/25" />
+      <Box className="top-[47.7%] left-[31.7%] h-[38.8%] w-[35.1%] border-status-waiting-text bg-status-waiting-text/25" />
+      <Label className="top-[12%] bg-info">Show where it is</Label>
+      <Label className="top-[64%] bg-status-waiting-text">ID + maker in frame</Label>
     </figure>
   )
+}
+
+function Box({ className }: { className: string }) {
+  return <span aria-hidden="true" className={`absolute rounded-chip border-2 ${className}`} />
 }
 
 function Label({ className, children }: { className: string; children: string }) {
