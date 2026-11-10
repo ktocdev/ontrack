@@ -1,0 +1,142 @@
+/* The app's own entry: Tailwind, the bundled fonts, tokens.css and the base layer. */
+@import '../../app/src/index.css';
+
+/* Tailwind scans this package by default; the app's components need scanning too. */
+@source '../../app/src/components';
+
+/*
+ * The docs chrome (top bar, sidebar, page text, the editor panel) is drawn in the app's own
+ * tokens, so every edit in the token editor shows on the whole site, the controls included.
+ * Reset in the panel puts it back if an edit leaves the panel hard to read.
+ * Only the warn and ok tones, the canvas grid and the panel shadow stay fixed.
+ */
+:root {
+  --ds-bg: var(--bg);
+  --ds-panel: var(--surface);
+  --ds-sunken: var(--surface-muted);
+  --ds-line: var(--border);
+  --ds-line-strong: var(--border-strong);
+  --ds-ink: var(--text);
+  --ds-ink-soft: var(--text-body);
+  --ds-muted: var(--text-muted);
+  --ds-accent: var(--brand); /* links, active text, sliders */
+  --ds-accent-fill: var(--brand-fill); /* filled buttons, with on-accent text */
+  --ds-accent-soft: var(--brand-tint-soft);
+  --ds-on-accent: var(--on-brand);
+  --ds-warn: #9a4a10;
+  --ds-ok: #1d6b45;
+  --ds-canvas-line: #dfe3de;
+  --ds-shadow: 0 12px 32px -12px rgba(20, 30, 25, 0.28);
+}
+
+[data-theme='dark'] {
+  --ds-warn: #f0a06a;
+  --ds-ok: #6fcf9d;
+  --ds-canvas-line: #2a3331;
+  --ds-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+}
+
+@theme inline {
+  --color-ds-bg: var(--ds-bg);
+  --color-ds-panel: var(--ds-panel);
+  --color-ds-sunken: var(--ds-sunken);
+  --color-ds-line: var(--ds-line);
+  --color-ds-line-strong: var(--ds-line-strong);
+  --color-ds-ink: var(--ds-ink);
+  --color-ds-ink-soft: var(--ds-ink-soft);
+  --color-ds-muted: var(--ds-muted);
+  --color-ds-accent: var(--ds-accent);
+  --color-ds-accent-fill: var(--ds-accent-fill);
+  --color-ds-accent-soft: var(--ds-accent-soft);
+  --color-ds-on-accent: var(--ds-on-accent);
+  --color-ds-warn: var(--ds-warn);
+  --color-ds-ok: var(--ds-ok);
+  --color-ds-canvas-line: var(--ds-canvas-line);
+  --shadow-ds: var(--ds-shadow);
+  /* Fixed families, so trying a font in the editor leaves the docs' own text alone. */
+  --font-ds-display: 'Archivo', system-ui, sans-serif;
+  --font-ds-body: 'Public Sans', system-ui, sans-serif;
+  --font-ds-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html,
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-ink);
+  }
+  body {
+    font-family: 'Public Sans', system-ui, sans-serif;
+  }
+}
+
+/* Running text on docs pages. */
+@utility ds-prose {
+  font-family: var(--font-ds-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ds-ink-soft);
+  & code {
+    font-family: var(--font-ds-mono);
+    font-size: 0.86em;
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: var(--ds-sunken);
+    color: var(--ds-ink);
+  }
+  & a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+/* The example canvas: the app's own background and text, so edited tokens show here. */
+@utility ds-canvas {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* Slider and color well styling for the editor panel. */
+@utility ds-range {
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ds-line-strong);
+  accent-color: var(--ds-accent);
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--ds-accent);
+    border: 3px solid var(--ds-panel);
+    box-shadow: 0 0 0 1px var(--ds-line-strong);
+  }
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--ds-accent);
+    border: 3px solid var(--ds-panel);
+  }
+}
+
+@utility ds-well {
+  appearance: none;
+  padding: 0;
+  border: 1px solid var(--ds-line-strong);
+  cursor: pointer;
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  &::-webkit-color-swatch {
+    border: 0;
+    border-radius: inherit;
+  }
+  &::-moz-color-swatch {
+    border: 0;
+    border-radius: inherit;
+  }
+}

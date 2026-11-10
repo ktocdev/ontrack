@@ -1,0 +1,16 @@
+{
+  // OnTrack's design system docs: its own Worker, not part of the app's. Nothing in the app
+  // links here. It answers one path on the portfolio's domain; a route takes precedence over
+  // the portfolio's custom domain on the same host, so the portfolio needs no change.
+  "name": "ontrack-design-system",
+  "compatibility_date": "2026-11-01",
+  "routes": [{ "pattern": "ktoc.dev/ontrack/design-system*", "zone_name": "ktoc.dev" }],
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    // vite.config.ts writes the site under dist/ontrack/design-system/, plus a copy of
+    // index.html at dist/ for deep links, and _headers and _redirects.
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+  },
+}
