@@ -81,7 +81,7 @@ export function TokenPanel() {
           type="button"
           onClick={() => setPanelOpen(false)}
           aria-label="Close token editor"
-          className="flex h-10 w-10 flex-none items-center justify-center rounded-[10px] text-ds-muted hover:bg-ds-sunken hover:text-ds-ink"
+          className="flex h-10 w-10 flex-none items-center justify-center rounded-control text-ds-muted hover:bg-ds-sunken hover:text-ds-ink"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
             <path d="M6 6l12 12M18 6L6 18" />
@@ -102,7 +102,7 @@ export function TokenPanel() {
             aria-selected={tab === t.id}
             aria-controls="token-tabpanel"
             onClick={() => setTab(t.id)}
-            className={`h-9 flex-none rounded-[8px] px-3 text-13 font-semibold transition-colors ${tab === t.id ? 'bg-ds-accent-soft text-ds-accent' : 'text-ds-muted hover:bg-ds-sunken hover:text-ds-ink'}`}
+            className={`h-9 flex-none rounded-segment px-3 text-13 font-semibold transition-colors ${tab === t.id ? 'bg-ds-accent-soft text-ds-accent' : 'text-ds-muted hover:bg-ds-sunken hover:text-ds-ink'}`}
           >
             {t.label}
           </button>

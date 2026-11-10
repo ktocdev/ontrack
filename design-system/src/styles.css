@@ -5,21 +5,24 @@
 @source '../../app/src/components';
 
 /*
- * The docs chrome (sidebar, page text, the editor panel) has its own colors, so the token
- * editor restyles the OnTrack examples and never the page you are using to edit them.
+ * The docs chrome (top bar, sidebar, page text, the editor panel) is drawn in the app's own
+ * tokens, so every edit in the token editor shows on the whole site, the controls included.
+ * Reset in the panel puts it back if an edit leaves the panel hard to read.
+ * Only the warn and ok tones, the canvas grid and the panel shadow stay fixed.
  */
 :root {
-  --ds-bg: #fafaf8;
-  --ds-panel: #ffffff;
-  --ds-sunken: #f1f2ef;
-  --ds-line: #e3e6e2;
-  --ds-line-strong: #cdd2cd;
-  --ds-ink: #17201c;
-  --ds-ink-soft: #3b4540;
-  --ds-muted: #5f6964;
-  --ds-accent: #12634f;
-  --ds-accent-soft: #e4efea;
-  --ds-on-accent: #ffffff;
+  --ds-bg: var(--bg);
+  --ds-panel: var(--surface);
+  --ds-sunken: var(--surface-muted);
+  --ds-line: var(--border);
+  --ds-line-strong: var(--border-strong);
+  --ds-ink: var(--text);
+  --ds-ink-soft: var(--text-body);
+  --ds-muted: var(--text-muted);
+  --ds-accent: var(--brand); /* links, active text, sliders */
+  --ds-accent-fill: var(--brand-fill); /* filled buttons, with on-accent text */
+  --ds-accent-soft: var(--brand-tint-soft);
+  --ds-on-accent: var(--on-brand);
   --ds-warn: #9a4a10;
   --ds-ok: #1d6b45;
   --ds-canvas-line: #dfe3de;
@@ -27,17 +30,6 @@
 }
 
 [data-theme='dark'] {
-  --ds-bg: #0f1312;
-  --ds-panel: #151a19;
-  --ds-sunken: #1b2120;
-  --ds-line: #252d2b;
-  --ds-line-strong: #34403c;
-  --ds-ink: #e8ece9;
-  --ds-ink-soft: #c3cbc7;
-  --ds-muted: #93a09a;
-  --ds-accent: #54b893;
-  --ds-accent-soft: #19302a;
-  --ds-on-accent: #07140f;
   --ds-warn: #f0a06a;
   --ds-ok: #6fcf9d;
   --ds-canvas-line: #2a3331;
@@ -54,6 +46,7 @@
   --color-ds-ink-soft: var(--ds-ink-soft);
   --color-ds-muted: var(--ds-muted);
   --color-ds-accent: var(--ds-accent);
+  --color-ds-accent-fill: var(--ds-accent-fill);
   --color-ds-accent-soft: var(--ds-accent-soft);
   --color-ds-on-accent: var(--ds-on-accent);
   --color-ds-warn: var(--ds-warn);

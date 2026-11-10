@@ -23,7 +23,7 @@ export function PageHeader({
       {sources.length > 0 && (
         <div className="flex flex-wrap gap-2 pt-1">
           {sources.map((s) => (
-            <code key={s} className="rounded-[6px] bg-ds-sunken px-2 py-1 font-ds-mono text-12 text-ds-muted">
+            <code key={s} className="rounded-tag bg-ds-sunken px-2 py-1 font-ds-mono text-12 text-ds-muted">
               app/src/{s}
             </code>
           ))}
@@ -88,7 +88,7 @@ export function Example({
   const [showCode, setShowCode] = useState(false)
   const codeId = useId()
   return (
-    <figure className="m-0 overflow-hidden rounded-[14px] border border-ds-line bg-ds-panel">
+    <figure className="m-0 overflow-hidden rounded-card border border-ds-line bg-ds-panel">
       {(title || code) && (
         <div className="flex min-h-11 items-center justify-between gap-3 border-b border-ds-line px-4 py-2">
           <span className="font-ds-body text-13 font-semibold text-ds-ink-soft">{title}</span>
@@ -98,7 +98,7 @@ export function Example({
               aria-expanded={showCode}
               aria-controls={codeId}
               onClick={() => setShowCode((v) => !v)}
-              className="rounded-[7px] px-2.5 py-1.5 font-ds-body text-12 font-semibold text-ds-muted hover:bg-ds-sunken hover:text-ds-ink"
+              className="rounded-chip px-2.5 py-1.5 font-ds-body text-12 font-semibold text-ds-muted hover:bg-ds-sunken hover:text-ds-ink"
             >
               {showCode ? 'Hide code' : 'Code'}
             </button>
@@ -130,7 +130,7 @@ export function Example({
 
 export function Code({ children }: { children: string }) {
   return (
-    <pre className="m-0 overflow-x-auto rounded-[12px] border border-ds-line bg-ds-sunken px-4 py-3 font-ds-mono text-12 leading-[1.6] text-ds-ink">
+    <pre className="m-0 overflow-x-auto rounded-input border border-ds-line bg-ds-sunken px-4 py-3 font-ds-mono text-12 leading-[1.6] text-ds-ink">
       <code>{children.trim()}</code>
     </pre>
   )
@@ -140,7 +140,7 @@ export type PropRow = { name: string; type: string; default?: string; children: 
 
 export function Props({ rows }: { rows: PropRow[] }) {
   return (
-    <div className="overflow-x-auto rounded-[12px] border border-ds-line">
+    <div className="overflow-x-auto rounded-input border border-ds-line">
       <table className="w-full border-collapse font-ds-body text-13">
         <thead>
           <tr className="bg-ds-sunken text-left text-ds-muted">
@@ -178,7 +178,7 @@ export function Rules({ dos, donts }: { dos: ReactNode[]; donts?: ReactNode[] })
 function RuleList({ tone, items }: { tone: 'do' | 'dont'; items: ReactNode[] }) {
   return (
     <div
-      className={`rounded-[12px] border border-ds-line bg-ds-panel p-4 border-t-4 ${tone === 'do' ? 'border-t-ds-ok' : 'border-t-ds-warn'}`}
+      className={`rounded-input border border-ds-line bg-ds-panel p-4 border-t-4 ${tone === 'do' ? 'border-t-ds-ok' : 'border-t-ds-warn'}`}
     >
       <h3 className={`mb-2 font-ds-body text-13 font-bold ${tone === 'do' ? 'text-ds-ok' : 'text-ds-warn'}`}>
         {tone === 'do' ? 'Do' : 'Don’t'}
@@ -199,7 +199,7 @@ export function TokenRef({ name, swatch = false }: { name: string; swatch?: bool
       {swatch && (
         <span
           aria-hidden="true"
-          className="inline-block h-3 w-3 rounded-[3px] shadow-[inset_0_0_0_1px_var(--ds-line-strong)]"
+          className="inline-block h-3 w-3 rounded-square shadow-[inset_0_0_0_1px_var(--ds-line-strong)]"
           style={{ background: `var(--${name})` }}
         />
       )}

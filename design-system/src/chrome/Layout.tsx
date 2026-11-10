@@ -23,7 +23,7 @@ export function Layout() {
       <TopBar onMenu={() => setMenuOpen((v) => !v)} menuOpen={menuOpen} />
       <div className="flex flex-1">
         <aside
-          className={`${menuOpen ? 'fixed inset-x-0 top-14 bottom-0 z-10 block' : 'hidden'} overflow-y-auto border-r border-ds-line bg-ds-panel lg:sticky lg:top-14 lg:block lg:h-[calc(100dvh-56px)] lg:w-[264px] lg:flex-none`}
+          className={`${menuOpen ? 'fixed inset-x-0 top-14 bottom-0 z-10 block' : 'hidden'} overflow-y-auto border-r border-border bg-surface lg:sticky lg:top-14 lg:block lg:h-[calc(100dvh-56px)] lg:w-[264px] lg:flex-none`}
         >
           <SideNav />
         </aside>
@@ -50,7 +50,7 @@ function TopBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean })
         onClick={onMenu}
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
-        className="flex h-11 w-11 items-center justify-center rounded-[10px] text-ds-ink hover:bg-ds-sunken lg:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-control text-ds-ink hover:bg-ds-sunken lg:hidden"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
           {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -71,7 +71,7 @@ function TopBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean })
           aria-controls="token-panel"
           // The word hides on a phone; the name must not.
           aria-label={count > 0 ? `Tokens, ${count} edited` : 'Tokens'}
-          className={`flex h-10 items-center gap-2 rounded-[10px] px-3.5 text-14 font-semibold transition-colors ${panelOpen ? 'bg-ds-accent text-ds-on-accent' : 'border border-ds-line-strong text-ds-ink hover:bg-ds-sunken'}`}
+          className={`flex h-10 items-center gap-2 rounded-control px-3.5 text-14 font-semibold transition-colors ${panelOpen ? 'bg-ds-accent-fill text-ds-on-accent' : 'border border-ds-line-strong text-ds-ink hover:bg-ds-sunken'}`}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
             <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
@@ -83,7 +83,7 @@ function TopBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean })
           {count > 0 && (
             <span
               aria-hidden
-              className={`min-w-5 rounded-full px-1.5 text-center text-11 leading-5 font-bold ${panelOpen ? 'bg-ds-on-accent text-ds-accent' : 'bg-ds-accent text-ds-on-accent'}`}
+              className={`min-w-5 rounded-full px-1.5 text-center text-11 leading-5 font-bold ${panelOpen ? 'bg-ds-on-accent text-ds-accent-fill' : 'bg-ds-accent-fill text-ds-on-accent'}`}
             >
               {count}
             </span>
@@ -103,7 +103,7 @@ const THEMES: { value: ThemePreference; label: string }[] = [
 function ThemeSwitch() {
   const { preference, setPreference } = useTheme()
   return (
-    <div role="radiogroup" aria-label="Theme" className="flex rounded-[10px] bg-ds-sunken p-[3px]">
+    <div role="radiogroup" aria-label="Theme" className="flex rounded-control bg-ds-sunken p-[3px]">
       {THEMES.map((t) => (
         <button
           key={t.value}
@@ -111,7 +111,7 @@ function ThemeSwitch() {
           role="radio"
           aria-checked={preference === t.value}
           onClick={() => setPreference(t.value)}
-          className={`h-[34px] rounded-[8px] px-2.5 text-13 font-semibold transition-colors ${preference === t.value ? 'bg-ds-panel text-ds-ink shadow-[0_1px_2px_rgba(0,0,0,0.12)]' : 'text-ds-muted hover:text-ds-ink'}`}
+          className={`h-[34px] rounded-segment px-2.5 text-13 font-semibold transition-colors ${preference === t.value ? 'bg-ds-panel text-ds-ink shadow-[0_1px_2px_rgba(0,0,0,0.12)]' : 'text-ds-muted hover:text-ds-ink'}`}
         >
           {t.label}
         </button>
@@ -120,12 +120,13 @@ function ThemeSwitch() {
   )
 }
 
+// Like all the docs chrome, the sidebar is drawn in the app's tokens (see styles.css).
 function SideNav() {
   return (
     <nav aria-label="Docs" className="flex flex-col gap-6 px-3 py-6">
       {NAV.map((group) => (
         <div key={group.title} className="flex flex-col gap-0.5">
-          <h2 className="mb-1.5 px-3 font-ds-body text-11 font-bold tracking-[0.08em] text-ds-muted uppercase">
+          <h2 className="mb-1.5 px-3 font-ds-body text-11 font-bold tracking-[0.08em] text-text-muted uppercase">
             {group.title}
           </h2>
           {group.pages.map((p) => (
@@ -134,7 +135,7 @@ function SideNav() {
               to={p.path}
               end
               className={({ isActive }) =>
-                `rounded-[8px] px-3 py-[7px] text-14 no-underline transition-colors ${isActive ? 'bg-ds-accent-soft font-semibold text-ds-accent!' : 'text-ds-ink-soft! hover:bg-ds-sunken hover:text-ds-ink!'}`
+                `rounded-control px-3 py-[7px] text-14 no-underline transition-colors ${isActive ? 'bg-brand-tint-soft font-semibold text-brand!' : 'text-text-secondary! hover:bg-surface-muted hover:text-text!'}`
               }
             >
               {p.title}

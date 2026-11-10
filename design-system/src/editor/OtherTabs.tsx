@@ -70,7 +70,7 @@ function FontPicker({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 rounded-[10px] border border-ds-line-strong bg-ds-panel px-2.5 text-[16px] text-ds-ink sm:text-14"
+        className="h-10 rounded-control border border-ds-line-strong bg-ds-panel px-2.5 text-[16px] text-ds-ink sm:text-14"
       >
         {options.map((f) => (
           <option key={f.id} value={f.id}>
@@ -151,7 +151,7 @@ export function ShapeTab() {
                           else d.radii[t.name] = Math.max(0, Math.min(64, v))
                         })
                       }
-                      className="h-8 w-16 rounded-[8px] border border-ds-line-strong bg-ds-panel px-2 text-right text-[16px] text-ds-ink sm:text-12"
+                      className="h-8 w-16 rounded-segment border border-ds-line-strong bg-ds-panel px-2 text-right text-[16px] text-ds-ink sm:text-12"
                     />
                     px
                   </label>
@@ -200,7 +200,7 @@ export function ShadowTab({ theme }: { theme: Theme }) {
         </p>
       </PanelSection>
       <PanelSection title="Preview">
-        <div className="ds-canvas grid grid-cols-2 gap-4 rounded-[12px] p-4">
+        <div className="ds-canvas grid grid-cols-2 gap-4 rounded-input p-4">
           {SHADOWS.map((t) => (
             <div key={t.name} className="flex flex-col gap-2">
               <div className="h-14 rounded-card bg-surface" style={{ boxShadow: `var(--${t.name})` }} />

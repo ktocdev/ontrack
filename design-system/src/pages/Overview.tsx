@@ -72,7 +72,7 @@ export function Overview() {
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="h-11 rounded-[10px] bg-ds-accent px-5 text-14 font-semibold text-ds-on-accent hover:opacity-90"
+            className="h-11 rounded-control bg-ds-accent-fill px-5 text-14 font-semibold text-ds-on-accent hover:opacity-90"
           >
             Open the token editor
           </button>

@@ -81,7 +81,7 @@ function FamilyEditor({ family, theme, tokens }: { family: Family; theme: Theme;
           base from <code className="font-ds-mono">--{FAMILY_ANCHOR[family]}</code>
         </span>
       </div>
-      <div className="grid grid-cols-[repeat(11,1fr)] overflow-hidden rounded-[8px] border border-ds-line">
+      <div className="grid grid-cols-[repeat(11,1fr)] overflow-hidden rounded-segment border border-ds-line">
         {steps.map((s) => (
           <span key={s.step} title={`${s.step} · ${s.color}`} className="h-8" style={{ background: s.color }} />
         ))}
@@ -145,7 +145,7 @@ function TokenList({ tokens, theme, family }: { tokens: Token[]; theme: Theme; f
             <div className="flex items-center gap-2.5">
               <span
                 aria-hidden
-                className="h-7 w-7 flex-none rounded-[6px] shadow-[inset_0_0_0_1px_var(--ds-line-strong)]"
+                className="h-7 w-7 flex-none rounded-tag shadow-[inset_0_0_0_1px_var(--ds-line-strong)]"
                 style={{ background: `var(--${t.name})` }}
               />
               <span className="flex min-w-0 flex-1 flex-col">
@@ -166,7 +166,7 @@ function TokenList({ tokens, theme, family }: { tokens: Token[]; theme: Theme; f
                   else if (v === 'custom') set({ mode: 'custom', value: fallback })
                   else set({ mode: 'step', step: Number(v.slice(5)) as Step })
                 }}
-                className="h-8 max-w-[132px] rounded-[8px] border border-ds-line-strong bg-ds-panel px-1.5 text-[16px] text-ds-ink sm:text-12"
+                className="h-8 max-w-[132px] rounded-segment border border-ds-line-strong bg-ds-panel px-1.5 text-[16px] text-ds-ink sm:text-12"
               >
                 <option value="follow">{family ? `Follows ramp (~${nearestStep(value)})` : 'As written'}</option>
                 {family &&
@@ -262,7 +262,7 @@ export function ContrastChecks() {
             <li key={r.label} className="flex items-center gap-2.5 border-t border-ds-line py-2 first:border-t-0">
               <span
                 aria-hidden
-                className="flex h-7 w-10 flex-none items-center justify-center rounded-[6px] text-12 font-bold shadow-[inset_0_0_0_1px_var(--ds-line)]"
+                className="flex h-7 w-10 flex-none items-center justify-center rounded-tag text-12 font-bold shadow-[inset_0_0_0_1px_var(--ds-line)]"
                 style={{ background: `var(--${r.bg})`, color: r.fg === 'white' ? '#fff' : `var(--${r.fg})` }}
               >
                 Aa
@@ -272,7 +272,7 @@ export function ContrastChecks() {
                 {r.ratio ? r.ratio.toFixed(2) : '—'}
               </span>
               <span
-                className={`w-11 rounded-[5px] py-0.5 text-center text-11 font-bold ${pass ? 'bg-ds-accent-soft text-ds-ok' : 'bg-ds-sunken text-ds-warn'}`}
+                className={`w-11 rounded-chip py-0.5 text-center text-11 font-bold ${pass ? 'bg-ds-accent-soft text-ds-ok' : 'bg-ds-sunken text-ds-warn'}`}
               >
                 {pass ? 'Pass' : 'Fail'}
               </span>

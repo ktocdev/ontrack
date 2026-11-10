@@ -81,7 +81,7 @@ export function ColorInput({
         aria-label={`${label}, color picker`}
         value={hex}
         onChange={(e) => onChange(e.target.value)}
-        className="ds-well h-9 w-9 flex-none rounded-[8px]"
+        className="ds-well h-9 w-9 flex-none rounded-segment"
       />
       <input
         type="text"
@@ -95,7 +95,7 @@ export function ColorInput({
           if (c) onChange(toHex(c))
         }}
         onBlur={() => setText(hex)}
-        className={`h-9 w-[104px] rounded-[8px] border bg-ds-panel px-2 font-ds-mono text-[16px] text-ds-ink sm:text-13 ${valid ? 'border-ds-line-strong' : 'border-ds-warn'}`}
+        className={`h-9 w-[104px] rounded-segment border bg-ds-panel px-2 font-ds-mono text-[16px] text-ds-ink sm:text-13 ${valid ? 'border-ds-line-strong' : 'border-ds-warn'}`}
       />
     </span>
   )
@@ -189,7 +189,7 @@ export function PanelButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 items-center justify-center rounded-[10px] px-3.5 text-13 font-semibold transition-colors ${primary ? 'bg-ds-accent text-ds-on-accent hover:opacity-90' : 'border border-ds-line-strong text-ds-ink hover:bg-ds-sunken'}`}
+      className={`flex h-10 items-center justify-center rounded-control px-3.5 text-13 font-semibold transition-colors ${primary ? 'bg-ds-accent-fill text-ds-on-accent hover:opacity-90' : 'border border-ds-line-strong text-ds-ink hover:bg-ds-sunken'}`}
     >
       {children}
     </button>

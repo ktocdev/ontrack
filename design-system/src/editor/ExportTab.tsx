@@ -78,7 +78,7 @@ export function ExportTab({ theme }: { theme: Theme }) {
           </PanelButton>
         </div>
         {fonts.length > 0 && (
-          <div className="rounded-[10px] bg-ds-sunken p-3 text-12 leading-[1.5] text-ds-ink-soft">
+          <div className="rounded-control bg-ds-sunken p-3 text-12 leading-[1.5] text-ds-ink-soft">
             <p className="m-0 mb-1 font-semibold text-ds-ink">The new fonts also need:</p>
             <ul className="m-0 flex list-disc flex-col gap-1 pl-4 font-ds-mono text-11">
               {fonts.map((f) => (
@@ -108,7 +108,7 @@ export function ExportTab({ theme }: { theme: Theme }) {
             }}
             rows={4}
             spellCheck={false}
-            className="rounded-[10px] border border-ds-line-strong bg-ds-panel p-2 font-ds-mono text-[16px] text-ds-ink sm:text-12"
+            className="rounded-control border border-ds-line-strong bg-ds-panel p-2 font-ds-mono text-[16px] text-ds-ink sm:text-12"
           />
         </label>
         {error && <p className="m-0 text-12 text-ds-warn">{error}</p>}
