@@ -35,6 +35,7 @@ supabase/
   tests/database/    pgTAP, one file per concern, run by `supabase test db`
   config.toml        local stack; invite-only signup, 12-char passwords, TOTP on
 design/              exported design: INDEX.md, tokens.md, screens/*.dc.html + .png
+design-system/       docs site and token editor, not part of the app (its own Worker, see below)
 handoff/             build plan, slides, architecture diagram
 ```
 
@@ -50,6 +51,10 @@ on a phone and matches its PNG, in light and dark mode.
 - The screens are light mode only. Dark values come from `tokens.md` (the proposed set, plus derived values marked in `tokens.css`). Check a new component in both themes on `/kit` before a screen uses it.
 - Shared patterns are shared components: a restaurant name with its color square is `RestaurantName`; a status with an icon is `StatusPill`. Build once in `app/src/components`, use everywhere.
 - `href` values between screen files are the routes. `data-props` on a screen lists its alternate states.
+
+## Design system docs
+
+`design-system/` is a separate Vite package, deployed as its own Worker on `ktoc.dev/ontrack/design-system` (OT-88); nothing in the app links to it. It renders the app's real components through the `@app` alias and reads `app/src/styles/tokens.css` and `index.css` at build time, so it holds no copy of a value. A new shared component gets a page there as well as its place on `/kit`; a new token shows up by itself. Its token editor works out every value from the edits (ramps in OKLCH, per theme) and exports a `tokens.css` to replace the app's. Its README has the setup and the deploy.
 
 ## App frame
 
