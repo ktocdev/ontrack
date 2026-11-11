@@ -154,15 +154,15 @@ A screen that needs real data can only render against the stack, which runs in C
 
 ## Current phase: 5 · Contractors, service records and invoices
 
-The plan's Phase 5 section says what ships and what it works around. Done when logging a $397.40 Coldline visit on a ticket raises that unit's 2026 cost, Coldline's spend, and the Closed tab's month total by the same amount, with the invoice PDF openable from all three places. A service record is never deleted, so Edit service record has no Delete; contractors archive, and delete only with no service records. Every service record belongs to a ticket, so a unit's Log service picks one.
+The plan's Phase 5 section says what ships and what it works around. Done when logging a $397.40 Coldline visit on a ticket raises that unit's 2026 cost, Coldline's spend, and the Closed tab's month total by the same amount, with the invoice PDF openable from all three places. A service record is never deleted, so Edit service record has no Delete; contractors archive, and delete only with no service records. A ticket is optional on a service record (decided Nov 11, 2026): a record has its own `restaurant_id`, which every policy reads; with a ticket, its restaurant and unit are the ticket's, and without one the unit is optional. A visit with no ticket counts toward the unit's and contractor's spend and Invoices, not the Closed tab's month totals.
 
 | PR    | Scope |
 | ----- | ----- |
 | OT-89 | Plan update and this split; the Phase 4 note from the live demo |
-| OT-90 | Service backend: `log_service` and `update_service_record` (record, line items and invoice in one logged step, `log_cost` at the ticket's restaurant, no delete), invoice files under `invoices/<service record id>/`, the spend views (`security_invoker`, so `see_costs`), pgTAP |
+| OT-90 | Service backend: ticket optional and `restaurant_id` on a service record; `log_service` and `update_service_record` (record, line items and invoice in one logged step, `log_cost` at the record's restaurant, no delete), invoice files under `invoices/<service record id>/`, the spend views (`security_invoker`, so `see_costs`), pgTAP |
 | OT-91 | Contractors backend by the archive and delete rule: save, archive / restore, delete only with no service records, each checked and logged; no direct writes; pgTAP |
-| OT-92 | Log service & cost from an Ops ticket, live total, Attach invoice, inline saving spinner, save failed; the ticket's Service & cost section |
-| OT-93 | Service record: invoice card (View, Download, Replace, Missing), cost, details; Edit without Delete; opened from ticket, unit and contractor; a unit's Log service picks a ticket |
+| OT-92 | Log service & cost from an Ops ticket, a unit (ticket optional) or a contractor (restaurant, then unit and ticket optional), live total, Attach invoice, inline saving spinner, save failed; the ticket's Service & cost section |
+| OT-93 | Service record: invoice card (View, Download, Replace, Missing), cost, details; Edit without Delete, where a ticket can be added; opened from ticket, unit, contractor and Invoices |
 | OT-94 | Contractor directory: search, trade chips, sort, preferred, insurance flags, call; empty and No results; replaces the Contractors placeholder; View as |
 | OT-95 | Contractor detail with Visits and Invoices tabs; Add and Edit contractor; Archive / Restore and Delete sheet; lasting link `/c/<id>` and Share link |
 | OT-96 | Invoices tab: by month, Missing filter and count, sort, search, totals |
