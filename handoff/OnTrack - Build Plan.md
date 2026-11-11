@@ -20,7 +20,8 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | OT-23 | Done, tried on the live app | Small fixes from trying Phase 1 live, before Phase 2 (see below) |
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
 | 3 · Ops dashboard and ticket work | Done, except the real-iPhone checks | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). The buzz and its badge were tried on Android (Nov 5, 2026). Google sign-in (OT-59) is deferred until the group's IT person is involved |
-| 4 · Equipment · first demo | Built; the done test passes in Playwright, and the demo on the live app is tried by hand | OT-65 plan update, then OT-66 to OT-88 (see Phase 4). QR labels (OT-74) are deferred until the iPhone link check |
+| 4 · Equipment · first demo | Done, except the real-iPhone checks; tried on the live app (Nov 11, 2026) | OT-65 plan update, then OT-66 to OT-88 (see Phase 4). QR labels (OT-74) are deferred until the iPhone link check |
+| 5 · Contractors, service records and invoices | Split into pull requests (Nov 11, 2026) | OT-89 plan update, then OT-90 to OT-98 (see Phase 5) |
 
 Phase 0 notes:
 
@@ -57,7 +58,7 @@ Phase 4 note (Nov 11, 2026):
 - **What changed:** every unit has a page and a history. Ops has an equipment list across restaurants with search, a filter sheet, category cards with open-ticket badges and this year's spend; a manager browses their restaurant's units by Front / Back and then category. A unit's page has Details (with the manual and a data plate photo), Tickets, open and closed, and Service & cost for Ops with See costs. Ops, and a manager with Add / edit equipment, add and edit units, and retire, restore or delete them by the archive and delete rule; retired units wait in a closed Retired card. A manager creates a ticket from a unit with the unit filled in, a ticket's equipment card opens its unit, and each unit has a lasting link, `/e/<id>`, and Share link. Ops and admins look after the group's categories. From feedback along the way: swipe down closes a sheet, Submit ticket with no photo asks first and offers Photo tips, a manager adds in-house tasks by hand and older finished ones sit behind Show older, and the app offers to install itself once. A security pass (OT-73) and an independent audit (OT-84) came before the done test, so it covers their fixes.
 - **What the client should try:** the demo. Ops enters a restaurant's real equipment through Add equipment (importing waits for Phase 7), with a manual or a data plate photo where there is one. A manager at that restaurant finds a unit by Back of House and its category, creates a ticket from it, and sees the ticket on the unit; Ops sees it on the dashboard and can open the unit from the ticket. Then the assistant ops manager and one restaurant manager install the app and run real tickets for a week. This waits until Four Corners has accounts (see Open items).
 - **What can't be tried on the live app yet:** QR labels, scanning and Print QR label wait for OT-74 and the iPhone link check. Service & cost shows its no-service-yet state until Phase 5 logs service, so spend on the lists stays empty. Importing equipment from a spreadsheet waits for Phase 7.
-- **How the done test went:** `e2e/stack/done-phase-4.spec.ts` runs it on Chromium and WebKit against the seeded stack. Maya at Logan Square opens Equipment, Back of House and Refrigeration, opens Walk-in Cooler 1 and creates a ticket from it with the unit already chosen; the ticket is under the unit's Tickets tab and opens from there, and Bert's dashboard lists it with the unit on it. Bert adds a unit at Logan Square through Add equipment, and it shows in Maya's Refrigeration card and in the ticket form's picker. Bert retires it, and it leaves both; Maya has Add / edit equipment, so it waits in her Retired card. The demo on the live app is tried by hand: not yet done.
+- **How the done test went:** `e2e/stack/done-phase-4.spec.ts` runs it on Chromium and WebKit against the seeded stack. Maya at Logan Square opens Equipment, Back of House and Refrigeration, opens Walk-in Cooler 1 and creates a ticket from it with the unit already chosen; the ticket is under the unit's Tickets tab and opens from there, and Bert's dashboard lists it with the unit on it. Bert adds a unit at Logan Square through Add equipment, and it shows in Maya's Refrigeration card and in the ticket form's picker. Bert retires it, and it leaves both; Maya has Add / edit equipment, so it waits in her Retired card. The demo on the live app was then tried by hand (Nov 11, 2026) and worked as expected. QR labels and the iPhone checks wait for a real iPhone.
 
 ## Decisions
 
@@ -418,6 +419,33 @@ Every repair gets a cost, a contractor and an invoice, and the spend views on eq
 
 **Done when:** logging a $397.40 Coldline visit on a ticket raises that unit's 2026 cost, Coldline's spend, and the Closed tab's month total by the same amount, with the invoice PDF openable from all three places.
 
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-89 | Plan update and this split; the Phase 4 note from the live demo |
+| OT-90 | Service backend: `log_service` and `update_service_record`, each one step that checks `log_cost` at the ticket's restaurant, writes the record, its line items and its invoice row together and logs it in `audit_log`; no delete; the invoice file under `invoices/<service record id>/`; the spend views (ticket total, unit lifetime and this year, contractor spend, visits and last visit this year, month totals), all `security_invoker` so they need `see_costs`; pgTAP |
+| OT-91 | Contractors backend by the archive and delete rule: `save_contractor`, `set_contractor_archived` and `delete_contractor` (only with no service records), each checking the caller and logging; trade from a fixed list; an archived contractor takes no new service; pgTAP |
+| OT-92 | Log service & cost from an Ops ticket: In-house or Outside contractor, the contractor picker (preferred first, "+ Add new contractor"), technician, invoice number, service date, labor, parts and trip fee with a live total, work notes, Attach invoice; the inline saving spinner and the save-failed state; the ticket's Service & cost section with its running total |
+| OT-93 | Service record: invoice card (View, Download, Replace, and Missing with Attach), cost breakdown, details linking to the contractor, the unit and the ticket; Edit service record without Delete; opened from a ticket, a unit's service log and a contractor's visits. A unit's Log service picks one of its tickets |
+| OT-94 | Contractor directory: search, trade chips with counts, Most used first or by spend, preferred stars, insurance flags 30 days out, one-tap call; its empty state and No results; the Contractors tab replaces its placeholder; View as |
+| OT-95 | Contractor detail: spend, visits and last visit, details, Call and Email, Visits and Invoices tabs; Add and Edit contractor with the preferred switch; Archive / Restore and Delete sheet; lasting link `/c/<id>` and Share link, refused without `see_contractors` |
+| OT-96 | Invoices tab: by month, the Missing filter and its count, sort, search by contractor, unit, ticket or invoice number, the month's count and total, rows opening the service record |
+| OT-97 | Security and code quality pass over Phase 5 |
+| OT-98 | The done test as one flow; the phase note |
+
+**What this phase has to work around**
+
+- **A service record is never deleted (OT-84).** Edit service record draws "Delete this record"; the archive and delete rule makes a service record part of the record, so it is left off, and a mistake is edited, with the edit logged. A record logged on the wrong ticket is corrected by Ops in the database until someone asks for a way in the app.
+- **Contractors follow the archive and delete rule.** No board draws Archive or Delete, so the sheet follows the restaurant one from OT-9: Archive takes a contractor out of the directory and the Log service picker and keeps their visits; Delete is there only while no service record names them. Today `contractors` is written straight through the API with `log_cost` and no log; OT-91 moves every write into functions.
+- **A unit's Log service needs a ticket.** The unit's Service & cost board has "+ Log service", but every service record belongs to a ticket, so from a unit it asks which of that unit's tickets the visit was for, open ones first. A visit that has no ticket at all, like a preventive maintenance call, is an open question for Ops (see Open items); until then it is logged on a ticket.
+- **Line item descriptions.** Service record shows "Labor · 2 hrs" and "Parts · fan motor, capacitor", but Log service and Edit only ask for amounts. The descriptions show when there are some (the seed has them) and the forms leave them off, as the boards do.
+- **The invoice amount** is the record's total; the invoice row holds its number, file and status (attached or missing), so a record logged with no file shows under Missing until one is attached.
+- **Restaurant scope.** Contractors are the group's, shared by every restaurant, so the directory lists every one; the spend, visits and invoices on it follow the restaurant picker at the top, as the dashboard does. Who sees what is `see_contractors` for the directory and `see_costs` at a restaurant for any amount; logging needs `log_cost` there, Ops by default.
+- **The Import contractors banner on Add contractor and the empty directory waits for Phase 7,** when Import contractors is built, so it is left off.
+- **Leadership's read-only contractor and invoice screens are Phase 7's.** A contractor link opened by leadership says so, as a ticket link does.
+- **View as:** each screen scopes its data from `useUser()` and hides Add, Edit, Log service, Attach and Replace when `viewingAs` is set.
+
 ## Phase 6 · Monthly walkthroughs
 
 Managers walk a checklist each month, log fixes and tickets as they go, and Ops sees who is on track. It is the biggest phase, so it is split into two halves that each ship on their own.
@@ -547,12 +575,13 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] For Google sign-in: is anyone on an iPhone? If so, the installed-app test decides the approach. Not known yet; the managers need asking
 - [ ] The real walkthrough checklist items per area (the design has 48 placeholders)
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
-- [ ] Turn off or delete a category, following the archive and delete rule. It has no board, and is saved for later, not scheduled. `categories` has no `active` column yet, so this starts with one. Today the write policy lets anyone with `edit_equipment` change the group-wide list through the API, though no screen does; decide whether that should be admin only when this is built
+- [x] Turn off or delete a category, following the archive and delete rule: built in OT-86 for Ops and admins (Nov 6, 2026), after OT-84 limited the writes to them
 - [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there
 - [x] How a manager finds a closed ticket: an ellipsis menu beside the search on Open tickets opens a simple list, in OT-33 (Nov 1, 2026)
 - [x] Whether Edit ticket should offer the title: yes, in OT-33 (Nov 1, 2026)
 - [x] Sharing a link to a ticket, a unit or a contractor: lasting links that work for every role, then Share link in the ellipsis menu, across Phases 3, 4 and 5 (Nov 1, 2026)
 - [ ] Whether Ops wants a filter sheet on the dashboard. Saved for later, not scheduled (OT-38, see Phase 3)
 - [x] Label stock size for the QR sheets: usually around 2.5 in, and it can be adjusted (Nov 5, 2026, from Ops). OT-74 sizes labels at 2.5 in by default, with the size a setting on the sheet
+- [ ] For Phase 5, from Ops: does a visit ever come with no ticket, like a preventive maintenance call? Every service record belongs to a ticket, so until asked such a visit is logged on a ticket (see Phase 5)
 - [ ] Whether SMS 2-step is wanted, given its per-message cost
 - [ ] Whether admins should keep "Don't ask again on this phone for 30 days". It follows the board for now: on for everyone and checked by default

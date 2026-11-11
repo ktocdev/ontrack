@@ -152,9 +152,26 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 4 · Equipment · first demo
+## Current phase: 5 · Contractors, service records and invoices
 
-The plan's Phase 4 section says what ships and what it works around. Done when a manager at Logan Square finds a unit by browsing Back of House and its category, creates a ticket from it with the unit filled in, and the ticket shows under that unit's Tickets tab and on the Ops dashboard; an Ops manager adds a unit, which shows on that manager's list, and retires it, which takes it off the list and out of the ticket form's picker. QR labels are deferred (OT-74), so until then nothing shows a QR code or a scan button.
+The plan's Phase 5 section says what ships and what it works around. Done when logging a $397.40 Coldline visit on a ticket raises that unit's 2026 cost, Coldline's spend, and the Closed tab's month total by the same amount, with the invoice PDF openable from all three places. A service record is never deleted, so Edit service record has no Delete; contractors archive, and delete only with no service records. Every service record belongs to a ticket, so a unit's Log service picks one.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-89 | Plan update and this split; the Phase 4 note from the live demo |
+| OT-90 | Service backend: `log_service` and `update_service_record` (record, line items and invoice in one logged step, `log_cost` at the ticket's restaurant, no delete), invoice files under `invoices/<service record id>/`, the spend views (`security_invoker`, so `see_costs`), pgTAP |
+| OT-91 | Contractors backend by the archive and delete rule: save, archive / restore, delete only with no service records, each checked and logged; no direct writes; pgTAP |
+| OT-92 | Log service & cost from an Ops ticket, live total, Attach invoice, inline saving spinner, save failed; the ticket's Service & cost section |
+| OT-93 | Service record: invoice card (View, Download, Replace, Missing), cost, details; Edit without Delete; opened from ticket, unit and contractor; a unit's Log service picks a ticket |
+| OT-94 | Contractor directory: search, trade chips, sort, preferred, insurance flags, call; empty and No results; replaces the Contractors placeholder; View as |
+| OT-95 | Contractor detail with Visits and Invoices tabs; Add and Edit contractor; Archive / Restore and Delete sheet; lasting link `/c/<id>` and Share link |
+| OT-96 | Invoices tab: by month, Missing filter and count, sort, search, totals |
+| OT-97 | Security and code quality pass over Phase 5 |
+| OT-98 | The done test as one flow; the phase note |
+
+## Phase 4, for the record
+
+The plan's Phase 4 section says what shipped and what it works around. Done when a manager at Logan Square finds a unit by browsing Back of House and its category, creates a ticket from it with the unit filled in, and the ticket shows under that unit's Tickets tab and on the Ops dashboard; an Ops manager adds a unit, which shows on that manager's list, and retires it, which takes it off the list and out of the ticket form's picker. Playwright runs it (`done-phase-4.spec.ts`), and it was tried on the live app (Nov 11, 2026). QR labels are deferred (OT-74), so until then nothing shows a QR code or a scan button.
 
 | PR    | Scope |
 | ----- | ----- |
