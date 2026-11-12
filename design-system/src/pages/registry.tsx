@@ -3,7 +3,7 @@ import { Overview } from './Overview'
 import { ColorPage, ElevationPage, IconsPage, ShapePage, SpacingPage, TypographyPage } from './foundations'
 import { AvatarsPage, ButtonsPage, CardsPage, PillsPage, RestaurantsPage } from './components-basics'
 import { ChoicesPage, FeedbackPage, FieldsPage, NavigationPage, SheetsPage } from './components-forms'
-import { EquipmentPage, LoadingPage, ThreadPage, TicketsPage } from './components-work'
+import { ContractorsPage, EquipmentPage, LoadingPage, ThreadPage, TicketsPage } from './components-work'
 
 /** Every docs page, in sidebar order. The router and the sidebar both read this. */
 export type PageDef = { path: string; title: string; summary: string; Component: ComponentType }
@@ -104,6 +104,12 @@ export const NAV: { title: string; pages: PageDef[] }[] = [
         title: 'Equipment and tasks',
         summary: 'Equipment lists, in-house tasks',
         Component: EquipmentPage,
+      },
+      {
+        path: '/components/contractors',
+        title: 'Contractors',
+        summary: 'Directory cards',
+        Component: ContractorsPage,
       },
       { path: '/components/loading', title: 'Loading', summary: 'Spinners and skeletons', Component: LoadingPage },
     ],

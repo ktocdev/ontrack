@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ContractorCard } from '@app/components/ContractorCard'
 import { Avatar } from '@app/components/Avatar'
 import { Card, RadioRow } from '@app/components/Card'
 import { ClosedTicketRow, MonthHeading } from '@app/components/ClosedTicketRow'
@@ -332,6 +333,47 @@ export function EquipmentPage() {
 }
 
 /* ---------------- Loading ---------------- */
+
+export function ContractorsPage() {
+  return (
+    <>
+      <PageHeader eyebrow="Components" title="Contractors" source={['components/ContractorCard.tsx']}>
+        <p>
+          A contractor in the directory: this year's spend for the restaurants picked, the trade, a Preferred star, an
+          insurance warning within 30 days of running out, and a call button when there is a phone.
+        </p>
+      </PageHeader>
+      <Section
+        title="Directory card"
+        intro="Spend and visits show only with see_costs; under View as the card opens nothing."
+      >
+        <Example
+          code={`<ContractorCard name="Coldline Refrigeration" trade="Refrigeration" preferred spend="$4,812" phone="…" to="/c/…" />`}
+        >
+          <ContractorCard
+            name="Coldline Refrigeration"
+            trade="Refrigeration"
+            preferred
+            contact="Rosa Alvarez"
+            visits="11 visits · last Oct 19, 2026"
+            spend="$4,812"
+            phone="(312) 555-0187"
+            to="#"
+          />
+          <ContractorCard
+            name="Brightway Electric"
+            trade="Electrical"
+            warning="Insurance expires Nov 1"
+            contact="Tina Nguyen"
+            visits="6 visits · last Oct 8, 2026"
+            spend="$2,140"
+            phone="(773) 555-0133"
+          />
+        </Example>
+      </Section>
+    </>
+  )
+}
 
 export function LoadingPage() {
   return (

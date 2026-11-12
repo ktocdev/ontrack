@@ -268,7 +268,12 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/equipment/OpsEquipmentScreen')).OpsEquipmentScreen,
                     }),
                   },
-                  { path: '/ops/contractors', ...placeholder('Contractors', 'Phase 5') },
+                  {
+                    path: '/ops/contractors',
+                    lazy: async () => ({
+                      Component: (await import('../screens/contractors/ContractorsScreen')).ContractorsScreen,
+                    }),
+                  },
                 ],
               },
               {
