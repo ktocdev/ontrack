@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Link, Navigate, useParams } from 'react-router'
+import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button, ButtonLink } from '../../components/Button'
@@ -16,6 +16,7 @@ import { TicketCard } from '../../components/TicketCard'
 import { EquipmentMenu } from '../../components/TicketMenu'
 import {
   IconChevronDown,
+  IconChevronRight,
   IconFile,
   IconPhone,
   IconPlus,
@@ -409,6 +410,7 @@ function Service({
   logTo: string | null
 }) {
   const { data, isPending, isError, refetch } = query
+  const location = useLocation()
   if (isPending) return <MetricsSkeleton />
   if (isError)
     return (
@@ -491,9 +493,11 @@ function Service({
             {data.records
               .filter((r) => yearOf(r.service_date) === y)
               .map((r) => (
-                <div
+                <Link
                   key={r.id}
-                  className="flex min-h-[64px] items-center gap-3 border-t border-surface-muted px-3.5 py-2.5 first:border-t-0"
+                  to={`/ops/service/${r.id}`}
+                  state={{ from: location.pathname }}
+                  className="flex min-h-[64px] items-center gap-3 border-t border-surface-muted px-3.5 py-2.5 text-text transition-colors first:border-t-0 hover:bg-surface-hover active:bg-surface-muted active:duration-0"
                 >
                   <span className="w-[52px] flex-none text-14 text-text-muted">{monthDay(r.service_date)}</span>
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -516,7 +520,8 @@ function Service({
                       </span>
                     ))}
                   <span className="flex-none text-15 font-bold">{money(r.totalCents)}</span>
-                </div>
+                  <IconChevronRight size={16} className="-ml-1 flex-none text-text-muted" />
+                </Link>
               ))}
           </ListCard>
         </section>

@@ -30,7 +30,12 @@ export function TicketService({ ticketId }: { ticketId: string }) {
             <p className="px-3.5 py-3 text-14 text-text-muted">No service logged yet.</p>
           ) : (
             data.records.map((r) => (
-              <div key={r.id} className="flex flex-col gap-1 border-t border-border px-3.5 py-3 first:border-t-0">
+              <Link
+                key={r.id}
+                to={`/ops/service/${r.id}`}
+                state={{ from: `/ops/tickets/${ticketId}` }}
+                className="flex flex-col gap-1 border-t border-border px-3.5 py-3 text-text transition-colors first:border-t-0 hover:bg-surface-hover active:bg-surface-muted active:duration-0"
+              >
                 <div className="flex justify-between gap-3">
                   <span className="min-w-0 text-15 font-semibold [overflow-wrap:anywhere]">
                     {r.kind === 'in_house' ? 'In-house' : (r.contractor?.name ?? 'Contractor')}
@@ -40,7 +45,7 @@ export function TicketService({ ticketId }: { ticketId: string }) {
                 <span className="text-12 text-text-muted [overflow-wrap:anywhere]">
                   {r.kind === 'in_house' ? 'In-house' : 'Contractor'} · {r.title} · {serviceDay(r.service_date, true)}
                 </span>
-              </div>
+              </Link>
             ))
           )}
           {data.records.length > 0 && (

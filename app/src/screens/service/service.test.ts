@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  amountText,
   invoiceFileName,
+  loggedWhen,
   invoiceFileProblem,
   MAX_CENTS,
   parseMoney,
@@ -43,6 +45,13 @@ describe('tidyMoney', () => {
   })
 })
 
+describe('amountText', () => {
+  it('fills an edit form from cents, leaving zero empty', () => {
+    expect(amountText(21740)).toBe('$217.40')
+    expect(amountText(0)).toBe('')
+  })
+})
+
 describe('saveLabel', () => {
   it('says where the visit lands, as the board does', () => {
     expect(saveLabel(true, true, false)).toBe('Save to ticket & equipment')
@@ -71,6 +80,11 @@ describe('dates', () => {
     expect(serviceDay('2026-10-19')).toBe('Oct 19, 2026')
     expect(serviceDay('2026-10-19', true, new Date(2026, 10, 11))).toBe('Oct 19')
     expect(serviceDay('2025-10-19', true, new Date(2026, 10, 11))).toBe('Oct 19, 2025')
+  })
+  it('says when a record was logged on the phone’s own clock', () => {
+    // 10:35 PM on Nov 11 in the phone's zone is already Nov 12 in UTC; the day follows the phone.
+    expect(loggedWhen(new Date(2026, 10, 11, 22, 35), new Date(2026, 10, 11))).toBe('Nov 11, 10:35 PM')
+    expect(loggedWhen(new Date(2025, 2, 4, 16, 5), new Date(2026, 10, 11))).toBe('Mar 4, 2025, 4:05 PM')
   })
   it('gives today in the phone’s time zone', () => {
     expect(todayISO(new Date(2026, 10, 3, 23, 30))).toBe('2026-11-03')

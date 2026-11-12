@@ -315,6 +315,17 @@ export function NavigationPage() {
       <Section title="Bars" intro="Back, close and title bars for detail screens; the brand bar over a cover.">
         <Example width="full" bare>
           <BackBar to="#" label="Equipment" />
+          <BackBar
+            to="#"
+            label="Back"
+            roomy
+            action={<span className="px-2 text-16 font-semibold text-brand">Edit</span>}
+          >
+            <span className="flex flex-col gap-px">
+              <span className="text-12 text-text-secondary">Walk-in Cooler 1 · Federale’s Logan Square</span>
+              <span className="font-display text-20 font-bold text-text">Service record</span>
+            </span>
+          </BackBar>
           <TitleBar to="#" label="Back" title="Closed tickets" />
           <CloseBar to="#" title="Add restaurant" />
           <CloseBar to="#" title="Log service" subtitle="OT-1042 · Walk-in Cooler 1" bordered={false} />

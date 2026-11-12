@@ -79,11 +79,11 @@ test('from a ticket: a contractor visit with its invoice, on the ticket and the 
 
   // On the unit's service log too, with the invoice on file.
   await page.goto(`/ops/equipment/${COOLER}/service`)
-  // A row of the log: its date, title and line, the invoice mark, the amount.
+  // A row of the log, a link to the record since OT-93.
   const row = page
     .getByRole('region', { name: /^Service log \d{4}$/ })
     .first()
-    .locator('div[class*="min-h-[64px]"]')
+    .getByRole('link')
     .filter({ hasText: 'Walk-in cooler not holding temp' })
     .filter({ hasText: '$397.40' })
     .first()
