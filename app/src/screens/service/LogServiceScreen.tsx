@@ -33,6 +33,7 @@ import {
  * by starts with your name. The board asks for no title, so the database names the visit
  * after its ticket. "+ Add new contractor" opens a short sheet that adds one and picks it,
  * so nothing typed is lost; the full Add contractor screen is the directory's (OT-95).
+ * From a contractor, Close and Save go back to the contractor's page.
  * While saving the form fades and the button spins and says where it is saving, as
  * Loading-Save draws it; when the database says no, everything typed stays and the
  * banner says why, and an invoice number the contractor already has is marked under its
@@ -54,8 +55,7 @@ export function LogServiceFromContractorScreen() {
 function closeTo(origin: Origin) {
   if (origin.from === 'ticket') return `/ops/tickets/${origin.id}`
   if (origin.from === 'equipment') return `/ops/equipment/${origin.id}/service`
-  // The contractor's own page arrives with OT-95.
-  return '/ops/contractors'
+  return `/ops/contractors/${origin.id}`
 }
 
 function Load({ origin }: { origin: Origin }) {

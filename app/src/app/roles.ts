@@ -89,6 +89,14 @@ export function equipmentPath(role: AppRole, id: string) {
   return null
 }
 
+/**
+ * Where a contractor's lasting link opens for each role: Ops's contractor page. Leadership's
+ * read-only one comes in Phase 7, and nobody else has contractor screens.
+ */
+export function contractorPath(role: AppRole, id: string) {
+  return role === 'ops' ? `/ops/contractors/${encodeURIComponent(id)}` : null
+}
+
 /** Where "Search equipment" on the 404 screen goes for each role. */
 export const ROLE_EQUIPMENT: Record<AppRole, string> = {
   manager: '/equipment',

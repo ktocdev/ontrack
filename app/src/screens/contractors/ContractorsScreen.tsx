@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
-import { Button } from '../../components/Button'
+import { Button, ButtonLink } from '../../components/Button'
+import { ListCard, ListRowLink } from '../../components/Card'
 import { Chip } from '../../components/Chip'
 import { ContractorCard } from '../../components/ContractorCard'
 import { EmptyState } from '../../components/EmptyState'
@@ -11,12 +12,17 @@ import { OverflowMenu } from '../../components/Menu'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
-import { useToast } from '../../components/Toast'
-import { IconBriefcase, IconPlus, IconSearchOff, IconWarning } from '../../components/icons'
+import {
+  IconBriefcase,
+  IconChevronDown,
+  IconChevronRight,
+  IconPlus,
+  IconSearchOff,
+  IconWarning,
+} from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
-import { AddContractorSheet } from '../service/ServiceFields'
 import { serviceDay } from '../service/service'
 import { useCanEditTrades, useTrades } from '../trades/useTrades'
 import {
@@ -26,6 +32,7 @@ import {
   tradeChips,
   tradeCount,
   wholeDollars,
+  type Contractor,
   type DirectoryRow,
   type Sort,
 } from './contractors'
@@ -42,9 +49,11 @@ import { useContractorDirectory } from './useContractorDirectory'
  * them. The menu beside Add opens Trades for whoever looks after them. "Most used first"
  * (this year's visits) switches to "Highest spend first". A contractor whose insurance
  * runs out within 30 days, or has, is flagged. The call button dials straight away.
- * Add opens the short add sheet until the full Add contractor screen (OT-95), and a
- * card opens nothing until the contractor page (OT-95). Import from a spreadsheet waits
- * for Phase 7, and the Invoices tab for OT-96. Under View as, Add is gone.
+ * Add opens Add contractor, on the trade a search named; a card opens the contractor
+ * (OT-95). Archived contractors sit apart under a closed Archived disclosure at the
+ * bottom, found by the search and chips too, so one can be restored. Import from a
+ * spreadsheet waits for Phase 7, and the Invoices tab for OT-96. Under View as, Add is
+ * gone and nothing opens.
  */
 export function ContractorsScreen() {
   const seeContractors = useRight('see_contractors')
@@ -63,14 +72,15 @@ function Directory() {
   const { data, isPending, isError, refetch } = useContractorDirectory(seeCosts)
   const trades = useTrades()
   const canEditTrades = useCanEditTrades()
-  const toast = useToast()
   const [year] = useState(() => new Date().getFullYear())
   const [query, setQuery] = useState('')
   const [trade, setTrade] = useState<string | null>(null)
   const [sort, setSort] = useState<Sort>('used')
-  const [adding, setAdding] = useState<{ trade: string } | null>(null)
 
-  const contractors = data?.contractors ?? []
+  const all = data?.contractors ?? []
+  const contractors = all.filter((c) => !c.archived_at)
+  // Archived ones sit apart at the bottom, so one can be found and restored.
+  const archived = all.filter((c) => c.archived_at && matchesSearch(c, query) && (!trade || c.trades.includes(trade)))
   const rows = data ? summarize(contractors, data.spend, scope.ids, year) : []
   const shown = sortRows(
     rows.filter((r) => (!trade || r.trades.includes(trade)) && matchesSearch(r, query)),
@@ -108,15 +118,15 @@ function Directory() {
           (canAdd && !empty) || canEditTrades ? (
             <span className="flex flex-none items-center gap-2">
               {canAdd && !empty && (
-                <Button
+                <ButtonLink
+                  to="/ops/contractors/new"
                   variant="compact"
                   aria-label="Add contractor"
                   icon={<IconPlus size={18} strokeWidth={2.4} />}
                   className="gap-1.5 px-3.5 text-14"
-                  onClick={() => setAdding({ trade: '' })}
                 >
                   Add
-                </Button>
+                </ButtonLink>
               )}
               {canEditTrades && (
                 <OverflowMenu
@@ -176,14 +186,14 @@ function Directory() {
           }
         >
           {canAdd && (
-            <Button
+            <ButtonLink
+              to="/ops/contractors/new"
               variant="medium"
               className="w-full"
               icon={<IconPlus size={18} strokeWidth={2.2} />}
-              onClick={() => setAdding({ trade: '' })}
             >
               Add contractor
-            </Button>
+            </ButtonLink>
           )}
         </EmptyState>
       ) : !isPending && shown.length === 0 ? (
@@ -199,14 +209,14 @@ function Directory() {
         >
           <div className="flex flex-col gap-2.5">
             {canAdd && (
-              <Button
+              <ButtonLink
+                to={addTo(searchedTrade ?? trade)}
                 variant="medium"
                 className="w-full"
                 icon={<IconPlus size={18} strokeWidth={2.2} />}
-                onClick={() => setAdding({ trade: searchedTrade ?? trade ?? '' })}
               >
                 {searchedTrade ? `Add a ${searchedTrade.toLowerCase()} contractor` : 'Add contractor'}
-              </Button>
+              </ButtonLink>
             )}
             <Button
               variant="secondary"
@@ -253,24 +263,63 @@ function Directory() {
                   visits={visitsLine(r)}
                   spend={seeCosts ? (r.yearCents ? wholeDollars(r.yearCents) : '$0') : undefined}
                   phone={r.phone}
+                  to={viewingAs ? undefined : `/ops/contractors/${r.id}`}
                 />
               ))}
+              {archived.length > 0 && <Archived contractors={archived} inert={!!viewingAs} />}
             </>
           )}
         </ScreenBody>
       )}
-      {adding && (
-        <AddContractorSheet
-          trade={adding.trade}
-          onClose={() => setAdding(null)}
-          onAdded={() => {
-            setAdding(null)
-            setQuery('')
-            setTrade(null)
-            toast.show('Contractor added.')
-          }}
-        />
-      )}
     </Screen>
+  )
+}
+
+/** "Add a roofing contractor" opens Add contractor on that trade. */
+const addTo = (trade: string | null | undefined) =>
+  trade ? `/ops/contractors/new?trade=${encodeURIComponent(trade)}` : '/ops/contractors/new'
+
+/** Archived contractors under a disclosure, closed to begin with; each opens their page to restore them. */
+function Archived({ contractors, inert }: { contractors: Contractor[]; inert: boolean }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <section aria-label="Archived contractors" className="mt-2 flex flex-none flex-col gap-2">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="-mx-1 flex min-h-tap items-center gap-2 px-1 text-left"
+      >
+        <IconChevronDown
+          size={18}
+          className={`flex-none text-text-secondary transition-transform ${open ? '' : '-rotate-90'}`}
+        />
+        <span className="eyebrow flex-1">Archived · {contractors.length}</span>
+        <span className="text-14 font-semibold text-brand">{open ? 'Hide' : 'Show'}</span>
+      </button>
+      {open && (
+        <ListCard>
+          {contractors.map((c) =>
+            inert ? (
+              <div
+                key={c.id}
+                className="flex min-h-[60px] flex-col justify-center border-t border-border px-3.5 py-2.5 first:border-t-0"
+              >
+                <span className="text-14 font-semibold">{c.name}</span>
+                <span className="text-12 text-text-muted">{c.trades.join(' · ')}</span>
+              </div>
+            ) : (
+              <ListRowLink
+                key={c.id}
+                to={`/ops/contractors/${c.id}`}
+                title={c.name}
+                subtitle={c.trades.join(' · ')}
+                trailing={<IconChevronRight className="text-text-muted" />}
+              />
+            ),
+          )}
+        </ListCard>
+      )}
+    </section>
   )
 }

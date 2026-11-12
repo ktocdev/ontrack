@@ -274,8 +274,8 @@ export function InvoiceFile({
 
 /**
  * "+ Add new contractor": the name, one or more trades and the phone; the rest is filled
- * in later. Log service opens it from the picker, and the directory's Add until the full
- * Add contractor screen (OT-95), with the trade a search named already picked.
+ * in later, on the full Edit contractor (OT-95). Log service opens it from the picker, so
+ * nothing typed on the form is lost; the directory's Add opens the full Add contractor.
  */
 export function AddContractorSheet({
   onClose,

@@ -7,6 +7,7 @@ import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErr
 import { LinkExpiredScreen } from '../screens/invite/LinkExpiredScreen'
 import { CenteredLoading, CheckingInvite } from '../screens/loading/CenteredLoading'
 import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
+import { ContractorLinkScreen } from '../screens/contractors/ContractorLinkScreen'
 import { EquipmentLinkScreen } from '../screens/equipment/EquipmentLinkScreen'
 import { TicketLinkScreen } from '../screens/tickets/TicketLinkScreen'
 import { BareShell, Shell } from './Shell'
@@ -133,6 +134,7 @@ export const router = createBrowserRouter([
           { path: '/', element: <RoleHome /> },
           { path: '/t/:id', element: <BareShell />, children: [{ index: true, element: <TicketLinkScreen /> }] },
           { path: '/e/:id', element: <BareShell />, children: [{ index: true, element: <EquipmentLinkScreen /> }] },
+          { path: '/c/:id', element: <BareShell />, children: [{ index: true, element: <ContractorLinkScreen /> }] },
           {
             path: '/profile',
             element: <BareShell />,
@@ -335,6 +337,24 @@ export const router = createBrowserRouter([
                     path: '/ops/service/:id/edit',
                     lazy: async () => ({
                       Component: (await import('../screens/service/EditServiceScreen')).EditServiceScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/contractors/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/contractors/ContractorFormScreen')).AddContractorScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/contractors/:id/edit',
+                    lazy: async () => ({
+                      Component: (await import('../screens/contractors/ContractorFormScreen')).EditContractorScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/contractors/:id/:tab?',
+                    lazy: async () => ({
+                      Component: (await import('../screens/contractors/ContractorScreen')).ContractorScreen,
                     }),
                   },
                   {

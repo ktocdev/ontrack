@@ -227,6 +227,8 @@ export function useLogService() {
         queryClient.invalidateQueries({ queryKey: ['tickets'] }),
         queryClient.invalidateQueries({ queryKey: ['equipment-service'] }),
         queryClient.invalidateQueries({ queryKey: ['ticket-closed'] }),
+        // The contractor's page and the directory's spend.
+        queryClient.invalidateQueries({ queryKey: ['contractors'] }),
       ]),
   })
 }

@@ -86,6 +86,7 @@ function useRefresh() {
       queryClient.invalidateQueries({ queryKey: ['ops-ticket'] }),
       queryClient.invalidateQueries({ queryKey: ['equipment-service'] }),
       queryClient.invalidateQueries({ queryKey: ['ticket-closed'] }),
+      queryClient.invalidateQueries({ queryKey: ['contractors'] }),
     ])
 }
 

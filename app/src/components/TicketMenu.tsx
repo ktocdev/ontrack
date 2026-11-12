@@ -1,4 +1,4 @@
-import { equipmentLink, shareLink, ticketLink } from '../lib/share'
+import { contractorLink, equipmentLink, shareLink, ticketLink } from '../lib/share'
 import { OverflowMenu, type MenuItem } from './Menu'
 import { useToast } from './Toast'
 
@@ -35,6 +35,11 @@ export function TicketMenu({ displayId, title, items = [] }: { displayId: string
       items={items}
     />
   )
+}
+
+/** A contractor's menu, with Share link to /c/<id> (OT-95). */
+export function ContractorMenu({ id, name, items = [] }: { id: string; name: string; items?: MenuItem[] }) {
+  return <ShareMenu label="More options for this contractor" url={contractorLink(id)} shareTitle={name} items={items} />
 }
 
 /** A unit's menu, with Share link to /e/<id> (OT-71). */

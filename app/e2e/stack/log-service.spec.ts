@@ -206,7 +206,7 @@ test('from a contractor: the restaurant, then a unit and a ticket, both optional
   })
   await page.getByRole('button', { name: 'Save to equipment' }).click()
   await expect(page.getByRole('status').filter({ hasText: 'Service logged.' })).toBeVisible()
-  await expect(page).toHaveURL(/\/ops\/contractors$/)
+  await expect(page).toHaveURL(new RegExp(`/ops/contractors/${COLDLINE}$`))
 })
 
 test('a manager has no way to log service, and the address is refused', async ({ page }) => {
