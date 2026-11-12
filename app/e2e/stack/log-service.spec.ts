@@ -165,7 +165,10 @@ test('+ Add new contractor adds one and picks it, keeping the form', async ({ pa
   const sheet = page.getByRole('dialog', { name: 'Add contractor' })
   await expect(sheet).toBeVisible()
   await sheet.getByLabel('Company name').fill(name)
-  await sheet.getByRole('group', { name: 'Trades' }).getByRole('button', { name: 'Retractable roofs & windows' }).click()
+  await sheet
+    .getByRole('group', { name: 'Trades' })
+    .getByRole('button', { name: 'Retractable roofs & windows' })
+    .click()
   await sheet.getByLabel('Phone (optional)').fill('(312) 555-0100')
   await sheet.getByRole('button', { name: 'Add contractor' }).click()
 

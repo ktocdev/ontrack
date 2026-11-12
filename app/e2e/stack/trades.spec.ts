@@ -79,7 +79,10 @@ test('Ops adds a trade, gives it to a contractor with another, and turns it off'
   await expect(menu.getByRole('button', { name: 'Delete trade' })).toBeDisabled()
   await expect(menu.getByText('A contractor has this trade, so it can be turned off but not deleted.')).toBeVisible()
   await menu.getByRole('button', { name: 'Turn off trade' }).click()
-  await page.getByRole('dialog', { name: `Turn off ${trade}?` }).getByRole('button', { name: 'Turn off trade' }).click()
+  await page
+    .getByRole('dialog', { name: `Turn off ${trade}?` })
+    .getByRole('button', { name: 'Turn off trade' })
+    .click()
   await expect(page.getByText('Turned off', { exact: true })).toBeVisible()
   await expect(row(page, trade)).toContainText('Off')
 
@@ -109,7 +112,10 @@ test('a trade nobody has can be renamed and deleted', async ({ page }, testInfo)
 
   await row(page, renamed).click()
   await page.getByRole('dialog', { name: renamed }).getByRole('button', { name: 'Delete trade' }).click()
-  await page.getByRole('dialog', { name: `Delete ${renamed}?` }).getByRole('button', { name: 'Delete trade' }).click()
+  await page
+    .getByRole('dialog', { name: `Delete ${renamed}?` })
+    .getByRole('button', { name: 'Delete trade' })
+    .click()
   await expect(page.getByRole('status').filter({ hasText: `${renamed} deleted.` })).toBeVisible()
   await expect(row(page, renamed)).toHaveCount(0)
 })
