@@ -30,6 +30,7 @@ import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { EquipmentMenu, TicketMenu } from '../../components/TicketMenu'
 import { VisibilityToggle, Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
+import { CostCard } from '../../components/Cost'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
 import { RadioCard } from '../../components/RadioCard'
@@ -299,6 +300,9 @@ export function KitPage() {
               />
               <div className="overflow-hidden rounded-card border border-border">
                 <CloseBar to="/kit" title="Add restaurant" />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border">
+                <CloseBar to="/kit" title="Log service" subtitle="OT-1042 · Walk-in Cooler 1" bordered={false} />
               </div>
               <div className="overflow-hidden rounded-card border border-border">
                 <BrandBackBar to="/kit" label="Back" />
@@ -741,6 +745,21 @@ export function KitPage() {
                 <option value="coldline">Coldline Refrigeration</option>
                 <option value="northstar">Northstar HVAC</option>
               </Select>
+              <CostCard
+                rows={[
+                  { label: 'Labor', value: '$120.00', onChange: () => undefined },
+                  { label: 'Parts', value: '$212.40', onChange: () => undefined },
+                  { label: 'Trip / call-out fee', value: '$65.00', onChange: () => undefined },
+                ]}
+                total="$397.40"
+              />
+              <CostCard
+                rows={[
+                  { label: 'Labor', value: '$120.00', onChange: () => undefined },
+                  { label: 'Parts', value: '12.345', onChange: () => undefined, invalid: true },
+                ]}
+                total={null}
+              />
               <SearchField label="Search equipment" placeholder="Name, brand or serial number" />
               <SearchField
                 label="Search tickets"
