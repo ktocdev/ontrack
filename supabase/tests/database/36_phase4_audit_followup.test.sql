@@ -66,12 +66,15 @@ select is((select count(*)::int from public.equipment where name = 'Test: chosen
 
 -- Service records -----------------------------------------------------------------------
 
+-- Since OT-90 records are written only through log_service and update_service_record.
 select pg_temp.login('bert.velilla@example.com');
-insert into public.service_records (ticket_id, equipment_id, kind, title)
-values ((:t1042)::uuid, (:espresso)::uuid, 'in_house', 'Test: wrong unit');
+select public.log_service(p_kind => 'in_house', p_ticket_id => (:t1042)::uuid,
+  p_equipment_id => (:espresso)::uuid, p_title => 'Test: wrong unit');
 select is((select equipment_id from public.service_records where title = 'Test: wrong unit'), (:cooler)::uuid,
   'a record is about its ticket''s unit, whatever the client sent');
-update public.service_records set equipment_id = (:espresso)::uuid where title = 'Test: wrong unit';
+select public.update_service_record(
+  (select id from public.service_records where title = 'Test: wrong unit'), 'in_house', current_date,
+  p_ticket_id => (:t1042)::uuid, p_equipment_id => (:espresso)::uuid, p_title => 'Test: wrong unit');
 select is((select equipment_id from public.service_records where title = 'Test: wrong unit'), (:cooler)::uuid,
   'and an edit can''t move it to another');
 delete from public.service_records where title = 'Test: wrong unit';

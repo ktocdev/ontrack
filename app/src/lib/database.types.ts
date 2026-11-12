@@ -717,14 +717,14 @@ isOneToOne: false
                   ]
                 },"service_records": {
                   Row: {
-                    "contractor_id": string | null,"created_at": string,"equipment_id": string | null,"id": string,"kind": Database["public"]['Enums']["service_kind"],"logged_by": string | null,"notes": string | null,"service_date": string,"technician": string | null,"ticket_id": string,"title": string,"updated_at": string
+                    "contractor_id": string | null,"created_at": string,"equipment_id": string | null,"id": string,"kind": Database["public"]['Enums']["service_kind"],"logged_by": string | null,"notes": string | null,"restaurant_id": string,"service_date": string,"technician": string | null,"ticket_id": string | null,"title": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "contractor_id"?: string | null,"created_at"?: string,"equipment_id"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["service_kind"],"logged_by"?: string | null,"notes"?: string | null,"service_date"?: string,"technician"?: string | null,"ticket_id": string,"title": string,"updated_at"?: string
+                    "contractor_id"?: string | null,"created_at"?: string,"equipment_id"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["service_kind"],"logged_by"?: string | null,"notes"?: string | null,"restaurant_id": string,"service_date"?: string,"technician"?: string | null,"ticket_id"?: string | null,"title": string,"updated_at"?: string
                   }
                   Update: {
-                    "contractor_id"?: string | null,"created_at"?: string,"equipment_id"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["service_kind"],"logged_by"?: string | null,"notes"?: string | null,"service_date"?: string,"technician"?: string | null,"ticket_id"?: string,"title"?: string,"updated_at"?: string
+                    "contractor_id"?: string | null,"created_at"?: string,"equipment_id"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["service_kind"],"logged_by"?: string | null,"notes"?: string | null,"restaurant_id"?: string,"service_date"?: string,"technician"?: string | null,"ticket_id"?: string | null,"title"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -757,6 +757,24 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
     },{
       foreignKeyName: "service_records_ticket_id_fkey"
       columns: ["ticket_id"]
@@ -1316,7 +1334,7 @@ isOneToOne: false
                   ]
                 },"v_contractor_spend": {
                   Row: {
-                    "contractor_id": string | null,"last_visit_on": string | null,"total_cents": number | null,"visits": number | null,"year": number | null
+                    "contractor_id": string | null,"last_visit_on": string | null,"restaurant_id": string,"total_cents": number | null,"visits": number | null,"year": number | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1326,6 +1344,24 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "contractors"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
     }
                   ]
                 },"v_equipment_contractors": {
@@ -1428,9 +1464,35 @@ isOneToOne: false
       referencedColumns: ["equipment_id"]
     }
                   ]
+                },"v_invoices_by_month": {
+                  Row: {
+                    "invoices": number | null,"missing": number | null,"month": string | null,"restaurant_id": string,"total_cents": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    }
+                  ]
                 },"v_missing_invoices": {
                   Row: {
-                    "contractor_id": string | null,"service_date": string,"service_record_id": string,"ticket_id": string,"total_cents": number | null
+                    "contractor_id": string | null,"equipment_id": string | null,"restaurant_id": string,"service_date": string,"service_record_id": string,"ticket_id": string | null,"total_cents": number | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1440,6 +1502,36 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "contractors"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "service_records_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
     },{
       foreignKeyName: "service_records_ticket_id_fkey"
       columns: ["ticket_id"]
@@ -1464,14 +1556,14 @@ isOneToOne: false
                   ]
                 },"v_restaurant_history": {
                   Row: {
-                    "equipment": number | null,"home_of": number | null,"inhouse_fixes": number | null,"restaurant_id": string,"tickets": number | null,"walkthroughs": number | null
+                    "equipment": number | null,"home_of": number | null,"inhouse_fixes": number | null,"restaurant_id": string,"service_records": number | null,"tickets": number | null,"walkthroughs": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                           "equipment"?: never,"home_of"?: never,"inhouse_fixes"?: never,"restaurant_id"?: string | null,"tickets"?: never,"walkthroughs"?: never
+                           "equipment"?: never,"home_of"?: never,"inhouse_fixes"?: never,"restaurant_id"?: string | null,"service_records"?: never,"tickets"?: never,"walkthroughs"?: never
                          }
                         Update: {
-                           "equipment"?: never,"home_of"?: never,"inhouse_fixes"?: never,"restaurant_id"?: string | null,"tickets"?: never,"walkthroughs"?: never
+                           "equipment"?: never,"home_of"?: never,"inhouse_fixes"?: never,"restaurant_id"?: string | null,"service_records"?: never,"tickets"?: never,"walkthroughs"?: never
                          }
                         Relationships: [
                     
@@ -1494,7 +1586,7 @@ isOneToOne: false
                   ]
                 },"v_ticket_costs": {
                   Row: {
-                    "last_service_on": string | null,"ticket_id": string,"total_cents": number | null,"visits": number | null
+                    "last_service_on": string | null,"ticket_id": string | null,"total_cents": number | null,"visits": number | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1514,6 +1606,9 @@ isOneToOne: false
                            },
 "add_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
+                           },
+"attach_invoice":
+{ Args: { "p_id": string,"p_path": string }; Returns: undefined
                            },
 "can":
 { Args: { "action": string,"rid"?: string }; Returns: boolean
@@ -1591,6 +1686,9 @@ isOneToOne: false
 "is_service":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"log_service":
+{ Args: { "p_contractor_id"?: string,"p_equipment_id"?: string,"p_invoice_number"?: string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents"?: number,"p_notes"?: string,"p_parts_cents"?: number,"p_restaurant_id"?: string,"p_service_date"?: string,"p_technician"?: string,"p_ticket_id"?: string,"p_title"?: string,"p_trip_cents"?: number }; Returns: string
+                           },
 "log_view_as":
 { Args: { "p_user": string }; Returns: undefined
                            },
@@ -1641,8 +1739,14 @@ isOneToOne: false
 "save_role_defaults":
 { Args: { "p_changes": Json }; Returns: undefined
                            },
+"service_check_input":
+{ Args: { "p_contractor_changed": boolean,"p_contractor_id": string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents": number,"p_parts_cents": number,"p_service_date": string,"p_trip_cents": number }; Returns: undefined
+                           },
 "service_record_restaurant":
 { Args: { "srid": string }; Returns: string
+                           },
+"service_record_snapshot":
+{ Args: { "p_id": string }; Returns: Json
                            },
 "set_category_active":
 { Args: { "p_active": boolean,"p_id": string }; Returns: undefined
@@ -1664,6 +1768,9 @@ isOneToOne: false
                            },
 "set_restaurant_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
+                           },
+"set_service_amount":
+{ Args: { "p_cents": number,"p_id": string,"p_kind": Database["public"]['Enums']["line_item_kind"] }; Returns: undefined
                            },
 "set_ticket_status":
 { Args: { "p_id": string,"p_scheduled_for"?: string,"p_status": Database["public"]['Enums']["ticket_status"] }; Returns: undefined
@@ -1691,6 +1798,9 @@ isOneToOne: false
                            },
 "update_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_id": string,"p_name": string,"p_phone": string }; Returns: undefined
+                           },
+"update_service_record":
+{ Args: { "p_contractor_id"?: string,"p_equipment_id"?: string,"p_id": string,"p_invoice_number"?: string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents"?: number,"p_notes"?: string,"p_parts_cents"?: number,"p_restaurant_id"?: string,"p_service_date": string,"p_technician"?: string,"p_ticket_id"?: string,"p_title"?: string,"p_trip_cents"?: number }; Returns: undefined
                            },
 "use_backup_code":
 { Args: { "p_code": string }; Returns: string
