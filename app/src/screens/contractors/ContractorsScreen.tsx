@@ -36,6 +36,7 @@ import {
   type DirectoryRow,
   type Sort,
 } from './contractors'
+import { ContractorTabs } from './ContractorTabs'
 import { useContractorDirectory } from './useContractorDirectory'
 
 /**
@@ -52,7 +53,8 @@ import { useContractorDirectory } from './useContractorDirectory'
  * Add opens Add contractor, on the trade a search named; a card opens the contractor
  * (OT-95). Archived contractors sit apart under a closed Archived disclosure at the
  * bottom, found by the search and chips too, so one can be restored. Import from a
- * spreadsheet waits for Phase 7, and the Invoices tab for OT-96. Under View as, Add is
+ * spreadsheet waits for Phase 7. The Directory and Invoices tabs (OT-96) sit under the
+ * title for anyone with see_costs. Under View as, Add is
  * gone and nothing opens.
  */
 export function ContractorsScreen() {
@@ -60,6 +62,9 @@ export function ContractorsScreen() {
   if (seeContractors === false) return <NotFoundScreen />
   return <Directory />
 }
+
+/** Room for an empty state that scrolls when it doesn't fit under the header, as on a short phone. */
+const EMPTY = 'flex min-h-0 flex-1 flex-col overflow-y-auto'
 
 const SORT_LABEL: Record<Sort, string> = { used: 'Most used first', spend: 'Highest spend first' }
 
@@ -138,6 +143,7 @@ function Directory() {
           ) : undefined
         }
       >
+        <ContractorTabs />
         {!empty && !isError && (
           <>
             <SearchField
@@ -162,74 +168,80 @@ function Directory() {
       </ScreenHeader>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load contractors"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <div className={EMPTY}>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load contractors"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </div>
       ) : empty ? (
-        <EmptyState
-          icon={<IconBriefcase size={30} />}
-          title="No contractors yet"
-          body={
-            <>
-              Add the companies you call for repairs. You can then pick them when you log service and see what you spend
-              with each.
-              <span className="mt-2.5 block text-13">You can also add one while logging service on a ticket.</span>
-            </>
-          }
-        >
-          {canAdd && (
-            <ButtonLink
-              to="/ops/contractors/new"
-              variant="medium"
-              className="w-full"
-              icon={<IconPlus size={18} strokeWidth={2.2} />}
-            >
-              Add contractor
-            </ButtonLink>
-          )}
-        </EmptyState>
-      ) : !isPending && shown.length === 0 ? (
-        <EmptyState
-          tone="neutral"
-          icon={<IconSearchOff size={30} />}
-          title={q ? `No contractors match "${q}"` : `No ${trade} contractors`}
-          body={
-            q
-              ? `None of your ${contractors.length} contractors match that company, contact or trade.${canAdd ? ' Add one if you’ve found someone new.' : ''}`
-              : 'None of your contractors have this trade yet.'
-          }
-        >
-          <div className="flex flex-col gap-2.5">
+        <div className={EMPTY}>
+          <EmptyState
+            icon={<IconBriefcase size={30} />}
+            title="No contractors yet"
+            body={
+              <>
+                Add the companies you call for repairs. You can then pick them when you log service and see what you
+                spend with each.
+                <span className="mt-2.5 block text-13">You can also add one while logging service on a ticket.</span>
+              </>
+            }
+          >
             {canAdd && (
               <ButtonLink
-                to={addTo(searchedTrade ?? trade)}
+                to="/ops/contractors/new"
                 variant="medium"
                 className="w-full"
                 icon={<IconPlus size={18} strokeWidth={2.2} />}
               >
-                {searchedTrade ? `Add a ${searchedTrade.toLowerCase()} contractor` : 'Add contractor'}
+                Add contractor
               </ButtonLink>
             )}
-            <Button
-              variant="secondary"
-              className="w-full"
-              onClick={() => {
-                setQuery('')
-                setTrade(null)
-              }}
-            >
-              {q ? 'Clear search' : 'Show all'}
-            </Button>
-          </div>
-        </EmptyState>
+          </EmptyState>
+        </div>
+      ) : !isPending && shown.length === 0 ? (
+        <div className={EMPTY}>
+          <EmptyState
+            tone="neutral"
+            icon={<IconSearchOff size={30} />}
+            title={q ? `No contractors match "${q}"` : `No ${trade} contractors`}
+            body={
+              q
+                ? `None of your ${contractors.length} contractors match that company, contact or trade.${canAdd ? ' Add one if you’ve found someone new.' : ''}`
+                : 'None of your contractors have this trade yet.'
+            }
+          >
+            <div className="flex flex-col gap-2.5">
+              {canAdd && (
+                <ButtonLink
+                  to={addTo(searchedTrade ?? trade)}
+                  variant="medium"
+                  className="w-full"
+                  icon={<IconPlus size={18} strokeWidth={2.2} />}
+                >
+                  {searchedTrade ? `Add a ${searchedTrade.toLowerCase()} contractor` : 'Add contractor'}
+                </ButtonLink>
+              )}
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() => {
+                  setQuery('')
+                  setTrade(null)
+                }}
+              >
+                {q ? 'Clear search' : 'Show all'}
+              </Button>
+            </div>
+          </EmptyState>
+        </div>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-0">
           {isPending ? (
