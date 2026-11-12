@@ -21,7 +21,7 @@ test('a manager picks a category and creates a ticket, and another manager canno
 
   const area = page.getByRole('radiogroup', { name: 'Area' })
   await expect(area.getByRole('radio', { name: 'Front of House' })).toHaveAttribute('aria-checked', 'true')
-  await expect(page.getByRole('link', { name: /^POS & tech/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /^Retractable roofs & windows/ })).toBeVisible()
   await area.getByRole('radio', { name: 'Back of House' }).click()
   await page.waitForTimeout(300)
   await testInfo.attach('create-area', { body: await page.screenshot(), contentType: 'image/png' })
