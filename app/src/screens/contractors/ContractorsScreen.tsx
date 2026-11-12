@@ -7,6 +7,7 @@ import { Chip } from '../../components/Chip'
 import { ContractorCard } from '../../components/ContractorCard'
 import { EmptyState } from '../../components/EmptyState'
 import { SearchField } from '../../components/Field'
+import { OverflowMenu } from '../../components/Menu'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
@@ -17,7 +18,7 @@ import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
 import { AddContractorSheet } from '../service/ServiceFields'
 import { serviceDay } from '../service/service'
-import { useTrades } from '../service/useLogService'
+import { useCanEditTrades, useTrades } from '../trades/useTrades'
 import {
   matchesSearch,
   sortRows,
@@ -36,7 +37,9 @@ import { useContractorDirectory } from './useContractorDirectory'
  * archived; the spend, visits and last visit on each follow the restaurant picker, as
  * the dashboard does (decided Nov 11, 2026), and show only with see_costs. Search finds
  * a company, contact or trade; the chips after "All" are the trades in the list, most
- * contractors first, and a count shows on All as the board draws it. "Most used first"
+ * contractors first, and a count shows on All as the board draws it. A contractor can
+ * have several trades (OT-99): the card shows each, and every one of their chips finds
+ * them. The menu beside Add opens Trades for whoever looks after them. "Most used first"
  * (this year's visits) switches to "Highest spend first". A contractor whose insurance
  * runs out within 30 days, or has, is flagged. The call button dials straight away.
  * Add opens the short add sheet until the full Add contractor screen (OT-95), and a
@@ -59,6 +62,7 @@ function Directory() {
   const canAdd = !!useRight('log_cost') && !viewingAs
   const { data, isPending, isError, refetch } = useContractorDirectory(seeCosts)
   const trades = useTrades()
+  const canEditTrades = useCanEditTrades()
   const toast = useToast()
   const [year] = useState(() => new Date().getFullYear())
   const [query, setQuery] = useState('')
@@ -69,13 +73,13 @@ function Directory() {
   const contractors = data?.contractors ?? []
   const rows = data ? summarize(contractors, data.spend, scope.ids, year) : []
   const shown = sortRows(
-    rows.filter((r) => (!trade || r.trade === trade) && matchesSearch(r, query)),
+    rows.filter((r) => (!trade || r.trades.includes(trade)) && matchesSearch(r, query)),
     seeCosts ? sort : 'used',
   )
   const empty = !isPending && !isError && contractors.length === 0
   const q = query.trim()
   // "Add a roofing contractor" when the search names a trade on the list.
-  const searchedTrade = (trades.data ?? []).find((t) => t.toLowerCase() === q.toLowerCase())
+  const searchedTrade = (trades.data ?? []).find((t) => t.active && t.name.toLowerCase() === q.toLowerCase())?.name
 
   const visitsLine = (r: DirectoryRow) =>
     seeCosts
@@ -101,16 +105,26 @@ function Directory() {
         }
         topRight={<ProfileLink />}
         action={
-          canAdd && !empty ? (
-            <Button
-              variant="compact"
-              aria-label="Add contractor"
-              icon={<IconPlus size={18} strokeWidth={2.4} />}
-              className="gap-1.5 px-3.5 text-14"
-              onClick={() => setAdding({ trade: '' })}
-            >
-              Add
-            </Button>
+          (canAdd && !empty) || canEditTrades ? (
+            <span className="flex flex-none items-center gap-2">
+              {canAdd && !empty && (
+                <Button
+                  variant="compact"
+                  aria-label="Add contractor"
+                  icon={<IconPlus size={18} strokeWidth={2.4} />}
+                  className="gap-1.5 px-3.5 text-14"
+                  onClick={() => setAdding({ trade: '' })}
+                >
+                  Add
+                </Button>
+              )}
+              {canEditTrades && (
+                <OverflowMenu
+                  label="More options for contractors"
+                  items={[{ to: '/ops/contractors/trades', label: 'Trades' }]}
+                />
+              )}
+            </span>
           ) : undefined
         }
       >
@@ -232,7 +246,7 @@ function Directory() {
                 <ContractorCard
                   key={r.id}
                   name={r.name}
-                  trade={r.trade}
+                  trades={r.trades}
                   preferred={r.preferred}
                   warning={r.insurance}
                   contact={r.contact_name}

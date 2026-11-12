@@ -165,7 +165,10 @@ test('+ Add new contractor adds one and picks it, keeping the form', async ({ pa
   const sheet = page.getByRole('dialog', { name: 'Add contractor' })
   await expect(sheet).toBeVisible()
   await sheet.getByLabel('Company name').fill(name)
-  await sheet.getByLabel('Trade').selectOption('Retractable roofs & windows')
+  await sheet
+    .getByRole('group', { name: 'Trades' })
+    .getByRole('button', { name: 'Retractable roofs & windows' })
+    .click()
   await sheet.getByLabel('Phone (optional)').fill('(312) 555-0100')
   await sheet.getByRole('button', { name: 'Add contractor' }).click()
 
@@ -176,7 +179,7 @@ test('+ Add new contractor adds one and picks it, keeping the form', async ({ pa
   // A name already in the list is refused in the sheet.
   await page.getByLabel('Contractor company').selectOption({ label: '+ Add new contractor' })
   await sheet.getByLabel('Company name').fill('coldline refrigeration')
-  await sheet.getByLabel('Trade').selectOption('Refrigeration')
+  await sheet.getByRole('group', { name: 'Trades' }).getByRole('button', { name: 'Refrigeration' }).click()
   await sheet.getByRole('button', { name: 'Add contractor' }).click()
   await expect(sheet.getByText('A contractor by that name is already in the list.')).toBeVisible()
 })

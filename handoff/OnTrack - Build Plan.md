@@ -433,6 +433,7 @@ Every repair gets a cost, a contractor and an invoice, and the spend views on eq
 | OT-96 | Invoices tab: by month, the Missing filter and its count, sort, search by contractor, unit, ticket or invoice number, the month's count and total, rows opening the service record |
 | OT-97 | Security and code quality pass over Phase 5 |
 | OT-98 | The done test as one flow; the phase note |
+| OT-99 | From feedback (Nov 12, 2026): a contractor has one or more trades, linked through `contractor_trades` to a `trades` table that replaces the fixed list; `save_contractor` takes the trades; Trades for Ops with Log cost and admins (from Contractors' menu and from Restaurants), by the archive and delete rule like Categories; the add sheet picks trades with chips, a card shows a tag for each, and every chip of theirs finds them; pgTAP and a flow |
 
 **What this phase has to work around**
 
@@ -442,6 +443,7 @@ Every repair gets a cost, a contractor and an invoice, and the spend views on eq
 - **Line item descriptions.** Service record shows "Labor · 2 hrs" and "Parts · fan motor, capacitor", but Log service and Edit only ask for amounts. The descriptions show when there are some (the seed has them) and the forms leave them off, as the boards do.
 - **The invoice amount** is the record's total; the invoice row holds its number, file and status (attached or missing), so a record logged with no file shows under Missing until one is attached.
 - **Restaurant scope.** Contractors are the group's, shared by every restaurant, so the directory lists every one; the spend, visits and invoices on it follow the restaurant picker at the top, as the dashboard does. Who sees what is `see_contractors` for the directory and `see_costs` at a restaurant for any amount; logging needs `log_cost` at the record's restaurant, Ops by default.
+- **Several trades per contractor (from feedback, Nov 12, 2026; OT-99).** Some contractors do more than one thing, like refrigeration and HVAC, so a contractor has one or more trades, where the boards draw one Trade dropdown. They are picked with chips you tap on and off, the style Invite user uses for restaurants, and a card shows a tag for each, wrapping when needed. The trade list is no longer fixed: Ops with Log cost and admins add, rename, turn off and delete trades on a Trades screen that follows Categories, since no board draws one. A turned-off trade leaves the choices, and contractors who have it keep it.
 - **The Import contractors banner on Add contractor and the empty directory waits for Phase 7,** when Import contractors is built, so it is left off.
 - **Leadership's read-only contractor and invoice screens are Phase 7's.** A contractor link opened by leadership says so, as a ticket link does.
 - **View as:** each screen scopes its data from `useUser()` and hides Add, Edit, Log service, Attach and Replace when `viewingAs` is set.

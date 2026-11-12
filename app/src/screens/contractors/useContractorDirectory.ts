@@ -4,7 +4,7 @@ import type { Contractor, SpendRow } from './contractors'
 
 /**
  * The directory: every contractor not archived, which is the group's whole list
- * (see_contractors), and what was spent with each, per restaurant and year
+ * (see_contractors), with their trades in the list's order, and what was spent with each, per restaurant and year
  * (v_contractor_spend, which returns rows only with see_costs). The screen adds up the
  * restaurants the picker shows. The key sits under 'contractors', which "+ Add new
  * contractor" refreshes.
@@ -17,7 +17,7 @@ export function useContractorDirectory(seeCosts: boolean) {
       const [contractors, spend] = await Promise.all([
         sb
           .from('contractors')
-          .select('id, name, trade, contact_name, phone, preferred, insurance_until')
+          .select('id, name, contact_name, phone, preferred, insurance_until, trades (name, sort_order)')
           .is('archived_at', null)
           .order('name'),
         seeCosts
@@ -28,7 +28,13 @@ export function useContractorDirectory(seeCosts: boolean) {
       ])
       if (contractors.error) throw contractors.error
       if (spend.error) throw spend.error
-      return { contractors: contractors.data as Contractor[], spend: (spend.data ?? []) as SpendRow[] }
+      return {
+        contractors: contractors.data.map(({ trades, ...c }): Contractor => ({
+          ...c,
+          trades: [...trades].sort((a, b) => a.sort_order - b.sort_order).map((t) => t.name),
+        })),
+        spend: (spend.data ?? []) as SpendRow[],
+      }
     },
   })
 }

@@ -6,14 +6,10 @@ import { ErrorBanner } from '../../components/Notice'
 import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { IconClose, IconFile, IconPaperclip } from '../../components/icons'
+import { TradePicker } from '../trades/TradePicker'
+import { useTrades } from '../trades/useTrades'
 import { shortDay } from './service'
-import {
-  useAddContractor,
-  useContractorChoices,
-  useTrades,
-  type DuplicateInvoice,
-  type TicketChoice,
-} from './useLogService'
+import { useAddContractor, useContractorChoices, type DuplicateInvoice, type TicketChoice } from './useLogService'
 
 /**
  * The parts Log service and Edit service record share: who did the work (in-house or a
@@ -277,9 +273,9 @@ export function InvoiceFile({
 }
 
 /**
- * "+ Add new contractor": the name, trade and phone; the rest is filled in later. Log
- * service opens it from the picker, and the directory's Add until the full Add contractor
- * screen (OT-95), with the trade a search named.
+ * "+ Add new contractor": the name, one or more trades and the phone; the rest is filled
+ * in later. Log service opens it from the picker, and the directory's Add until the full
+ * Add contractor screen (OT-95), with the trade a search named already picked.
  */
 export function AddContractorSheet({
   onClose,
@@ -288,12 +284,15 @@ export function AddContractorSheet({
 }: {
   onClose: () => void
   onAdded: (id: string) => void
+  /** Picked on opening: the name of the trade a search or a chip named. */
   trade?: string
 }) {
   const trades = useTrades()
   const add = useAddContractor()
   const [name, setName] = useState('')
-  const [trade, setTrade] = useState(startTrade)
+  // Untouched, it is the trade the sheet opened on, once the list has loaded.
+  const [picked, setPicked] = useState<string[] | null>(null)
+  const tradeIds = picked ?? (trades.data ?? []).filter((t) => t.name === startTrade).map((t) => t.id)
   const [phone, setPhone] = useState('')
   const code = (add.error as { code?: string } | null)?.code
   return (
@@ -312,14 +311,14 @@ export function AddContractorSheet({
           setName(e.target.value)
         }}
       />
-      <Select label="Trade" value={trade} onChange={(e) => setTrade(e.target.value)}>
-        <option value="">Choose a trade</option>
-        {(trades.data ?? []).map((t) => (
-          <option key={t} value={t}>
-            {t}
-          </option>
-        ))}
-      </Select>
+      <TradePicker
+        trades={trades.data ?? []}
+        value={tradeIds}
+        onChange={(ids) => {
+          add.reset()
+          setPicked(ids)
+        }}
+      />
       <Input
         label="Phone"
         optional
@@ -335,13 +334,15 @@ export function AddContractorSheet({
             ? 'A contractor by that name is already in the list.'
             : code === '42501'
               ? 'Only Ops or an admin can add a contractor.'
-              : 'That didn’t go through. Check your connection and try again.'}
+              : code === '23514'
+                ? 'One of those trades was just turned off. Pick another.'
+                : 'That didn’t go through. Check your connection and try again.'}
         </span>
       )}
       <Button
         loading={add.isPending}
-        disabled={!name.trim() || !trade}
-        onClick={() => add.mutate({ name, trade, phone }, { onSuccess: onAdded })}
+        disabled={!name.trim() || tradeIds.length === 0}
+        onClick={() => add.mutate({ name, tradeIds, phone }, { onSuccess: onAdded })}
       >
         Add contractor
       </Button>

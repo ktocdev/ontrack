@@ -127,7 +127,8 @@ insert into public.equipment (id, restaurant_id, category_id, name, brand, model
 -- ---------------------------------------------------------------------------
 -- Contractors ("All · 12")
 -- ---------------------------------------------------------------------------
-insert into public.contractors (id, name, trade, contact_name, phone, email, preferred, insurance_until, notes, created_by) values
+-- Each with one trade, as the boards draw them; a contractor can have several (OT-99).
+with v (id, name, trade, contact_name, phone, email, preferred, insurance_until, notes, created_by) as (values
   ('55555555-5555-4555-8555-000000000001', 'Coldline Refrigeration',    'Refrigeration', 'Rosa Alvarez',    '(312) 555-0187', 'rosa@coldlinerefrigeration.example.com', true,  '2027-06-30', 'After hours: (312) 555-0190. Account #FC-2210.', '22222222-2222-4222-8222-000000000003'),
   ('55555555-5555-4555-8555-000000000002', 'Northstar HVAC',            'HVAC',          'Kevin Brooks',    '(312) 555-0162', 'kevin@northstarhvac.example.com',        true,  '2027-02-28', null, '22222222-2222-4222-8222-000000000003'),
   ('55555555-5555-4555-8555-000000000003', 'Brightway Electric',        'Electrical',    'Tina Nguyen',     '(773) 555-0133', 'tina@brightwayelectric.example.com',     false, '2026-11-01', 'Ask for the restaurant rate.', '22222222-2222-4222-8222-000000000003'),
@@ -139,7 +140,13 @@ insert into public.contractors (id, name, trade, contact_name, phone, email, pre
   ('55555555-5555-4555-8555-000000000009', 'ClearSound AV',             'Audio & video', 'Jonah Pierce',    '(773) 555-0144', 'jonah@clearsoundav.example.com',         false, '2027-05-31', null, '22222222-2222-4222-8222-000000000003'),
   ('55555555-5555-4555-8555-000000000010', 'TechPoint POS',             'Audio & video', 'Support desk',    '(800) 555-0177', 'help@techpointpos.example.com',          false, null,         null, '22222222-2222-4222-8222-000000000003'),
   ('55555555-5555-4555-8555-000000000011', 'Metro Lighting',            'Lighting',      'Celia Grant',     '(312) 555-0156', 'celia@metrolighting.example.com',        false, '2027-08-31', null, '22222222-2222-4222-8222-000000000003'),
-  ('55555555-5555-4555-8555-000000000012', 'Windy City Glass & Decor',  'Decorations',   'Nate Okafor',     '(773) 555-0160', 'nate@windycityglass.example.com',        false, '2026-09-30', 'Insurance certificate requested.', '22222222-2222-4222-8222-000000000003');
+  ('55555555-5555-4555-8555-000000000012', 'Windy City Glass & Decor',  'Decorations',   'Nate Okafor',     '(773) 555-0160', 'nate@windycityglass.example.com',        false, '2026-09-30', 'Insurance certificate requested.', '22222222-2222-4222-8222-000000000003')
+), added as (
+  insert into public.contractors (id, name, contact_name, phone, email, preferred, insurance_until, notes, created_by)
+  select id::uuid, name, contact_name, phone, email, preferred, insurance_until::date, notes, created_by::uuid from v
+)
+insert into public.contractor_trades (contractor_id, trade_id)
+select v.id::uuid, t.id from v join public.trades t on t.name = v.trade;
 
 -- ---------------------------------------------------------------------------
 -- Tickets. Events are inserted by hand with their own timestamps, so the
