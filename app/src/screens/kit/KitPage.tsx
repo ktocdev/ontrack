@@ -45,6 +45,7 @@ import {
 } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
 import {
+  BackBar,
   BrandBackBar,
   CloseBar,
   Screen,
@@ -303,6 +304,19 @@ export function KitPage() {
               </div>
               <div className="overflow-hidden rounded-card border border-border">
                 <CloseBar to="/kit" title="Log service" subtitle="OT-1042 · Walk-in Cooler 1" bordered={false} />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border">
+                <BackBar
+                  to="/kit"
+                  label="Back"
+                  roomy
+                  action={<span className="px-2 text-16 font-semibold text-brand">Edit</span>}
+                >
+                  <span className="flex flex-col gap-px">
+                    <span className="text-12 text-text-secondary">Walk-in Cooler 1 · Federale’s Logan Square</span>
+                    <span className="font-display text-20 font-bold text-text">Service record</span>
+                  </span>
+                </BackBar>
               </div>
               <div className="overflow-hidden rounded-card border border-border">
                 <BrandBackBar to="/kit" label="Back" />

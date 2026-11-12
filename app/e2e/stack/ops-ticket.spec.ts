@@ -49,6 +49,7 @@ test('the ticket shows what the board does', async ({ page }, testInfo) => {
   await expect(page.getByText('Oct 19, 2026 - 9:12 AM')).toBeVisible()
   await expect(page.getByText('Reading 46°F')).toBeVisible()
   await expect(page.getByText('Walk-in Cooler 1')).toBeVisible()
+  await expect(page.getByText('Category', { exact: true }).locator('..')).toContainText('Back of House › Refrigeration')
   await expect(statusButton(page)).toContainText('In progress')
 
   // Nobody assigns. Service & cost has its visits and Log service since OT-92.

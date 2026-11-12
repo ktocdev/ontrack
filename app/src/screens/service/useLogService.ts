@@ -150,6 +150,45 @@ export class DuplicateInvoiceError extends Error {
 
 const blank = (v: string) => v.trim() || undefined
 
+/**
+ * A save the database refused because the contractor already has this invoice number:
+ * its detail names the visit that has it, so look that up (with see_costs there) to say
+ * where. Any other error is passed through as it came.
+ */
+export async function asDuplicate(error: { code?: string; details?: string | null }, number: string) {
+  if (error.code !== '23505') return error
+  const other = error.details
+    ? await requireSupabase()
+        .from('service_records')
+        .select('service_date, ticket:tickets (display_id), equipment (name)')
+        .eq('id', error.details)
+        .maybeSingle()
+    : null
+  return new DuplicateInvoiceError({
+    number: number.trim(),
+    ticket: other?.data?.ticket?.display_id ?? null,
+    unit: other?.data?.equipment?.name ?? null,
+    date: other?.data?.service_date ?? null,
+  })
+}
+
+/**
+ * Uploads an invoice to its record's folder and names it on the record (attach_invoice
+ * checks it is there). A photo is shrunk to 2000 px, which keeps a paper invoice
+ * readable. A file with the same name replaces the one there.
+ */
+export async function attachInvoice(id: string, file: File) {
+  const sb = requireSupabase()
+  const image = file.type.startsWith('image/')
+  const blob = image ? await resizeToJpeg(file, 2000) : file
+  const name = image ? `${invoiceFileName(file.name).replace(/\.[^.]*$/, '')}.jpg` : invoiceFileName(file.name)
+  const path = `${id}/${name}`
+  const up = await sb.storage.from('invoices').upload(path, blob, { contentType: blob.type, upsert: true })
+  if (up.error) throw up.error
+  const attached = await sb.rpc('attach_invoice', { p_id: id, p_path: path })
+  if (attached.error) throw attached.error
+}
+
 export function useLogService() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -169,38 +208,13 @@ export function useLogService() {
         p_parts_cents: v.partsCents,
         p_trip_cents: v.tripCents,
       })
-      if (logged.error) {
-        if (logged.error.code === '23505') {
-          // The detail names the visit that has the number; with see_costs there, say where.
-          const other = logged.error.details
-            ? await sb
-                .from('service_records')
-                .select('service_date, ticket:tickets (display_id), equipment (name)')
-                .eq('id', logged.error.details)
-                .maybeSingle()
-            : null
-          throw new DuplicateInvoiceError({
-            number: v.invoiceNumber.trim(),
-            ticket: other?.data?.ticket?.display_id ?? null,
-            unit: other?.data?.equipment?.name ?? null,
-            date: other?.data?.service_date ?? null,
-          })
-        }
-        throw logged.error
-      }
+      if (logged.error) throw await asDuplicate(logged.error, v.invoiceNumber)
       const id = logged.data
 
       let fileFailed = false
       if (file) {
         try {
-          const image = file.type.startsWith('image/')
-          const blob = image ? await resizeToJpeg(file, 2000) : file
-          const name = image ? `${invoiceFileName(file.name).replace(/\.[^.]*$/, '')}.jpg` : invoiceFileName(file.name)
-          const path = `${id}/${name}`
-          const up = await sb.storage.from('invoices').upload(path, blob, { contentType: blob.type, upsert: true })
-          if (up.error) throw up.error
-          const attached = await sb.rpc('attach_invoice', { p_id: id, p_path: path })
-          if (attached.error) throw attached.error
+          await attachInvoice(id, file)
         } catch {
           fileFailed = true
         }

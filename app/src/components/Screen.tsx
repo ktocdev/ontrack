@@ -60,17 +60,23 @@ export function ScreenHeader({ title, topLeft, topRight, action, children, class
   )
 }
 
-/** Back bar for detail screens: 44px back target, a crumb, bottom divider. The Create form draws it with no line. */
+/**
+ * Back bar for detail screens: 44px back target, a crumb, bottom divider. The Create form
+ * draws it with no line. Roomy adds the 12px above a two-line header (Service record:
+ * the unit and restaurant over the title).
+ */
 export function BackBar({
   to,
   label,
   bordered = true,
+  roomy = false,
   action,
   children,
 }: {
   to: string
   label: string
   bordered?: boolean
+  roomy?: boolean
   /** A link at the right end (Edit on a unit's page). */
   action?: ReactNode
   children?: ReactNode
@@ -78,7 +84,9 @@ export function BackBar({
   return (
     <div
       className={`flex flex-none items-center gap-1 px-3 ${
-        bordered ? 'mb-2 border-b border-border pb-2 pt-safe' : 'pb-1 pt-[calc(12px+var(--safe-top))]'
+        bordered
+          ? `mb-2 border-b border-border pb-2 ${roomy ? 'pt-[calc(12px+var(--safe-top))]' : 'pt-safe'}`
+          : 'pb-1 pt-[calc(12px+var(--safe-top))]'
       }`}
     >
       <Link

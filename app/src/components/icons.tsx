@@ -428,6 +428,18 @@ export const IconDownload = (p: IconProps) => (
     <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
   </svg>
 )
+/** Two arrows out to the corners: View an invoice full size. */
+export const IconExpand = (p: IconProps) => (
+  <svg {...base({ size: 18, ...p })}>
+    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+  </svg>
+)
+/** Two arrows round a circle: Replace an invoice. */
+export const IconReplace = (p: IconProps) => (
+  <svg {...base({ size: 18, ...p })}>
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" />
+  </svg>
+)
 export const IconShieldTick = (p: IconProps) => (
   <svg {...base({ size: 26, ...p })}>
     <path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z" />

@@ -11,6 +11,7 @@ import { LogServiceLink } from '../service/TicketService'
 import { money, timeline } from '../tickets/closed'
 import { ClosingComment, Fact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
+import { AREA_LABEL } from '../tickets/tickets'
 import { useClosedFacts } from '../tickets/useCloseTicket'
 import { useSignedPhotos } from '../tickets/usePhotos'
 import { TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
@@ -62,6 +63,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
                 {ticket.restaurant.name}
               </span>
             )}
+            {ticket.category && ` · ${AREA_LABEL[ticket.category.area]} › ${ticket.category.name}`}
             {ticket.equipment && ` · ${ticket.equipment.name}`}
             {closedOn && ` · Closed ${closedOn}`}
           </span>

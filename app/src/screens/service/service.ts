@@ -63,3 +63,24 @@ export function todayISO(now = new Date()) {
   const p = (n: number) => String(n).padStart(2, '0')
   return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`
 }
+
+/** "Aug 12" for a date column. */
+export function shortDay(date: string) {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number]
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+/** "120" or "$120.00" for an amount in cents; empty for none. */
+export function amountText(cents: number) {
+  return cents ? tidyMoney(String(cents / 100)) : ''
+}
+
+/** "Oct 19, 4:50 PM" for a moment, on the phone's own clock; the year only if not this one. */
+export function loggedWhen(at: Date, now = new Date()) {
+  const day = at.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: at.getFullYear() === now.getFullYear() ? undefined : 'numeric',
+  })
+  return `${day}, ${at.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
+}

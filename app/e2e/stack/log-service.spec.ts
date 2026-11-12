@@ -79,11 +79,11 @@ test('from a ticket: a contractor visit with its invoice, on the ticket and the 
 
   // On the unit's service log too, with the invoice on file.
   await page.goto(`/ops/equipment/${COOLER}/service`)
-  // A row of the log: its date, title and line, the invoice mark, the amount.
+  // A row of the log, a link to the record since OT-93.
   const row = page
     .getByRole('region', { name: /^Service log \d{4}$/ })
     .first()
-    .locator('div[class*="min-h-[64px]"]')
+    .getByRole('link')
     .filter({ hasText: 'Walk-in cooler not holding temp' })
     .filter({ hasText: '$397.40' })
     .first()
@@ -133,7 +133,10 @@ test('from a unit: in-house work with no ticket, done by you', async ({ page }, 
   await page.getByRole('radio', { name: 'In-house' }).click()
   await expect(page.getByLabel('Done by')).toHaveValue('Bert Velilla')
   await expect(page.getByLabel('Contractor company')).toHaveCount(0)
-  await fillCost(page, '', '38.5', '')
+  // In-house work asks only for parts.
+  await expect(amount(page, 'Labor')).toHaveCount(0)
+  await expect(amount(page, 'Trip / call-out fee')).toHaveCount(0)
+  await amount(page, 'Parts').fill('38.5')
   await page.getByLabel('Work notes').fill(notes)
   await page.getByRole('button', { name: 'Save to equipment' }).click()
 
@@ -145,7 +148,6 @@ test('from a unit: in-house work with no ticket, done by you', async ({ page }, 
 test('a bad amount is marked, and the total waits for it', async ({ page }) => {
   await signIn(page, BERT)
   await page.goto(`/ops/tickets/${T1042}/service/new`)
-  await page.getByRole('radio', { name: 'In-house' }).click()
   await fillCost(page, '12.345', '10', '')
   await expect(amount(page, 'Labor')).toHaveAttribute('aria-invalid', 'true')
   await expect(page.getByText('–', { exact: true })).toBeVisible()

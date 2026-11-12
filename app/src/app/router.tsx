@@ -315,6 +315,18 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
+                    path: '/ops/service/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/service/ServiceRecordScreen')).ServiceRecordScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/service/:id/edit',
+                    lazy: async () => ({
+                      Component: (await import('../screens/service/EditServiceScreen')).EditServiceScreen,
+                    }),
+                  },
+                  {
                     path: '/ops/contractors/:id/service/new',
                     lazy: async () => ({
                       Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromContractorScreen,
