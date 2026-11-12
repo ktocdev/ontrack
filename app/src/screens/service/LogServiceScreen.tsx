@@ -281,7 +281,7 @@ function Form({ origin, loaded }: { origin: Origin; loaded: LogServiceOrigin }) 
             />
 
             <SectionLabel className="-mb-0.5">Cost</SectionLabel>
-            <CostCard rows={amounts.rows} total={amounts.total} />
+            <CostCard rows={amounts.rows(work.kind)} total={amounts.total} />
 
             <Textarea
               label="Work notes"

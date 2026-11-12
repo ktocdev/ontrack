@@ -19,7 +19,7 @@ import type { TicketStatus } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { TicketService } from '../service/TicketService'
 import { longDate } from '../tickets/closed'
-import { scheduledLabel } from '../tickets/tickets'
+import { AREA_LABEL, scheduledLabel } from '../tickets/tickets'
 import { ThreadFeed } from '../tickets/ThreadFeed'
 import { threadItems } from '../tickets/thread'
 import { EquipmentCard, TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
@@ -35,7 +35,8 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * decides that: In progress puts you on it, back to Open takes the person off. Take this
  * over is for one a colleague has. Scheduled asks for its date, which has no board. Links
  * to later phases stay off: the walkthrough opens nothing yet (the equipment card opens the unit).
- * Service & cost lists each visit with the total so far, with see_costs (OT-92). Writing back and forth is rare for Ops, so the message
+ * Service & cost lists each visit with the total so far, with see_costs (OT-92). Category
+ * says Front or Back of House and which category, from feedback (Nov 11, 2026). Writing back and forth is rare for Ops, so the message
  * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
  * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
  * optional comment, then goes back to the dashboard.
@@ -161,6 +162,11 @@ export function OpsTicketScreen() {
               <Fact label="Location">
                 <RestaurantSquare color={ticket.restaurant.color} />
                 {ticket.restaurant.name}
+              </Fact>
+            )}
+            {ticket.category && (
+              <Fact label="Category">
+                {AREA_LABEL[ticket.category.area]} › {ticket.category.name}
               </Fact>
             )}
             {ticket.opener && <Fact label="Reporter">{ticket.opener.full_name}</Fact>}

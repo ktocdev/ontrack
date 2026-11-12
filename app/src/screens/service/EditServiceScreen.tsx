@@ -166,7 +166,7 @@ function Form({ data }: { data: ServiceRecordData }) {
             />
 
             <SectionLabel className="-mb-0.5">Cost</SectionLabel>
-            <CostCard rows={amounts.rows} total={amounts.total} />
+            <CostCard rows={amounts.rows(work.kind)} total={amounts.total} />
 
             <Textarea
               label="Description"

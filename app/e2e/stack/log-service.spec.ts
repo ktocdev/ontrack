@@ -133,7 +133,10 @@ test('from a unit: in-house work with no ticket, done by you', async ({ page }, 
   await page.getByRole('radio', { name: 'In-house' }).click()
   await expect(page.getByLabel('Done by')).toHaveValue('Bert Velilla')
   await expect(page.getByLabel('Contractor company')).toHaveCount(0)
-  await fillCost(page, '', '38.5', '')
+  // In-house work asks only for parts.
+  await expect(amount(page, 'Labor')).toHaveCount(0)
+  await expect(amount(page, 'Trip / call-out fee')).toHaveCount(0)
+  await amount(page, 'Parts').fill('38.5')
   await page.getByLabel('Work notes').fill(notes)
   await page.getByRole('button', { name: 'Save to equipment' }).click()
 
@@ -145,7 +148,6 @@ test('from a unit: in-house work with no ticket, done by you', async ({ page }, 
 test('a bad amount is marked, and the total waits for it', async ({ page }) => {
   await signIn(page, BERT)
   await page.goto(`/ops/tickets/${T1042}/service/new`)
-  await page.getByRole('radio', { name: 'In-house' }).click()
   await fillCost(page, '12.345', '10', '')
   await expect(amount(page, 'Labor')).toHaveAttribute('aria-invalid', 'true')
   await expect(page.getByText('–', { exact: true })).toBeVisible()

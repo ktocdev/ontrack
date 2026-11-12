@@ -71,22 +71,20 @@ test('the seed’s visit on OT-1042: invoice, cost line by line and details, fro
 })
 
 test('a visit with no invoice says Missing, takes one, then replaces it', async ({ page, request }, testInfo) => {
+  const title = `Quarterly coil cleaning ${run(testInfo.project.name)}`
   const id = await logVisit(request, {
     p_kind: 'contractor',
     p_restaurant_id: LOGAN,
     p_equipment_id: COOLER,
     p_contractor_id: COLDLINE,
-    p_title: `Quarterly coil cleaning ${run(testInfo.project.name)}`,
+    p_title: title,
     p_labor_cents: 18000,
   })
   await signIn(page, BERT)
 
   // From the unit's log, where its row says No invoice.
   await page.goto(`/ops/equipment/${COOLER}/service`)
-  await page
-    .getByRole('link', { name: /Quarterly coil cleaning/ })
-    .first()
-    .click()
+  await page.getByRole('link', { name: new RegExp(title) }).click()
   await expect(page).toHaveURL(new RegExp(`/ops/service/${id}$`))
   await expect(page.getByText('Missing invoice')).toBeVisible()
   await expect(page.getByText('Ticket', { exact: true })).toHaveCount(0)
@@ -136,7 +134,8 @@ test('Edit corrects a visit and puts it on a ticket, with no Delete', async ({ p
   await expect(page.getByText(/delete/i)).toHaveCount(0)
 
   await page.getByLabel('What was done').fill(title)
-  await page.getByLabel('Labor', { exact: true }).fill('45')
+  await expect(page.getByLabel('Labor', { exact: true })).toHaveCount(0)
+  await page.getByLabel('Parts', { exact: true }).fill('45')
   await page.getByLabel('Ticket (optional)').selectOption(T1042)
   await expect(page.getByLabel('Equipment (optional)')).toHaveCount(0)
   await page.waitForTimeout(300)
@@ -146,7 +145,7 @@ test('Edit corrects a visit and puts it on a ticket, with no Delete', async ({ p
   await expect(page).toHaveURL(new RegExp(`/ops/service/${id}$`))
   await expect(page.getByRole('status').filter({ hasText: 'Changes saved.' })).toBeVisible()
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
-  await expect(page.getByText('$57.00')).toBeVisible()
+  await expect(page.getByText('$45.00').first()).toBeVisible()
   await expect(page.getByRole('link', { name: /Ticket\s*OT-1042/ })).toBeVisible()
 
   // And it is on the ticket now.
