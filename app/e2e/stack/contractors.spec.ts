@@ -42,8 +42,11 @@ test('the directory: each contractor with trade, preferred, contact, visits, spe
   // Brightway's insurance ran out on Nov 1, 2026: flagged before and after.
   await expect(card(page, 'Brightway Electric')).toContainText(/Insurance expire[sd] Nov 1/)
   await expect(card(page, 'Pipeworks Plumbing')).not.toContainText('Insurance')
-  // Archived contractors aren't listed, and nothing opens a card until the contractor page (OT-95).
-  await expect(coldline.getByRole('link', { name: /^Coldline/ })).toHaveCount(0)
+  // A card opens the contractor's page (OT-95).
+  await expect(coldline.getByRole('link', { name: /^Coldline/ })).toHaveAttribute(
+    'href',
+    '/ops/contractors/55555555-5555-4555-8555-000000000001',
+  )
   await page.waitForTimeout(300)
   await testInfo.attach('directory', { body: await page.screenshot(), contentType: 'image/png' })
 })
@@ -91,11 +94,12 @@ test('search finds a company, contact or trade, and says so when nothing matches
   await page.waitForTimeout(300)
   await testInfo.attach('no-results', { body: await page.screenshot(), contentType: 'image/png' })
 
-  // Add a roofing contractor starts the sheet on that trade.
-  await page.getByRole('button', { name: 'Add a roofing contractor' }).click()
-  const sheet = page.getByRole('dialog', { name: 'Add contractor' })
-  await expect(tradeChip(sheet, 'Roofing')).toHaveAttribute('aria-pressed', 'true')
-  await sheet.getByRole('button', { name: 'Cancel' }).click()
+  // Add a roofing contractor opens Add contractor on that trade.
+  await page.getByRole('link', { name: 'Add a roofing contractor' }).click()
+  await expect(page.getByRole('heading', { name: 'Add contractor' })).toBeVisible()
+  await expect(tradeChip(page.locator('form'), 'Roofing')).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('link', { name: 'Close' }).click()
+  await search.fill('roofing')
 
   // The button under the message; the search box's own X has the same name.
   await page.getByRole('button', { name: 'Clear search' }).last().click()
@@ -107,16 +111,18 @@ test('Add puts a new contractor in the directory, with every trade picked', asyn
   // Not roofing: the search test looks for a roofer and expects none.
   const name = `Test Handyman ${run(testInfo.project.name)}`
   await open(page)
-  await page.getByRole('button', { name: 'Add contractor' }).click()
-  const sheet = page.getByRole('dialog', { name: 'Add contractor' })
-  await sheet.getByLabel('Company name').fill(name)
-  await expect(sheet.getByRole('button', { name: 'Add contractor' })).toBeDisabled()
-  await tradeChip(sheet, 'General repair').click()
-  await tradeChip(sheet, 'Plumbing').click()
-  await expect(tradeChip(sheet, 'Plumbing')).toHaveAttribute('aria-pressed', 'true')
-  await sheet.getByLabel('Phone (optional)').fill('(312) 555-0111')
-  await sheet.getByRole('button', { name: 'Add contractor' }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'Contractor added.' })).toBeVisible()
+  await page.getByRole('link', { name: 'Add contractor' }).click()
+  const form = page.locator('form')
+  await form.getByLabel('Company name').fill(name)
+  await tradeChip(form, 'General repair').click()
+  await tradeChip(form, 'Plumbing').click()
+  await expect(tradeChip(form, 'Plumbing')).toHaveAttribute('aria-pressed', 'true')
+  await form.getByLabel('Contact name').fill('Sam Ortiz')
+  await form.getByLabel('Phone').fill('(312) 555-0111')
+  await form.getByRole('button', { name: 'Save contractor' }).click()
+  await expect(page.getByRole('status').filter({ hasText: `${name} added.` })).toBeVisible()
+  await expect(page.getByRole('heading', { name, level: 1 })).toBeVisible()
+  await page.getByRole('link', { name: 'Back to contractors' }).click()
   await expect(card(page, name)).toContainText('Plumbing')
   await expect(card(page, name)).toContainText('General repair')
   // Found under both trades' chips.
@@ -137,7 +143,7 @@ test('with no contractors it says so and offers Add contractor', async ({ page }
   await open(page)
   await expect(page.getByRole('heading', { name: 'No contractors yet' })).toBeVisible()
   await expect(page.getByText('You can also add one while logging service on a ticket.')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Add contractor' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Add contractor' })).toBeVisible()
   await expect(page.getByRole('searchbox', { name: 'Search contractors' })).toHaveCount(0)
   await page.waitForTimeout(300)
   await testInfo.attach('empty', { body: await page.screenshot(), contentType: 'image/png' })

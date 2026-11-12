@@ -149,8 +149,12 @@ function Record({ data, back }: { data: ServiceRecordData; back: string }) {
         <Rows>
           {r.kind === 'contractor' ? (
             <>
-              {/* The contractor's own page arrives with OT-95. */}
-              <Row label="Contractor">{r.contractor?.name ?? '—'}</Row>
+              <Row
+                label="Contractor"
+                to={r.contractor && !viewingAs ? `/ops/contractors/${r.contractor.id}` : undefined}
+              >
+                {r.contractor?.name ?? '—'}
+              </Row>
               {r.technician && <Row label="Technician">{r.technician}</Row>}
             </>
           ) : (

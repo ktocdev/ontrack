@@ -15,6 +15,11 @@ export function equipmentLink(id: string) {
   return `${window.location.origin}/e/${id}`
 }
 
+/** A contractor's lasting link, /c/<id>, from the current origin (OT-95). It grants nothing. */
+export function contractorLink(id: string) {
+  return `${window.location.origin}/c/${id}`
+}
+
 /**
  * The ticket number in a typed link, forgiving of how a phone keyboard spells it: OT-0123,
  * ot-123, OT123 and 123 are all ticket 123. Anything else is not a number (an older link

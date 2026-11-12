@@ -3,7 +3,7 @@ import { requireSupabase } from '../../lib/supabase'
 import type { Contractor, SpendRow } from './contractors'
 
 /**
- * The directory: every contractor not archived, which is the group's whole list
+ * The directory: every contractor, archived ones marked (the screen lists them apart), which is the group's whole list
  * (see_contractors), with their trades in the list's order, and what was spent with each, per restaurant and year
  * (v_contractor_spend, which returns rows only with see_costs). The screen adds up the
  * restaurants the picker shows. The key sits under 'contractors', which "+ Add new
@@ -17,8 +17,7 @@ export function useContractorDirectory(seeCosts: boolean) {
       const [contractors, spend] = await Promise.all([
         sb
           .from('contractors')
-          .select('id, name, contact_name, phone, preferred, insurance_until, trades (name, sort_order)')
-          .is('archived_at', null)
+          .select('id, name, contact_name, phone, preferred, insurance_until, archived_at, trades (name, sort_order)')
           .order('name'),
         seeCosts
           ? sb

@@ -13,6 +13,7 @@ export type Contractor = {
   phone: string | null
   preferred: boolean
   insurance_until: string | null
+  archived_at?: string | null
 }
 
 /** One row of v_contractor_spend: a contractor at a restaurant in a year. */
