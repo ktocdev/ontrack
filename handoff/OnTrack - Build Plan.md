@@ -21,7 +21,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 2 · Tickets, the manager loop | Done, except the real-iPhone check | OT-24 plan update, then OT-25 to OT-35 (see Phase 2) |
 | 3 · Ops dashboard and ticket work | Done, except the real-iPhone checks | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). The buzz and its badge were tried on Android (Nov 5, 2026). Google sign-in (OT-59) is deferred until the group's IT person is involved |
 | 4 · Equipment · first demo | Done, except the real-iPhone checks; tried on the live app (Nov 11, 2026) | OT-65 plan update, then OT-66 to OT-88 (see Phase 4). QR labels (OT-74) are deferred until the iPhone link check |
-| 5 · Contractors, service records and invoices | Split into pull requests (Nov 11, 2026) | OT-89 plan update, then OT-90 to OT-98 (see Phase 5) |
+| 5 · Contractors, service records and invoices | In progress: OT-89 to OT-95 and OT-99 merged; the contractor page tried on the live app (Nov 12, 2026) | OT-89 plan update, then OT-90 to OT-99 (see Phase 5) |
 
 Phase 0 notes:
 
@@ -429,7 +429,7 @@ Every repair gets a cost, a contractor and an invoice, and the spend views on eq
 | OT-92 | Log service & cost, from an Ops ticket (the ticket filled in), from a unit's Service & cost (the unit filled in, a ticket optional) and from a contractor's page (restaurant, then a unit and a ticket, both optional): In-house or Outside contractor, the contractor picker (preferred first, "+ Add new contractor"), technician, invoice number, service date, labor, parts and trip fee with a live total, work notes, Attach invoice; the inline saving spinner and the save-failed state; the ticket's Service & cost section with its running total |
 | OT-93 | Service record: invoice card (View, Download, Replace, and Missing with Attach), cost breakdown, details linking to the contractor, the unit and the ticket; Edit service record without Delete, where a ticket can be added or changed; opened from a ticket, a unit's service log, a contractor's visits and Invoices; a record with no ticket leaves out the Ticket row |
 | OT-94 | Contractor directory: search, trade chips with counts, Most used first or by spend, preferred stars, insurance flags 30 days out, one-tap call; its empty state and No results; the Contractors tab replaces its placeholder; View as |
-| OT-95 | Contractor detail: spend, visits and last visit, details, Call and Email, Visits and Invoices tabs; Add and Edit contractor with the preferred switch; Archive / Restore and Delete sheet; lasting link `/c/<id>` and Share link, refused without `see_contractors` |
+| OT-95 | Contractor detail: spend, visits and last visit, details, Call and Email, Visits and Invoices tabs; Add and Edit contractor with the preferred switch; Archive / Restore and Delete sheet; lasting link `/c/<id>` and Share link, refused without `see_contractors`. Tried on the live app (Nov 12, 2026): the contractor page, Call, Email, and a shared link opened on a second device |
 | OT-96 | Invoices tab: by month, the Missing filter and its count, sort, search by contractor, unit, ticket or invoice number, the month's count and total, rows opening the service record |
 | OT-97 | Security and code quality pass over Phase 5 |
 | OT-98 | The done test as one flow; the phase note |
@@ -553,14 +553,6 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 | The walkthrough phase is large | It can stall the pilot | It is after the demo milestone and split in two; 6a alone is useful |
 | A secret pasted into a `VITE_` build variable | It ships in the public JavaScript; on Oct 28 a Supabase personal access token went out in the OT-3 preview this way and was revoked | Only the URL and the `sb_publishable_` key go in Cloudflare; check the key's prefix when setting a new branch's variables |
 | Solo build with AI help drifts from the design | Screens that look close but not right erode trust with a team that already struggled with the canvas | Build from the boards one at a time, check both themes in `/kit`, and put the preview on a phone before merging |
-
-**OT-23**
-
-- [x] Remove the "Looks a lot like a color already in use" warning from Add restaurant; two restaurants may then look alike, which is accepted. An exact match is still refused, and so are the reserved brand and urgent colors
-- [x] Add Edit restaurant (name, address, phone, color), reusing the Add form. It opens from the restaurant's sheet, archived ones too, and logs what changed. There is no board for it
-- [x] Signing back in after a deliberate sign-out goes to the role's home, not the page they left; only a timed-out session returns to its page
-- [x] A refresh says "Loading…", not "Signing you in…"
-- [x] Remove the silent fallback to the Resend test sender, so a missing `EMAIL_FROM` gives a clear error in the function log
 
 **Open items**
 
