@@ -28,6 +28,7 @@ import { byPriority } from '../ops/dashboard'
 import { longDate, money } from '../tickets/closed'
 import { activityLine, ago, AREA_LABEL, byActivity, scheduledLabel } from '../tickets/tickets'
 import { monthDay, monthYear, yearOf } from './equipment'
+import { LogServiceButton, LogServiceLink } from '../service/TicketService'
 import { useEquipmentDetail, useEquipmentService } from './useEquipmentDetail'
 
 /**
@@ -271,7 +272,13 @@ function Detail({ ops }: { ops: boolean }) {
             </>
           )
         ) : tab === 'service' ? (
-          <Service unitName={unit.name} warranty={warranty || null} year={year} query={service} />
+          <Service
+            unitName={unit.name}
+            warranty={warranty || null}
+            year={year}
+            query={service}
+            logTo={unit.retired_at ? null : `/ops/equipment/${unit.id}/service/new`}
+          />
         ) : (
           <>
             {unit.serial && (
@@ -392,11 +399,14 @@ function Service({
   warranty,
   year,
   query,
+  logTo,
 }: {
   unitName: string
   warranty: string | null
   year: number
   query: ReturnType<typeof useEquipmentService>
+  /** Where "+ Log service" goes; none on a retired unit. */
+  logTo: string | null
 }) {
   const { data, isPending, isError, refetch } = query
   if (isPending) return <MetricsSkeleton />
@@ -422,12 +432,14 @@ function Service({
         title="No service logged yet"
         body={
           <>
-            Repairs and maintenance visits logged on its tickets show up here, with what this {unitName.toLowerCase()}{' '}
-            costs over time and which contractors work on it.
+            Log each repair or maintenance visit to track what this {unitName.toLowerCase()} costs over time and which
+            contractors work on it.
             {warranty && <span className="mt-2.5 block text-13">Warranty: {warranty}.</span>}
           </>
         }
-      />
+      >
+        {logTo && <LogServiceButton to={logTo} />}
+      </EmptyState>
     )
 
   const years = [...new Set(data.records.map((r) => yearOf(r.service_date)))]
@@ -471,7 +483,10 @@ function Service({
       )}
       {years.map((y) => (
         <section key={y} aria-label={`Service log ${y}`} className="flex flex-none flex-col gap-2">
-          <SectionLabel className="pt-2">Service log · {y}</SectionLabel>
+          <div className="flex items-end justify-between gap-3">
+            <SectionLabel className="pt-2">Service log · {y}</SectionLabel>
+            {logTo && y === years[0] && <LogServiceLink to={logTo} className="-mb-2" />}
+          </div>
           <ListCard>
             {data.records
               .filter((r) => yearOf(r.service_date) === y)

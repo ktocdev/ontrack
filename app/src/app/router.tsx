@@ -302,6 +302,24 @@ export const router = createBrowserRouter([
                     path: '/ops/tickets/:id',
                     lazy: async () => ({ Component: (await import('../screens/ops/OpsTicketScreen')).OpsTicketScreen }),
                   },
+                  {
+                    path: '/ops/tickets/:id/service/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromTicketScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/equipment/:id/service/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromEquipmentScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/contractors/:id/service/new',
+                    lazy: async () => ({
+                      Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromContractorScreen,
+                    }),
+                  },
                 ],
               },
             ],

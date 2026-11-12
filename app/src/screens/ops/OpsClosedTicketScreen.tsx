@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useUser } from '../../auth/context'
+import { useRight } from '../../auth/rights'
 import { Card } from '../../components/Card'
 import { PhotoViewer } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { TicketMenu } from '../../components/TicketMenu'
+import { LogServiceLink } from '../service/TicketService'
 import { money, timeline } from '../tickets/closed'
 import { ClosingComment, Fact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
@@ -19,13 +21,15 @@ import type { useOpsTicket } from './useOpsTicket'
  * how it went, read-only, with the back arrow to Closed tickets. The board leaves out what
  * was wrong, because its flag says that; a closed ticket has no flag, so the description
  * and its photos stay, as on a manager's Closed ticket. Contractor and Cost appear only if
- * the database returns them, which takes see_costs.
+ * the database returns them, which takes see_costs. A bill often comes after closing, so
+ * "+ Log service" sits beside Resolution for anyone with log_cost (OT-92).
  */
 type Data = NonNullable<ReturnType<typeof useOpsTicket>['data']>
 type Ticket = NonNullable<Data['ticket']>
 
 export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: Data }) {
-  const { user } = useUser()
+  const { user, viewingAs } = useUser()
+  const canLog = useRight('log_cost') && !viewingAs
   const facts = useClosedFacts(ticket.id).data
   const paths = data.photos.filter((p) => !p.update_id).map((p) => p.path)
   const urls = useSignedPhotos(paths)
@@ -70,9 +74,14 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
         )}
         <TicketPhotos paths={paths} urls={urls.data} onOpen={setViewing} />
 
+        {(hasResolution || canLog) && (
+          <div className="-mb-0.5 flex items-end justify-between gap-3">
+            <SectionLabel>{hasResolution ? 'Resolution' : 'Service & cost'}</SectionLabel>
+            <LogServiceLink to={`/ops/tickets/${ticket.id}/service/new`} className="-mb-2" />
+          </div>
+        )}
         {hasResolution && (
           <>
-            <SectionLabel className="-mb-0.5">Resolution</SectionLabel>
             <Card className="overflow-hidden">
               {facts?.resolution && (
                 <ClosingComment

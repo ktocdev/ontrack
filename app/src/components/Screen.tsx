@@ -138,16 +138,19 @@ export function TitleBar({ to, label, title }: { to: string; label: string; titl
  * Header for a full-screen form opened from a list (Add restaurant): 24px
  * Archivo title on the left, a 44px close target on the right, 1px bottom
  * border. 12px 12px 8px 20px padding. Invite user draws it with no border or
- * bottom padding.
+ * bottom padding. With a subtitle (Log service: "OT-1042 · Walk-in Cooler 1") the title
+ * is 22px with the 12px line under it, 2px apart.
  */
 export function CloseBar({
   to,
   title,
+  subtitle,
   label = 'Close',
   bordered = true,
 }: {
   to: string
   title: ReactNode
+  subtitle?: ReactNode
   label?: string
   bordered?: boolean
 }) {
@@ -155,7 +158,14 @@ export function CloseBar({
     <div
       className={`flex flex-none items-center justify-between pl-5 pr-3 pt-[calc(12px+var(--safe-top))] ${bordered ? 'border-b border-border pb-2' : ''}`}
     >
-      <h1 className="font-display text-24 font-bold tracking-[-0.02em]">{title}</h1>
+      {subtitle ? (
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <h1 className="font-display text-22 font-bold tracking-[-0.02em]">{title}</h1>
+          <span className="truncate text-12 text-text-secondary">{subtitle}</span>
+        </div>
+      ) : (
+        <h1 className="font-display text-24 font-bold tracking-[-0.02em]">{title}</h1>
+      )}
       <Link
         to={to}
         aria-label={label}

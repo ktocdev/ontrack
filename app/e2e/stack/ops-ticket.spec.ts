@@ -37,7 +37,7 @@ async function pick(page: Page, name: string) {
   await page.getByRole('menuitemradio', { name }).click()
 }
 
-test('the ticket shows what the board does, without what later phases build', async ({ page }, testInfo) => {
+test('the ticket shows what the board does', async ({ page }, testInfo) => {
   await signIn(page, BERT)
   await page.goto(`/ops/tickets/${T1042}`)
   await expect(page.getByRole('heading', { name: 'Walk-in cooler not holding temp' })).toBeVisible()
@@ -51,9 +51,11 @@ test('the ticket shows what the board does, without what later phases build', as
   await expect(page.getByText('Walk-in Cooler 1')).toBeVisible()
   await expect(statusButton(page)).toContainText('In progress')
 
-  // Nobody assigns, and Log service waits for Phase 5.
+  // Nobody assigns. Service & cost has its visits and Log service since OT-92.
   await expect(page.getByRole('button', { name: /^Assigned/ })).toHaveCount(0)
-  await expect(page.getByText('Log service')).toHaveCount(0)
+  await expect(
+    page.getByRole('region', { name: 'Service & cost' }).getByRole('link', { name: '+ Log service' }),
+  ).toBeVisible()
   await page.waitForTimeout(300)
   await testInfo.attach('ticket', { body: await page.screenshot(), contentType: 'image/png' })
 

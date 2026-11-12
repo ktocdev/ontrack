@@ -4,6 +4,7 @@ import { Card } from '@app/components/Card'
 import { Chip, ChoiceChips, FilterButton, FilterChip } from '@app/components/Chip'
 import { CodeInput, StepBars } from '@app/components/CodeInput'
 import { EmptyState } from '@app/components/EmptyState'
+import { CostCard } from '@app/components/Cost'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '@app/components/Field'
 import { InstallSheet } from '@app/components/InstallSheet'
 import { ErrorBanner, Notice } from '@app/components/Notice'
@@ -39,7 +40,11 @@ export function FieldsPage() {
   const [query, setQuery] = useState('freezer')
   return (
     <>
-      <PageHeader eyebrow="Components" title="Fields" source={['components/Field.tsx', 'components/CodeInput.tsx']}>
+      <PageHeader
+        eyebrow="Components"
+        title="Fields"
+        source={['components/Field.tsx', 'components/CodeInput.tsx', 'components/Cost.tsx']}
+      >
         <p>
           Every field has a visible label above it and its text at 16px, so iOS never zooms. Hints sit under the field;
           an error replaces the hint and says how to fix it.
@@ -62,6 +67,28 @@ export function FieldsPage() {
             <option value="coldline">Coldline Refrigeration</option>
             <option value="northstar">Northstar HVAC</option>
           </Select>
+        </Example>
+      </Section>
+      <Section
+        title="Cost"
+        intro="Log service and Edit service record: a field per amount on the right, the total under a divider. An amount that won't read is marked and the total shows a dash."
+      >
+        <Example code={`<CostCard rows={[{ label: 'Labor', value, onChange }, …]} total="$397.40" />`}>
+          <CostCard
+            rows={[
+              { label: 'Labor', value: '$120.00', onChange: () => undefined },
+              { label: 'Parts', value: '$212.40', onChange: () => undefined },
+              { label: 'Trip / call-out fee', value: '$65.00', onChange: () => undefined },
+            ]}
+            total="$397.40"
+          />
+          <CostCard
+            rows={[
+              { label: 'Labor', value: '$120.00', onChange: () => undefined },
+              { label: 'Parts', value: '12.345', onChange: () => undefined, invalid: true },
+            ]}
+            total={null}
+          />
         </Example>
       </Section>
       <Section title="Search">
@@ -290,6 +317,7 @@ export function NavigationPage() {
           <BackBar to="#" label="Equipment" />
           <TitleBar to="#" label="Back" title="Closed tickets" />
           <CloseBar to="#" title="Add restaurant" />
+          <CloseBar to="#" title="Log service" subtitle="OT-1042 · Walk-in Cooler 1" bordered={false} />
           <BrandBackBar to="#" label="Back" />
         </Example>
       </Section>

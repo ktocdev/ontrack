@@ -108,7 +108,8 @@ test('Ops sees the restaurant, Installed, the details in a card and Service & co
   await expect(page.getByText(/^Visits \d{4}$/)).toBeVisible()
   const contractors = page.getByRole('region', { name: 'Contractors on this unit' })
   await expect(contractors).toContainText('Coldline Refrigeration')
-  await expect(contractors).toContainText(/\$822\.40|No visits in \d{4}/)
+  // Other flows log visits on this unit as they run (OT-92), so any amount.
+  await expect(contractors).toContainText(/\$[\d,]+\.\d\d|No visits in \d{4}/)
   await expect(contractors.getByRole('link', { name: 'Call Coldline Refrigeration' })).toHaveAttribute('href', /^tel:/)
   const log = page.getByRole('region', { name: 'Service log 2026' })
   await expect(log).toContainText('Condenser fan motor replaced')

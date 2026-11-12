@@ -183,11 +183,11 @@ select is((select count(*)::int from public.service_records where id = (:'rec'):
 
 select lives_ok(format($$ select public.update_service_record(%L, 'contractor', '2026-11-03',
     p_ticket_id => %L, p_contractor_id => %L, p_technician => 'Rosa Alvarez', p_title => 'Condenser fan motor replaced',
-    p_invoice_number => 'INV-58213', p_labor_cents => 18000, p_parts_cents => 21740, p_trip_cents => 0) $$,
+    p_invoice_number => 'CL-20932', p_labor_cents => 18000, p_parts_cents => 21740, p_trip_cents => 0) $$,
   :'rec', :t1042, :coldline), 'Ops corrects a visit');
 select results_eq(
   format('select title, (select total_cents from public.v_service_record_totals where service_record_id = %1$L), (select number from public.invoices where service_record_id = %1$L), (select amount_cents from public.invoices where service_record_id = %1$L) from public.service_records where id = %1$L', :'rec'),
-  $$ values ('Condenser fan motor replaced'::text, 39740::bigint, 'INV-58213'::text, 39740) $$,
+  $$ values ('Condenser fan motor replaced'::text, 39740::bigint, 'CL-20932'::text, 39740) $$,
   'the title, amounts and invoice number change, and the invoice keeps the total');
 select is((select count(*)::int from public.service_line_items where service_record_id = (:'rec')::uuid and kind = 'trip'), 0,
   'an amount set to zero leaves no line item');

@@ -17,6 +17,7 @@ import { useToast } from '../../components/Toast'
 import { IconClipboardCheck, IconClose, IconPlus } from '../../components/icons'
 import type { TicketStatus } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
+import { TicketService } from '../service/TicketService'
 import { longDate } from '../tickets/closed'
 import { scheduledLabel } from '../tickets/tickets'
 import { ThreadFeed } from '../tickets/ThreadFeed'
@@ -33,8 +34,8 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * a ticket, so the board's Assigned dropdown is a line saying who is on it, and the status
  * decides that: In progress puts you on it, back to Open takes the person off. Take this
  * over is for one a colleague has. Scheduled asks for its date, which has no board. Links
- * to later phases stay off: the walkthrough opens nothing yet (the equipment card opens the unit), and
- * Service & cost waits for Phase 5. Writing back and forth is rare for Ops, so the message
+ * to later phases stay off: the walkthrough opens nothing yet (the equipment card opens the unit).
+ * Service & cost lists each visit with the total so far, with see_costs (OT-92). Writing back and forth is rare for Ops, so the message
  * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
  * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
  * optional comment, then goes back to the dashboard.
@@ -209,6 +210,8 @@ export function OpsTicketScreen() {
             to={viewingAs ? undefined : `/ops/equipment/${ticket.equipment.id}`}
           />
         )}
+
+        <TicketService ticketId={ticket.id} />
 
         <div className="-mb-2.5 flex min-h-tap flex-none items-center justify-between gap-3 pt-1">
           <h2 className="eyebrow">Updates · {count}</h2>
