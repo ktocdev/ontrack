@@ -428,6 +428,12 @@ export const IconDownload = (p: IconProps) => (
     <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
   </svg>
 )
+/** A filled star: a preferred contractor. */
+export const IconStar = ({ size = 12, className }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+    <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />
+  </svg>
+)
 /** Two arrows out to the corners: View an invoice full size. */
 export const IconExpand = (p: IconProps) => (
   <svg {...base({ size: 18, ...p })}>

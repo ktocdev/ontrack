@@ -30,6 +30,7 @@ import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { EquipmentMenu, TicketMenu } from '../../components/TicketMenu'
 import { VisibilityToggle, Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
+import { ContractorCard } from '../../components/ContractorCard'
 import { CostCard } from '../../components/Cost'
 import { Input, PasswordField, PasswordRules, SearchField, Select, Textarea } from '../../components/Field'
 import { ErrorBanner, Notice } from '../../components/Notice'
@@ -623,6 +624,25 @@ export function KitPage() {
                 </KeyValueRow>
                 <KeyValueRow label="Installed">Mar 2022</KeyValueRow>
               </Card>
+              <ContractorCard
+                name="Coldline Refrigeration"
+                trade="Refrigeration"
+                preferred
+                contact="Rosa Alvarez"
+                visits="11 visits · last Oct 19, 2026"
+                spend="$4,812"
+                phone="(312) 555-0187"
+                to="#"
+              />
+              <ContractorCard
+                name="Brightway Electric"
+                trade="Electrical"
+                warning="Insurance expires Nov 1"
+                contact="Tina Nguyen"
+                visits="6 visits · last Oct 8, 2026"
+                spend="$2,140"
+                phone="(773) 555-0133"
+              />
             </Section>
 
             <Section id="controls">

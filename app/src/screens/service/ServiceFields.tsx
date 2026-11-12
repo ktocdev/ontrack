@@ -276,12 +276,24 @@ export function InvoiceFile({
   )
 }
 
-/** "+ Add new contractor": the name, trade and phone; the rest is filled in from the directory. */
-function AddContractorSheet({ onClose, onAdded }: { onClose: () => void; onAdded: (id: string) => void }) {
+/**
+ * "+ Add new contractor": the name, trade and phone; the rest is filled in later. Log
+ * service opens it from the picker, and the directory's Add until the full Add contractor
+ * screen (OT-95), with the trade a search named.
+ */
+export function AddContractorSheet({
+  onClose,
+  onAdded,
+  trade: startTrade = '',
+}: {
+  onClose: () => void
+  onAdded: (id: string) => void
+  trade?: string
+}) {
   const trades = useTrades()
   const add = useAddContractor()
   const [name, setName] = useState('')
-  const [trade, setTrade] = useState('')
+  const [trade, setTrade] = useState(startTrade)
   const [phone, setPhone] = useState('')
   const code = (add.error as { code?: string } | null)?.code
   return (
