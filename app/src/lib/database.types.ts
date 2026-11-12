@@ -734,6 +734,12 @@ isOneToOne: false
       referencedRelation: "contractors"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "v_contractor_history"
+      referencedColumns: ["contractor_id"]
+    },{
       foreignKeyName: "service_records_equipment_id_fkey"
       columns: ["equipment_id"]
 isOneToOne: false
@@ -1332,6 +1338,20 @@ isOneToOne: false
                         Relationships: [
                     
                   ]
+                },"v_contractor_history": {
+                  Row: {
+                    "contractor_id": string,"in_use": boolean | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "contractor_id"?: string | null,"in_use"?: never
+                         }
+                        Update: {
+                           "contractor_id"?: string | null,"in_use"?: never
+                         }
+                        Relationships: [
+                    
+                  ]
                 },"v_contractor_spend": {
                   Row: {
                     "contractor_id": string | null,"last_visit_on": string | null,"restaurant_id": string,"total_cents": number | null,"visits": number | null,"year": number | null
@@ -1344,6 +1364,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "contractors"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "v_contractor_history"
+      referencedColumns: ["contractor_id"]
     },{
       foreignKeyName: "service_records_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -1376,6 +1402,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "contractors"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "v_contractor_history"
+      referencedColumns: ["contractor_id"]
     },{
       foreignKeyName: "service_records_equipment_id_fkey"
       columns: ["equipment_id"]
@@ -1503,6 +1535,12 @@ isOneToOne: false
       referencedRelation: "contractors"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "service_records_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "v_contractor_history"
+      referencedColumns: ["contractor_id"]
+    },{
       foreignKeyName: "service_records_equipment_id_fkey"
       columns: ["equipment_id"]
 isOneToOne: false
@@ -1616,6 +1654,9 @@ isOneToOne: false
 "can_edit_categories":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"can_edit_contractors":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "can_post_on_ticket":
 { Args: { "tid": string }; Returns: boolean
                            },
@@ -1656,7 +1697,16 @@ isOneToOne: false
               "closed_count": number,"month": string,"total_cents": number
             }[]
                            },
+"contractor_in_use":
+{ Args: { "p_id": string }; Returns: boolean
+                           },
+"contractor_trades":
+{ Args: Record<PropertyKey, never>; Returns: (string)[]
+                           },
 "delete_category":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"delete_contractor":
 { Args: { "p_id": string }; Returns: undefined
                            },
 "delete_equipment":
@@ -1730,6 +1780,9 @@ isOneToOne: false
 "reopen_ticket":
 { Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
                            },
+"save_contractor":
+{ Args: { "p_contact_name"?: string,"p_email"?: string,"p_id": string,"p_insurance_until"?: string,"p_name": string,"p_notes"?: string,"p_phone"?: string,"p_preferred"?: boolean,"p_trade": string }; Returns: string
+                           },
 "save_group_name":
 { Args: { "p_name": string,"p_short_name": string }; Returns: undefined
                            },
@@ -1750,6 +1803,9 @@ isOneToOne: false
                            },
 "set_category_active":
 { Args: { "p_active": boolean,"p_id": string }; Returns: undefined
+                           },
+"set_contractor_archived":
+{ Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
                            },
 "set_equipment_retired":
 { Args: { "p_id": string,"p_retired": boolean }; Returns: undefined
