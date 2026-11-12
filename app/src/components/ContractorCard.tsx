@@ -5,13 +5,13 @@ import { IconPhone, IconStar } from './icons'
 /**
  * A contractor in the directory (design/screens/Ops-Contractors): white card, 14px
  * radius, 12px 14px padding. The name, 16px semibold on one line, with this year's spend
- * on the right; the trade tag, a Preferred star and an insurance warning; the contact;
+ * on the right; a tag for each trade (several wrap, OT-99), a Preferred star and an insurance warning; the contact;
  * the visits line. A 44px call button on the right when there is a phone. The card opens
  * the contractor when given `to`; under View as it is plain text.
  */
 export function ContractorCard({
   name,
-  trade,
+  trades,
   preferred,
   warning,
   contact,
@@ -21,7 +21,8 @@ export function ContractorCard({
   to,
 }: {
   name: string
-  trade: string
+  /** One or more, in the trade list's order. */
+  trades: string[]
   preferred?: boolean
   /** "Insurance expires Nov 1", in the warning tag. */
   warning?: string | null
@@ -40,7 +41,11 @@ export function ContractorCard({
         {spend !== undefined && <span className="flex-none text-14 font-bold">{spend}</span>}
       </span>
       <span className="flex flex-wrap items-center gap-2">
-        <span className="rounded-tag bg-surface-muted px-2 py-0.5 text-11 font-bold text-text-body">{trade}</span>
+        {trades.map((t) => (
+          <span key={t} className="rounded-tag bg-surface-muted px-2 py-0.5 text-11 font-bold text-text-body">
+            {t}
+          </span>
+        ))}
         {preferred && (
           <span className="inline-flex items-center gap-[3px] text-11 font-bold text-brand">
             <IconStar />

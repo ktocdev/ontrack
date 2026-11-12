@@ -93,16 +93,54 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
-                },"contractors": {
+                },"contractor_trades": {
                   Row: {
-                    "archived_at": string | null,"contact_name": string | null,"created_at": string,"created_by": string | null,"email": string | null,"id": string,"insurance_until": string | null,"name": string,"notes": string | null,"phone": string | null,"preferred": boolean,"trade": string,"updated_at": string
+                    "contractor_id": string,"created_at": string,"trade_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"contact_name"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"insurance_until"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"preferred"?: boolean,"trade": string,"updated_at"?: string
+                    "contractor_id": string,"created_at"?: string,"trade_id": string
                   }
                   Update: {
-                    "archived_at"?: string | null,"contact_name"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"insurance_until"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"preferred"?: boolean,"trade"?: string,"updated_at"?: string
+                    "contractor_id"?: string,"created_at"?: string,"trade_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "contractor_trades_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "contractors"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "contractor_trades_contractor_id_fkey"
+      columns: ["contractor_id"]
+isOneToOne: false
+      referencedRelation: "v_contractor_history"
+      referencedColumns: ["contractor_id"]
+    },{
+      foreignKeyName: "contractor_trades_trade_id_fkey"
+      columns: ["trade_id"]
+isOneToOne: false
+      referencedRelation: "trades"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "contractor_trades_trade_id_fkey"
+      columns: ["trade_id"]
+isOneToOne: false
+      referencedRelation: "v_trade_history"
+      referencedColumns: ["trade_id"]
+    }
+                  ]
+                },"contractors": {
+                  Row: {
+                    "archived_at": string | null,"contact_name": string | null,"created_at": string,"created_by": string | null,"email": string | null,"id": string,"insurance_until": string | null,"name": string,"notes": string | null,"phone": string | null,"preferred": boolean,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"contact_name"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"insurance_until"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"preferred"?: boolean,"updated_at"?: string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"contact_name"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"insurance_until"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"preferred"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -989,6 +1027,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"trades": {
+                  Row: {
+                    "active": boolean,"created_at": string,"id": string,"name": string,"sort_order": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"created_at"?: string,"id"?: string,"name": string,"sort_order": number
+                  }
+                  Update: {
+                    "active"?: boolean,"created_at"?: string,"id"?: string,"name"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"two_step_codes": {
                   Row: {
                     "code_hash": string,"used_at": string | null,"user_id": string
@@ -1636,6 +1688,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"v_trade_history": {
+                  Row: {
+                    "in_use": boolean | null,"trade_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "in_use"?: never,"trade_id"?: string | null
+                         }
+                        Update: {
+                           "in_use"?: never,"trade_id"?: string | null
+                         }
+                        Relationships: [
+                    
+                  ]
                 }
           }
           Functions: {
@@ -1644,6 +1710,9 @@ isOneToOne: false
                            },
 "add_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
+                           },
+"add_trade":
+{ Args: { "p_name": string }; Returns: string
                            },
 "attach_invoice":
 { Args: { "p_id": string,"p_path": string }; Returns: undefined
@@ -1700,8 +1769,8 @@ isOneToOne: false
 "contractor_in_use":
 { Args: { "p_id": string }; Returns: boolean
                            },
-"contractor_trades":
-{ Args: Record<PropertyKey, never>; Returns: (string)[]
+"contractor_trade_names":
+{ Args: { "p_contractor_id": string }; Returns: (string)[]
                            },
 "delete_category":
 { Args: { "p_id": string }; Returns: undefined
@@ -1716,6 +1785,9 @@ isOneToOne: false
 { Args: { "p_id": string }; Returns: undefined
                            },
 "delete_restaurant":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"delete_trade":
 { Args: { "p_id": string }; Returns: undefined
                            },
 "end_sessions":
@@ -1777,11 +1849,14 @@ isOneToOne: false
 "rename_category":
 { Args: { "p_id": string,"p_name": string }; Returns: undefined
                            },
+"rename_trade":
+{ Args: { "p_id": string,"p_name": string }; Returns: undefined
+                           },
 "reopen_ticket":
 { Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
                            },
 "save_contractor":
-{ Args: { "p_contact_name"?: string,"p_email"?: string,"p_id": string,"p_insurance_until"?: string,"p_name": string,"p_notes"?: string,"p_phone"?: string,"p_preferred"?: boolean,"p_trade": string }; Returns: string
+{ Args: { "p_contact_name"?: string,"p_email"?: string,"p_id": string,"p_insurance_until"?: string,"p_name": string,"p_notes"?: string,"p_phone"?: string,"p_preferred"?: boolean,"p_trade_ids": (string)[] }; Returns: string
                            },
 "save_group_name":
 { Args: { "p_name": string,"p_short_name": string }; Returns: undefined
@@ -1831,11 +1906,20 @@ isOneToOne: false
 "set_ticket_status":
 { Args: { "p_id": string,"p_scheduled_for"?: string,"p_status": Database["public"]['Enums']["ticket_status"] }; Returns: undefined
                            },
+"set_trade_active":
+{ Args: { "p_active": boolean,"p_id": string }; Returns: undefined
+                           },
 "take_ticket":
 { Args: { "p_id": string }; Returns: undefined
                            },
 "ticket_restaurant":
 { Args: { "tid": string }; Returns: string
+                           },
+"trade_in_use":
+{ Args: { "p_id": string }; Returns: boolean
+                           },
+"trade_name_taken":
+{ Args: { "p_except": string,"p_name": string }; Returns: boolean
                            },
 "two_step_code_hash":
 { Args: { "p_code": string,"p_user": string }; Returns: string

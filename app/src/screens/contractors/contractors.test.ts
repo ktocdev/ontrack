@@ -15,7 +15,7 @@ const NOW = new Date(2026, 9, 20) // Oct 20, 2026
 const c = (id: string, over: Partial<Contractor> = {}): Contractor => ({
   id,
   name: id,
-  trade: 'Refrigeration',
+  trades: ['Refrigeration'],
   contact_name: null,
   phone: null,
   preferred: false,
@@ -76,6 +76,11 @@ describe('search and sort', () => {
     expect(matchesSearch(k, 'roofing')).toBe(false)
     expect(matchesSearch(k, '  ')).toBe(true)
   })
+  it('finds a contractor by any of their trades', () => {
+    const k = c('Northstar', { trades: ['Refrigeration', 'HVAC'] })
+    expect(matchesSearch(k, 'hvac')).toBe(true)
+    expect(matchesSearch(k, 'refrig')).toBe(true)
+  })
   it('puts the most used first, or the most spent', () => {
     const rows = summarize(
       [c('few', { preferred: true }), c('many'), c('none')],
@@ -91,10 +96,16 @@ describe('search and sort', () => {
 
 describe('chips and labels', () => {
   it('lists trades with the most contractors first', () => {
-    expect(tradeChips([c('a'), c('b', { trade: 'HVAC' }), c('c'), c('d', { trade: 'Electrical' })])).toEqual([
+    expect(tradeChips([c('a'), c('b', { trades: ['HVAC'] }), c('c'), c('d', { trades: ['Electrical'] })])).toEqual([
       'Refrigeration',
       'Electrical',
       'HVAC',
+    ])
+  })
+  it('counts a contractor with several trades under each', () => {
+    expect(tradeChips([c('a', { trades: ['Refrigeration', 'HVAC'] }), c('b', { trades: ['HVAC'] }), c('c')])).toEqual([
+      'HVAC',
+      'Refrigeration',
     ])
   })
   it('writes spend in whole dollars and counts a trade', () => {

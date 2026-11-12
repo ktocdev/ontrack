@@ -626,7 +626,7 @@ export function KitPage() {
               </Card>
               <ContractorCard
                 name="Coldline Refrigeration"
-                trade="Refrigeration"
+                trades={['Refrigeration', 'HVAC']}
                 preferred
                 contact="Rosa Alvarez"
                 visits="11 visits · last Oct 19, 2026"
@@ -636,7 +636,7 @@ export function KitPage() {
               />
               <ContractorCard
                 name="Brightway Electric"
-                trade="Electrical"
+                trades={['Electrical']}
                 warning="Insurance expires Nov 1"
                 contact="Tina Nguyen"
                 visits="6 visits · last Oct 8, 2026"

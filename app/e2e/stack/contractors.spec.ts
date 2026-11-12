@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
 import { signIn } from './helpers'
 
 /**
@@ -11,6 +11,8 @@ test.use({ timezoneId: 'America/Chicago' })
 
 const BERT = 'bert.velilla@example.com'
 const card = (page: Page, name: string) => page.getByRole('article', { name })
+const tradeChip = (scope: Locator, name: string) =>
+  scope.getByRole('group', { name: 'Trades' }).getByRole('button', { name, exact: true })
 const run = (name: string) => `${name === 'webkit' ? 'W' : 'C'}${Date.now() % 1_000_000}`
 
 async function open(page: Page) {
@@ -92,7 +94,7 @@ test('search finds a company, contact or trade, and says so when nothing matches
   // Add a roofing contractor starts the sheet on that trade.
   await page.getByRole('button', { name: 'Add a roofing contractor' }).click()
   const sheet = page.getByRole('dialog', { name: 'Add contractor' })
-  await expect(sheet.getByLabel('Trade')).toHaveValue('Roofing')
+  await expect(tradeChip(sheet, 'Roofing')).toHaveAttribute('aria-pressed', 'true')
   await sheet.getByRole('button', { name: 'Cancel' }).click()
 
   // The button under the message; the search box's own X has the same name.
@@ -101,18 +103,30 @@ test('search finds a company, contact or trade, and says so when nothing matches
   await expect(card(page, 'Coldline Refrigeration')).toBeVisible()
 })
 
-test('Add puts a new contractor in the directory', async ({ page }, testInfo) => {
+test('Add puts a new contractor in the directory, with every trade picked', async ({ page }, testInfo) => {
   // Not roofing: the search test looks for a roofer and expects none.
   const name = `Test Handyman ${run(testInfo.project.name)}`
   await open(page)
   await page.getByRole('button', { name: 'Add contractor' }).click()
   const sheet = page.getByRole('dialog', { name: 'Add contractor' })
   await sheet.getByLabel('Company name').fill(name)
-  await sheet.getByLabel('Trade').selectOption('General repair')
+  await expect(sheet.getByRole('button', { name: 'Add contractor' })).toBeDisabled()
+  await tradeChip(sheet, 'General repair').click()
+  await tradeChip(sheet, 'Plumbing').click()
+  await expect(tradeChip(sheet, 'Plumbing')).toHaveAttribute('aria-pressed', 'true')
   await sheet.getByLabel('Phone (optional)').fill('(312) 555-0111')
   await sheet.getByRole('button', { name: 'Add contractor' }).click()
   await expect(page.getByRole('status').filter({ hasText: 'Contractor added.' })).toBeVisible()
+  await expect(card(page, name)).toContainText('Plumbing')
   await expect(card(page, name)).toContainText('General repair')
+  // Found under both trades' chips.
+  const chips = page.getByRole('button', { name: /^All · / }).locator('..')
+  await chips.getByRole('button', { name: 'Plumbing', exact: true }).click()
+  await expect(card(page, name)).toBeVisible()
+  await expect(card(page, 'Pipeworks Plumbing')).toBeVisible()
+  await chips.getByRole('button', { name: 'General repair', exact: true }).click()
+  await expect(card(page, name)).toBeVisible()
+  await expect(card(page, 'Pipeworks Plumbing')).toHaveCount(0)
   await expect(card(page, name)).toContainText(/No visits in \d{4}/)
 })
 

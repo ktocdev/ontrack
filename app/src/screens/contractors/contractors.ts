@@ -7,7 +7,8 @@
 export type Contractor = {
   id: string
   name: string
-  trade: string
+  /** One or more, in the trade list's order (OT-99). */
+  trades: string[]
   contact_name: string | null
   phone: string | null
   preferred: boolean
@@ -76,11 +77,11 @@ export function summarize(
   }))
 }
 
-/** Company, contact or trade, ignoring case. */
+/** Company, contact or any of their trades, ignoring case. */
 export function matchesSearch(c: Contractor, query: string) {
   const q = query.trim().toLowerCase()
   if (!q) return true
-  return [c.name, c.contact_name, c.trade].some((v) => v?.toLowerCase().includes(q))
+  return [c.name, c.contact_name, ...c.trades].some((v) => v?.toLowerCase().includes(q))
 }
 
 /**
@@ -98,10 +99,13 @@ export function sortRows(rows: DirectoryRow[], sort: Sort) {
   )
 }
 
-/** The trades in the directory, most contractors first, as the chips after All. */
+/**
+ * The trades in the directory, most contractors first, as the chips after All. A
+ * contractor with several trades counts toward each.
+ */
 export function tradeChips(contractors: Contractor[]) {
   const count = new Map<string, number>()
-  for (const c of contractors) count.set(c.trade, (count.get(c.trade) ?? 0) + 1)
+  for (const c of contractors) for (const t of c.trades) count.set(t, (count.get(t) ?? 0) + 1)
   return [...count.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([t]) => t)
 }
 

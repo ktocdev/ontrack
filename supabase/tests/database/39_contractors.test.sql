@@ -1,6 +1,6 @@
 -- OT-91: contractors change only through save_contractor, set_contractor_archived and
--- delete_contractor, by Ops with log_cost or an admin, each logged; a trade comes from
--- the fixed list; delete only while no service record names them.
+-- delete_contractor, by Ops with log_cost or an admin, each logged; trades come from the
+-- list (OT-99; 41_trades has the rest); delete only while no service record names them.
 begin;
 select plan(37);
 
@@ -11,6 +11,15 @@ begin
     json_build_object('sub', (select id from auth.users where email = p_email), 'role', 'authenticated', 'aal', 'aal2')::text, true);
   perform set_config('role', 'authenticated', true);
 end $$;
+-- The ids of trades by name, as save_contractor takes them.
+create function pg_temp.trades(variadic p_names text[]) returns uuid[] language sql as $$
+  select array(select id from public.trades where name = any (p_names) order by sort_order)
+$$;
+-- A contractor's trades by name, in the list's order.
+create function pg_temp.trades_of(p_id uuid) returns text[] language sql as $$
+  select array(select t.name from public.contractor_trades ct join public.trades t on t.id = ct.trade_id
+               where ct.contractor_id = p_id order by t.sort_order)
+$$;
 create function pg_temp.su() returns void language plpgsql as $$
 begin
   perform set_config('role', 'postgres', true);
@@ -26,52 +35,52 @@ end $$;
 
 -- The trade list ---------------------------------------------------------------------------
 
-select is(array_length(public.contractor_trades(), 1), 15, 'fifteen trades');
-select is((public.contractor_trades())[15], 'Other', 'with Other last');
-select is((select count(*)::int from public.contractors where not (trade = any (public.contractor_trades()))), 0,
-  'every seeded contractor''s trade is on the list');
+select is((select count(*)::int from public.trades where active), 15, 'fifteen trades');
+select is((select name from public.trades order by sort_order desc limit 1), 'Other', 'with Other last');
+select is((select count(*)::int from public.contractors c where cardinality(pg_temp.trades_of(c.id)) <> 1), 0,
+  'every seeded contractor has one trade');
 
 -- Adding ------------------------------------------------------------------------------------
 
 select pg_temp.login('bert.velilla@example.com');
-select public.save_contractor(null, ' Test Roofing Co ', 'Roofing', p_contact_name => 'Sam Lee',
+select public.save_contractor(null, ' Test Roofing Co ', pg_temp.trades('Roofing'), p_contact_name => 'Sam Lee',
   p_phone => '(312) 555-0100', p_email => 'sam@example.com', p_preferred => true) as added
 \gset
 select results_eq(
-  format('select name, trade, contact_name, preferred, created_by from public.contractors where id = %L', :'added'),
-  format('values (%L::text, %L::text, %L::text, true, %L::uuid)', 'Test Roofing Co', 'Roofing', 'Sam Lee', :bert),
+  format('select name, pg_temp.trades_of(id), contact_name, preferred, created_by from public.contractors where id = %L', :'added'),
+  format('values (%L::text, %L::text[], %L::text, true, %L::uuid)', 'Test Roofing Co', '{Roofing}', 'Sam Lee', :bert),
   'Ops adds a contractor, trimmed, as themselves');
 select pg_temp.su();
 select is((select actor_id from public.audit_log where action = 'contractor.add' and meta->>'contractor_id' = :'added'),
   (:bert)::uuid, 'and it is logged');
 
 select pg_temp.login('bert.velilla@example.com');
-select throws_ok($$ select public.save_contractor(null, 'coldline refrigeration', 'Refrigeration') $$,
+select throws_ok($$ select public.save_contractor(null, 'coldline refrigeration', pg_temp.trades('Refrigeration')) $$,
   '23505', null, 'a name already in the directory is refused, whatever its case');
-select throws_ok($$ select public.save_contractor(null, 'Test: no trade', 'Pest control') $$,
+select throws_ok($$ select public.save_contractor(null, 'Test: no trade', array[gen_random_uuid()]) $$,
   '22023', null, 'a trade off the list is refused');
-select throws_ok($$ select public.save_contractor(null, '  ', 'Other') $$,
+select throws_ok($$ select public.save_contractor(null, '  ', pg_temp.trades('Other')) $$,
   '23514', null, 'a name is required');
-select throws_ok(format($$ select public.save_contractor(null, %L, 'Other') $$, repeat('x', 121)),
+select throws_ok(format($$ select public.save_contractor(null, %L, pg_temp.trades('Other')) $$, repeat('x', 121)),
   '23514', null, 'and has a length limit');
-select throws_ok($$ select public.save_contractor(null, 'Test: bad email', 'Other', p_email => 'not an email') $$,
+select throws_ok($$ select public.save_contractor(null, 'Test: bad email', pg_temp.trades('Other'), p_email => 'not an email') $$,
   '23514', null, 'an email must look like one');
 
 -- Editing -----------------------------------------------------------------------------------
 
-select lives_ok(format($$ select public.save_contractor(%L, 'Test Roofing Co', 'General repair',
+select lives_ok(format($$ select public.save_contractor(%L, 'Test Roofing Co', pg_temp.trades('General repair'),
   p_phone => '(312) 555-0101', p_notes => 'Test: gutters too') $$, :'added'), 'Ops edits a contractor');
 select results_eq(
-  format('select trade, phone, contact_name, preferred from public.contractors where id = %L', :'added'),
-  $$ values ('General repair'::text, '(312) 555-0101'::text, null::text, false) $$,
+  format('select pg_temp.trades_of(id), phone, contact_name, preferred from public.contractors where id = %L', :'added'),
+  $$ values ('{General repair}'::text[], '(312) 555-0101'::text, null::text, false) $$,
   'every field is as the form holds it');
 select pg_temp.su();
 select results_eq(
-  format($$ select meta->'before'->>'trade', meta->'after'->>'trade' from public.audit_log
+  format($$ select meta->'before'->'trades', meta->'after'->'trades' from public.audit_log
             where action = 'contractor.update' and meta->>'contractor_id' = %L $$, :'added'),
-  $$ values ('Roofing'::text, 'General repair'::text) $$, 'the edit is logged with before and after');
+  $$ values ('["Roofing"]'::jsonb, '["General repair"]'::jsonb) $$, 'the edit is logged with before and after');
 select pg_temp.login('bert.velilla@example.com');
-select throws_ok(format($$ select public.save_contractor(%L, 'Test', 'Other') $$, gen_random_uuid()),
+select throws_ok(format($$ select public.save_contractor(%L, 'Test', pg_temp.trades('Other')) $$, gen_random_uuid()),
   'P0002', null, 'editing a contractor that doesn''t exist says so');
 
 -- Who may -----------------------------------------------------------------------------------
@@ -79,18 +88,18 @@ select throws_ok(format($$ select public.save_contractor(%L, 'Test', 'Other') $$
 select pg_temp.su();
 insert into public.rights (user_id, key, allowed, updated_by) values ((:maya)::uuid, 'log_cost', true, (:bert)::uuid);
 select pg_temp.login('maya.reyes@example.com');
-select throws_ok($$ select public.save_contractor(null, 'Test: by a manager', 'Other') $$,
+select throws_ok($$ select public.save_contractor(null, 'Test: by a manager', pg_temp.trades('Other')) $$,
   '42501', null, 'a manager with log_cost at her restaurant can''t change the group''s contractors');
 select throws_ok(format($$ select public.set_contractor_archived(%L, true) $$, :coldline),
   '42501', null, 'or archive one');
 select pg_temp.login('lee.chen@example.com');
-select throws_ok($$ select public.save_contractor(null, 'Test: by leadership', 'Other') $$,
+select throws_ok($$ select public.save_contractor(null, 'Test: by leadership', pg_temp.trades('Other')) $$,
   '42501', null, 'leadership reads contractors and changes none');
 select pg_temp.login('admin@example.com');
-select lives_ok($$ select public.save_contractor(null, 'Test: by an admin', 'Other') $$, 'an admin can add one');
+select lives_ok($$ select public.save_contractor(null, 'Test: by an admin', pg_temp.trades('Other')) $$, 'an admin can add one');
 
 select pg_temp.login('bert.velilla@example.com');
-select throws_ok($$ insert into public.contractors (name, trade) values ('Test: direct', 'Other') $$,
+select throws_ok($$ insert into public.contractors (name) values ('Test: direct') $$,
   '42501', null, 'nobody inserts a contractor directly, which would skip the log');
 update public.contractors set name = 'Test: renamed directly' where id = (:coldline)::uuid;
 delete from public.contractors where id = (:'added')::uuid;
@@ -107,7 +116,7 @@ select isnt((select archived_at from public.contractors where id = (:coldline)::
   'who stays readable, with their visits');
 select throws_ok(format($$ select public.log_service(p_kind => 'contractor', p_restaurant_id => %L, p_contractor_id => %L) $$, :r1, :coldline),
   '22023', null, 'and takes no new visits');
-select lives_ok($$ select public.save_contractor(null, 'Coldline Refrigeration', 'Refrigeration') $$,
+select lives_ok($$ select public.save_contractor(null, 'Coldline Refrigeration', pg_temp.trades('Refrigeration')) $$,
   'an archived contractor''s name is free again');
 select throws_ok(format($$ select public.set_contractor_archived(%L, false) $$, :coldline),
   '23505', null, 'so restoring them while the name is taken is refused');

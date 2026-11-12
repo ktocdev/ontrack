@@ -70,6 +70,12 @@ export function RestaurantsScreen() {
                 subtitle="What tickets and equipment are sorted by"
                 trailing={<IconChevronRight className="text-text-muted" />}
               />
+              <ListRowLink
+                to="/admin/restaurants/trades"
+                title="Trades"
+                subtitle="What contractors do"
+                trailing={<IconChevronRight className="text-text-muted" />}
+              />
             </ListCard>
           </>
         )}

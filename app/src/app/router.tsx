@@ -292,6 +292,12 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
+                    path: '/ops/contractors/trades',
+                    lazy: async () => ({
+                      Component: (await import('../screens/trades/TradesScreen')).OpsTradesScreen,
+                    }),
+                  },
+                  {
                     path: '/ops/equipment/:id/edit',
                     lazy: async () => ({
                       Component: (await import('../screens/equipment/EquipmentFormScreen')).OpsEditEquipmentScreen,
@@ -369,6 +375,12 @@ export const router = createBrowserRouter([
                     path: '/admin/restaurants/categories',
                     lazy: async () => ({
                       Component: (await import('../screens/categories/CategoriesScreen')).AdminCategoriesScreen,
+                    }),
+                  },
+                  {
+                    path: '/admin/restaurants/trades',
+                    lazy: async () => ({
+                      Component: (await import('../screens/trades/TradesScreen')).AdminTradesScreen,
                     }),
                   },
                 ],

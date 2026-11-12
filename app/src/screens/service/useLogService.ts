@@ -57,7 +57,7 @@ export function useLogServiceOrigin(origin: Origin) {
 
 export type LogServiceOrigin = NonNullable<ReturnType<typeof useLogServiceOrigin>['data']>
 
-export type ContractorChoice = { id: string; name: string; trade: string; preferred: boolean }
+export type ContractorChoice = { id: string; name: string; preferred: boolean }
 
 /** The picker: contractors not archived, preferred first, then by name. */
 export function useContractorChoices() {
@@ -66,7 +66,7 @@ export function useContractorChoices() {
     queryFn: async (): Promise<ContractorChoice[]> => {
       const { data, error } = await requireSupabase()
         .from('contractors')
-        .select('id, name, trade, preferred')
+        .select('id, name, preferred')
         .is('archived_at', null)
         .order('preferred', { ascending: false })
         .order('name')
@@ -231,29 +231,16 @@ export function useLogService() {
   })
 }
 
-/** The trades a contractor can have, the database's own list. */
-export function useTrades() {
-  return useQuery({
-    queryKey: ['contractors', 'trades'],
-    staleTime: Infinity,
-    queryFn: async () => {
-      const { data, error } = await requireSupabase().rpc('contractor_trades')
-      if (error) throw error
-      return data
-    },
-  })
-}
-
 /** "+ Add new contractor" from the picker: saved through save_contractor, then picked. */
 export function useAddContractor() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (c: { name: string; trade: string; phone: string }) => {
+    mutationFn: async (c: { name: string; tradeIds: string[]; phone: string }) => {
       const { data, error } = await requireSupabase().rpc('save_contractor', {
         // A new contractor has no id yet; the generated type can't say the argument takes null.
         p_id: null as unknown as string,
         p_name: c.name.trim(),
-        p_trade: c.trade,
+        p_trade_ids: c.tradeIds,
         p_phone: blank(c.phone),
       })
       if (error) throw error
