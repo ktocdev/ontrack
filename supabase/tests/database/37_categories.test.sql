@@ -84,7 +84,7 @@ select lives_ok($$ select public.add_category('Rooftop', 'foh') $$, 'an admin lo
 
 select pg_temp.su();
 -- One transaction gives every row the same time, so the actions are compared sorted.
-select is((select array_agg(action order by action) from public.audit_log where action like 'category.%'),
+select is((select array_agg(action order by action) from public.audit_log where action like 'category.%' and actor_id is not null),
   array['category.add', 'category.add', 'category.add', 'category.delete', 'category.rename', 'category.turn_off', 'category.turn_on'],
   'every change is logged');
 

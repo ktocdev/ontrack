@@ -102,7 +102,7 @@ test('an admin opens Categories from Restaurants', async ({ page }) => {
   await page.getByRole('link', { name: /^Categories/ }).click()
   await expect(page).toHaveURL(/\/admin\/restaurants\/categories$/)
   await expect(page.getByRole('button', { name: 'Add category' })).toBeVisible()
-  await expect(row(page, 'POS & tech')).toBeVisible()
+  await expect(row(page, 'Retractable roofs & windows')).toBeVisible()
 })
 
 test('a manager has no way to Categories, and the Ops address is refused', async ({ page }) => {

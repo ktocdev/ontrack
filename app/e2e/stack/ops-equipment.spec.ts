@@ -26,7 +26,9 @@ test('a card per type, one open at a time, each row with its restaurant, serial,
   await openEquipment(page)
   await expect(page.getByRole('link', { name: 'Add equipment' })).toBeVisible()
 
-  // Back of House types first, every card closed on arriving.
+  // Back of House types first, every card closed on arriving. evaluateAll doesn't wait,
+  // so wait for the cards first (it read none, now and then, on both browsers).
+  await expect(page.getByRole('region').first()).toBeVisible()
   const names = await page.getByRole('region').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')))
   expect(names.slice(0, 3)).toEqual(['Cooking', 'Refrigeration', 'Plumbing'])
   for (const name of names) await expect(head(page, name!)).toHaveAttribute('aria-expanded', 'false')

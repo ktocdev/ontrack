@@ -1,7 +1,7 @@
 -- The categories come from a migration, not the seed (OT-25), so a hosted project
 -- has them. The seed no longer inserts any, so these counts prove the migration.
 begin;
-select plan(4);
+select plan(6);
 
 create function pg_temp.login(p_email text) returns void language plpgsql as $$
 begin
@@ -13,6 +13,10 @@ end $$;
 
 select is((select count(*)::int from public.categories where area = 'foh'), 8, 'eight for the front of house');
 select is((select count(*)::int from public.categories where area = 'boh'), 8, 'eight for the back of house');
+select is((select sort_order from public.categories where area = 'foh' and name = 'Retractable roofs & windows'), 8,
+  'Retractable roofs & windows is last in the front of house (OT-91)');
+select is((select count(*)::int from public.categories where name = 'POS & tech'), 0,
+  'and POS & tech, which nothing used here, is gone');
 
 select pg_temp.login('ari.kim@example.com');
 select is((select count(*)::int from public.categories), 16, 'a manager can read them all');
