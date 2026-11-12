@@ -110,6 +110,12 @@ export const IconChevronDown = (p: IconProps) => (
     <path d="m6 9 6 6 6-6" />
   </svg>
 )
+/** Up and down arrows, the Invoices tab's sort (design/screens/Ops-Invoices). */
+export const IconSort = (p: IconProps) => (
+  <svg {...base({ size: 14, ...p }, 2.2)}>
+    <path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4" />
+  </svg>
+)
 export const IconClose = (p: IconProps) => (
   <svg {...base({ size: 22, ...p }, 2, false)}>
     <path d="M6 6l12 12M18 6 6 18" />

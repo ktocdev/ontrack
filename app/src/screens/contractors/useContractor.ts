@@ -39,22 +39,7 @@ export function useContractor(id: string, seeCosts: boolean) {
       for (const r of [contractor, history, records]) if (r.error) throw r.error
       if (!contractor.data) return null
 
-      const ids = (records.data ?? []).map((r) => r.id)
-      const [totals, missing, invoices] = ids.length
-        ? await Promise.all([
-            sb.from('v_service_record_totals').select('service_record_id, total_cents').in('service_record_id', ids),
-            sb.from('v_missing_invoices').select('service_record_id').in('service_record_id', ids),
-            sb.from('invoices').select('service_record_id, number').in('service_record_id', ids),
-          ])
-        : [
-            { data: [], error: null },
-            { data: [], error: null },
-            { data: [], error: null },
-          ]
-      for (const r of [totals, missing, invoices]) if (r.error) throw r.error
-      const totalOf = new Map((totals.data ?? []).map((t) => [t.service_record_id, t.total_cents ?? 0]))
-      const missingIds = new Set((missing.data ?? []).map((m) => m.service_record_id))
-      const numberOf = new Map((invoices.data ?? []).map((i) => [i.service_record_id, i.number]))
+      const { totalOf, missingIds, numberOf } = await visitAmounts((records.data ?? []).map((r) => r.id))
 
       const { trades, ...c } = contractor.data
       return {
@@ -73,6 +58,43 @@ export function useContractor(id: string, seeCosts: boolean) {
       }
     },
   })
+}
+
+/**
+ * Each visit's total, whether its invoice is missing, and its number. Given ids, for those
+ * visits; given null, for every visit RLS lets through (see_costs), which suits a list of
+ * all of them and keeps a long list of ids out of the address.
+ */
+export async function visitAmounts(ids: string[] | null) {
+  const sb = requireSupabase()
+  if (ids?.length === 0)
+    return {
+      totalOf: new Map<string, number>(),
+      missingIds: new Set<string>(),
+      numberOf: new Map<string, string | null>(),
+    }
+  const totalsQ = sb.from('v_service_record_totals').select('service_record_id, total_cents')
+  const missingQ = sb.from('v_missing_invoices').select('service_record_id')
+  const invoicesQ = sb.from('invoices').select('service_record_id, number')
+  const [totals, missing, invoices] = await Promise.all(
+    ids
+      ? [
+          totalsQ.in('service_record_id', ids),
+          missingQ.in('service_record_id', ids),
+          invoicesQ.in('service_record_id', ids),
+        ]
+      : [totalsQ, missingQ, invoicesQ],
+  )
+  for (const r of [totals, missing, invoices]) if (r.error) throw r.error
+  return {
+    totalOf: new Map(
+      (totals.data ?? []).flatMap((t) =>
+        t.service_record_id ? [[t.service_record_id, t.total_cents ?? 0] as const] : [],
+      ),
+    ),
+    missingIds: new Set((missing.data ?? []).map((m) => m.service_record_id)),
+    numberOf: new Map((invoices.data ?? []).map((i) => [i.service_record_id, i.number] as const)),
+  }
 }
 
 export type ContractorData = NonNullable<ReturnType<typeof useContractor>['data']>
