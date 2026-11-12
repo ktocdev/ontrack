@@ -13,7 +13,8 @@
 -- them.
 --
 -- A trade comes from a fixed list (decided Nov 12, 2026): the Add contractor board's
--- seven, the seven more the seed uses, and Other last. contractor_trades() is the one
+-- seven, with Retractable roofs & windows (some locations have them) after Roofing, six
+-- more the seed uses, and Other last. No POS & tech: Ops doesn't handle it. contractor_trades() is the one
 -- place it lives; the check reads it and the app can too.
 
 create or replace function public.contractor_trades()
@@ -23,8 +24,8 @@ immutable
 set search_path = public
 as $$
   select array[
-    'Roofing', 'Refrigeration', 'HVAC', 'Electrical', 'Plumbing', 'Dishwashing', 'General repair',
-    'Cooking', 'Ventilation', 'Lighting', 'Furniture', 'Decorations', 'Audio & video', 'POS & tech',
+    'Roofing', 'Retractable roofs & windows', 'Refrigeration', 'HVAC', 'Electrical', 'Plumbing', 'Dishwashing', 'General repair',
+    'Cooking', 'Ventilation', 'Lighting', 'Furniture', 'Decorations', 'Audio & video',
     'Other'
   ];
 $$;
