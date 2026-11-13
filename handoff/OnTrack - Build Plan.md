@@ -22,7 +22,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 3 · Ops dashboard and ticket work | Done, except the real-iPhone checks | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). The buzz and its badge were tried on Android (Nov 5, 2026). Google sign-in (OT-59) is deferred until the group's IT person is involved |
 | 4 · Equipment · first demo | Done, except the real-iPhone checks; tried on the live app (Nov 11, 2026) | OT-65 plan update, then OT-66 to OT-88 (see Phase 4). QR labels (OT-74) are deferred until the iPhone link check |
 | 5 · Contractors, service records and invoices | Done, except the real-iPhone checks; the contractor page tried on the live app (Nov 12, 2026), the done test waits for a try there | OT-89 plan update, then OT-90 to OT-100 (see Phase 5) |
-| 6 · Monthly walkthroughs | Planned: 6a (the manager's walkthrough) first, then 6b (Ops and the schedule) | OT-101 plan update, then OT-102 to OT-119 (see Phase 6) |
+| 6 · Monthly walkthroughs | In progress: 6a (the manager's walkthrough), then 6b (Ops and the schedule) | OT-101 plan update, then OT-102 to OT-111 for 6a; 6b numbered after 6a (see Phase 6) |
 
 Phase 0 notes:
 
@@ -131,7 +131,7 @@ Decided Oct 30, 2026, after restaurants got archive and delete in OT-9. Each pha
 | People | Deactivate / Reactivate: no sign-in, out of pickers, name kept on history | Revoke a pending invite; delete an account only with no history | 1 (OT-10 revoke and ban, OT-12 User profile) |
 | Equipment | Retire | Only with no tickets or service records | 4 |
 | Contractors | Archive | Only with no service records | 5 |
-| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | Categories 4 (OT-86); the rest 6b (OT-112) |
+| Categories, walkthrough templates and items, quarterly tasks | Turn off | Only if never used | Categories 4 (OT-86); the rest 6b |
 | Tickets | None (closing ends a ticket) | Never | |
 | Walkthroughs, ticket updates, service records, invoices | None (they are the record) | Never; edits are logged | |
 | In-house fixes and tasks | None | While still open | 2 (OT-30) |
@@ -481,7 +481,8 @@ Managers walk a checklist each month, log fixes and tickets as they go, and Ops 
 - Ops in-house fixes, read-only, with Convert to ticket: the fix leaves the restaurant's in-house list, becomes a ticket with the Walkthrough tag, and the manager is notified
 - Walkthrough schedule: the group rotation (a cycle of months, each with its own checklist, like "A · Kitchen + Exterior, B · Back of House + Front of House"), a restaurant's own rotation and Switch back to group schedule, the year's preview, the restaurant list with Group or Own, and the settings (due date, reminders)
 - Quarterly tasks: the group list with per-restaurant removals, restores, changes and additions; the task editor with directions and a video link
-- Checklist editor, so Ops can change the sections, groups and items without a deploy. No board draws it, so it follows Categories (OT-86): add, rename, reorder, turn off and on, delete only if never used, each logged
+- Import checklist from a spreadsheet (asked for, Nov 12, 2026): download a template, fill in sections, groups, items, directions and video links, upload it, see what changes, and replace the checklist. A walkthrough already open keeps the checklist it opened with. Built so Phase 7's contractor and equipment imports can reuse it
+- Checklist editor, for small changes without a spreadsheet. No board draws it, so it follows Categories (OT-86): add, rename, reorder, turn off and on, delete only if never used, each logged
 
 **Screens from the design:** Walkthrough · Manager (11 screens: this month, checklist, quick ticket, quarterly task, all done, review, partial warning, in-house fixes from item and from review, edit ticket, all tickets); Ops (5 screens: all restaurants, one restaurant, schedule, quarterly tasks, in-house fixes). Leadership's read-only walkthrough (`WT-Exec`) is Phase 7's.
 
@@ -491,7 +492,7 @@ Managers walk a checklist each month, log fixes and tickets as they go, and Ops 
 
 | PR | Scope |
 | --- | --- |
-| OT-101 | Plan update and this split; Phase 5 moves to the record in `CLAUDE.md` |
+| OT-101 | Plan update and this split; Phase 5 moves to the record in `CLAUDE.md` (merged into the OT-98 branch after #97, so it reached `main` with OT-102) |
 | **6a** | |
 | OT-102 | Walkthrough backend. The checklist in sections (a section is a name, like Back of House or Kitchen, in place of the Front / Back area), so 6b's rotation needs no rework; a walkthrough keeps the checklist it opened with, so a later edit changes next month's, not this one. A check changes only through functions that check the caller (`create_tickets` at the restaurant) and refuse a submitted walkthrough: mark Good or clear, add an in-house fix from an item, create a ticket from an item (`source = walkthrough`, linked to the walkthrough and the check). Good is refused while the item has an open fix or ticket. `submit_walkthrough` with an optional note, allowed with checks still to do. The progress per section as a view. The month's opening as one function (`open_walkthroughs(period)`), safe to run twice, with the due date and the checklist from the schedule, and the `pg_cron` job; quarterly tasks shown in each month of their quarter until done; pgTAP |
 | OT-103 | Reminders: a daily `pg_cron` job writes a reminder for each open walkthrough 7 and 2 days before its due date, to the managers at that restaurant, once each, through `notifications` and `send-push`, push and email; a switch for it on Profile; `notification_recipients` and pgTAP say who gets it |
@@ -503,22 +504,15 @@ Managers walk a checklist each month, log fixes and tickets as they go, and Ops 
 | OT-109 | Review & submit, the partial warning sheet, the all-tickets list, the note for Ops |
 | OT-110 | Security and code quality pass over 6a |
 | OT-111 | 6a's done test as one flow; the note for 6a |
-| **6b** | |
-| OT-112 | Ops walkthrough backend: the rotation (a schedule holds its cycle of checklists; a restaurant's own, or the group's), `save_schedule`, `use_own_schedule` and `use_group_schedule`; quarterly tasks for the group and per restaurant (remove, restore, change, add); the checklist editor's functions by the archive and delete rule; `convert_inhouse_fix`; `send_walkthrough_reminder` for Ops, at most one an hour per walkthrough; the overview and history views; each checked and logged; pgTAP |
-| OT-113 | Ops walkthroughs overview and one restaurant's walkthrough, with Send reminder; replaces the Walkthroughs placeholder; View as |
-| OT-114 | Ops in-house fixes, read-only, with Convert to ticket |
-| OT-115 | Walkthrough schedule: rotation, own schedule and switch back, the year's preview, the restaurant list, settings |
-| OT-116 | Quarterly tasks: the group list, per-restaurant changes, the task editor |
-| OT-117 | Checklist editor (no board; follows Categories) |
-| OT-118 | Security and code quality pass over 6b |
-| OT-119 | The phase's done test as one flow; the phase note |
+| **6b** | Numbered when 6a's done test passes (decided Nov 12, 2026), since the rotation and feedback from 6a will reshape it. In order: the Ops backend (rotations and who uses them, quarterly task overrides, the checklist editor's and the import's functions, `convert_inhouse_fix`, `send_walkthrough_reminder`, the overview and history views, pgTAP); the Ops overview and one restaurant with Send reminder; Ops in-house fixes with Convert to ticket; the schedule; quarterly tasks; Import checklist from a spreadsheet; the checklist editor; a security and code quality pass; the done test and the phase note |
 
 **What this phase has to work around**
 
-- **The rotation is more than the schema holds (decide in OT-101's review).** The schedule board draws a cycle of months, each with its own checklist ("A · Kitchen + Exterior", "B · Back of House + Front of House"), and a restaurant with its own cycle and its own checklist (Ranalli's, three months, "6 zones · 20 items"). Phase 0's tables hold the months a walkthrough is due and one checklist split into Front and Back. The plan builds the rotation as drawn, in 6b, and makes 6a's checklist sections rather than Front / Back so nothing in 6a has to change for it. Until 6b, every restaurant gets the group's one checklist every month. If Ops wants one checklist every month after all, OT-112 and OT-115 shrink to the due date and the reminders.
-- **The real checklist is an open item.** The seed has a starter template; the boards draw seven groups (Electrical, Plumbing, Envelope, Aesthetics, HVAC, Health and safety, Inventory control) with 24 items for each of Back and Front of House, which the seed will follow. The group's own checklist, and what "Kitchen + Exterior" holds, come from Ops. Until the checklist editor (OT-117), Ops sends it and a migration loads it.
+- **The rotation is more than the schema holds (decided Nov 12, 2026: build it, in 6b).** The schedule board draws a cycle of months, each with its own checklist ("A · Kitchen + Exterior", "B · Back of House + Front of House"), and a restaurant with its own cycle and its own checklist (Ranalli's, three months, "6 zones · 20 items"). Phase 0's tables hold the months a walkthrough is due and one checklist split into Front and Back. 6a makes the checklist sections rather than Front / Back, so nothing in 6a has to change for the rotation. Until 6b, every restaurant gets the group's one checklist every month.
+- **A checklist and a rotation can be shared (decided Nov 12, 2026).** The board offers the group's schedule or a restaurant's own. Katie wants the same one usable at several restaurants, say both Federale's on one and Ranalli's on another, so a checklist (from OT-102) and a rotation (in 6b) stand on their own and restaurants point to them, never a copy per restaurant. Each restaurant still gets its own walkthrough each month. The board's Group and Own become the rotation's name on the restaurant list.
+- **The real checklist is an open item.** The seed has a starter template; the boards draw seven groups (Electrical, Plumbing, Envelope, Aesthetics, HVAC, Health and safety, Inventory control) with 24 items for each of Back and Front of House, which the seed will follow. The group's own checklist, and what "Kitchen + Exterior" holds, come from Ops. Until Import checklist in 6b, Ops sends it and a migration loads it.
 - **Who does the walkthrough.** One walkthrough per restaurant per month, shared by everyone with Create tickets there: any manager at the restaurant can tick items and submit, each tap saves at once, and the home names who started it. Ops can read every one but checks nothing, as the boards draw.
-- **Due date.** The boards say "Due Fri, Oct 31" and the schedule's setting says "Last day of the month"; the table's default is the 25th. The due date becomes the last day of the month unless a schedule sets a day, and a walkthrough submitted after it counts as Late.
+- **Due date (decided Nov 12, 2026).** The last day of the month, as the boards say, where the table's default was the 25th. A walkthrough submitted after it counts as Late.
 - **Quarterly tasks** show in each month of their quarter ("Q4 location tasks · Due Dec 31") until they are done; once done they show as done in the rest of the quarter. A walkthrough submitted with a quarterly task still to do doesn't count it as missed until the quarter ends.
 - **The quick ticket's Scan QR** waits for OT-74, as on Create ticket, so it is left off.
 - **Convert to ticket (6b)** says the ticket is "unassigned"; nobody assigns since OT-48, so it is simply a new ticket on the dashboard, with nobody on it.
@@ -620,7 +614,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [ ] For Google sign-in: who runs the group's Google admin account, to help set up the sign-in connection? An IT person does, not yet involved; Ops was unsure how they would take the change, so Katie will try to reach them, or the other Ops manager first for more background
 - [x] For Google sign-in: does everyone have a work Google account, including every manager, Ops, leadership and any outside people? Yes (Nov 4, 2026, from Ops)
 - [ ] For Google sign-in: is anyone on an iPhone? If so, the installed-app test decides the approach. Not known yet; the managers need asking
-- [ ] The real walkthrough checklist items per section (the design has 48 placeholders), and what each month of the rotation covers, from Ops, before 6a is tried on the live app; a migration loads them until the checklist editor (OT-117)
+- [ ] The real walkthrough checklist items per section (the design has 48 placeholders), and what each month of the rotation covers, from Ops, before 6a is tried on the live app; a migration loads them until Import checklist in 6b
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
 - [x] Turn off or delete a category, following the archive and delete rule: built in OT-86 for Ops and admins (Nov 6, 2026), after OT-84 limited the writes to them
 - [ ] Whether an admin may post in a ticket thread. Leadership can't since OT-28, but an admin still can through the API, though no screen offers it. Phase 7 builds the admin's view-only tickets, so decide there

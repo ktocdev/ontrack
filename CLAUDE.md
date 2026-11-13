@@ -154,7 +154,7 @@ A screen that needs real data can only render against the stack, which runs in C
 
 ## Current phase: 6 · Monthly walkthroughs
 
-The plan's Phase 6 section says what ships and what it works around. It ships in two halves: 6a is the manager's walkthrough, 6b is Ops and the schedule. Done when next month's walkthrough is opened by the database for all four restaurants, a manager submits one from a phone with two tickets and one fix, those tickets show the Walkthrough tag on the Ops dashboard, and the Ops overview shows one of four submitted (6b). One walkthrough per restaurant per month, shared by everyone with `create_tickets` there; Ops reads and checks nothing. A walkthrough keeps the checklist it opened with. The checklist is in sections, not the Front / Back area, so 6b's rotation (a cycle of months, each with its own checklist) needs no rework. Checks change only through functions, Good is refused while an item has an open fix or ticket, and a walkthrough's in-house fix is added by the function that records the check, never by a direct insert.
+The plan's Phase 6 section says what ships and what it works around. It ships in two halves: 6a is the manager's walkthrough, 6b is Ops and the schedule. Done when next month's walkthrough is opened by the database for all four restaurants, a manager submits one from a phone with two tickets and one fix, those tickets show the Walkthrough tag on the Ops dashboard, and the Ops overview shows one of four submitted (6b). One walkthrough per restaurant per month, shared by everyone with `create_tickets` there; Ops reads and checks nothing. A walkthrough keeps the checklist it opened with. A checklist (and in 6b a rotation) stands on its own and several restaurants may use the same one; never copy one per restaurant. Due on the last day of the month. The checklist is in sections, not the Front / Back area, so 6b's rotation (a cycle of months, each with its own checklist) needs no rework. Checks change only through functions, Good is refused while an item has an open fix or ticket, and a walkthrough's in-house fix is added by the function that records the check, never by a direct insert.
 
 | PR    | Scope |
 | ----- | ----- |
@@ -169,14 +169,7 @@ The plan's Phase 6 section says what ships and what it works around. It ships in
 | OT-109 | Review & submit, the partial warning, all tickets, the note for Ops |
 | OT-110 | Security and code quality pass over 6a |
 | OT-111 | 6a's done test; the note for 6a |
-| OT-112 | 6b backend: the rotation and own schedules, quarterly task overrides, checklist editor functions, `convert_inhouse_fix`, `send_walkthrough_reminder`, overview and history views, pgTAP |
-| OT-113 | Ops walkthroughs overview and one restaurant, Send reminder; View as |
-| OT-114 | Ops in-house fixes with Convert to ticket |
-| OT-115 | Walkthrough schedule |
-| OT-116 | Quarterly tasks |
-| OT-117 | Checklist editor (no board; follows Categories) |
-| OT-118 | Security and code quality pass over 6b |
-| OT-119 | The done test as one flow; the phase note |
+| 6b    | Numbered when 6a's done test passes: Ops backend, overview and one restaurant, in-house fixes with Convert to ticket, schedule (rotations restaurants share), quarterly tasks, Import checklist from a spreadsheet, checklist editor, security pass, done test |
 
 ## Phase 5, for the record
 
