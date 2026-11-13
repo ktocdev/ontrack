@@ -5,7 +5,7 @@ import { safeReturnPath } from '../../auth/returnPath'
 import { Notice } from '../../components/Notice'
 import { BackBar, Screen, ScreenBody } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
-import { TaskList, TaskRow } from '../../components/TaskRow'
+import { TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
 import { IconChevronDown, IconClose } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
@@ -14,8 +14,6 @@ import { useSetTaskDone } from '../tickets/useInHouse'
 import { addedLine, whereFrom } from './fixes'
 import { useWalkthroughFixes, type WalkthroughFix } from './useWalkthroughFixes'
 import { monthName } from './walkthrough'
-
-const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
 
 /**
  * Walkthrough · In-house fixes (design/screens/WT-Fix, WT-Fix-All). Every fix made on
@@ -125,20 +123,20 @@ export function WalkthroughFixesScreen() {
           </div>
         )}
         <div className="flex flex-none items-baseline justify-between pt-1">
-          <span className={SECTION}>In-house to fix · {open.length}</span>
+          <span className="eyebrow">In-house to fix · {open.length}</span>
           {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
         </div>
         {open.length > 0 ? (
           <TaskList>{open.map(row)}</TaskList>
         ) : (
-          <div className="flex-none rounded-input border border-border bg-surface px-4 py-[18px] text-14 leading-[1.45] text-text-secondary">
+          <TaskListEmpty>
             {closed.length > 0 ? 'Nothing left to fix. Checked-off fixes are under Closed.' : 'No in-house fixes yet.'}
-          </div>
+          </TaskListEmpty>
         )}
         {closed.length > 0 && (
           <details className="group mt-1 flex-none">
             <summary className="flex min-h-tap cursor-pointer list-none items-center justify-between group-open:mb-1 [&::-webkit-details-marker]:hidden">
-              <span className={SECTION}>Closed · {closed.length}</span>
+              <span className="eyebrow">Closed · {closed.length}</span>
               <IconChevronDown size={16} strokeWidth={2.2} className="text-text-secondary group-open:rotate-180" />
             </summary>
             <TaskList>{closed.map(row)}</TaskList>

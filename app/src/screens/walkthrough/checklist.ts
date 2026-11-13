@@ -69,7 +69,7 @@ export function groupsOf(
       good,
       fixes: itemFixes,
       tickets: itemTickets,
-      open: itemFixes.some((f) => !f.done_at) || itemTickets.some((t) => t.status !== 'closed'),
+      open: stillOpen(itemFixes, itemTickets),
       done: good || itemFixes.length > 0 || itemTickets.length > 0,
     }
     let group = groups.find((g) => g.name === row.group_name)
@@ -118,4 +118,10 @@ export function litChoices(fixes: Pick<FixRow, 'done_at'>[], tickets: Pick<Ticke
     inhouse: fixes.some((f) => !f.done_at),
     ticket: tickets.some((t) => t.status !== 'closed'),
   }
+}
+
+/** A fix not checked off or a ticket not closed, which keeps Good away, on an item or a task. */
+export function stillOpen(fixes: Pick<FixRow, 'done_at'>[], tickets: Pick<TicketRow, 'status'>[]) {
+  const lit = litChoices(fixes, tickets)
+  return lit.inhouse || lit.ticket
 }

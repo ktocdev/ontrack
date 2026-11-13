@@ -28,7 +28,7 @@ import {
   PeopleListSkeleton,
   Spinner,
 } from '@app/components/Skeleton'
-import { TaskList, TaskRow } from '@app/components/TaskRow'
+import { TaskList, TaskListEmpty, TaskRow } from '@app/components/TaskRow'
 import { Composer, ThreadEvent, ThreadMessage, VisibilityToggle } from '@app/components/Thread'
 import { TicketCard } from '@app/components/TicketCard'
 import { useToast } from '@app/components/Toast'
@@ -350,6 +350,9 @@ export function EquipmentPage() {
               onToggle={() => toast.show('Unchecked.')}
             />
           </TaskList>
+        </Example>
+        <Example title="With nothing to list">
+          <TaskListEmpty>Nothing left to fix. Checked-off tasks are under Closed.</TaskListEmpty>
         </Example>
       </Section>
     </>

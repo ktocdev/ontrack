@@ -39,7 +39,7 @@ import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { ReorderList } from '../../components/ReorderList'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
-import { TaskList, TaskRow } from '../../components/TaskRow'
+import { TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import {
   CountTile,
@@ -617,6 +617,7 @@ export function KitPage() {
                   onToggle={() => toast.show('Row unchecked.')}
                 />
               </TaskList>
+              <TaskListEmpty>Nothing left to fix. Checked-off tasks are under Closed.</TaskListEmpty>
               <ListCard>
                 <ListRow
                   leading={<Avatar name="Sam Patel" role="manager" />}

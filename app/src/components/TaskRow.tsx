@@ -12,6 +12,15 @@ export function TaskList({ children }: { children: ReactNode }) {
   return <div className="flex-none overflow-hidden rounded-input border border-border bg-surface">{children}</div>
 }
 
+/** What a list says in its place while it has no rows: "Nothing left to fix." */
+export function TaskListEmpty({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex-none rounded-input border border-border bg-surface px-4 py-[18px] text-14 leading-[1.45] text-text-secondary">
+      {children}
+    </div>
+  )
+}
+
 export function TaskRow({
   title,
   meta,
