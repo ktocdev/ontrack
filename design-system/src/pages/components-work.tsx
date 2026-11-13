@@ -2,6 +2,15 @@ import { useState } from 'react'
 import { ContractorCard } from '@app/components/ContractorCard'
 import { Avatar } from '@app/components/Avatar'
 import { Card, DisclosureList, ListRow, RadioRow } from '@app/components/Card'
+import {
+  CheckChoice,
+  ChecklistEntries,
+  ChecklistEntry,
+  ChecklistGroup,
+  ChecklistHelp,
+  ChecklistItem,
+  InlineFix,
+} from '@app/components/Checklist'
 import { ClosedTicketRow, MonthHeading } from '@app/components/ClosedTicketRow'
 import { EquipmentGroup, EquipmentRow, OpenBadge, OpenNote } from '@app/components/Equipment'
 import { OpsTicketCard } from '@app/components/OpsTicketCard'
@@ -447,6 +456,92 @@ export function WalkthroughPage() {
               trailing={<FlagChip tone="ticket">5 tickets</FlagChip>}
             />
           </DisclosureList>
+        </Example>
+      </Section>
+      <Section
+        title="Checklist"
+        intro="A group's card opens and closes; each item has Good, In-house and Ticket, lit once picked. Good is left out while the item has a fix or ticket still open. What was made from an item is listed under it, and In-house opens a field there."
+      >
+        <Example
+          code={`<ChecklistGroup name="Electrical" done={2} total={3} open onToggle={toggle}>
+  <ChecklistItem name="Outlets" choices={…}>…</ChecklistItem>
+</ChecklistGroup>`}
+        >
+          <div className="flex flex-col gap-2.5">
+            <ChecklistHelp />
+            <ChecklistGroup name="Electrical" done={2} total={3} open onToggle={() => undefined}>
+              <ChecklistItem
+                name="Light bulbs"
+                choices={
+                  <>
+                    <CheckChoice tone="good" lit aria-pressed>
+                      Good
+                    </CheckChoice>
+                    <CheckChoice tone="inhouse" lit={false}>
+                      In-house
+                    </CheckChoice>
+                    <CheckChoice tone="ticket" lit={false}>
+                      Ticket
+                    </CheckChoice>
+                  </>
+                }
+              />
+              <ChecklistItem
+                name="Outlets"
+                choices={
+                  <>
+                    <CheckChoice tone="inhouse" lit>
+                      In-house
+                    </CheckChoice>
+                    <CheckChoice tone="ticket" lit>
+                      Ticket
+                    </CheckChoice>
+                  </>
+                }
+              >
+                <ChecklistEntries>
+                  <ChecklistEntry kind="fix" to="#">
+                    Replaced cracked cover plate by mop sink
+                  </ChecklistEntry>
+                  <ChecklistEntry kind="ticket" label="OT-1051" urgent to="#">
+                    Scorch marks on prep line outlet
+                  </ChecklistEntry>
+                  <ChecklistEntry kind="fix" done>
+                    Re-glue trim on pass shelf
+                  </ChecklistEntry>
+                </ChecklistEntries>
+              </ChecklistItem>
+              <ChecklistItem
+                name="Feature"
+                choices={
+                  <>
+                    <CheckChoice tone="good" lit={false}>
+                      Good
+                    </CheckChoice>
+                    <CheckChoice tone="inhouse" lit={false}>
+                      In-house
+                    </CheckChoice>
+                    <CheckChoice tone="ticket" lit={false}>
+                      Ticket
+                    </CheckChoice>
+                  </>
+                }
+              >
+                <ChecklistEntries>
+                  <InlineFix
+                    item="Feature"
+                    saving={false}
+                    autoFocus={false}
+                    onAdd={() => undefined}
+                    onCancel={() => undefined}
+                  />
+                </ChecklistEntries>
+              </ChecklistItem>
+            </ChecklistGroup>
+            <ChecklistGroup name="Plumbing" done={3} total={3} open={false} onToggle={() => undefined}>
+              {null}
+            </ChecklistGroup>
+          </div>
         </Example>
       </Section>
       <Section title="Loading">

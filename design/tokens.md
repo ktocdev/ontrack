@@ -49,7 +49,7 @@ Scale: 11, 12, 13, 14, 15, 16, 20, 22, 24, 30 px. Eyebrows are 11 or 12px, weigh
 | Closed | `#ECEEEB` | `#3F4944` | circle with check |
 | Fixed (in-house) | `#DCE8E3` | `#0B4537` | circle with check |
 
-The Reopened banner on tickets uses `#FBF5E3` background, `#E2C77A` border, `#4A3808` text. Walkthrough tags are a white outline chip: border `#A9B3AE`, text `#2E3833`, clipboard icon. The walkthrough's progress bar (WT-Home) is brand fill for Good, `#C9A227` for in-house and the URGENT orange for tickets, on the `surface-sunken` track.
+The Reopened banner on tickets uses `#FBF5E3` background, `#E2C77A` border, `#4A3808` text. Walkthrough tags are a white outline chip: border `#A9B3AE`, text `#2E3833`, clipboard icon. The walkthrough's progress bar (WT-Home) is brand fill for Good, `#C9A227` for in-house and the URGENT orange for tickets, on the `surface-sunken` track. The checklist's Good, In-house and Ticket buttons, once picked (WT-Checklist), are `#D4F0DE` / `#2E8B57` / `#0E4A2B`, `#F3ECD6` / `#B8941F` / `#4A3808` and `#FBE3D6` / `#C2551A` / `#7A2E06` (background, 1.5px border, text).
 
 ## Restaurant colors
 

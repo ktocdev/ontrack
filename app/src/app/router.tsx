@@ -204,9 +204,16 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
-                  // The checklist (OT-105) and Review & submit (OT-109) replace these.
+                  // The quick ticket (OT-106), quarterly tasks (OT-107) and Review & submit (OT-109) replace these.
                   { path: '/walkthrough/:id/review', ...placeholder('Review & submit', 'OT-109') },
-                  { path: '/walkthrough/:id/:section', ...placeholder('Checklist', 'OT-105') },
+                  { path: '/walkthrough/:id/quarterly', ...placeholder('Quarterly tasks', 'OT-107') },
+                  { path: '/walkthrough/:id/ticket/:itemId', ...placeholder('Create ticket', 'OT-106') },
+                  {
+                    path: '/walkthrough/:id/:section',
+                    lazy: async () => ({
+                      Component: (await import('../screens/walkthrough/ChecklistScreen')).ChecklistScreen,
+                    }),
+                  },
                   {
                     path: '/tickets/closed',
                     lazy: async () => ({
