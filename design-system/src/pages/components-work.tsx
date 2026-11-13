@@ -33,13 +33,17 @@ import { Composer, ThreadEvent, ThreadMessage, VisibilityToggle } from '@app/com
 import { TicketCard } from '@app/components/TicketCard'
 import { useToast } from '@app/components/Toast'
 import {
+  CountTile,
   FlagChip,
   FlagChips,
+  LeftRow,
   ProgressBar,
   ProgressRing,
   WalkthroughCardSkeleton,
   WalkthroughSectionRow,
+  WalkthroughTicketRow,
 } from '@app/components/Walkthrough'
+import { Notice } from '@app/components/Notice'
 import { Example, PageHeader, Rules, Section } from '../chrome/Doc'
 import { SAMPLE_RESTAURANTS } from './components-basics'
 
@@ -472,7 +476,14 @@ export function WalkthroughPage() {
         >
           <div className="flex flex-col gap-2.5">
             <ChecklistHelp />
-            <ChecklistGroup name="Electrical" done={2} total={3} open onToggle={() => undefined}>
+            <ChecklistGroup
+              name="Electrical"
+              done={2}
+              total={3}
+              open
+              onToggle={() => undefined}
+              flags={<FlagChips tickets={1} fixes={1} />}
+            >
               <ChecklistItem
                 name="Light bulbs"
                 choices={
@@ -556,6 +567,55 @@ export function WalkthroughPage() {
               </p>
               <HowToVideo url="https://example.com/how-to" task="Organize utility areas" />
             </TaskCard>
+          </div>
+        </Example>
+      </Section>
+      <Section
+        title="Review"
+        intro="Review & submit's counts, the warning while checks are still to do, the parts left, and the walkthrough's tickets: compact on Review, full on the tickets list."
+      >
+        <Example
+          code={`<CountTile tone="inhouse" count={4} label="In-house" to={path} />
+<LeftRow to={path} name="Back of House" left={8} />
+<WalkthroughTicketRow displayId="OT-1051" title="…" where="…" status="open" />`}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-3 gap-2">
+              <CountTile tone="good" count={41} label="Good" />
+              <CountTile
+                tone="inhouse"
+                count={4}
+                label="In-house"
+                to="/kit"
+                ariaLabel="4 in-house fixes, view and manage all"
+              />
+              <CountTile tone="ticket" count={5} label="Tickets" to="/kit" ariaLabel="5 tickets, view and edit all" />
+            </div>
+            <Notice tone="warn">
+              <b>30 of 50 checks are still to do.</b> You can submit now, or go back and finish them first.
+            </Notice>
+            <div className="overflow-hidden rounded-control border border-border bg-surface">
+              <LeftRow to="/kit" name="Back of House" left={8} />
+              <LeftRow to="/kit" name="Q4 location tasks" left={2} />
+            </div>
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <WalkthroughTicketRow
+                compact
+                to="/kit"
+                displayId="OT-1051"
+                title="Outlets"
+                where="BOH › Electrical"
+                status="in_progress"
+              />
+              <WalkthroughTicketRow
+                to="/kit"
+                displayId="OT-1051"
+                urgent
+                title="Scorch marks on prep line outlet"
+                where="BOH › Electrical › Outlets"
+                status="in_progress"
+              />
+            </div>
           </div>
         </Example>
       </Section>

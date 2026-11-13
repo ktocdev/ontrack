@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { StatusPill, UrgentTag, type PillStatus } from './Pill'
 import { Sk } from './Skeleton'
 import { IconChevronRight } from './icons'
 
@@ -152,6 +153,134 @@ export function WalkthroughCardSkeleton() {
           </div>
         </div>
       ))}
+    </div>
+  )
+}
+
+const TILE = {
+  good: 'bg-status-fixed-bg text-status-fixed-text',
+  inhouse: 'border border-choice-inhouse-border bg-choice-inhouse-bg text-choice-inhouse-text',
+  ticket: 'border border-choice-ticket-border bg-status-open-bg text-choice-ticket-text',
+}
+
+/** Review's counts (WT-Review): Good, In-house, Tickets; the last two open their lists. */
+export function CountTile({
+  tone,
+  count,
+  label,
+  to,
+  state,
+  ariaLabel,
+}: {
+  tone: keyof typeof TILE
+  count: number
+  label: string
+  to?: string
+  /** Carried to the list it opens (the way back to Review). */
+  state?: unknown
+  /** What a screen reader hears for a tile that opens a list. */
+  ariaLabel?: string
+}) {
+  const body = (
+    <>
+      <b className="font-display text-22 font-bold">{count}</b>
+      <span className="flex items-center justify-between text-12 font-semibold">
+        {label}
+        {to && <IconChevronRight size={14} className="flex-none" />}
+      </span>
+    </>
+  )
+  const box = `flex min-w-0 flex-col gap-0.5 rounded-input px-3 py-2.5 ${TILE[tone]}`
+  return to ? (
+    <Link
+      to={to}
+      state={state}
+      aria-label={ariaLabel}
+      className={`${box} no-underline transition-[filter] hover:brightness-[.97] active:brightness-95 active:duration-0`}
+    >
+      {body}
+    </Link>
+  ) : (
+    <div className={box}>{body}</div>
+  )
+}
+
+/**
+ * A ticket made on a walkthrough: on Review its item over "OT-1051 · BOH › Electrical"
+ * (compact), on the tickets list its number and URGENT over its title and where it came
+ * from, with the status and the way in.
+ */
+export function WalkthroughTicketRow({
+  to,
+  displayId,
+  title,
+  where,
+  status,
+  urgent = false,
+  compact = false,
+}: {
+  to?: string
+  displayId: string
+  title: string
+  where: string
+  status: PillStatus
+  urgent?: boolean
+  compact?: boolean
+}) {
+  const body = compact ? (
+    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span className="text-14 font-semibold text-text">{title}</span>
+      <span className="text-12 text-text-muted">
+        <span className="font-mono">{displayId}</span> · {where}
+      </span>
+    </span>
+  ) : (
+    <span className="flex min-w-0 flex-1 flex-col gap-1">
+      <span className="flex items-center gap-2">
+        <span className="font-mono text-13 text-text-secondary">{displayId}</span>
+        {urgent && <UrgentTag />}
+      </span>
+      <span className="text-15 font-semibold leading-snug text-text">{title}</span>
+      <span className="text-13 text-text-muted">{where}</span>
+    </span>
+  )
+  const row = `flex min-h-[52px] items-center gap-2.5 border-t border-border px-4 py-3 text-text first:border-t-0`
+  const inner = (
+    <>
+      {body}
+      <StatusPill status={status} className="flex-none" />
+      {to && !compact && <IconChevronRight size={16} className="flex-none text-text-muted" />}
+    </>
+  )
+  return to ? (
+    <Link
+      to={to}
+      className={`${row} transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-muted active:duration-0`}
+    >
+      {inner}
+    </Link>
+  ) : (
+    <div className={row}>{inner}</div>
+  )
+}
+
+/** A part of the walkthrough with checks still to do: its name and "8 left". */
+export function LeftRow({ to, name, left }: { to?: string; name: string; left: number }) {
+  const row =
+    'flex min-h-tap items-center justify-between gap-2.5 border-t border-border px-3.5 text-14 font-semibold text-text first:border-t-0'
+  const count = <b className="text-13 font-semibold text-status-waiting-text">{left} left</b>
+  return to ? (
+    <Link
+      to={to}
+      className={`${row} transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-muted active:duration-0`}
+    >
+      {name}
+      {count}
+    </Link>
+  ) : (
+    <div className={row}>
+      {name}
+      {count}
     </div>
   )
 }

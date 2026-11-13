@@ -15,7 +15,9 @@ export function useChecklist(walkthroughId: string) {
       const sb = requireSupabase()
       const { data: w, error } = await sb
         .from('walkthroughs')
-        .select('id, period, status, restaurant_id, template_id, restaurant:restaurants (name)')
+        .select(
+          'id, period, due_on, status, restaurant_id, template_id, submitted_at, submitted_note, restaurant:restaurants (name), submitter:profiles!walkthroughs_submitted_by_fkey (full_name)',
+        )
         .eq('id', walkthroughId)
         .maybeSingle()
       if (error) throw error

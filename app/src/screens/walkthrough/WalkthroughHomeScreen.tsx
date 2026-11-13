@@ -17,7 +17,7 @@ type Restaurant = SignedIn['restaurants'][number]
  * Manager · Walkthrough (design/screens/WT-Home, WT-Home-Done). Each restaurant's newest
  * walkthrough as a card: the month, the due date, the checklist's sections as its title,
  * the bar split into Good, in-house and tickets, then a row for each section and the
- * quarter's tasks with their flags. Review & submit is an outline button until every
+ * quarter's tasks with what is still open there (from feedback, Nov 13, 2026). Review & submit is an outline button until every
  * check is done, then the primary one. A walkthrough is shared by everyone at the
  * restaurant, so the card says who started it when that wasn't you, and who submitted
  * it once it is in. Past walkthroughs sit closed under the card. Before a restaurant's
@@ -153,8 +153,8 @@ function ThisMonth({
             name={part.name}
             done={part.done}
             total={part.total}
-            tickets={part.tickets}
-            fixes={part.fixes}
+            tickets={part.openTickets}
+            fixes={part.openFixes}
           />
         ))}
       </div>

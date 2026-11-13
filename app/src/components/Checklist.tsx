@@ -42,13 +42,18 @@ export function CheckChoice({
   )
 }
 
-/** A group of items (Electrical): its name, "3/5", a check when every item is done. */
+/**
+ * A group of items (Electrical): its name, "3/5", a check when every item has had a choice,
+ * and chips for the tickets and in-house fixes still open in it, which show folded or open
+ * (from feedback, Nov 13, 2026: 5/5 with a ticket still open needed saying).
+ */
 export function ChecklistGroup({
   name,
   done,
   total,
   open,
   onToggle,
+  flags,
   children,
 }: {
   name: string
@@ -56,6 +61,8 @@ export function ChecklistGroup({
   total: number
   open: boolean
   onToggle: () => void
+  /** What is still open in the group, as FlagChips. */
+  flags?: ReactNode
   children: ReactNode
 }) {
   return (
@@ -64,7 +71,7 @@ export function ChecklistGroup({
         type="button"
         aria-expanded={open}
         onClick={onToggle}
-        className="flex min-h-[52px] w-full items-center gap-2.5 px-3.5 text-left text-15 font-semibold text-text transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0"
+        className="flex min-h-[52px] w-full items-center gap-2.5 px-3.5 py-2 text-left text-15 font-semibold text-text transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0"
       >
         <IconChevronRight
           size={16}
@@ -79,6 +86,7 @@ export function ChecklistGroup({
             <IconCheck size={16} />
           </span>
         )}
+        {flags && <span className="ml-auto flex flex-wrap justify-end gap-1.5">{flags}</span>}
       </button>
       {open && children}
     </section>

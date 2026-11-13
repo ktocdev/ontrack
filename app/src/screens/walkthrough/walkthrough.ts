@@ -18,6 +18,8 @@ export type ProgressRow = {
   good_items: number | null
   inhouse_items: number | null
   ticket_items: number | null
+  open_tickets: number | null
+  open_fixes: number | null
 }
 
 export type Part = {
@@ -29,6 +31,9 @@ export type Part = {
   done: number
   tickets: number
   fixes: number
+  /** Still to do: fixes not checked off, tickets not closed. */
+  openTickets: number
+  openFixes: number
 }
 
 export type Progress = {
@@ -58,6 +63,8 @@ export function progressOf(rows: ProgressRow[], period: string): Progress {
             done: n(r.done),
             tickets: n(r.tickets),
             fixes: n(r.fixes),
+            openTickets: n(r.open_tickets),
+            openFixes: n(r.open_fixes),
           }
         : {
             key: r.section_id ?? '',
@@ -67,6 +74,8 @@ export function progressOf(rows: ProgressRow[], period: string): Progress {
             done: n(r.done),
             tickets: n(r.tickets),
             fixes: n(r.fixes),
+            openTickets: n(r.open_tickets),
+            openFixes: n(r.open_fixes),
           },
     )
   const sum = (pick: (r: ProgressRow) => number | null) => rows.reduce((s, r) => s + n(pick(r)), 0)
@@ -138,4 +147,20 @@ export function splitByRestaurant<W extends WalkthroughLike>(walkthroughs: W[], 
   const shown = new Set(current.map((w) => w.id))
   const past = newestFirst.filter((w) => !shown.has(w.id))
   return { current, past }
+}
+
+/** A day (YYYY-MM-DD) as a count of days, so two can be subtracted. */
+const dayCount = (date: string) => Math.round(Date.parse(`${date.slice(0, 10)}T00:00:00Z`) / 86_400_000)
+
+/** Today here, as YYYY-MM-DD. */
+export function localDay(now = new Date()) {
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+/** How a finished walkthrough sits against its due date: "6 days early", "on the due date", "2 days late". */
+export function timing(dueOn: string, today: string) {
+  const days = dayCount(dueOn) - dayCount(today)
+  if (days === 0) return 'on the due date'
+  const n = Math.abs(days)
+  return `${n} ${n === 1 ? 'day' : 'days'} ${days > 0 ? 'early' : 'late'}`
 }
