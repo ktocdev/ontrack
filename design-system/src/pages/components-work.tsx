@@ -476,7 +476,14 @@ export function WalkthroughPage() {
         >
           <div className="flex flex-col gap-2.5">
             <ChecklistHelp />
-            <ChecklistGroup name="Electrical" done={2} total={3} open onToggle={() => undefined}>
+            <ChecklistGroup
+              name="Electrical"
+              done={2}
+              total={3}
+              open
+              onToggle={() => undefined}
+              flags={<FlagChips tickets={1} fixes={1} />}
+            >
               <ChecklistItem
                 name="Light bulbs"
                 choices={

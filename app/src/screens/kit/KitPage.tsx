@@ -743,7 +743,14 @@ export function KitPage() {
 
             <Section id="checklist">
               <ChecklistHelp />
-              <ChecklistGroup name="Electrical" done={2} total={3} open onToggle={() => undefined}>
+              <ChecklistGroup
+                name="Electrical"
+                done={2}
+                total={3}
+                open
+                onToggle={() => undefined}
+                flags={<FlagChips tickets={1} fixes={1} />}
+              >
                 <ChecklistItem
                   name="Light bulbs"
                   choices={

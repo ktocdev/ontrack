@@ -16,7 +16,7 @@ import {
 import { BackBar, Screen, ScreenBody, UnderlineTabs } from '../../components/Screen'
 import { GroupedListSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
-import { FlagChip } from '../../components/Walkthrough'
+import { FlagChip, FlagChips } from '../../components/Walkthrough'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import {
   firstOpen,
@@ -314,6 +314,12 @@ function Section({
           total={g.total}
           open={open.has(g.name)}
           onToggle={() => toggle(g.name)}
+          flags={
+            <FlagChips
+              tickets={g.items.reduce((n, it) => n + it.tickets.filter((t) => t.status !== 'closed').length, 0)}
+              fixes={g.items.reduce((n, it) => n + it.fixes.filter((f) => !f.done_at).length, 0)}
+            />
+          }
         >
           {g.items.map((it) => {
             const thing: Thing = {

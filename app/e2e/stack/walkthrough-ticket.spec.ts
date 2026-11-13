@@ -58,6 +58,8 @@ test('a ticket from an item asks for a category, carries the tag, and edits back
   await expect(entry).toBeVisible()
   await expect(entry).toContainText('URGENT')
   await expect(paint.getByRole('button', { name: 'Good' })).toHaveCount(0)
+  // The group's header says a ticket is still open in it, folded or not.
+  await expect(page.getByRole('button', { name: /^Aesthetics/ })).toContainText('1 ticket')
   await paint.getByRole('button', { name: /^Add another ticket for Paint/ }).click()
   const again = page.getByRole('dialog', { name: 'Add another ticket' })
   await expect(again.getByText(/Already on this item: OT-\d+/)).toBeVisible()
