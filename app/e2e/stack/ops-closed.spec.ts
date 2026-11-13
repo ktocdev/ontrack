@@ -130,7 +130,9 @@ test('a closed ticket shows how it ended, read-only, and goes back to the list',
   await expect(page.getByText('Your closing comment')).toBeVisible()
   await expect(page.getByText('Booth Doctor reupholstered the seat panel in matching vinyl.')).toBeVisible()
   await expect(page.getByText('Contractor', { exact: true }).locator('..')).toContainText(/\S/)
-  await expect(page.getByText('$420.00')).toBeVisible()
+  await expect(page.getByText('$420.00').first()).toBeVisible()
+  // Under Resolution, its visit opens the service record (OT-98).
+  await expect(page.getByRole('region', { name: 'Service & cost' })).toContainText('Ticket total')
   await expect(page.getByText('Opened', { exact: true })).toBeVisible()
   await page.waitForTimeout(300)
   await testInfo.attach('closed-ticket', { body: await page.screenshot(), contentType: 'image/png' })

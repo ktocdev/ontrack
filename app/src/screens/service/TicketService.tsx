@@ -12,9 +12,10 @@ import { useTicketService } from './useLogService'
  * Service & cost on an Ops ticket (design/screens/Ops-Ticket): each visit, the contractor
  * or In-house with its amount, what was done and when, then "Ticket total so far". Only
  * with see_costs, which is what the database asks too. "+ Log service" needs log_cost and
- * is hidden under View as.
+ * is hidden under View as. A closed ticket has the same list under its Resolution (OT-98),
+ * so each visit, and its invoice, still opens from there; its total is final.
  */
-export function TicketService({ ticketId }: { ticketId: string }) {
+export function TicketService({ ticketId, closed = false }: { ticketId: string; closed?: boolean }) {
   const seeCosts = useRight('see_costs')
   const { data } = useTicketService(ticketId, !!seeCosts)
   if (!seeCosts) return null
@@ -50,7 +51,9 @@ export function TicketService({ ticketId }: { ticketId: string }) {
           )}
           {data.records.length > 0 && (
             <div className="flex justify-between border-t border-border bg-surface-hover px-3.5 py-2.5 text-13">
-              <span className="font-semibold text-text-secondary">Ticket total so far</span>
+              <span className="font-semibold text-text-secondary">
+                {closed ? 'Ticket total' : 'Ticket total so far'}
+              </span>
               <span className="font-bold">{money(data.totalCents)}</span>
             </div>
           )}
