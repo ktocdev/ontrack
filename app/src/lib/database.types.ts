@@ -1760,7 +1760,7 @@ isOneToOne: false
                   ]
                 },"v_walkthrough_progress": {
                   Row: {
-                    "area": Database["public"]['Enums']["area"] | null,"done": number | null,"fixes": number | null,"kind": string | null,"name": string | null,"section_id": string | null,"short_name": string | null,"sort_order": number | null,"tickets": number | null,"total": number | null,"walkthrough_id": string | null
+                    "area": Database["public"]['Enums']["area"] | null,"done": number | null,"fixes": number | null,"good_items": number | null,"inhouse_items": number | null,"kind": string | null,"name": string | null,"section_id": string | null,"short_name": string | null,"sort_order": number | null,"ticket_items": number | null,"tickets": number | null,"total": number | null,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Relationships: [

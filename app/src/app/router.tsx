@@ -187,7 +187,12 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/tickets/InHouseScreen')).InHouseScreen,
                     }),
                   },
-                  { path: '/walkthrough', ...placeholder('Walkthrough', 'Phase 6a') },
+                  {
+                    path: '/walkthrough',
+                    lazy: async () => ({
+                      Component: (await import('../screens/walkthrough/WalkthroughHomeScreen')).WalkthroughHomeScreen,
+                    }),
+                  },
                   {
                     path: '/equipment',
                     lazy: async () => ({
@@ -199,6 +204,9 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
+                  // The checklist (OT-105) and Review & submit (OT-109) replace these.
+                  { path: '/walkthrough/:id/review', ...placeholder('Review & submit', 'OT-109') },
+                  { path: '/walkthrough/:id/:section', ...placeholder('Checklist', 'OT-105') },
                   {
                     path: '/tickets/closed',
                     lazy: async () => ({

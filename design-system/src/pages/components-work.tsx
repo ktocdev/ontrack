@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ContractorCard } from '@app/components/ContractorCard'
 import { Avatar } from '@app/components/Avatar'
-import { Card, RadioRow } from '@app/components/Card'
+import { Card, DisclosureList, ListRow, RadioRow } from '@app/components/Card'
 import { ClosedTicketRow, MonthHeading } from '@app/components/ClosedTicketRow'
 import { EquipmentGroup, EquipmentRow, OpenBadge, OpenNote } from '@app/components/Equipment'
 import { OpsTicketCard } from '@app/components/OpsTicketCard'
@@ -20,6 +20,14 @@ import { TaskList, TaskRow } from '@app/components/TaskRow'
 import { Composer, ThreadEvent, ThreadMessage, VisibilityToggle } from '@app/components/Thread'
 import { TicketCard } from '@app/components/TicketCard'
 import { useToast } from '@app/components/Toast'
+import {
+  FlagChip,
+  FlagChips,
+  ProgressBar,
+  ProgressRing,
+  WalkthroughCardSkeleton,
+  WalkthroughSectionRow,
+} from '@app/components/Walkthrough'
 import { Example, PageHeader, Rules, Section } from '../chrome/Doc'
 import { SAMPLE_RESTAURANTS } from './components-basics'
 
@@ -369,6 +377,81 @@ export function ContractorsPage() {
             spend="$2,140"
             phone="(773) 555-0133"
           />
+        </Example>
+      </Section>
+    </>
+  )
+}
+
+export function WalkthroughPage() {
+  return (
+    <>
+      <PageHeader eyebrow="Components" title="Walkthrough" source={['components/Walkthrough.tsx']}>
+        <p>
+          A month's walkthrough at a glance: a bar for the whole checklist split by how each done item ended (Good,
+          in-house, ticket), a ring for each section, and chips for what was flagged.
+        </p>
+      </PageHeader>
+      <Section
+        title="Progress bar"
+        intro="Each done item counts once: a ticket first, then an in-house fix, then Good."
+      >
+        <Example code={`<ProgressBar good={16} inhouse={2} tickets={2} total={50} label="20 of 50 checks done" />`}>
+          <div className="flex flex-col gap-3">
+            <ProgressBar good={16} inhouse={2} tickets={2} total={50} label="20 of 50 checks done" />
+            <ProgressBar good={44} inhouse={3} tickets={3} total={50} label="50 of 50 checks done" />
+          </div>
+        </Example>
+      </Section>
+      <Section
+        title="Section rows"
+        intro="A row opens the section's checklist; with no `to` (View as) it opens nothing."
+      >
+        <Example
+          code={`<WalkthroughSectionRow to={path} name="Back of House" done={16} total={24} tickets={2} fixes={1} />`}
+        >
+          <div className="overflow-hidden rounded-card border border-border bg-surface [&>*:last-child]:border-b-0">
+            <WalkthroughSectionRow to="#" name="Back of House" done={16} total={24} tickets={2} fixes={1} />
+            <WalkthroughSectionRow to="#" name="Front of House" done={4} total={24} tickets={0} fixes={0} />
+            <WalkthroughSectionRow name="Q4 location tasks" done={2} total={2} tickets={1} fixes={1} />
+          </div>
+        </Example>
+      </Section>
+      <Section title="Rings and chips">
+        <Example
+          code={`<ProgressRing done={16} total={24} />
+<FlagChips tickets={2} fixes={1} />`}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <ProgressRing done={0} total={24} />
+              <ProgressRing done={16} total={24} />
+              <ProgressRing done={24} total={24} />
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <FlagChips tickets={2} fixes={1} />
+              <FlagChip tone="good">All good</FlagChip>
+              <FlagChip tone="missed">Not done</FlagChip>
+            </div>
+          </div>
+        </Example>
+      </Section>
+      <Section title="Past walkthroughs" intro="The chevron variant of DisclosureList.">
+        <Example
+          code={`<DisclosureList label="Past walkthroughs" heading="Past walkthroughs" variant="chevron">…</DisclosureList>`}
+        >
+          <DisclosureList label="Past walkthroughs" heading="Past walkthroughs" variant="chevron" defaultOpen>
+            <ListRow
+              title="Sep"
+              subtitle="Kitchen + Exterior"
+              trailing={<FlagChip tone="ticket">5 tickets</FlagChip>}
+            />
+          </DisclosureList>
+        </Example>
+      </Section>
+      <Section title="Loading">
+        <Example code={`<WalkthroughCardSkeleton />`}>
+          <WalkthroughCardSkeleton />
         </Example>
       </Section>
     </>

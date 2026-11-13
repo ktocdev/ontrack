@@ -90,6 +90,7 @@ export function ButtonsPage() {
               Invite
             </Button>
             <Button variant="medium">Ask admin for a new invite</Button>
+            <Button variant="outline">Review &amp; submit</Button>
             <Button variant="done" disabled>
               Request sent
             </Button>

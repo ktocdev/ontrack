@@ -13,6 +13,7 @@ import { ButtonSpinner } from './Skeleton'
  *  secondary-danger  secondary with danger text  (Sign out)
  *  ghost-danger      ghost with danger text      (Remove photo)
  *  medium    48px primary with 15px text         (Invite people, empty and error screens)
+ *  outline   medium's size, brand outline         (Review & submit before the walkthrough is done)
  *  done      medium once its work is done        (Request sent)
  *  tall      52px secondary with 16px bold text  (Reopen ticket)
  */
@@ -26,6 +27,7 @@ export type ButtonVariant =
   | 'secondary-danger'
   | 'ghost-danger'
   | 'medium'
+  | 'outline'
   | 'done'
   | 'tall'
 
@@ -45,6 +47,8 @@ const VARIANT: Record<ButtonVariant, string> = {
     'min-h-[44px] rounded-input bg-brand-fill px-4 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
   medium:
     'min-h-[48px] rounded-input bg-brand-fill px-5 text-15 font-bold text-on-brand not-disabled:hover:bg-brand-fill-hover not-disabled:active:bg-brand-fill-active',
+  outline:
+    'min-h-[48px] rounded-input border-[1.5px] border-brand bg-surface px-5 text-15 font-bold text-brand not-disabled:hover:bg-brand-tint-soft not-disabled:active:bg-brand-tint not-disabled:active:text-brand-strong',
   done: 'min-h-[48px] rounded-input bg-brand-tint px-5 text-15 font-bold text-brand-strong disabled:cursor-default disabled:opacity-100',
   tall: 'min-h-[52px] rounded-input border border-border-strong bg-surface px-4 text-16 font-bold text-text not-disabled:hover:border-border-muted not-disabled:active:bg-surface-muted',
   small:
