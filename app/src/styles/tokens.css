@@ -81,6 +81,17 @@
   --progress-inhouse: #c9a227;
   --progress-ticket: var(--urgent);
 
+  /* Walkthrough checklist: Good, In-house and Ticket once picked (WT-Checklist) */
+  --choice-good-bg: #d4f0de;
+  --choice-good-border: #2e8b57;
+  --choice-good-text: #0e4a2b;
+  --choice-inhouse-bg: #f3ecd6;
+  --choice-inhouse-border: #b8941f;
+  --choice-inhouse-text: #4a3808;
+  --choice-ticket-bg: #fbe3d6;
+  --choice-ticket-border: #c2551a;
+  --choice-ticket-text: #7a2e06;
+
   /* Small alert badge on a tab ("1 reopened") and the toast's action text */
   --alert-badge: #b8941f;
   --toast-action: #8fd4b8;
@@ -207,6 +218,15 @@
   --progress-good: var(--brand-fill);
   --progress-inhouse: #b8941f; /* derived: the alert badge's gold, which reads on dark */
   --progress-ticket: var(--urgent);
+  --choice-good-text: #7fd3a3; /* derived */
+  --choice-good-border: #3fa36b; /* derived */
+  --choice-good-bg: color-mix(in srgb, var(--choice-good-text) 20%, var(--surface)); /* derived */
+  --choice-inhouse-text: #e2c77a; /* derived */
+  --choice-inhouse-border: #b8941f; /* derived */
+  --choice-inhouse-bg: color-mix(in srgb, var(--choice-inhouse-text) 20%, var(--surface)); /* derived */
+  --choice-ticket-text: #f0a27a; /* derived */
+  --choice-ticket-border: #d9622a; /* derived */
+  --choice-ticket-bg: color-mix(in srgb, var(--choice-ticket-text) 20%, var(--surface)); /* derived */
 
   --alert-badge: #b8941f; /* derived: same gold reads on both */
   --toast-action: var(--brand-fill); /* derived: the toast turns light in dark mode */
@@ -292,6 +312,15 @@
   --color-progress-good: var(--progress-good);
   --color-progress-inhouse: var(--progress-inhouse);
   --color-progress-ticket: var(--progress-ticket);
+  --color-choice-good-bg: var(--choice-good-bg);
+  --color-choice-good-border: var(--choice-good-border);
+  --color-choice-good-text: var(--choice-good-text);
+  --color-choice-inhouse-bg: var(--choice-inhouse-bg);
+  --color-choice-inhouse-border: var(--choice-inhouse-border);
+  --color-choice-inhouse-text: var(--choice-inhouse-text);
+  --color-choice-ticket-bg: var(--choice-ticket-bg);
+  --color-choice-ticket-border: var(--choice-ticket-border);
+  --color-choice-ticket-text: var(--choice-ticket-text);
   --color-square-outline: var(--square-outline);
   --color-scrim: var(--scrim);
   --color-alert-badge: var(--alert-badge);

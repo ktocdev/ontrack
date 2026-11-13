@@ -16,6 +16,15 @@ import {
   RowIcon,
 } from '../../components/Card'
 import { Chip, ChoiceChips, FilterButton, FilterChip } from '../../components/Chip'
+import {
+  CheckChoice,
+  ChecklistEntries,
+  ChecklistEntry,
+  ChecklistGroup,
+  ChecklistHelp,
+  ChecklistItem,
+  InlineFix,
+} from '../../components/Checklist'
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { CodeInput, StepBars } from '../../components/CodeInput'
 import { EmptyState } from '../../components/EmptyState'
@@ -121,6 +130,7 @@ const SECTIONS = {
   avatars: 'Avatars',
   cards: 'Cards and rows',
   walkthrough: 'Walkthrough progress',
+  checklist: 'Walkthrough checklist',
   controls: 'Segmented and tabs',
   choices: 'Chips, radio cards and empty',
   fields: 'Fields',
@@ -687,6 +697,82 @@ export function KitPage() {
                 />
               </DisclosureList>
               <WalkthroughCardSkeleton />
+            </Section>
+
+            <Section id="checklist">
+              <ChecklistHelp />
+              <ChecklistGroup name="Electrical" done={2} total={3} open onToggle={() => undefined}>
+                <ChecklistItem
+                  name="Light bulbs"
+                  choices={
+                    <>
+                      <CheckChoice tone="good" lit aria-pressed>
+                        Good
+                      </CheckChoice>
+                      <CheckChoice tone="inhouse" lit={false}>
+                        In-house
+                      </CheckChoice>
+                      <CheckChoice tone="ticket" lit={false}>
+                        Ticket
+                      </CheckChoice>
+                    </>
+                  }
+                />
+                <ChecklistItem
+                  name="Outlets"
+                  choices={
+                    <>
+                      <CheckChoice tone="inhouse" lit>
+                        In-house
+                      </CheckChoice>
+                      <CheckChoice tone="ticket" lit>
+                        Ticket
+                      </CheckChoice>
+                    </>
+                  }
+                >
+                  <ChecklistEntries>
+                    <ChecklistEntry kind="fix" to="#">
+                      Replaced cracked cover plate by mop sink
+                    </ChecklistEntry>
+                    <ChecklistEntry kind="ticket" label="OT-1051" urgent to="#">
+                      Scorch marks on prep line outlet
+                    </ChecklistEntry>
+                    <ChecklistEntry kind="fix" done>
+                      Re-glue trim on pass shelf
+                    </ChecklistEntry>
+                  </ChecklistEntries>
+                </ChecklistItem>
+                <ChecklistItem
+                  name="Feature"
+                  choices={
+                    <>
+                      <CheckChoice tone="good" lit={false}>
+                        Good
+                      </CheckChoice>
+                      <CheckChoice tone="inhouse" lit={false}>
+                        In-house
+                      </CheckChoice>
+                      <CheckChoice tone="ticket" lit={false}>
+                        Ticket
+                      </CheckChoice>
+                    </>
+                  }
+                >
+                  <ChecklistEntries>
+                    <InlineFix
+                      item="Feature"
+                      saving={false}
+                      autoFocus={false}
+                      onAdd={() => undefined}
+                      onCancel={() => undefined}
+                    />
+                  </ChecklistEntries>
+                </ChecklistItem>
+              </ChecklistGroup>
+              <ChecklistGroup name="Plumbing" done={3} total={3} open={false} onToggle={() => undefined}>
+                {null}
+              </ChecklistGroup>
             </Section>
 
             <Section id="controls">
