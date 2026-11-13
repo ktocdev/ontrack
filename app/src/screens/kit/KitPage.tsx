@@ -42,12 +42,15 @@ import { StatusMenu } from '../../components/StatusMenu'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import {
+  CountTile,
   FlagChip,
   FlagChips,
+  LeftRow,
   ProgressBar,
   ProgressRing,
   WalkthroughCardSkeleton,
   WalkthroughSectionRow,
+  WalkthroughTicketRow,
 } from '../../components/Walkthrough'
 import { EquipmentMenu, TicketMenu } from '../../components/TicketMenu'
 import { VisibilityToggle, Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
@@ -699,6 +702,42 @@ export function KitPage() {
                   trailing={<FlagChip tone="ticket">5 tickets</FlagChip>}
                 />
               </DisclosureList>
+              <div className="grid grid-cols-3 gap-2">
+                <CountTile tone="good" count={41} label="Good" />
+                <CountTile
+                  tone="inhouse"
+                  count={4}
+                  label="In-house"
+                  to="/kit"
+                  ariaLabel="4 in-house fixes, view and manage all"
+                />
+                <CountTile tone="ticket" count={5} label="Tickets" to="/kit" ariaLabel="5 tickets, view and edit all" />
+              </div>
+              <Notice tone="warn">
+                <b>30 of 50 checks are still to do.</b> You can submit now, or go back and finish them first.
+              </Notice>
+              <div className="overflow-hidden rounded-control border border-border bg-surface">
+                <LeftRow to="/kit" name="Back of House" left={8} />
+                <LeftRow to="/kit" name="Q4 location tasks" left={2} />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border bg-surface">
+                <WalkthroughTicketRow
+                  compact
+                  to="/kit"
+                  displayId="OT-1051"
+                  title="Outlets"
+                  where="BOH › Electrical"
+                  status="in_progress"
+                />
+                <WalkthroughTicketRow
+                  to="/kit"
+                  displayId="OT-1051"
+                  urgent
+                  title="Scorch marks on prep line outlet"
+                  where="BOH › Electrical › Outlets"
+                  status="in_progress"
+                />
+              </div>
               <WalkthroughCardSkeleton />
             </Section>
 

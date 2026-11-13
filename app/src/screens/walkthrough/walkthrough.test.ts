@@ -9,6 +9,7 @@ import {
   quarterEnd,
   quarterOf,
   splitByRestaurant,
+  timing,
   type ProgressRow,
 } from './walkthrough'
 
@@ -132,5 +133,14 @@ describe('splitByRestaurant', () => {
     )
     expect(current.map((x) => x.id)).toEqual(['oct-a', 'oct-b'])
     expect(past.map((x) => x.id)).toEqual(['sep-a', 'aug-a'])
+  })
+})
+
+describe('timing', () => {
+  it('says how early or late, by whole days', () => {
+    expect(timing('2026-10-31', '2026-10-25')).toBe('6 days early')
+    expect(timing('2026-10-31', '2026-10-30')).toBe('1 day early')
+    expect(timing('2026-10-31', '2026-10-31')).toBe('on the due date')
+    expect(timing('2026-10-31', '2026-11-02')).toBe('2 days late')
   })
 })

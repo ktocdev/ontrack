@@ -139,3 +139,19 @@ export function splitByRestaurant<W extends WalkthroughLike>(walkthroughs: W[], 
   const past = newestFirst.filter((w) => !shown.has(w.id))
   return { current, past }
 }
+
+/** A day (YYYY-MM-DD) as a count of days, so two can be subtracted. */
+const dayCount = (date: string) => Math.round(Date.parse(`${date.slice(0, 10)}T00:00:00Z`) / 86_400_000)
+
+/** Today here, as YYYY-MM-DD. */
+export function localDay(now = new Date()) {
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+/** How a finished walkthrough sits against its due date: "6 days early", "on the due date", "2 days late". */
+export function timing(dueOn: string, today: string) {
+  const days = dayCount(dueOn) - dayCount(today)
+  if (days === 0) return 'on the due date'
+  const n = Math.abs(days)
+  return `${n} ${n === 1 ? 'day' : 'days'} ${days > 0 ? 'early' : 'late'}`
+}
