@@ -227,14 +227,14 @@ isOneToOne: false
                   ]
                 },"group_settings": {
                   Row: {
-                    "id": boolean,"name": string,"profile_photos": boolean,"short_name": string | null,"updated_at": string
+                    "id": boolean,"name": string,"profile_photos": boolean,"short_name": string | null,"time_zone": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"updated_at"?: string
+                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"time_zone"?: string,"updated_at"?: string
                   }
                   Update: {
-                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"updated_at"?: string
+                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"time_zone"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -925,14 +925,14 @@ isOneToOne: false
                   ]
                 },"tickets": {
                   Row: {
-                    "assignee_id": string | null,"category_id": string,"closed_at": string | null,"closed_by": string | null,"created_at": string,"created_by": string,"description": string | null,"display_id": string | null,"equipment_id": string | null,"id": string,"last_closed_at": string | null,"number": number,"parent_ticket_id": string | null,"reopen_count": number,"reopened_at": string | null,"resolution": string | null,"restaurant_id": string,"scheduled_for": string | null,"source": Database["public"]['Enums']["ticket_source"],"status": Database["public"]['Enums']["ticket_status"],"title": string,"updated_at": string,"urgency": Database["public"]['Enums']["ticket_urgency"],"walkthrough_id": string | null
+                    "assignee_id": string | null,"category_id": string,"closed_at": string | null,"closed_by": string | null,"created_at": string,"created_by": string,"description": string | null,"display_id": string | null,"equipment_id": string | null,"id": string,"last_closed_at": string | null,"number": number,"parent_ticket_id": string | null,"reopen_count": number,"reopened_at": string | null,"resolution": string | null,"restaurant_id": string,"scheduled_for": string | null,"source": Database["public"]['Enums']["ticket_source"],"status": Database["public"]['Enums']["ticket_status"],"title": string,"updated_at": string,"urgency": Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id": string | null,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "assignee_id"?: string | null,"category_id": string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by": string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number": number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id": string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title": string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_id"?: string | null
+                    "assignee_id"?: string | null,"category_id": string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by": string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number": number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id": string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title": string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "assignee_id"?: string | null,"category_id"?: string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by"?: string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number"?: number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id"?: string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title"?: string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_id"?: string | null
+                    "assignee_id"?: string | null,"category_id"?: string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by"?: string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number"?: number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id"?: string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title"?: string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1019,6 +1019,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "tickets_walkthrough_check_id_fkey"
+      columns: ["walkthrough_check_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_checks"
+      referencedColumns: ["id"]
     },{
       foreignKeyName: "tickets_walkthrough_fk"
       columns: ["walkthrough_id"]
@@ -1197,34 +1203,46 @@ isOneToOne: false
                   ]
                 },"walkthrough_items": {
                   Row: {
-                    "active": boolean,"area": Database["public"]['Enums']["area"],"directions": string | null,"group_name": string,"id": string,"sort_order": number,"template_id": string,"title": string,"video_url": string | null
+                    "active": boolean,"category_id": string | null,"directions": string | null,"group_name": string,"id": string,"section_id": string,"sort_order": number,"title": string,"video_url": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"area": Database["public"]['Enums']["area"],"directions"?: string | null,"group_name": string,"id"?: string,"sort_order"?: number,"template_id": string,"title": string,"video_url"?: string | null
+                    "active"?: boolean,"category_id"?: string | null,"directions"?: string | null,"group_name": string,"id"?: string,"section_id": string,"sort_order"?: number,"title": string,"video_url"?: string | null
                   }
                   Update: {
-                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"],"directions"?: string | null,"group_name"?: string,"id"?: string,"sort_order"?: number,"template_id"?: string,"title"?: string,"video_url"?: string | null
+                    "active"?: boolean,"category_id"?: string | null,"directions"?: string | null,"group_name"?: string,"id"?: string,"section_id"?: string,"sort_order"?: number,"title"?: string,"video_url"?: string | null
                   }
                   Relationships: [
                     {
-      foreignKeyName: "walkthrough_items_template_id_fkey"
-      columns: ["template_id"]
+      foreignKeyName: "walkthrough_items_category_id_fkey"
+      columns: ["category_id"]
 isOneToOne: false
-      referencedRelation: "walkthrough_templates"
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_items_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "v_category_history"
+      referencedColumns: ["category_id"]
+    },{
+      foreignKeyName: "walkthrough_items_section_id_fkey"
+      columns: ["section_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_sections"
       referencedColumns: ["id"]
     }
                   ]
                 },"walkthrough_schedules": {
                   Row: {
-                    "active": boolean,"due_day": number,"id": string,"months": (number)[],"reminder_days": (number)[],"restaurant_id": string | null,"updated_at": string,"updated_by": string | null
+                    "active": boolean,"due_day": number | null,"id": string,"months": (number)[],"reminder_days": (number)[],"restaurant_id": string | null,"template_id": string | null,"updated_at": string,"updated_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"due_day"?: number,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                    "active"?: boolean,"due_day"?: number | null,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"template_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Update: {
-                    "active"?: boolean,"due_day"?: number,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                    "active"?: boolean,"due_day"?: number | null,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"template_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -1246,6 +1264,12 @@ isOneToOne: true
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
     },{
+      foreignKeyName: "walkthrough_schedules_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "walkthrough_schedules_updated_by_fkey"
       columns: ["updated_by"]
 isOneToOne: false
@@ -1257,6 +1281,26 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    }
+                  ]
+                },"walkthrough_sections": {
+                  Row: {
+                    "active": boolean,"area": Database["public"]['Enums']["area"] | null,"id": string,"name": string,"short_name": string | null,"sort_order": number,"template_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"] | null,"id"?: string,"name": string,"short_name"?: string | null,"sort_order"?: number,"template_id": string
+                  }
+                  Update: {
+                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"] | null,"id"?: string,"name"?: string,"short_name"?: string | null,"sort_order"?: number,"template_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthrough_sections_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
     }
                   ]
                 },"walkthrough_templates": {
@@ -1275,14 +1319,14 @@ isOneToOne: false
                   ]
                 },"walkthroughs": {
                   Row: {
-                    "created_at": string,"due_on": string,"id": string,"period": string,"restaurant_id": string,"started_by": string | null,"status": Database["public"]['Enums']["walkthrough_status"],"submitted_at": string | null,"submitted_by": string | null,"template_id": string | null
+                    "created_at": string,"due_on": string,"id": string,"period": string,"restaurant_id": string,"started_by": string | null,"status": Database["public"]['Enums']["walkthrough_status"],"submitted_at": string | null,"submitted_by": string | null,"submitted_note": string | null,"template_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"due_on": string,"id"?: string,"period": string,"restaurant_id": string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"template_id"?: string | null
+                    "created_at"?: string,"due_on": string,"id"?: string,"period": string,"restaurant_id": string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"submitted_note"?: string | null,"template_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"due_on"?: string,"id"?: string,"period"?: string,"restaurant_id"?: string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"template_id"?: string | null
+                    "created_at"?: string,"due_on"?: string,"id"?: string,"period"?: string,"restaurant_id"?: string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"submitted_note"?: string | null,"template_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1702,6 +1746,14 @@ isOneToOne: false
                         Relationships: [
                     
                   ]
+                },"v_walkthrough_progress": {
+                  Row: {
+                    "area": Database["public"]['Enums']["area"] | null,"done": number | null,"fixes": number | null,"kind": string | null,"name": string | null,"section_id": string | null,"short_name": string | null,"sort_order": number | null,"tickets": number | null,"total": number | null,"walkthrough_id": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Functions: {
@@ -1713,6 +1765,9 @@ isOneToOne: false
                            },
 "add_trade":
 { Args: { "p_name": string }; Returns: string
+                           },
+"add_walkthrough_fix":
+{ Args: { "p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_walkthrough_id": string }; Returns: string
                            },
 "attach_invoice":
 { Args: { "p_id": string,"p_path": string }; Returns: undefined
@@ -1772,6 +1827,9 @@ isOneToOne: false
 "contractor_trade_names":
 { Args: { "p_contractor_id": string }; Returns: (string)[]
                            },
+"create_walkthrough_ticket":
+{ Args: { "p_category_id"?: string,"p_description"?: string,"p_equipment_id"?: string,"p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"],"p_walkthrough_id": string }; Returns: string
+                           },
 "delete_category":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -1798,6 +1856,9 @@ isOneToOne: false
                            },
 "equipment_restaurant":
 { Args: { "eid": string }; Returns: string
+                           },
+"group_today":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "has_scope":
 { Args: { "rid": string }; Returns: boolean
@@ -1830,6 +1891,9 @@ isOneToOne: false
                            },
 "notify_send_push":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"open_walkthroughs":
+{ Args: { "p_period"?: string }; Returns: number
                            },
 "path_uuid":
 { Args: { "object_name": string }; Returns: string
@@ -1909,6 +1973,12 @@ isOneToOne: false
 "set_trade_active":
 { Args: { "p_active": boolean,"p_id": string }; Returns: undefined
                            },
+"set_walkthrough_good":
+{ Args: { "p_good"?: boolean,"p_item_id"?: string,"p_task_id"?: string,"p_walkthrough_id": string }; Returns: undefined
+                           },
+"submit_walkthrough":
+{ Args: { "p_note"?: string,"p_walkthrough_id": string }; Returns: undefined
+                           },
 "take_ticket":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -1948,8 +2018,42 @@ isOneToOne: false
 "use_remembered_device":
 { Args: { "p_token": string }; Returns: boolean
                            },
+"walkthrough_check_for":
+{ Args: { "p_item_id": string,"p_result": Database["public"]['Enums']["check_result"],"p_task_id": string,"w": Omit<Database["public"]['Tables']["walkthroughs"]['Row'], Database["public"]['Tables']["walkthroughs"]['ComputedFields']> }; Returns: string
+                           },
+"walkthrough_due_on":
+{ Args: { "p_due_day": number,"p_period": string }; Returns: string
+                           },
+"walkthrough_for_change":
+{ Args: { "p_walkthrough_id": string }; Returns: {
+              "created_at": string,
+"due_on": string,
+"id": string,
+"period": string,
+"restaurant_id": string,
+"started_by": string | null,
+"status": Database["public"]['Enums']["walkthrough_status"],
+"submitted_at": string | null,
+"submitted_by": string | null,
+"submitted_note": string | null,
+"template_id": string | null
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "walkthroughs"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"walkthrough_quarter_tasks":
+{ Args: { "p_walkthrough_id": string }; Returns: {
+              "check_id": string,"check_walkthrough_id": string,"directions": string,"done": boolean,"fixes": number,"sort_order": number,"task_id": string,"tickets": number,"title": string,"video_url": string
+            }[]
+                           },
 "walkthrough_restaurant":
 { Args: { "wid": string }; Returns: string
+                           },
+"walkthrough_target":
+{ Args: { "p_item_id": string,"p_task_id": string,"w": Omit<Database["public"]['Tables']["walkthroughs"]['Row'], Database["public"]['Tables']["walkthroughs"]['ComputedFields']> }; Returns: Record<string, unknown>
                            }
           }
           Enums: {
