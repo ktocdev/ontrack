@@ -41,8 +41,15 @@ test('a manager sees the tasks to fix in the board order, and Front and Back nar
 
 test('another restaurant’s manager sees none of them', async ({ page }) => {
   await openInHouse(page, 'ari.kim@example.com')
-  await expect(page.getByText('Nothing to fix right now.')).toBeVisible()
-  await expect(page.getByRole('checkbox')).toHaveCount(0)
+  // Ari may have tasks of his own from other flows; none of Logan Square's show.
+  await expect(page.getByRole('heading', { name: 'In-house tasks' })).toBeVisible()
+  for (const title of [
+    'Replace 2 bulbs over booths 4–6',
+    'Tighten wobbly 2-top at table 14',
+    'Re-glue trim on pass shelf',
+  ]) {
+    await expect(page.getByText(title)).toHaveCount(0)
+  }
 })
 
 test('checking a task moves it to Closed and it stays there, and unchecking brings it back with no Delete', async ({

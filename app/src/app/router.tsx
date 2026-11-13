@@ -204,6 +204,12 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
+                  {
+                    path: '/walkthrough/:id/fixes',
+                    lazy: async () => ({
+                      Component: (await import('../screens/walkthrough/WalkthroughFixesScreen')).WalkthroughFixesScreen,
+                    }),
+                  },
                   // Review & submit (OT-109) replaces this.
                   { path: '/walkthrough/:id/review', ...placeholder('Review & submit', 'OT-109') },
                   {

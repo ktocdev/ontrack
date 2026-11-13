@@ -5,18 +5,18 @@ import { useRight } from '../../auth/rights'
 import { firstName } from '../../auth/session'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
-import { ErrorBanner, Notice } from '../../components/Notice'
+import { Notice } from '../../components/Notice'
 import { CountBadge, WalkthroughTag } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader, UnderlineTabs } from '../../components/Screen'
-import { ConfirmSheet } from '../../components/Sheet'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
-import { IconChevronDown, IconPlus, IconTrash, IconWarning } from '../../components/icons'
+import { IconChevronDown, IconPlus, IconWarning } from '../../components/icons'
 import { AddTaskSheet } from './AddTaskSheet'
+import { DeleteTaskSheet } from './DeleteTaskSheet'
 import { RECENT_DAYS, splitClosed } from './inHouse'
-import { useDeleteTask, useInHouse, useSetTaskDone } from './useInHouse'
+import { useInHouse, useSetTaskDone } from './useInHouse'
 import { useOpenTickets } from './useOpenTickets'
 
 /**
@@ -39,7 +39,6 @@ export function InHouseScreen() {
   const { data, isPending, isError, refetch } = useInHouse(ids)
   const openTickets = useOpenTickets(ids)
   const setDone = useSetTaskDone(ids)
-  const remove = useDeleteTask()
   const toast = useToast()
   const [deleting, setDeleting] = useState<{ id: string; title: string } | null>(null)
   const [deleted, setDeleted] = useState(false)
@@ -60,15 +59,6 @@ export function InHouseScreen() {
       { id, done },
       { onError: () => toast.show('Couldn’t save that. Check your connection and try again.') },
     )
-  }
-  const confirmDelete = () => {
-    if (!deleting) return
-    remove.mutate(deleting.id, {
-      onSuccess: () => {
-        setDeleting(null)
-        setDeleted(true)
-      },
-    })
   }
 
   const row = (t: (typeof all)[number]) => (
@@ -213,39 +203,14 @@ export function InHouseScreen() {
 
       <AddTaskSheet open={adding} onOpenChange={setAdding} />
 
-      <ConfirmSheet
-        open={deleting !== null}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) {
-            remove.reset()
-            setDeleting(null)
-          }
+      <DeleteTaskSheet
+        task={deleting}
+        onClose={() => setDeleting(null)}
+        onDeleted={() => {
+          setDeleting(null)
+          setDeleted(true)
         }}
-        title="Delete this in-house task?"
-        icon={
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-status-open-bg text-danger">
-            <IconTrash size={24} />
-          </span>
-        }
-        description={
-          <span className="flex flex-col gap-2">
-            <span>"{deleting?.title}" will be removed.</span>
-            <b className="text-danger">This is permanent and cannot be undone.</b>
-          </span>
-        }
-      >
-        {remove.isError && (
-          <ErrorBanner title="Couldn't delete this yet.">
-            It may have just been checked off, or your connection dropped. Try again.
-          </ErrorBanner>
-        )}
-        <Button variant="danger" loading={remove.isPending} onClick={confirmDelete}>
-          Delete
-        </Button>
-        <Button variant="secondary" onClick={() => setDeleting(null)}>
-          Cancel
-        </Button>
-      </ConfirmSheet>
+      />
     </Screen>
   )
 }

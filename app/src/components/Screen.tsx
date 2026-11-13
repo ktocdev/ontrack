@@ -80,10 +80,13 @@ export function BackBar({
   bordered = true,
   roomy = false,
   action,
+  state,
   children,
 }: {
   to: string
   label: string
+  /** Carried to where Back goes (which group to open on a checklist). */
+  state?: unknown
   bordered?: boolean
   roomy?: boolean
   /** A link at the right end (Edit on a unit's page). */
@@ -100,6 +103,7 @@ export function BackBar({
     >
       <Link
         to={to}
+        state={state}
         aria-label={label}
         className="flex h-11 w-11 items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
       >
