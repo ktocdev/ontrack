@@ -204,10 +204,15 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
-                  // The quick ticket (OT-106), quarterly tasks (OT-107) and Review & submit (OT-109) replace these.
+                  // Quarterly tasks (OT-107) and Review & submit (OT-109) replace these.
                   { path: '/walkthrough/:id/review', ...placeholder('Review & submit', 'OT-109') },
                   { path: '/walkthrough/:id/quarterly', ...placeholder('Quarterly tasks', 'OT-107') },
-                  { path: '/walkthrough/:id/ticket/:itemId', ...placeholder('Create ticket', 'OT-106') },
+                  {
+                    path: '/walkthrough/:walkthroughId/:section/ticket/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/tickets/EditTicketScreen')).EditTicketScreen,
+                    }),
+                  },
                   {
                     path: '/walkthrough/:id/:section',
                     lazy: async () => ({

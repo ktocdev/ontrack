@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import {
   CheckChoice,
@@ -16,6 +16,7 @@ import { useToast } from '../../components/Toast'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { firstOpen, groupsOf, openAfter, type ChecklistGroup as Group } from './checklist'
 import { goodRefusal, useAddFix, useChecklist, useSetGood } from './useChecklist'
+import { QuickTicketSheet, type QuickTicketTarget } from './QuickTicketSheet'
 import { monthName } from './walkthrough'
 
 /**
@@ -23,8 +24,9 @@ import { monthName } from './walkthrough'
  * walkthrough: the tabs between sections, Help, and the section's groups as cards. Each
  * item has Good, In-house and Ticket; every tap saves at once. Good is hidden while the
  * item has a fix or ticket still open, as the database refuses it then. In-house opens a
- * field under the item; Ticket opens the quick ticket sheet (OT-106). What was made from
- * an item is listed under it. When a group fills, it closes and the next one opens. A
+ * field under the item; Ticket opens the quick ticket sheet. What was made from an item is
+ * listed under it: a ticket still open opens the walkthrough's Edit ticket, one closed its
+ * own page, and a fix the In-house tab. When a group fills, it closes and the next one opens. A
  * submitted walkthrough, or one seen under View as, shows its marks and changes nothing.
  */
 export function ChecklistScreen() {
@@ -109,10 +111,14 @@ function Section({
   linksOff: boolean
 }) {
   const toast = useToast()
-  const navigate = useNavigate()
   const setGood = useSetGood(walkthroughId)
   const addFix = useAddFix(walkthroughId)
   const [drafting, setDrafting] = useState<string | null>(null)
+  const [ticketFor, setTicketFor] = useState<QuickTicketTarget | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  // Each opening starts a fresh sheet, even for the same item.
+  const [opened, setOpened] = useState(0)
+  const section = data.sections.find((s) => s.id === sectionId)
 
   const groups = useMemo(
     () => groupsOf(sectionId, data.items, data.checks, data.fixes, data.tickets),
@@ -120,7 +126,13 @@ function Section({
   )
   // When a tap fills a group, it closes and the next opens (worked out as the data changes).
   const [seen, setSeen] = useState<Group[]>(groups)
-  const [open, setOpen] = useState(() => firstOpen(groups))
+  // Coming back from a ticket, its group is open as well.
+  const openGroup = (useLocation().state as { openGroup?: string } | null)?.openGroup
+  const [open, setOpen] = useState(() => {
+    const first = firstOpen(groups)
+    if (openGroup && groups.some((g) => g.name === openGroup)) first.add(openGroup)
+    return first
+  })
   if (seen !== groups) {
     setSeen(groups)
     setOpen(openAfter(seen, groups, open))
@@ -193,7 +205,19 @@ function Section({
                           ? `Add another ticket for ${it.title} (${it.tickets.length} so far)`
                           : `Create ticket for ${it.title}`
                       }
-                      onClick={() => navigate(`/walkthrough/${walkthroughId}/ticket/${it.id}`)}
+                      onClick={() => {
+                        setTicketFor({
+                          itemId: it.id,
+                          itemTitle: it.title,
+                          groupName: g.name,
+                          sectionName: section?.name ?? '',
+                          area: section?.area ?? null,
+                          categoryId: data.items.find((i) => i.id === it.id)?.category_id ?? null,
+                          openTickets: it.tickets.filter((t) => t.status !== 'closed').map((t) => t.display_id ?? ''),
+                        })
+                        setOpened((n) => n + 1)
+                        setSheetOpen(true)
+                      }}
                     >
                       Ticket
                     </CheckChoice>
@@ -219,7 +243,13 @@ function Section({
                         label={t.display_id ?? ''}
                         urgent={t.urgency === 'urgent'}
                         done={t.status === 'closed'}
-                        to={linksOff ? undefined : `/tickets/${t.id}`}
+                        to={
+                          linksOff
+                            ? undefined
+                            : t.status === 'closed'
+                              ? `/tickets/${t.id}`
+                              : `/walkthrough/${walkthroughId}/${sectionId}/ticket/${t.id}`
+                        }
                       >
                         {t.title}
                       </ChecklistEntry>
@@ -247,6 +277,16 @@ function Section({
           })}
         </ChecklistGroup>
       ))}
+      {ticketFor && (
+        <QuickTicketSheet
+          key={opened}
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+          walkthroughId={walkthroughId}
+          restaurantId={data.walkthrough.restaurant_id}
+          target={ticketFor}
+        />
+      )}
     </ScreenBody>
   )
 }

@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { ErrorBanner } from '../../components/Notice'
 import { AddPhotoButton, PhotoTray, PhotoViewer } from '../../components/Photo'
@@ -20,6 +20,9 @@ import { ThreadFeed } from './ThreadFeed'
 import { scheduledLabel } from './tickets'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
 import { usePostUpdate, useTicket } from './useTicket'
+import { IconClipboardCheck } from '../../components/icons'
+import { useTicketOrigin } from '../walkthrough/useTicketOrigin'
+import { monthName } from '../walkthrough/walkthrough'
 
 /**
  * Manager · Ticket (design/screens/Ticket): the header with the status, the title and
@@ -27,7 +30,8 @@ import { usePostUpdate, useTicket } from './useTicket'
  * composer. The equipment card opens the unit's page. A photo
  * opens large when tapped, which has no board. Edit, Close and Share are in the header's
  * menu instead of the board's Edit link, which left the header too crowded. A closed ticket
- * has its own screen, which stays up after reopening it until the person leaves.
+ * has its own screen, which stays up after reopening it until the person leaves. A ticket
+ * made on a walkthrough says which, and the line opens that part of the checklist.
  */
 const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
@@ -46,6 +50,7 @@ export function TicketScreen() {
   const [reopened, setReopened] = useState<{ note: string; shown: NonNullable<typeof data> } | null>(null)
   const [closing, setClosing] = useState(false)
   const toast = useToast()
+  const origin = useTicketOrigin(data?.ticket?.walkthrough_id ?? null, data?.ticket?.walkthrough_check_id ?? null).data
 
   if (isPending) {
     return (
@@ -135,6 +140,16 @@ export function TicketScreen() {
             )}
             {ticket.category && ` › ${AREA_SHORT[ticket.category.area]} › ${ticket.category.name}`}
           </span>
+          {origin && (
+            <Link
+              to={`/walkthrough/${origin.walkthroughId}${origin.sectionId ? `/${origin.sectionId}` : ''}`}
+              className="inline-flex min-h-tap items-center gap-1.5 text-13 font-semibold text-brand"
+            >
+              <IconClipboardCheck size={15} className="flex-none" />
+              From the {monthName(origin.period)} walkthrough
+              {origin.chips.length ? ` · ${origin.chips[origin.chips.length - 1]}` : ''}
+            </Link>
+          )}
         </div>
 
         {ticket.description && (

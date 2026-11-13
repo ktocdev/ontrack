@@ -24,7 +24,7 @@ export function useChecklist(walkthroughId: string) {
       const [sections, progress, checks, fixes, tickets] = await Promise.all([
         sb
           .from('walkthrough_sections')
-          .select('id')
+          .select('id, name, area')
           .eq('template_id', w.template_id ?? ''),
         sb.from('v_walkthrough_progress').select('*').eq('walkthrough_id', w.id),
         sb.from('walkthrough_checks').select('id, item_id, result').eq('walkthrough_id', w.id),
@@ -42,7 +42,7 @@ export function useChecklist(walkthroughId: string) {
       for (const r of [sections, progress, checks, fixes, tickets]) if (r.error) throw r.error
       const { data: items, error: itemsError } = await sb
         .from('walkthrough_items')
-        .select('id, section_id, group_name, title, sort_order, active')
+        .select('id, section_id, group_name, title, sort_order, active, category_id')
         .in(
           'section_id',
           sections.data!.map((s) => s.id),
@@ -55,6 +55,7 @@ export function useChecklist(walkthroughId: string) {
           restaurantName: (w.restaurant as unknown as { name: string } | null)?.name ?? '',
         },
         progress: progressOf(progress.data!, w.period),
+        sections: sections.data!,
         items,
         checks: checks.data! as CheckRow[],
         fixes: fixes.data!,

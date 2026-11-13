@@ -74,13 +74,13 @@ export type NewTicket = {
  * a failure here leaves a ticket without its photos: that report still matters, and
  * it is what the person gets told.
  */
-async function addPhotos(ticketId: string, t: NewTicket) {
-  if (t.photos.length === 0) return true
+export async function addTicketPhotos(ticketId: string, photos: PickedPhoto[], createdBy: string) {
+  if (photos.length === 0) return true
   try {
-    const paths = await uploadPhotos(ticketId, t.photos)
+    const paths = await uploadPhotos(ticketId, photos)
     const { error } = await requireSupabase()
       .from('ticket_photos')
-      .insert(paths.map((path) => ({ ticket_id: ticketId, path, created_by: t.createdBy })))
+      .insert(paths.map((path) => ({ ticket_id: ticketId, path, created_by: createdBy })))
     return !error
   } catch {
     return false
@@ -108,7 +108,7 @@ export function useCreateTicket() {
         .select('id, display_id')
         .single()
       if (error) throw error
-      return { displayId: data.display_id, photosFailed: !(await addPhotos(data.id, t)) }
+      return { displayId: data.display_id, photosFailed: !(await addTicketPhotos(data.id, t.photos, t.createdBy)) }
     },
     onSuccess: () =>
       Promise.all([

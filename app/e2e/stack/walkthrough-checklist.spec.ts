@@ -93,9 +93,12 @@ test('a manager marks items as they walk, and a full group hands on to the next'
   await page.getByRole('button', { name: 'Help' }).click()
   await testInfo.attach('checklist', { body: await page.screenshot(), contentType: 'image/png' })
 
-  // Ticket leads on to the quick ticket (OT-106).
+  // Ticket opens the quick ticket over the checklist (walkthrough-ticket.spec makes one).
   await choices(page, 'Outlets').getByRole('button', { name: 'Create ticket for Outlets' }).click()
-  await expect(page).toHaveURL(new RegExp(`/walkthrough/${RANALLIS_OCT}/ticket/${item(4)}$`))
+  const sheet = page.getByRole('dialog', { name: 'Create ticket' })
+  await expect(sheet.getByText('Outlets', { exact: true })).toBeVisible()
+  await sheet.getByRole('button', { name: 'Cancel' }).click()
+  await expect(sheet).toHaveCount(0)
 })
 
 test('a walkthrough at another restaurant is not found', async ({ page }) => {
