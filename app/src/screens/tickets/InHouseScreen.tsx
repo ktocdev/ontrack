@@ -8,7 +8,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { ErrorBanner, Notice } from '../../components/Notice'
 import { CountBadge, WalkthroughTag } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
-import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader, UnderlineTabs } from '../../components/Screen'
 import { ConfirmSheet } from '../../components/Sheet'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskList, TaskRow } from '../../components/TaskRow'
@@ -147,17 +147,19 @@ export function InHouseScreen() {
       </ScreenHeader>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load your in-house tasks"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load your in-house tasks"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-1">
           {isPending ? (

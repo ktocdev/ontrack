@@ -5,7 +5,7 @@ import { Card } from '../../components/Card'
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { EmptyState } from '../../components/EmptyState'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
-import { Screen, ScreenBody, TitleBar } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, TitleBar } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconTray, IconWarning } from '../../components/icons'
 import { money } from '../tickets/closed'
@@ -61,17 +61,19 @@ export function OpsClosedScreen() {
       </div>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load closed tickets"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load closed tickets"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : isPending ? (
         <ScreenBody className="gap-2.5 pb-4 pt-4">
           <CardFeedSkeleton label="Loading closed tickets" />

@@ -43,7 +43,7 @@ export function invoiceFileProblem(file: { type: string; size: number }): string
   return null
 }
 
-/** A file's name as storage keeps it, under the record's folder. */
+/** A file's name as storage keeps it, in a folder of its own under the record's. */
 export function invoiceFileName(name: string) {
   return name.replace(/[^A-Za-z0-9._-]+/g, '-').slice(-120) || 'invoice.pdf'
 }

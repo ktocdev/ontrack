@@ -10,7 +10,8 @@ import { IconCheck, IconChevronDown } from './icons'
 type Restaurant = { id: string; name: string; color: string }
 
 const ALL = 'all'
-const OPTION =
+/** A row in a dropdown of choices with a check on the one picked; the Invoices month menu uses it too. */
+export const MENU_OPTION =
   'flex min-h-12 cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-1.5 text-15 font-medium text-text outline-none data-[highlighted]:bg-surface-hover'
 
 export function RestaurantPicker({
@@ -48,7 +49,7 @@ export function RestaurantPicker({
             value={selectedId ?? ALL}
             onValueChange={(value) => onSelect(value === ALL ? null : value)}
           >
-            <DropdownMenu.RadioItem value={ALL} className={OPTION}>
+            <DropdownMenu.RadioItem value={ALL} className={MENU_OPTION}>
               <AllRestaurantsSquare colors={colors} className="mx-px" />
               <span className="flex min-w-0 flex-1 flex-col gap-px">
                 <span className="font-semibold">All restaurants</span>
@@ -59,7 +60,7 @@ export function RestaurantPicker({
               </DropdownMenu.ItemIndicator>
             </DropdownMenu.RadioItem>
             {restaurants.map((r) => (
-              <DropdownMenu.RadioItem key={r.id} value={r.id} className={OPTION}>
+              <DropdownMenu.RadioItem key={r.id} value={r.id} className={MENU_OPTION}>
                 <RestaurantSquare color={r.color} size={12} />
                 <span className="min-w-0 flex-1 truncate font-semibold">{r.name}</span>
                 <DropdownMenu.ItemIndicator>

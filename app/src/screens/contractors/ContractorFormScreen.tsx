@@ -14,7 +14,7 @@ import { IconStar } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { TradePicker } from '../trades/TradePicker'
 import { useTrades } from '../trades/useTrades'
-import { monthEnd, monthOf } from './contractor'
+import { EMAIL, monthEnd, monthOf, NAME_TAKEN, saveProblem } from './contractor'
 import {
   useContractor,
   useDeleteContractor,
@@ -58,8 +58,6 @@ export function EditContractorScreen() {
   if (!data) return <NotFoundScreen />
   return <Form editing={data.contractor} inUse={data.inUse} />
 }
-
-const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 
 function Form({ editing, inUse = true }: { editing?: ContractorRow; inUse?: boolean }) {
   const { viewingAs } = useUser()
@@ -140,12 +138,7 @@ function Form({ editing, inUse = true }: { editing?: ContractorRow; inUse?: bool
           {save.isError && code !== '23505' && (
             <div ref={banner} className="flex-none">
               <ErrorBanner title="Couldn't save yet.">
-                {code === '42501'
-                  ? 'Your account can’t add or change contractors. Ask your admin. '
-                  : code === '23514'
-                    ? 'One of the trades was just turned off, or a field is too long. Check them and try again. '
-                    : 'Check your connection and try again. '}
-                Everything you entered is still here.
+                {saveProblem(code)} Everything you entered is still here.
               </ErrorBanner>
             </div>
           )}
@@ -155,7 +148,7 @@ function Form({ editing, inUse = true }: { editing?: ContractorRow; inUse?: bool
             autoComplete="organization"
             value={values.name}
             onChange={set('name')}
-            error={code === '23505' ? 'A contractor by that name is already in the list.' : show(errors.name)}
+            error={code === '23505' ? NAME_TAKEN : show(errors.name)}
           />
           <div className="flex flex-none flex-col gap-1.5">
             <TradePicker

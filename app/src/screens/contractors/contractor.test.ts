@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { insuranceLine, monthEnd, monthOf, summarizeVisits, visitsLabel, type Visit } from './contractor'
+import { insuranceLine, mailtoHref, monthEnd, monthOf, summarizeVisits, visitsLabel, type Visit } from './contractor'
 
 const v = (id: string, date: string, restaurant: string, cents: number, missing = false): Visit => ({
   id,
@@ -66,5 +66,18 @@ describe('insurance and months', () => {
   it('counts visits', () => {
     expect(visitsLabel(1)).toBe('1 visit')
     expect(visitsLabel(11)).toBe('11 visits')
+  })
+})
+
+describe('the Email button', () => {
+  it('links an ordinary address', () => {
+    expect(mailtoHref('rosa@coldline.example.com')).toBe('mailto:rosa@coldline.example.com')
+    expect(mailtoHref("o'brien+ap@service.hobart.example.co.uk")).toBe("mailto:o'brien+ap@service.hobart.example.co.uk")
+  })
+
+  it('links nothing that would add a CC, a subject or a second recipient', () => {
+    for (const email of ['a@b.co?cc=x%40y.z', 'a@b.co?subject=hi&body=pay', 'a@b.co,x%40y.z', 'a@b.co%0Acc:x', 'a@b'])
+      expect(mailtoHref(email)).toBeNull()
+    expect(mailtoHref(null)).toBeNull()
   })
 })

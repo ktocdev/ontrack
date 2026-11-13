@@ -6,7 +6,7 @@ import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { EquipmentGroup, EquipmentRow } from '../../components/Equipment'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
-import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { GroupedListSkeleton } from '../../components/Skeleton'
 import { IconPlus, IconWarning, IconWrench } from '../../components/icons'
@@ -111,35 +111,39 @@ export function EquipmentScreen() {
       </ScreenHeader>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load equipment"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load equipment"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : empty ? (
-        <EmptyState
-          titleSize={20}
-          icon={<IconWrench size={30} />}
-          title="No equipment yet"
-          body={
-            <>
-              Your operations team adds equipment. Once they do, it shows up here, grouped by area.
-              <span className="mt-2.5 block text-13">You can still report a problem by area in the meantime.</span>
-            </>
-          }
-        >
-          {!viewingAs && (
-            <ButtonLink to="/tickets/new" variant="small" icon={<IconPlus size={18} />} className="w-full">
-              Create ticket by area
-            </ButtonLink>
-          )}
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            titleSize={20}
+            icon={<IconWrench size={30} />}
+            title="No equipment yet"
+            body={
+              <>
+                Your operations team adds equipment. Once they do, it shows up here, grouped by area.
+                <span className="mt-2.5 block text-13">You can still report a problem by area in the meantime.</span>
+              </>
+            }
+          >
+            {!viewingAs && (
+              <ButtonLink to="/tickets/new" variant="small" icon={<IconPlus size={18} />} className="w-full">
+                Create ticket by area
+              </ButtonLink>
+            )}
+          </EmptyState>
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-1">
           {isPending ? (

@@ -6,6 +6,7 @@ import { Button, ButtonLink, IconButton } from '../../components/Button'
 import {
   Card,
   CategoryTile,
+  DisclosureList,
   KeyValueRow,
   ListCard,
   ListRow,
@@ -616,6 +617,10 @@ export function KitPage() {
                   trailing={<IconChevronRight className="text-text-muted" />}
                 />
               </ListCard>
+              <DisclosureList label="Archived contractors" heading="Archived · 2">
+                <ListRow title="Lakeview Plumbing" subtitle="Plumbing" />
+                <ListRow title="Old Town Signs" subtitle="Decorations · Lighting" />
+              </DisclosureList>
               <Notice>Profile saved.</Notice>
               <Card className="px-3.5">
                 <KeyValueRow label="Brand">Kolpak</KeyValueRow>

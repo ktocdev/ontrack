@@ -105,6 +105,33 @@ test('a visit with no invoice says Missing, takes one, then replaces it', async 
   await expect(page.getByRole('status').filter({ hasText: 'Invoice replaced.' })).toBeVisible()
   await expect(page.getByText('Coldline_PM-2.pdf')).toBeVisible()
 
+  // Replaced again by a file with the same name, as a phone's photos all are: the old
+  // file stays in Storage beside the new one, and Storage takes no overwrite or removal
+  // of it, even from Ops (OT-97).
+  const headers = { apikey: KEY, Authorization: `Bearer ${await tokenFor(request, BERT)}` }
+  const attachedPath = async () => {
+    const res = await request.get(`${SUPABASE}/rest/v1/invoices?service_record_id=eq.${id}&select=path`, { headers })
+    return ((await res.json()) as { path: string }[])[0]?.path
+  }
+  const old = await attachedPath()
+  await page
+    .getByLabel('Replace invoice')
+    .setInputFiles({ ...pdf('Coldline_PM-2.pdf'), buffer: Buffer.from('%PDF-1.4\n% corrected\n%%EOF\n') })
+  await expect.poll(attachedPath).not.toBe(old)
+  await expect(page.getByText('Coldline_PM-2.pdf')).toBeVisible()
+  await expect(page.getByText(/didn’t upload/)).toHaveCount(0)
+
+  const oldFile = `${SUPABASE}/storage/v1/object/authenticated/invoices/${old}`
+  expect(await (await request.get(oldFile, { headers })).text()).toBe('%PDF-1.4\n%%EOF\n')
+  const overwrite = await request.post(`${SUPABASE}/storage/v1/object/invoices/${old}`, {
+    headers: { ...headers, 'content-type': 'application/pdf', 'x-upsert': 'true' },
+    data: Buffer.from('%PDF-1.4\n% overwritten\n%%EOF\n'),
+  })
+  expect(overwrite.ok()).toBe(false)
+  const removal = await request.delete(`${SUPABASE}/storage/v1/object/invoices/${old}`, { headers })
+  expect(removal.ok()).toBe(false)
+  expect(await (await request.get(oldFile, { headers })).text()).toBe('%PDF-1.4\n%%EOF\n')
+
   // Back returns to the unit.
   await page.getByRole('link', { name: 'Back to Walk-in Cooler 1' }).click()
   await expect(page).toHaveURL(new RegExp(`/ops/equipment/${COOLER}/service$`))
