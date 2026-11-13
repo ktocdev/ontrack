@@ -42,12 +42,14 @@ export function useServiceRecord(id: string) {
       if (!record.data) return null
 
       const path = invoice.data?.status === 'attached' ? invoice.data.path : null
+      // The file sits in a folder of its own under the record's (older ones, straight under it).
       const name = path?.split('/').pop() ?? null
+      const folder = path?.split('/').slice(0, -1).join('/') ?? id
       const [view, download, listing] = path
         ? await Promise.all([
             sb.storage.from('invoices').createSignedUrl(path, 3600),
             sb.storage.from('invoices').createSignedUrl(path, 3600, { download: name ?? true }),
-            sb.storage.from('invoices').list(id, { search: name ?? undefined }),
+            sb.storage.from('invoices').list(folder, { search: name ?? undefined }),
           ])
         : [null, null, null]
       const size = listing?.data?.find((f) => f.name === name)?.metadata?.size as number | undefined

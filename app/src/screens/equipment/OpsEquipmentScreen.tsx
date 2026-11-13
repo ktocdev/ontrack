@@ -9,7 +9,7 @@ import { EquipmentGroup, EquipmentRow } from '../../components/Equipment'
 import { OverflowMenu } from '../../components/Menu'
 import { SearchField } from '../../components/Field'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
-import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { GroupedListSkeleton } from '../../components/Skeleton'
 import { IconPlus, IconWarning, IconWrench } from '../../components/icons'
 import { useCanEditCategories } from '../categories/useCategoryAdmin'
@@ -180,24 +180,28 @@ export function OpsEquipmentScreen() {
       </ScreenHeader>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load equipment"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load equipment"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : empty ? (
-        <EmptyState
-          titleSize={20}
-          icon={<IconWrench size={30} />}
-          title="No equipment yet"
-          body={`Nothing has been added ${where}. Once it is, it shows up here, grouped by type.`}
-        />
+        <ScreenEmpty>
+          <EmptyState
+            titleSize={20}
+            icon={<IconWrench size={30} />}
+            title="No equipment yet"
+            body={`Nothing has been added ${where}. Once it is, it shows up here, grouped by type.`}
+          />
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-1">
           {isPending ? (

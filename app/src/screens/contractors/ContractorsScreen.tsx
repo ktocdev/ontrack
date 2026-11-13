@@ -3,23 +3,16 @@ import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button, ButtonLink } from '../../components/Button'
-import { ListCard, ListRowLink } from '../../components/Card'
+import { DisclosureList, ListRow, ListRowLink } from '../../components/Card'
 import { Chip } from '../../components/Chip'
 import { ContractorCard } from '../../components/ContractorCard'
 import { EmptyState } from '../../components/EmptyState'
 import { SearchField } from '../../components/Field'
 import { OverflowMenu } from '../../components/Menu'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
-import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
-import {
-  IconBriefcase,
-  IconChevronDown,
-  IconChevronRight,
-  IconPlus,
-  IconSearchOff,
-  IconWarning,
-} from '../../components/icons'
+import { IconBriefcase, IconChevronRight, IconPlus, IconSearchOff, IconWarning } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
@@ -62,9 +55,6 @@ export function ContractorsScreen() {
   if (seeContractors === false) return <NotFoundScreen />
   return <Directory />
 }
-
-/** Room for an empty state that scrolls when it doesn't fit under the header, as on a short phone. */
-const EMPTY = 'flex min-h-0 flex-1 flex-col overflow-y-auto'
 
 const SORT_LABEL: Record<Sort, string> = { used: 'Most used first', spend: 'Highest spend first' }
 
@@ -168,7 +158,7 @@ function Directory() {
       </ScreenHeader>
 
       {isError ? (
-        <div className={EMPTY}>
+        <ScreenEmpty>
           <EmptyState
             tone="neutral"
             titleSize={20}
@@ -180,9 +170,9 @@ function Directory() {
               Try again
             </Button>
           </EmptyState>
-        </div>
+        </ScreenEmpty>
       ) : empty ? (
-        <div className={EMPTY}>
+        <ScreenEmpty>
           <EmptyState
             icon={<IconBriefcase size={30} />}
             title="No contractors yet"
@@ -205,9 +195,9 @@ function Directory() {
               </ButtonLink>
             )}
           </EmptyState>
-        </div>
+        </ScreenEmpty>
       ) : !isPending && shown.length === 0 ? (
-        <div className={EMPTY}>
+        <ScreenEmpty>
           <EmptyState
             tone="neutral"
             icon={<IconSearchOff size={30} />}
@@ -241,7 +231,7 @@ function Directory() {
               </Button>
             </div>
           </EmptyState>
-        </div>
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-0">
           {isPending ? (
@@ -293,45 +283,21 @@ const addTo = (trade: string | null | undefined) =>
 
 /** Archived contractors under a disclosure, closed to begin with; each opens their page to restore them. */
 function Archived({ contractors, inert }: { contractors: Contractor[]; inert: boolean }) {
-  const [open, setOpen] = useState(false)
   return (
-    <section aria-label="Archived contractors" className="mt-2 flex flex-none flex-col gap-2">
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-        className="-mx-1 flex min-h-tap items-center gap-2 px-1 text-left"
-      >
-        <IconChevronDown
-          size={18}
-          className={`flex-none text-text-secondary transition-transform ${open ? '' : '-rotate-90'}`}
-        />
-        <span className="eyebrow flex-1">Archived · {contractors.length}</span>
-        <span className="text-14 font-semibold text-brand">{open ? 'Hide' : 'Show'}</span>
-      </button>
-      {open && (
-        <ListCard>
-          {contractors.map((c) =>
-            inert ? (
-              <div
-                key={c.id}
-                className="flex min-h-[60px] flex-col justify-center border-t border-border px-3.5 py-2.5 first:border-t-0"
-              >
-                <span className="text-14 font-semibold">{c.name}</span>
-                <span className="text-12 text-text-muted">{c.trades.join(' · ')}</span>
-              </div>
-            ) : (
-              <ListRowLink
-                key={c.id}
-                to={`/ops/contractors/${c.id}`}
-                title={c.name}
-                subtitle={c.trades.join(' · ')}
-                trailing={<IconChevronRight className="text-text-muted" />}
-              />
-            ),
-          )}
-        </ListCard>
+    <DisclosureList label="Archived contractors" heading={`Archived · ${contractors.length}`} className="mt-2">
+      {contractors.map((c) =>
+        inert ? (
+          <ListRow key={c.id} title={c.name} subtitle={c.trades.join(' · ')} />
+        ) : (
+          <ListRowLink
+            key={c.id}
+            to={`/ops/contractors/${c.id}`}
+            title={c.name}
+            subtitle={c.trades.join(' · ')}
+            trailing={<IconChevronRight className="text-text-muted" />}
+          />
+        ),
       )}
-    </section>
+    </DisclosureList>
   )
 }

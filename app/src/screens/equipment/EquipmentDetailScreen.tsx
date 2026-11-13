@@ -3,19 +3,26 @@ import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button, ButtonLink } from '../../components/Button'
-import { Card, KeyValueRow, ListCard } from '../../components/Card'
+import { Card, DisclosureList, KeyValueRow, ListCard } from '../../components/Card'
 import { ClosedTicketRow } from '../../components/ClosedTicketRow'
 import { EmptyState } from '../../components/EmptyState'
 import { OpenBadge } from '../../components/Equipment'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { PhotoViewer } from '../../components/Photo'
 import { RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
-import { BackBar, Screen, ScreenBody, ScreenFooter, SectionLabel, UnderlineTabs } from '../../components/Screen'
+import {
+  BackBar,
+  Screen,
+  ScreenBody,
+  ScreenEmpty,
+  ScreenFooter,
+  SectionLabel,
+  UnderlineTabs,
+} from '../../components/Screen'
 import { DetailSkeleton, MetricsSkeleton } from '../../components/Skeleton'
 import { TicketCard } from '../../components/TicketCard'
 import { EquipmentMenu } from '../../components/TicketMenu'
 import {
-  IconChevronDown,
   IconChevronRight,
   IconFile,
   IconPhone,
@@ -90,17 +97,19 @@ function Detail({ ops }: { ops: boolean }) {
     return (
       <Screen>
         {back}
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load this equipment"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load this equipment"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       </Screen>
     )
   if (!data) return <NotFoundScreen />
@@ -374,24 +383,10 @@ function Details({ ops, children }: { ops: boolean; children: ReactNode }) {
 
 /** Closed tickets under a disclosure, open to begin with, as the manager's board draws it. */
 function ClosedTickets({ count, children }: { count: number; children: ReactNode }) {
-  const [shown, setShown] = useState(true)
   return (
-    <section aria-label="Closed tickets" className="flex flex-none flex-col gap-2.5">
-      <button
-        type="button"
-        aria-expanded={shown}
-        onClick={() => setShown((s) => !s)}
-        className="-mx-1 flex min-h-tap items-center gap-2 px-1 text-left"
-      >
-        <IconChevronDown
-          size={18}
-          className={`flex-none text-text-secondary transition-transform ${shown ? '' : '-rotate-90'}`}
-        />
-        <span className="eyebrow flex-1">Closed · {count}</span>
-        <span className="text-14 font-semibold text-brand">{shown ? 'Hide' : 'Show'}</span>
-      </button>
-      {shown && <ListCard>{children}</ListCard>}
-    </section>
+    <DisclosureList label="Closed tickets" heading={`Closed · ${count}`} defaultOpen>
+      {children}
+    </DisclosureList>
   )
 }
 

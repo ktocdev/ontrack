@@ -7,7 +7,7 @@ import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
-import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
@@ -64,37 +64,41 @@ export function OpsDashboardScreen() {
       />
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load the dashboard"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load the dashboard"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : data?.length === 0 ? (
-        <EmptyState
-          titleSize={22}
-          icon={<IconCheckCircle size={30} />}
-          title="All caught up"
-          body={
-            <>
-              No open tickets{' '}
-              {scope.selected ? `at ${scope.selected.name}` : `across your ${restaurants.length} restaurants`}.
-              <br />
-              New tickets show up here, most urgent first.
-            </>
-          }
-        >
-          {!viewingAs && (
-            <ButtonLink to="/ops/closed" variant="secondary" className="w-full">
-              View closed tickets
-            </ButtonLink>
-          )}
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            titleSize={22}
+            icon={<IconCheckCircle size={30} />}
+            title="All caught up"
+            body={
+              <>
+                No open tickets{' '}
+                {scope.selected ? `at ${scope.selected.name}` : `across your ${restaurants.length} restaurants`}.
+                <br />
+                New tickets show up here, most urgent first.
+              </>
+            }
+          >
+            {!viewingAs && (
+              <ButtonLink to="/ops/closed" variant="secondary" className="w-full">
+                View closed tickets
+              </ButtonLink>
+            )}
+          </EmptyState>
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-5 pb-4 pt-1">
           {isPending ? (

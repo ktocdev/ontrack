@@ -6,6 +6,7 @@ import {
   Card,
   CategoryTile,
   KeyValueRow,
+  DisclosureList,
   ListCard,
   ListRow,
   ListRowButton,
@@ -437,6 +438,21 @@ export function CardsPage() {
               trailing={<IconChevronRight className="text-text-muted" />}
             />
           </ListCard>
+        </Example>
+      </Section>
+      <Section
+        title="List under a heading"
+        intro="A list card that its heading shows and hides: a unit's closed tickets (open to begin with), the directory's archived contractors (closed)."
+      >
+        <Example
+          code={`<DisclosureList label="Archived contractors" heading="Archived · 2">
+  <ListRowLink to={path} title="Lakeview Plumbing" subtitle="Plumbing" />
+</DisclosureList>`}
+        >
+          <DisclosureList label="Archived contractors" heading="Archived · 2">
+            <ListRow title="Lakeview Plumbing" subtitle="Plumbing" />
+            <ListRow title="Old Town Signs" subtitle="Decorations · Lighting" />
+          </DisclosureList>
         </Example>
       </Section>
       <Section title="Details">

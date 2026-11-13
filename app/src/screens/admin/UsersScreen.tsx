@@ -6,7 +6,7 @@ import { ListCard } from '../../components/Card'
 import { Chip } from '../../components/Chip'
 import { EmptyState } from '../../components/EmptyState'
 import { RoleTag } from '../../components/Pill'
-import { Screen, ScreenBody } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty } from '../../components/Screen'
 import { PeopleListSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { IconChevronRight, IconPerson, IconPlus, IconUserPlus } from '../../components/icons'
@@ -73,15 +73,17 @@ export function UsersScreen() {
             </ListCard>
           )}
         </AdminHeader>
-        <EmptyState
-          icon={<IconUserPlus size={30} />}
-          title="It's just you so far"
-          body="Invite restaurant managers to report problems, and your operations team to assign and close tickets."
-        >
-          <ButtonLink to="/admin/users/new" variant="medium" className="w-full" icon={<IconPlus size={18} />}>
-            Invite people
-          </ButtonLink>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            icon={<IconUserPlus size={30} />}
+            title="It's just you so far"
+            body="Invite restaurant managers to report problems, and your operations team to assign and close tickets."
+          >
+            <ButtonLink to="/admin/users/new" variant="medium" className="w-full" icon={<IconPlus size={18} />}>
+              Invite people
+            </ButtonLink>
+          </EmptyState>
+        </ScreenEmpty>
       </Screen>
     )
   }

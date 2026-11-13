@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
-import { Screen, ScreenBody } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconChevronLeft, IconWarning } from '../../components/icons'
@@ -35,25 +35,29 @@ export function ClosedTicketsScreen() {
       </div>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load your closed tickets"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load your closed tickets"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : data?.length === 0 ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconCheckCircle size={30} />}
-          title="No closed tickets yet"
-          body="Tickets show up here once they're closed."
-        />
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconCheckCircle size={30} />}
+            title="No closed tickets yet"
+            body="Tickets show up here once they're closed."
+          />
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-4">
           {isPending ? (

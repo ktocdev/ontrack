@@ -16,13 +16,14 @@ import { useReplaceInvoice, useServiceRecord, type ServiceRecordData } from './u
 
 /**
  * Ops · Service record (design/screens/Service-Record, and its missingInvoice state).
- * Opened from a ticket's Service & cost, a unit's service log, and later a contractor's
- * visits and the Invoices tab; Back returns where it came from. The date and what was
+ * Opened from a ticket's Service & cost, a unit's service log, a contractor's visits and
+ * invoices, and the Invoices tab; Back returns where it came from. The date and what was
  * done, the description, the invoice (View, Download, Replace; or Missing with Attach),
  * the cost line by line, and the details: contractor, technician, ticket, equipment and
  * who logged it. A visit with no ticket leaves out the Ticket row, and in-house work
  * shows Done by and no invoice unless one was attached. Edit, Replace and Attach need
- * log_cost and are hidden under View as. There is no delete: a visit is a record.
+ * log_cost and are hidden under View as. There is no delete: a visit is a record, and a
+ * replaced invoice file stays in Storage beside the new one.
  * The file's page count on the board isn't known without opening it, so the line gives
  * its number and size.
  */

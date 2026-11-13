@@ -10,10 +10,10 @@ import { ListCard } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
 import { SearchField } from '../../components/Field'
 import { RestaurantName } from '../../components/RestaurantName'
-import { RestaurantPicker } from '../../components/RestaurantPicker'
-import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
+import { MENU_OPTION, RestaurantPicker } from '../../components/RestaurantPicker'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
-import { IconCheck, IconChevronDown, IconFile, IconPlus, IconSort, IconWarning } from '../../components/icons'
+import { IconCheck, IconChevronDown, IconPlus, IconSort, IconWarning } from '../../components/icons'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
 import { serviceDay } from '../service/service'
@@ -30,6 +30,7 @@ import {
   type InvoiceRow,
   type InvoiceSort,
 } from './invoices'
+import { InvoiceMark } from './InvoiceMark'
 import { useInvoices } from './useInvoices'
 
 /**
@@ -48,9 +49,6 @@ export function InvoicesScreen() {
   if (seeCosts === false) return <Navigate to="/ops/contractors" replace />
   return <Invoices />
 }
-
-const OPTION =
-  'flex min-h-12 cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-1.5 text-15 font-medium text-text outline-none data-[highlighted]:bg-surface-hover'
 
 function Invoices() {
   const scope = useRestaurantScope()
@@ -112,7 +110,7 @@ function Invoices() {
       </ScreenHeader>
 
       {isError ? (
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <ScreenEmpty>
           <EmptyState
             tone="neutral"
             titleSize={20}
@@ -124,7 +122,7 @@ function Invoices() {
               Try again
             </Button>
           </EmptyState>
-        </div>
+        </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-1">
           {isPending ? (
@@ -211,7 +209,7 @@ function MonthMenu({
 
 function MonthOption({ value, children }: { value: string; children: ReactNode }) {
   return (
-    <DropdownMenu.RadioItem value={value} className={OPTION}>
+    <DropdownMenu.RadioItem value={value} className={MENU_OPTION}>
       <span className="min-w-0 flex-1 font-semibold">{children}</span>
       <DropdownMenu.ItemIndicator>
         <IconCheck size={18} strokeWidth={2.6} className="text-brand" />
@@ -227,16 +225,7 @@ function Row({ row: r }: { row: InvoiceRow }) {
   const amount = money(r.totalCents)
   const body = (
     <>
-      <span
-        aria-hidden="true"
-        className={`flex h-10 w-[34px] flex-none items-center justify-center rounded-tag ${
-          r.invoiceMissing
-            ? 'border border-dashed border-reopened-banner-border bg-reopened-banner-bg text-status-waiting-text'
-            : 'bg-brand-tint-soft text-brand'
-        }`}
-      >
-        {r.invoiceMissing ? <IconPlus size={16} strokeWidth={2.2} /> : <IconFile size={16} />}
-      </span>
+      <InvoiceMark isMissing={r.invoiceMissing} missing={<IconPlus size={16} strokeWidth={2.2} />} />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-15 font-semibold [overflow-wrap:anywhere]">{r.contractor?.name ?? 'Contractor'}</span>
         {r.restaurant && <RestaurantName variant="meta" name={r.restaurant.name} color={r.restaurant.color} />}

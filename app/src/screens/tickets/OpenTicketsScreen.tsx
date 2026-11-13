@@ -6,7 +6,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { OverflowMenu } from '../../components/Menu'
 import { CountBadge } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
-import { Screen, ScreenBody, ScreenHeader, UnderlineTabs } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, ScreenHeader, UnderlineTabs } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconPlus, IconWarning } from '../../components/icons'
@@ -88,30 +88,34 @@ export function OpenTicketsScreen() {
       </ScreenHeader>
 
       {isError ? (
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load your tickets"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load your tickets"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       ) : noneAtAll ? (
-        <EmptyState
-          titleSize={20}
-          icon={<IconCheckCircle size={30} />}
-          title="No open tickets"
-          body={`Everything at ${only?.name ?? 'your restaurants'} is working. When something breaks, create a ticket.`}
-        >
-          {!viewingAs && (
-            <ButtonLink to="/tickets/new" variant="medium" className="w-full" icon={<IconPlus size={18} />}>
-              Create ticket
-            </ButtonLink>
-          )}
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            titleSize={20}
+            icon={<IconCheckCircle size={30} />}
+            title="No open tickets"
+            body={`Everything at ${only?.name ?? 'your restaurants'} is working. When something breaks, create a ticket.`}
+          >
+            {!viewingAs && (
+              <ButtonLink to="/tickets/new" variant="medium" className="w-full" icon={<IconPlus size={18} />}>
+                Create ticket
+              </ButtonLink>
+            )}
+          </EmptyState>
+        </ScreenEmpty>
       ) : waitingForEmpty ? (
         <div className="flex-1" />
       ) : (

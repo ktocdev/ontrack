@@ -175,15 +175,17 @@ export async function asDuplicate(error: { code?: string; details?: string | nul
 /**
  * Uploads an invoice to its record's folder and names it on the record (attach_invoice
  * checks it is there). A photo is shrunk to 2000 px, which keeps a paper invoice
- * readable. A file with the same name replaces the one there.
+ * readable. Each upload gets a folder of its own under the record's, so a replacement
+ * with the same name (a phone calls every photo image.jpg) sits beside the old file and
+ * never on top of it: Storage lets an invoice be added, not changed or removed (OT-97).
  */
 export async function attachInvoice(id: string, file: File) {
   const sb = requireSupabase()
   const image = file.type.startsWith('image/')
   const blob = image ? await resizeToJpeg(file, 2000) : file
   const name = image ? `${invoiceFileName(file.name).replace(/\.[^.]*$/, '')}.jpg` : invoiceFileName(file.name)
-  const path = `${id}/${name}`
-  const up = await sb.storage.from('invoices').upload(path, blob, { contentType: blob.type, upsert: true })
+  const path = `${id}/${crypto.randomUUID()}/${name}`
+  const up = await sb.storage.from('invoices').upload(path, blob, { contentType: blob.type })
   if (up.error) throw up.error
   const attached = await sb.rpc('attach_invoice', { p_id: id, p_path: path })
   if (attached.error) throw attached.error

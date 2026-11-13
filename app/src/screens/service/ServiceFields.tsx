@@ -6,6 +6,7 @@ import { ErrorBanner } from '../../components/Notice'
 import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { IconClose, IconFile, IconPaperclip } from '../../components/icons'
+import { saveProblem } from '../contractors/contractor'
 import { TradePicker } from '../trades/TradePicker'
 import { useTrades } from '../trades/useTrades'
 import { shortDay } from './service'
@@ -273,26 +274,17 @@ export function InvoiceFile({
 }
 
 /**
- * "+ Add new contractor": the name, one or more trades and the phone; the rest is filled
- * in later, on the full Edit contractor (OT-95). Log service opens it from the picker, so
- * nothing typed on the form is lost; the directory's Add opens the full Add contractor.
+ * "+ Add new contractor": the name, one or more trades and the phone, which is optional
+ * here and required on the full form (decided in OT-95); the rest is filled in later, on
+ * Edit contractor. Log service opens it from the picker, so nothing typed on the form is
+ * lost; the directory's Add opens the full Add contractor. A save that fails says why in
+ * the full form's words (saveProblem).
  */
-export function AddContractorSheet({
-  onClose,
-  onAdded,
-  trade: startTrade = '',
-}: {
-  onClose: () => void
-  onAdded: (id: string) => void
-  /** Picked on opening: the name of the trade a search or a chip named. */
-  trade?: string
-}) {
+export function AddContractorSheet({ onClose, onAdded }: { onClose: () => void; onAdded: (id: string) => void }) {
   const trades = useTrades()
   const add = useAddContractor()
   const [name, setName] = useState('')
-  // Untouched, it is the trade the sheet opened on, once the list has loaded.
-  const [picked, setPicked] = useState<string[] | null>(null)
-  const tradeIds = picked ?? (trades.data ?? []).filter((t) => t.name === startTrade).map((t) => t.id)
+  const [tradeIds, setTradeIds] = useState<string[]>([])
   const [phone, setPhone] = useState('')
   const code = (add.error as { code?: string } | null)?.code
   return (
@@ -316,7 +308,7 @@ export function AddContractorSheet({
         value={tradeIds}
         onChange={(ids) => {
           add.reset()
-          setPicked(ids)
+          setTradeIds(ids)
         }}
       />
       <Input
@@ -330,13 +322,7 @@ export function AddContractorSheet({
       />
       {add.isError && (
         <span role="alert" className="text-13 font-semibold text-danger">
-          {code === '23505'
-            ? 'A contractor by that name is already in the list.'
-            : code === '42501'
-              ? 'Only Ops or an admin can add a contractor.'
-              : code === '23514'
-                ? 'One of those trades was just turned off. Pick another.'
-                : 'That didn’t go through. Check your connection and try again.'}
+          {saveProblem(code)}
         </span>
       )}
       <Button

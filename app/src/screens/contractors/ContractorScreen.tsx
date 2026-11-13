@@ -6,7 +6,7 @@ import { Button, ButtonLink, buttonClasses } from '../../components/Button'
 import { Card, KeyValueRow, ListCard } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
 import { RestaurantName } from '../../components/RestaurantName'
-import { BackBar, Screen, ScreenBody, SectionLabel, UnderlineTabs } from '../../components/Screen'
+import { BackBar, Screen, ScreenBody, ScreenEmpty, SectionLabel, UnderlineTabs } from '../../components/Screen'
 import { DetailSkeleton } from '../../components/Skeleton'
 import { ContractorMenu } from '../../components/TicketMenu'
 import {
@@ -23,8 +23,9 @@ import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
 import { serviceDay } from '../service/service'
 import { money } from '../tickets/closed'
-import { insuranceLine, summarizeVisits, visitsLabel, type Visit } from './contractor'
+import { insuranceLine, mailtoHref, summarizeVisits, visitsLabel, type Visit } from './contractor'
 import { insuranceWarning } from './contractors'
+import { InvoiceMark } from './InvoiceMark'
 import { useContractor, type ContractorData } from './useContractor'
 
 /**
@@ -64,17 +65,19 @@ export function ContractorScreen() {
     return (
       <Screen>
         {back}
-        <EmptyState
-          tone="neutral"
-          titleSize={20}
-          icon={<IconWarning size={30} />}
-          title="We couldn't load this contractor"
-          body="Check your connection and try again."
-        >
-          <Button variant="small" className="w-full" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </EmptyState>
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load this contractor"
+            body="Check your connection and try again."
+          >
+            <Button variant="small" className="w-full" onClick={() => void refetch()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
       </Screen>
     )
   if (!data) return <NotFoundScreen />
@@ -94,6 +97,7 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
   const warning = insuranceWarning(c.insurance_until)
   const insurance = c.insurance_until ? insuranceLine(c.insurance_until) : null
   const tel = c.phone?.replace(/[^\d+]/g, '')
+  const mailto = mailtoHref(c.email)
 
   return (
     <Screen>
@@ -152,7 +156,7 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
           </div>
         </div>
 
-        {(tel || c.email) && (
+        {(tel || mailto) && (
           <div className="flex flex-none gap-2.5">
             {tel && (
               <a href={`tel:${tel}`} aria-label={`Call ${c.name}`} className={buttonClasses('medium', 'flex-1')}>
@@ -160,12 +164,8 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
                 Call
               </a>
             )}
-            {c.email && (
-              <a
-                href={`mailto:${c.email}`}
-                aria-label={`Email ${c.name}`}
-                className={buttonClasses('secondary', 'flex-1')}
-              >
+            {mailto && (
+              <a href={mailto} aria-label={`Email ${c.name}`} className={buttonClasses('secondary', 'flex-1')}>
                 <IconMail size={20} />
                 Email
               </a>
@@ -345,16 +345,7 @@ function Invoices({ visits, missing }: { visits: Visit[]; missing: number }) {
       <ListCard className="flex-none">
         {visits.map((v) => (
           <VisitLink key={v.id} visit={v}>
-            <span
-              aria-hidden="true"
-              className={`flex h-10 w-[34px] flex-none items-center justify-center rounded-tag ${
-                v.invoiceMissing
-                  ? 'border border-dashed border-reopened-banner-border bg-reopened-banner-bg text-status-waiting-text'
-                  : 'bg-brand-tint-soft text-brand'
-              }`}
-            >
-              {v.invoiceMissing ? <IconWarning size={16} /> : <IconFile size={16} />}
-            </span>
+            <InvoiceMark isMissing={v.invoiceMissing} missing={<IconWarning size={16} />} />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="text-15 font-semibold [overflow-wrap:anywhere]">
                 {v.invoiceMissing ? 'Missing invoice' : (v.invoiceNumber ?? 'Invoice on file')}

@@ -69,6 +69,32 @@ export function monthOf(date: string | null) {
   return date ? date.slice(0, 7) : ''
 }
 
+/**
+ * An email address and nothing more, as the database checks it (contractors_email_shape):
+ * no "?", "&" or "%", which in a mailto: link would add a CC, a subject or a body (OT-97).
+ */
+export const EMAIL = /^[A-Za-z0-9._+'-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/
+
+/** The Email button's link, or null for an address saved before the check that isn't one. */
+export function mailtoHref(email: string | null) {
+  return email && EMAIL.test(email) ? `mailto:${email}` : null
+}
+
+/** A contractor's name the list already has, as both forms say it on the name field. */
+export const NAME_TAKEN = 'A contractor by that name is already in the list.'
+
+/**
+ * Why a contractor didn't save, from the database's error code, in the same words on Add
+ * and Edit contractor and on Log service's quick "+ Add new contractor" sheet.
+ */
+export function saveProblem(code: string | undefined) {
+  if (code === '23505') return NAME_TAKEN
+  if (code === '42501') return 'Your account can’t add or change contractors. Ask your admin.'
+  if (code === '23514')
+    return 'One of the trades was just turned off, or a field is too long. Check them and try again.'
+  return 'Check your connection and try again.'
+}
+
 /** "Visits · 11" for the tab, and "1 missing" for the Invoices tab's badge. */
 export function visitsLabel(n: number) {
   return `${n} visit${n === 1 ? '' : 's'}`

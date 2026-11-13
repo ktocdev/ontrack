@@ -1,5 +1,12 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
+import {
+  useState,
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactNode,
+} from 'react'
 import { Link, type LinkProps } from 'react-router'
+import { IconChevronDown } from './icons'
 
 /**
  * Cards and rows. A card is white on the screen background with a 1px border
@@ -187,5 +194,44 @@ export function KeyValueRow({ label, children }: { label: string; children: Reac
       <span className="text-14 text-text-muted">{label}</span>
       <span className="text-right text-14 font-medium text-text">{children}</span>
     </div>
+  )
+}
+
+/**
+ * A list card under a heading that shows and hides it: a unit's closed tickets, the
+ * directory's archived contractors. The heading is an eyebrow with a chevron and Show or
+ * Hide; `label` names the group for a screen reader.
+ */
+export function DisclosureList({
+  label,
+  heading,
+  defaultOpen = false,
+  className = '',
+  children,
+}: {
+  label: string
+  heading: ReactNode
+  defaultOpen?: boolean
+  className?: string
+  children: ReactNode
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <section aria-label={label} className={`flex flex-none flex-col gap-2.5 ${className}`}>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="-mx-1 flex min-h-tap items-center gap-2 px-1 text-left"
+      >
+        <IconChevronDown
+          size={18}
+          className={`flex-none text-text-secondary transition-transform ${open ? '' : '-rotate-90'}`}
+        />
+        <span className="eyebrow flex-1">{heading}</span>
+        <span className="text-14 font-semibold text-brand">{open ? 'Hide' : 'Show'}</span>
+      </button>
+      {open && <ListCard>{children}</ListCard>}
+    </section>
   )
 }

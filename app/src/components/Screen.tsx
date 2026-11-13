@@ -29,6 +29,15 @@ export function ScreenBody({ className = '', children, ...rest }: ComponentProps
   )
 }
 
+/**
+ * Room for an EmptyState that sits under a header instead of inside a ScreenBody. It
+ * scrolls when the state doesn't fit, as under a tall header on a short phone, where
+ * its button would otherwise end up behind the tab bar; when it fits, nothing changes.
+ */
+export function ScreenEmpty({ children }: { children: ReactNode }) {
+  return <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">{children}</div>
+}
+
 type HeaderProps = {
   title: ReactNode
   /** Row above the title: restaurant name on the left, avatar on the right. */
