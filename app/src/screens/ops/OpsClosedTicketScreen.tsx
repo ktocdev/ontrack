@@ -7,7 +7,7 @@ import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { TicketMenu } from '../../components/TicketMenu'
-import { LogServiceLink } from '../service/TicketService'
+import { LogServiceLink, TicketService } from '../service/TicketService'
 import { money, timeline } from '../tickets/closed'
 import { ClosingComment, Fact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
@@ -22,8 +22,10 @@ import type { useOpsTicket } from './useOpsTicket'
  * how it went, read-only, with the back arrow to Closed tickets. The board leaves out what
  * was wrong, because its flag says that; a closed ticket has no flag, so the description
  * and its photos stay, as on a manager's Closed ticket. Contractor and Cost appear only if
- * the database returns them, which takes see_costs. A bill often comes after closing, so
- * "+ Log service" sits beside Resolution for anyone with log_cost (OT-92).
+ * the database returns them, which takes see_costs. Under Resolution, Service & cost lists
+ * each visit as an open ticket does, so a visit's record and invoice open from a closed
+ * ticket too (OT-98). A bill often comes after closing, so "+ Log service" is there for
+ * anyone with log_cost (OT-92), beside Resolution for someone who can't see costs.
  */
 type Data = NonNullable<ReturnType<typeof useOpsTicket>['data']>
 type Ticket = NonNullable<Data['ticket']>
@@ -31,6 +33,7 @@ type Ticket = NonNullable<Data['ticket']>
 export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: Data }) {
   const { user, viewingAs } = useUser()
   const canLog = useRight('log_cost') && !viewingAs
+  const seeCosts = useRight('see_costs')
   const facts = useClosedFacts(ticket.id).data
   const paths = data.photos.filter((p) => !p.update_id).map((p) => p.path)
   const urls = useSignedPhotos(paths)
@@ -76,10 +79,10 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
         )}
         <TicketPhotos paths={paths} urls={urls.data} onOpen={setViewing} />
 
-        {(hasResolution || canLog) && (
+        {(hasResolution || (canLog && !seeCosts)) && (
           <div className="-mb-0.5 flex items-end justify-between gap-3">
             <SectionLabel>{hasResolution ? 'Resolution' : 'Service & cost'}</SectionLabel>
-            <LogServiceLink to={`/ops/tickets/${ticket.id}/service/new`} className="-mb-2" />
+            {!seeCosts && <LogServiceLink to={`/ops/tickets/${ticket.id}/service/new`} className="-mb-2" />}
           </div>
         )}
         {hasResolution && (
@@ -105,6 +108,8 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
             </Card>
           </>
         )}
+
+        <TicketService ticketId={ticket.id} closed />
 
         <Timeline steps={steps} />
       </ScreenBody>
