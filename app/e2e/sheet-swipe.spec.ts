@@ -2,25 +2,36 @@ import { expect, test, type Locator, type Page } from '@playwright/test'
 
 /**
  * Swipe down to close a sheet (OT-76), on the kit's sheet. Playwright has no touch
- * drag, so the touches are dispatched by hand: a real finger is tried on Android and
- * an iPhone too.
+ * drag, so the touches are made by hand: a real finger is tried on Android and an
+ * iPhone too. The whole gesture runs inside the page with its own timing, since
+ * sending each touch from the test took longer than a flick on a slow CI runner.
  */
 
 async function swipe(sheet: Locator, distance: number, { slow = false } = {}) {
   const box = (await sheet.boundingBox())!
-  const x = box.x + box.width / 2
-  const y = box.y + 40
-  const touch = (dy: number) => [{ identifier: 1, clientX: x, clientY: y + dy }]
-  await sheet.dispatchEvent('touchstart', { touches: touch(0), changedTouches: touch(0) })
-  for (let step = 1; step <= 5; step++) {
-    await sheet.dispatchEvent('touchmove', {
-      touches: touch((distance * step) / 5),
-      changedTouches: touch((distance * step) / 5),
-    })
-    if (slow) await sheet.page().waitForTimeout(40)
-  }
-  if (slow) await sheet.page().waitForTimeout(150)
-  await sheet.dispatchEvent('touchend', { touches: [], changedTouches: touch(distance) })
+  await sheet.evaluate(
+    async (el, { x, y, distance, slow }) => {
+      const wait = (ms: number) => new Promise((done) => setTimeout(done, ms))
+      // WebKit can't construct a Touch, so a plain event carries what the sheet reads.
+      const fire = (type: string, dy: number | null) => {
+        const touch = { identifier: 1, target: el, clientX: x, clientY: y + (dy ?? distance) }
+        const event = new Event(type, { bubbles: true, cancelable: true })
+        Object.defineProperties(event, {
+          touches: { value: dy === null ? [] : [touch] },
+          changedTouches: { value: [touch] },
+        })
+        el.dispatchEvent(event)
+      }
+      fire('touchstart', 0)
+      for (let step = 1; step <= 5; step++) {
+        await wait(slow ? 40 : 4)
+        fire('touchmove', (distance * step) / 5)
+      }
+      if (slow) await wait(150)
+      fire('touchend', null)
+    },
+    { x: box.x + box.width / 2, y: box.y + 40, distance, slow },
+  )
 }
 
 async function openSheet(page: Page) {

@@ -212,6 +212,7 @@ test('each role sees the kinds it is sent, and a switch stays as set', async ({ 
   for (const name of ['New tickets', 'Reopened tickets', 'Status changes', 'Updates']) {
     await expect(page.getByRole('switch', { name })).toBeChecked()
   }
+  await expect(page.getByRole('switch', { name: 'Walkthrough reminders' })).toHaveCount(0)
   await page.getByRole('switch', { name: 'New tickets' }).click()
   await expect(page.getByRole('switch', { name: 'New tickets' })).not.toBeChecked()
   await page.reload()
@@ -225,6 +226,7 @@ test('each role sees the kinds it is sent, and a switch stays as set', async ({ 
   await openProfile(manager, 'dana.ortiz@example.com')
   await expect(manager.getByRole('switch', { name: 'Status changes' })).toBeChecked()
   await expect(manager.getByRole('switch', { name: 'Updates' })).toBeChecked()
+  await expect(manager.getByRole('switch', { name: 'Walkthrough reminders' })).toBeChecked()
   await expect(manager.getByRole('switch', { name: 'New tickets' })).toHaveCount(0)
   await manager.getByRole('switch', { name: 'Updates' }).scrollIntoViewIfNeeded()
   await manager.waitForTimeout(300)
