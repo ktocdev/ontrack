@@ -24,6 +24,15 @@ async function loadTasks(restaurantIds: string[]) {
 
 export type Task = Awaited<ReturnType<typeof loadTasks>>[number]
 
+/** A task changed: the lists under 'tickets', and a walkthrough's checklist and home, which show its fixes. */
+function refreshTasks(queryClient: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+    queryClient.invalidateQueries({ queryKey: ['walkthrough'] }),
+    queryClient.invalidateQueries({ queryKey: ['walkthrough-home'] }),
+  ])
+}
+
 export function useInHouse(restaurantIds: string[]) {
   return useQuery({ queryKey: inHouseKey(restaurantIds), queryFn: () => loadTasks(restaurantIds) })
 }
@@ -50,7 +59,7 @@ export function useSetTaskDone(restaurantIds: string[]) {
       return { before }
     },
     onError: (_error, _vars, context) => queryClient.setQueryData(key, context?.before),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+    onSettled: () => refreshTasks(queryClient),
   })
 }
 
@@ -61,7 +70,7 @@ export function useDeleteTask() {
       const { error } = await requireSupabase().rpc('delete_inhouse_fix', { p_id: id })
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+    onSuccess: () => refreshTasks(queryClient),
   })
 }
 

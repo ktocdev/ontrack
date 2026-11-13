@@ -30,7 +30,7 @@ import { monthName, quarterEnd } from './walkthrough'
  * still open, as the database refuses it then. In-house opens a field under the item;
  * Ticket opens the quick ticket sheet. What was made from an item is listed under it: a
  * ticket still open opens the walkthrough's Edit ticket, one closed its own page, and a fix
- * the In-house tab. When a group fills, it closes and the next one opens. The quarter's
+ * this walkthrough's In-house fixes for that item. When a group fills, it closes and the next one opens. The quarter's
  * tasks are cards with directions, the how-to video and the same Result; one done in an
  * earlier walkthrough this quarter says so and takes nothing more. A submitted
  * walkthrough, or one seen under View as, shows its marks and changes nothing.
@@ -114,6 +114,8 @@ type Thing = {
   tickets: TicketRow[]
   /** What the quick ticket shows and asks for. */
   ticket: Omit<QuickTicketTarget, 'openTickets'>
+  /** The item's group, opened again on the way back. */
+  group?: string
 }
 
 /** What a tap does, shared by a section's items and the quarter's tasks. */
@@ -195,7 +197,17 @@ function useWork(data: Data, sectionKey: string, readOnly: boolean, linksOff: bo
     return (
       <ChecklistEntries>
         {thing.fixes.map((f) => (
-          <ChecklistEntry key={f.id} kind="fix" done={!!f.done_at} to={linksOff ? undefined : '/tickets/in-house'}>
+          <ChecklistEntry
+            key={f.id}
+            kind="fix"
+            done={!!f.done_at}
+            to={
+              linksOff
+                ? undefined
+                : `/walkthrough/${walkthroughId}/fixes?${thing.target.itemId ? `item=${thing.target.itemId}` : `task=${thing.target.taskId}`}`
+            }
+            state={{ backTo: `/walkthrough/${walkthroughId}/${sectionKey}`, openGroup: thing.group }}
+          >
             {f.title}
           </ChecklistEntry>
         ))}
@@ -298,6 +310,7 @@ function Section({
           {g.items.map((it) => {
             const thing: Thing = {
               target: { itemId: it.id },
+              group: g.name,
               title: it.title,
               good: it.good,
               open: it.open,

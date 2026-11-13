@@ -112,6 +112,7 @@ export function ChecklistEntries({ children }: { children: ReactNode }) {
 /** A fix or a ticket from an item: its tag, its words, and the way to it. */
 export function ChecklistEntry({
   to,
+  state,
   kind,
   label,
   urgent = false,
@@ -120,6 +121,8 @@ export function ChecklistEntry({
 }: {
   /** Nothing to open (View as) leaves it still. */
   to?: string
+  /** Carried to where it opens (the way back to this checklist). */
+  state?: unknown
   kind: 'fix' | 'ticket'
   /** The ticket's number; a fix says In-house. */
   label?: string
@@ -153,7 +156,7 @@ export function ChecklistEntry({
   )
   const row = 'flex min-h-7 items-start gap-2.5 text-13 leading-[1.45] text-text-body'
   return to ? (
-    <Link to={to} className={`${row} hover:text-text [&:hover>span:nth-child(2)]:underline`}>
+    <Link to={to} state={state} className={`${row} hover:text-text [&:hover>span:nth-child(2)]:underline`}>
       {body}
     </Link>
   ) : (
