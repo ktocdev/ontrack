@@ -9,7 +9,10 @@ import {
   ChecklistGroup,
   ChecklistHelp,
   ChecklistItem,
+  HowToVideo,
   InlineFix,
+  TaskCard,
+  TaskLabel,
 } from '@app/components/Checklist'
 import { ClosedTicketRow, MonthHeading } from '@app/components/ClosedTicketRow'
 import { EquipmentGroup, EquipmentRow, OpenBadge, OpenNote } from '@app/components/Equipment'
@@ -541,6 +544,18 @@ export function WalkthroughPage() {
             <ChecklistGroup name="Plumbing" done={3} total={3} open={false} onToggle={() => undefined}>
               {null}
             </ChecklistGroup>
+            <TaskCard
+              title="Organize utility areas"
+              status={<FlagChip tone="missed">To do</FlagChip>}
+              open
+              onToggle={() => undefined}
+            >
+              <TaskLabel>Directions</TaskLabel>
+              <p className="text-14 leading-[1.55] text-text-body">
+                Clear at least 3 feet in front of the electrical panel.
+              </p>
+              <HowToVideo url="https://example.com/how-to" task="Organize utility areas" />
+            </TaskCard>
           </div>
         </Example>
       </Section>

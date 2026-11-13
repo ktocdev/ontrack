@@ -204,9 +204,8 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
-                  // Quarterly tasks (OT-107) and Review & submit (OT-109) replace these.
+                  // Review & submit (OT-109) replaces this.
                   { path: '/walkthrough/:id/review', ...placeholder('Review & submit', 'OT-109') },
-                  { path: '/walkthrough/:id/quarterly', ...placeholder('Quarterly tasks', 'OT-107') },
                   {
                     path: '/walkthrough/:walkthroughId/:section/ticket/:id',
                     lazy: async () => ({

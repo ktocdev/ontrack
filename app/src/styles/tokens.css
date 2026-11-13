@@ -92,6 +92,9 @@
   --choice-ticket-border: #c2551a;
   --choice-ticket-text: #7a2e06;
 
+  /* The how-to video card on a quarterly task (WT-Quarterly), white text on it */
+  --video-bg: #2e3833;
+
   /* Small alert badge on a tab ("1 reopened") and the toast's action text */
   --alert-badge: #b8941f;
   --toast-action: #8fd4b8;
@@ -227,6 +230,7 @@
   --choice-ticket-text: #f0a27a; /* derived */
   --choice-ticket-border: #d9622a; /* derived */
   --choice-ticket-bg: color-mix(in srgb, var(--choice-ticket-text) 20%, var(--surface)); /* derived */
+  --video-bg: #0e1412; /* derived: darker than the surface, so the card still reads as a picture */
 
   --alert-badge: #b8941f; /* derived: same gold reads on both */
   --toast-action: var(--brand-fill); /* derived: the toast turns light in dark mode */
@@ -321,6 +325,7 @@
   --color-choice-ticket-bg: var(--choice-ticket-bg);
   --color-choice-ticket-border: var(--choice-ticket-border);
   --color-choice-ticket-text: var(--choice-ticket-text);
+  --color-video-bg: var(--video-bg);
   --color-square-outline: var(--square-outline);
   --color-scrim: var(--scrim);
   --color-alert-badge: var(--alert-badge);

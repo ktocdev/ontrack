@@ -23,7 +23,10 @@ import {
   ChecklistGroup,
   ChecklistHelp,
   ChecklistItem,
+  HowToVideo,
   InlineFix,
+  TaskCard,
+  TaskLabel,
 } from '../../components/Checklist'
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { CodeInput, StepBars } from '../../components/CodeInput'
@@ -773,6 +776,38 @@ export function KitPage() {
               <ChecklistGroup name="Plumbing" done={3} total={3} open={false} onToggle={() => undefined}>
                 {null}
               </ChecklistGroup>
+              <TaskCard
+                title="Organize utility areas"
+                status={<FlagChip tone="missed">To do</FlagChip>}
+                open
+                onToggle={() => undefined}
+              >
+                <TaskLabel>Directions</TaskLabel>
+                <p className="text-14 leading-[1.55] text-text-body">
+                  Clear at least 3 feet in front of the electrical panel and the water heater.
+                </p>
+                <HowToVideo url="https://example.com/how-to" task="Organize utility areas" />
+                <TaskLabel>Result</TaskLabel>
+                <div className="flex gap-1">
+                  <CheckChoice tone="good" lit={false} className="min-h-11 flex-1 text-13">
+                    Good
+                  </CheckChoice>
+                  <CheckChoice tone="inhouse" lit={false} className="min-h-11 flex-1 text-13">
+                    In-house
+                  </CheckChoice>
+                  <CheckChoice tone="ticket" lit={false} className="min-h-11 flex-1 text-13">
+                    Ticket
+                  </CheckChoice>
+                </div>
+              </TaskCard>
+              <TaskCard
+                title="Degrease BOH floors"
+                status={<FlagChip tone="good">Done</FlagChip>}
+                open={false}
+                onToggle={() => undefined}
+              >
+                {null}
+              </TaskCard>
             </Section>
 
             <Section id="controls">

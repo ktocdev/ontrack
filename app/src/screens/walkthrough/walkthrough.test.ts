@@ -6,6 +6,7 @@ import {
   monthShort,
   pastFlag,
   progressOf,
+  quarterEnd,
   quarterOf,
   splitByRestaurant,
   type ProgressRow,
@@ -87,6 +88,16 @@ describe('dates', () => {
     expect(monthName('2026-10-01')).toBe('October')
     expect(monthShort('2026-09-01')).toBe('Sep')
     expect(dueDate('2026-10-31')).toBe('Sat, Oct 31')
+  })
+
+  it('gives the quarter its last day', () => {
+    expect(['2026-10-01', '2026-11-01', '2026-02-01', '2026-06-01', '2026-09-01'].map(quarterEnd)).toEqual([
+      'Dec 31',
+      'Dec 31',
+      'Mar 31',
+      'Jun 30',
+      'Sep 30',
+    ])
   })
 
   it('names the quarter', () => {
