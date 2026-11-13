@@ -4,7 +4,7 @@ import { requireSupabase } from '../../lib/supabase'
 import { deviceSubscription, turnOffPush, turnOnPush } from '../../pwa/push'
 import type { AppRole } from '../../lib/supabase'
 
-export type NotificationKind = 'new_ticket' | 'reopened' | 'status_change' | 'update'
+export type NotificationKind = 'new_ticket' | 'reopened' | 'status_change' | 'update' | 'walkthrough_reminder'
 type PrefKind = NotificationKind | 'email'
 
 const KIND = {
@@ -12,12 +12,16 @@ const KIND = {
   reopened: { title: 'Reopened tickets', subtitle: 'When a manager reopens a ticket' },
   status_change: { title: 'Status changes', subtitle: 'When the status changes on a ticket you opened or are on' },
   update: { title: 'Updates', subtitle: 'When someone posts on a ticket you opened or are on' },
+  walkthrough_reminder: {
+    title: 'Walkthrough reminders',
+    subtitle: 'A week and two days before the month’s walkthrough is due',
+  },
 } satisfies Record<NotificationKind, { title: string; subtitle: string }>
 
 /** What each role is sent, which notification_recipients applies. Admin and leadership aren't sent anything yet. */
 const KINDS_FOR: Record<AppRole, NotificationKind[]> = {
   ops: ['new_ticket', 'reopened', 'status_change', 'update'],
-  manager: ['status_change', 'update'],
+  manager: ['status_change', 'update', 'walkthrough_reminder'],
   admin: [],
   leadership: [],
 }

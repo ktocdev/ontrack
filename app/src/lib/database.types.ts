@@ -441,14 +441,14 @@ isOneToOne: false
                   ]
                 },"notification_deliveries": {
                   Row: {
-                    "channel": string,"created_at": string,"id": string,"kind": string,"notification_id": string,"status": string,"ticket_id": string,"user_id": string
+                    "channel": string,"created_at": string,"id": string,"kind": string,"notification_id": string,"status": string,"ticket_id": string | null,"user_id": string,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "channel": string,"created_at"?: string,"id"?: string,"kind": string,"notification_id": string,"status": string,"ticket_id": string,"user_id": string
+                    "channel": string,"created_at"?: string,"id"?: string,"kind": string,"notification_id": string,"status": string,"ticket_id"?: string | null,"user_id": string,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "channel"?: string,"created_at"?: string,"id"?: string,"kind"?: string,"notification_id"?: string,"status"?: string,"ticket_id"?: string,"user_id"?: string
+                    "channel"?: string,"created_at"?: string,"id"?: string,"kind"?: string,"notification_id"?: string,"status"?: string,"ticket_id"?: string | null,"user_id"?: string,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -475,6 +475,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "notification_deliveries_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "walkthroughs"
+      referencedColumns: ["id"]
     }
                   ]
                 },"notification_prefs": {
@@ -505,14 +511,14 @@ isOneToOne: false
                   ]
                 },"notifications": {
                   Row: {
-                    "actor_id": string | null,"body": string | null,"created_at": string,"id": string,"internal": boolean,"kind": string,"picked_up": boolean,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string
+                    "actor_id": string | null,"body": string | null,"created_at": string,"days_before": number | null,"id": string,"internal": boolean,"kind": string,"picked_up": boolean,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string | null,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind": string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id": string
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"days_before"?: number | null,"id"?: string,"internal"?: boolean,"kind": string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"internal"?: boolean,"kind"?: string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"days_before"?: number | null,"id"?: string,"internal"?: boolean,"kind"?: string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -532,6 +538,12 @@ isOneToOne: false
       columns: ["ticket_id"]
 isOneToOne: false
       referencedRelation: "tickets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notifications_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "walkthroughs"
       referencedColumns: ["id"]
     }
                   ]
@@ -1801,6 +1813,7 @@ isOneToOne: false
               "actor_id": string | null,
 "body": string | null,
 "created_at": string,
+"days_before": number | null,
 "id": string,
 "internal": boolean,
 "kind": string,
@@ -1808,7 +1821,8 @@ isOneToOne: false
 "processed_at": string | null,
 "seq": number,
 "status_to": string | null,
-"ticket_id": string
+"ticket_id": string | null,
+"walkthrough_id": string | null
             }[]
                           SetofOptions: {
         from: "*"
@@ -1906,6 +1920,9 @@ isOneToOne: false
                            },
 "profile_photos_on":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"queue_walkthrough_reminders":
+{ Args: { "p_today"?: string }; Returns: number
                            },
 "remember_device":
 { Args: Record<PropertyKey, never>; Returns: string
