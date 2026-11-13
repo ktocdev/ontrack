@@ -20,7 +20,8 @@ export function LiveTickets() {
     const reread = () => {
       window.clearTimeout(timer)
       timer = window.setTimeout(() => {
-        for (const queryKey of [['tickets'], ['ticket'], ['ops-ticket']]) {
+        // The walkthrough's checklist and home list its tickets too.
+        for (const queryKey of [['tickets'], ['ticket'], ['ops-ticket'], ['walkthrough'], ['walkthrough-home']]) {
           void queryClient.invalidateQueries({ queryKey })
         }
       }, SETTLE_MS)

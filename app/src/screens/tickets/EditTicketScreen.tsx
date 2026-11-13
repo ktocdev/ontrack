@@ -16,12 +16,15 @@ import { useToast } from '../../components/Toast'
 import { IconChevronLeft } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { longDate } from './closed'
-import { AREA_LABEL, scheduledLabel } from './tickets'
+import { ago, AREA_LABEL, scheduledLabel } from './tickets'
 import { CloseTicketSheet } from './CloseTicketSheet'
 import { useSaveTicket, type TicketEdits } from './useCloseTicket'
 import { useTicketForm } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
+import type { Update } from './thread'
 import { useTicket } from './useTicket'
+import { useTicketOrigin } from '../walkthrough/useTicketOrigin'
+import { monthName } from '../walkthrough/walkthrough'
 
 /**
  * Manager · Edit / close ticket (design/screens/Edit-Ticket). Description, equipment,
@@ -30,10 +33,16 @@ import { useTicket } from './useTicket'
  * as the board draws it; this also offers View closed ticket. "Ops has been notified"
  * shows only when someone is on it, since only they are told of a manager's close. A ticket that was already
  * closed has nothing to edit and goes to its own screen.
+ *
+ * Opened from a walkthrough's checklist (design/screens/WT-Edit-Ticket), the same screen
+ * names the section, group and item, calls the title What's wrong?, shows the latest
+ * update, and goes back to the checklist. A ticket from a walkthrough says so on its
+ * Opened line wherever it is edited.
  */
 export function EditTicketScreen() {
-  const { id = '' } = useParams()
+  const { id = '', walkthroughId, section } = useParams()
   const { data, isPending } = useTicket(id)
+  const checklist = walkthroughId && section ? `/walkthrough/${walkthroughId}/${section}` : null
   const [closedHere, setClosedHere] = useState<string | null>(null)
 
   if (isPending) {
@@ -46,7 +55,16 @@ export function EditTicketScreen() {
   const ticket = data?.ticket
   if (!ticket) return <NotFoundScreen />
   if (ticket.status === 'closed' && closedHere === null) return <Navigate to={`/tickets/${id}`} replace />
-  return <EditForm ticket={ticket} closedNote={closedHere} onClosed={setClosedHere} />
+  const latest = [...(data.updates ?? [])].reverse().find((u) => u.kind === 'message' && !u.internal && u.body)
+  return (
+    <EditForm
+      ticket={ticket}
+      closedNote={closedHere}
+      onClosed={setClosedHere}
+      checklist={checklist}
+      latest={checklist ? latest : undefined}
+    />
+  )
 }
 
 type Ticket = NonNullable<NonNullable<ReturnType<typeof useTicket>['data']>['ticket']>
@@ -55,10 +73,15 @@ function EditForm({
   ticket,
   closedNote,
   onClosed,
+  checklist,
+  latest,
 }: {
   ticket: Ticket
   closedNote: string | null
   onClosed: (note: string) => void
+  /** The checklist this was opened from, which Back and Save return to. */
+  checklist: string | null
+  latest?: Update
 }) {
   const { user } = useUser()
   const navigate = useNavigate()
@@ -67,6 +90,9 @@ function EditForm({
   const save = useSaveTicket(ticket.id)
   const picked = usePickedPhotos()
   const units = useTicketForm(ticket.category_id, ticket.restaurant_id)
+  const origin = useTicketOrigin(ticket.walkthrough_id, ticket.walkthrough_check_id).data
+  // Back on the checklist, the item's group is open again.
+  const back = checklist && origin?.chips[1] ? { openGroup: origin.chips[1] } : undefined
 
   const [title, setTitle] = useState(ticket.title)
   const [description, setDescription] = useState(ticket.description ?? '')
@@ -97,7 +123,7 @@ function EditForm({
       {
         onSuccess: () => {
           toast.show('Changes saved.')
-          navigate(`/tickets/${ticket.id}`)
+          navigate(checklist ?? `/tickets/${ticket.id}`, { state: back })
         },
       },
     )
@@ -106,8 +132,9 @@ function EditForm({
     <Screen>
       <div className="flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-5 pt-[calc(12px+var(--safe-top))]">
         <Link
-          to={`/tickets/${ticket.id}`}
-          aria-label="Back to ticket"
+          to={checklist ?? `/tickets/${ticket.id}`}
+          state={back}
+          aria-label={checklist ? 'Back to checklist' : 'Back to ticket'}
           className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
         >
           <IconChevronLeft size={22} />
@@ -138,25 +165,47 @@ function EditForm({
             Check your connection and try again. Everything you entered is still here.
           </ErrorBanner>
         )}
-        {ticket.category && (
+        {checklist && origin?.chips.length ? (
           <div className="flex flex-none flex-wrap gap-1.5 text-12 font-semibold text-text-body">
-            <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{AREA_LABEL[ticket.category.area]}</span>
-            <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{ticket.category.name}</span>
+            {origin.chips.map((chip) => (
+              <span key={chip} className="rounded-pill bg-surface-sunken px-[9px] py-1">
+                {chip}
+              </span>
+            ))}
           </div>
+        ) : (
+          ticket.category && (
+            <div className="flex flex-none flex-wrap gap-1.5 text-12 font-semibold text-text-body">
+              <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{AREA_LABEL[ticket.category.area]}</span>
+              <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{ticket.category.name}</span>
+            </div>
+          )
         )}
-        <Input
-          label="Title"
-          maxLength={140}
-          value={title}
-          disabled={closed}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <Textarea
-          label="Description"
-          value={description}
-          disabled={closed}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        {checklist ? (
+          <Textarea
+            label="What's wrong?"
+            maxLength={140}
+            value={title}
+            disabled={closed}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        ) : (
+          <Input
+            label="Title"
+            maxLength={140}
+            value={title}
+            disabled={closed}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        )}
+        {(!checklist || ticket.description) && (
+          <Textarea
+            label="Description"
+            value={description}
+            disabled={closed}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        )}
         <div className="flex flex-none flex-col gap-1">
           {(shown || list.length > 0) && (
             <>
@@ -202,23 +251,34 @@ function EditForm({
               value={urgency}
               onChange={setUrgency}
               options={[
-                { value: 'low', label: 'Low' },
+                // A walkthrough's ticket is Normal or Urgent, as the board draws it, unless it is already Low.
+                ...(checklist && ticket.urgency !== 'low' ? [] : [{ value: 'low' as const, label: 'Low' }]),
                 { value: 'normal', label: 'Normal' },
                 { value: 'urgent', label: 'Urgent' },
               ]}
             />
           )}
         </div>
+        {latest && (
+          <div className="flex flex-none flex-col gap-1 rounded-card border border-border bg-surface px-3.5 py-3">
+            <span className="text-12 font-semibold text-text-secondary">
+              Latest update · {latest.author?.full_name.split(' ')[0] ?? 'Someone'}
+              {latest.author?.role === 'ops' ? ', Ops' : ''} · {ago(new Date(latest.created_at), new Date())}
+            </span>
+            <p className="whitespace-pre-wrap text-15 leading-[1.4] text-text">{latest.body}</p>
+          </div>
+        )}
         <span className="text-12 text-text-muted">
-          Opened by {ticket.opener?.full_name ?? 'someone'} · {longDate(new Date(ticket.created_at))}
+          Opened by {ticket.opener?.full_name ?? 'someone'}
+          {origin ? ` from the ${monthName(origin.period)} walkthrough` : ''} · {longDate(new Date(ticket.created_at))}
         </span>
       </ScreenBody>
 
       <ScreenFooter>
         {closed ? (
           <>
-            <ButtonLink to="/tickets" className="w-full">
-              Back to open tickets
+            <ButtonLink to={checklist ?? '/tickets'} state={back} className="w-full">
+              {checklist ? 'Back to checklist' : 'Back to open tickets'}
             </ButtonLink>
             <ButtonLink to={`/tickets/${ticket.id}`} variant="secondary" className="w-full">
               View closed ticket
