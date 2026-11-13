@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
+import { useRight } from '../../auth/rights'
 import {
   CheckChoice,
   ChecklistEntries,
@@ -23,6 +24,7 @@ import {
   groupsOf,
   litChoices,
   openAfter,
+  stillOpen,
   type ChecklistGroup as Group,
   type FixRow,
   type TicketRow,
@@ -41,12 +43,15 @@ import { monthName, quarterEnd } from './walkthrough'
  * this walkthrough's In-house fixes for that item. When a group fills, it closes and the next one opens. The quarter's
  * tasks are cards with directions, the how-to video and the same Result; one done in an
  * earlier walkthrough this quarter says so and takes nothing more. A submitted
- * walkthrough, or one seen under View as, shows its marks and changes nothing.
+ * walkthrough, one seen under View as, or one opened by someone without Create tickets
+ * shows its marks and changes nothing.
  */
 export function ChecklistScreen() {
   const { id = '', section = '' } = useParams()
   const { data, isPending, isError } = useChecklist(id)
   const { viewingAs } = useUser()
+  // Someone whose Create tickets is switched off reads the walkthrough; the database refuses the rest.
+  const mayWork = useRight('create_tickets') !== false
 
   if (isPending) {
     return (
@@ -63,7 +68,7 @@ export function ChecklistScreen() {
   if (!part) return <NotFoundScreen />
 
   const w = data.walkthrough
-  const readOnly = !!viewingAs || w.status !== 'open'
+  const readOnly = !!viewingAs || !mayWork || w.status !== 'open'
   const base = `/walkthrough/${w.id}`
   const quarterly = section === 'quarterly'
 
@@ -141,6 +146,7 @@ function useWork(data: Data, sectionKey: string, readOnly: boolean, linksOff: bo
 
   const choices = (thing: Thing, wide = false) => {
     const size = wide ? 'min-h-11 flex-1 text-13' : ''
+    const lit = litChoices(thing.fixes, thing.tickets)
     return (
       <>
         {!thing.open && (
@@ -162,7 +168,7 @@ function useWork(data: Data, sectionKey: string, readOnly: boolean, linksOff: bo
         )}
         <CheckChoice
           tone="inhouse"
-          lit={litChoices(thing.fixes, thing.tickets).inhouse}
+          lit={lit.inhouse}
           disabled={readOnly}
           className={size}
           aria-label={
@@ -176,7 +182,7 @@ function useWork(data: Data, sectionKey: string, readOnly: boolean, linksOff: bo
         </CheckChoice>
         <CheckChoice
           tone="ticket"
-          lit={litChoices(thing.fixes, thing.tickets).ticket}
+          lit={lit.ticket}
           disabled={readOnly}
           className={size}
           aria-label={
@@ -365,7 +371,7 @@ function Quarter({ data, readOnly, linksOff }: { data: Data; readOnly: boolean; 
           target: { taskId: t.task_id },
           title: t.title,
           good: check?.result === 'good',
-          open: fixes.some((f) => !f.done_at) || tickets.some((k) => k.status !== 'closed'),
+          open: stillOpen(fixes, tickets),
           fixes,
           tickets,
           ticket: {

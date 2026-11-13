@@ -86,3 +86,12 @@ test('a ticket from an item asks for a category, carries the tag, and edits back
   await page.getByRole('link', { name: 'From the October walkthrough · Paint' }).click()
   await expect(page).toHaveURL(new RegExp(`/walkthrough/${RANALLIS_OCT}/${FOH}$`))
 })
+
+test('a walkthrough ticket that names no item opens the walkthrough’s review', async ({ page }) => {
+  // The seed links OT-1039 to Logan Square's October walkthrough, with no item.
+  await signIn(page, 'maya.reyes@example.com')
+  await page.goto('/t/OT-1039')
+  await page.getByRole('link', { name: 'From the October walkthrough', exact: true }).click()
+  await expect(page).toHaveURL(/\/walkthrough\/aaaaaaaa-aaaa-4aaa-8aaa-000000000001\/review$/)
+  await expect(page.getByRole('heading', { name: 'Review & submit' })).toBeVisible()
+})

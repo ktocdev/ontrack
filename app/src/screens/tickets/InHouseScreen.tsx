@@ -10,7 +10,7 @@ import { CountBadge, WalkthroughTag } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader, UnderlineTabs } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
-import { TaskList, TaskRow } from '../../components/TaskRow'
+import { TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
 import { IconChevronDown, IconPlus, IconWarning } from '../../components/icons'
 import { AddTaskSheet } from './AddTaskSheet'
@@ -31,8 +31,6 @@ import { useOpenTickets } from './useOpenTickets'
  * state and Add is gone. Closed shows what was checked off in the last 30 days, latest
  * first; older ones wait behind Show older, still there to look at (from feedback, OT-85).
  */
-const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
-
 export function InHouseScreen() {
   const { restaurants, viewingAs } = useUser()
   const ids = restaurants.map((r) => r.id)
@@ -157,22 +155,22 @@ export function InHouseScreen() {
           ) : (
             <>
               <div className="flex flex-none items-baseline justify-between">
-                <span className={SECTION}>To fix · {open.length}</span>
+                <span className="eyebrow">To fix · {open.length}</span>
                 {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
               </div>
               {open.length > 0 ? (
                 <TaskList>{open.map(row)}</TaskList>
               ) : (
-                <div className="flex-none rounded-input border border-border bg-surface px-4 py-[18px] text-14 leading-[1.45] text-text-secondary">
+                <TaskListEmpty>
                   {closed.length > 0
                     ? 'Nothing left to fix. Checked-off tasks are under Closed.'
                     : 'Nothing to fix right now.'}
-                </div>
+                </TaskListEmpty>
               )}
               {closed.length > 0 && (
                 <details className="group mt-1 flex-none">
                   <summary className="flex min-h-tap cursor-pointer list-none items-center justify-between group-open:mb-1 [&::-webkit-details-marker]:hidden">
-                    <span className={SECTION}>Closed · {closed.length}</span>
+                    <span className="eyebrow">Closed · {closed.length}</span>
                     <IconChevronDown
                       size={16}
                       strokeWidth={2.2}

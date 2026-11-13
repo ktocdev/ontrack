@@ -142,7 +142,8 @@ export function TicketScreen() {
           </span>
           {origin && (
             <Link
-              to={`/walkthrough/${origin.walkthroughId}${origin.sectionId ? `/${origin.sectionId}` : ''}`}
+              // Its part of the checklist, or the walkthrough's review when it names no item.
+              to={`/walkthrough/${origin.walkthroughId}/${origin.sectionId ?? 'review'}`}
               className="inline-flex min-h-tap items-center gap-1.5 text-13 font-semibold text-brand"
             >
               <IconClipboardCheck size={15} className="flex-none" />

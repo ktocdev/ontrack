@@ -3,6 +3,7 @@ import {
   firstOpen,
   groupsOf,
   litChoices,
+  stillOpen,
   openAfter,
   type CheckRow,
   type FixRow,
@@ -122,5 +123,17 @@ describe('litChoices', () => {
 
   it('stays lit while one of several is still open', () => {
     expect(litChoices([{ done_at: '2026-11-13' }, { done_at: null }], [])).toEqual({ inhouse: true, ticket: false })
+  })
+})
+
+describe('stillOpen', () => {
+  it('is true while a fix or a ticket is still to do, which keeps Good away', () => {
+    expect(stillOpen([{ done_at: null }], [])).toBe(true)
+    expect(stillOpen([], [{ status: 'reopened' }])).toBe(true)
+  })
+
+  it('is false with nothing made, or everything done', () => {
+    expect(stillOpen([], [])).toBe(false)
+    expect(stillOpen([{ done_at: '2026-11-13' }], [{ status: 'closed' }])).toBe(false)
   })
 })

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
+import { useRight } from '../../auth/rights'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { Textarea } from '../../components/Field'
@@ -20,8 +21,6 @@ import { ticketPath, useSubmitWalkthrough, useWalkthroughTickets } from './useRe
 import { useWalkthroughFixes } from './useWalkthroughFixes'
 import { localDay, monthName, onDay, quarterOf, timing } from './walkthrough'
 
-const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
-
 /**
  * Manager · Review & submit (design/screens/WT-Review, WT-Review-Partial). How the
  * walkthrough went: all done and how early, or how many checks are still to do and where;
@@ -29,7 +28,8 @@ const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondar
  * the in-house fixes, to check off here; and a note for Ops. Submit walkthrough submits at
  * once when every check is done, and otherwise asks first (Keep going or Submit anyway),
  * since the database allows it. Once submitted it says when and by whom, with the note,
- * and takes nothing more. Under View as nothing submits or checks off.
+ * and takes nothing more. Under View as nothing submits or checks off, and someone
+ * without Create tickets has no Submit.
  */
 export function ReviewScreen() {
   const { id = '' } = useParams()
@@ -39,6 +39,7 @@ export function ReviewScreen() {
   const tickets = useWalkthroughTickets(id)
   const setDone = useSetTaskDone(restaurants.map((r) => r.id))
   const submit = useSubmitWalkthrough(id)
+  const mayWork = useRight('create_tickets') !== false
   const toast = useToast()
   const navigate = useNavigate()
   const [note, setNote] = useState('')
@@ -83,7 +84,7 @@ export function ReviewScreen() {
   const w = checklist.data.walkthrough
   const p = checklist.data.progress
   const open = w.status === 'open'
-  const canAct = open && !viewingAs
+  const canAct = open && !viewingAs && mayWork
   const left = p.total - p.done
   const partsLeft = p.parts.filter((part) => part.total > part.done)
   // Fixes still to do first, then the ones checked off, which stay on the record.
@@ -155,7 +156,7 @@ export function ReviewScreen() {
 
         {open && left > 0 && (
           <>
-            <span className={`${SECTION} pt-1`}>Still to do · {left}</span>
+            <span className="eyebrow pt-1">Still to do · {left}</span>
             <div className="flex-none overflow-hidden rounded-control border border-border bg-surface">
               {partsLeft.map((part) => (
                 <LeftRow
@@ -171,7 +172,7 @@ export function ReviewScreen() {
 
         {allTickets.length > 0 && (
           <>
-            <span className={`${SECTION} pt-1`}>Tickets created · {allTickets.length}</span>
+            <span className="eyebrow pt-1">Tickets created · {allTickets.length}</span>
             <div className="flex-none overflow-hidden rounded-input border border-border-strong bg-surface">
               {allTickets.map((t) => (
                 <WalkthroughTicketRow
@@ -197,7 +198,7 @@ export function ReviewScreen() {
         {allFixes.length > 0 && (
           <>
             <div className="flex flex-none items-baseline justify-between pt-1">
-              <span className={SECTION}>In-house to fix · {openFixes}</span>
+              <span className="eyebrow">In-house to fix · {openFixes}</span>
               {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
             </div>
             <TaskList>
@@ -239,7 +240,7 @@ export function ReviewScreen() {
         ) : (
           w.submitted_note && (
             <div className="flex flex-none flex-col gap-1">
-              <span className={SECTION}>Note for Ops</span>
+              <span className="eyebrow">Note for Ops</span>
               <p className="whitespace-pre-wrap text-14 leading-[1.5] text-text-body">{w.submitted_note}</p>
             </div>
           )

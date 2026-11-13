@@ -2,13 +2,12 @@ import { useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { BackBar, Screen, ScreenBody } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
+import { TaskListEmpty } from '../../components/TaskRow'
 import { WalkthroughTicketRow } from '../../components/Walkthrough'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useChecklist } from './useChecklist'
 import { ticketPath, useWalkthroughTickets } from './useReview'
 import { monthName, quarterOf } from './walkthrough'
-
-const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondary'
 
 /**
  * Walkthrough · Tickets (design/screens/WT-Tickets-All), opened from Review's Tickets
@@ -46,7 +45,7 @@ export function WalkthroughTicketsScreen() {
       </BackBar>
       <ScreenBody className="gap-2.5 pb-4 pt-2">
         <div className="flex flex-none items-baseline justify-between">
-          <span className={SECTION}>Tickets created · {all.length}</span>
+          <span className="eyebrow">Tickets created · {all.length}</span>
           {all.length > 0 && !viewingAs && <span className="text-12 text-text-secondary">Tap to edit or close</span>}
         </div>
         {all.length > 0 ? (
@@ -70,9 +69,7 @@ export function WalkthroughTicketsScreen() {
             ))}
           </div>
         ) : (
-          <div className="flex-none rounded-input border border-border bg-surface px-4 py-[18px] text-14 leading-[1.45] text-text-secondary">
-            No tickets from this walkthrough yet.
-          </div>
+          <TaskListEmpty>No tickets from this walkthrough yet.</TaskListEmpty>
         )}
       </ScreenBody>
     </Screen>
