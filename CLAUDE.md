@@ -152,9 +152,35 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 5 · Contractors, service records and invoices
+## Current phase: 6 · Monthly walkthroughs
 
-The plan's Phase 5 section says what ships and what it works around. Done when logging a $397.40 Coldline visit on a ticket raises that unit's 2026 cost, Coldline's spend, and the Closed tab's month total by the same amount, with the invoice PDF openable from all three places. A service record is never deleted, so Edit service record has no Delete; contractors archive, and delete only with no service records. A ticket is optional on a service record (decided Nov 11, 2026): a record has its own `restaurant_id`, which every policy reads; with a ticket, its restaurant and unit are the ticket's, and without one the unit is optional. A visit with no ticket counts toward the unit's and contractor's spend and Invoices, not the Closed tab's month totals.
+The plan's Phase 6 section says what ships and what it works around. It ships in two halves: 6a is the manager's walkthrough, 6b is Ops and the schedule. Done when next month's walkthrough is opened by the database for all four restaurants, a manager submits one from a phone with two tickets and one fix, those tickets show the Walkthrough tag on the Ops dashboard, and the Ops overview shows one of four submitted (6b). One walkthrough per restaurant per month, shared by everyone with `create_tickets` there; Ops reads and checks nothing. A walkthrough keeps the checklist it opened with. The checklist is in sections, not the Front / Back area, so 6b's rotation (a cycle of months, each with its own checklist) needs no rework. Checks change only through functions, Good is refused while an item has an open fix or ticket, and a walkthrough's in-house fix is added by the function that records the check, never by a direct insert.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-101 | Plan update and this split; Phase 5 to the record |
+| OT-102 | 6a backend: checklist sections, checks, fixes and tickets from an item through checked functions, `submit_walkthrough`, progress view, `open_walkthroughs(period)` and its `pg_cron` job, quarterly tasks by quarter, pgTAP |
+| OT-103 | Reminders 7 and 2 days before due, push and email, through `notifications`; a Profile switch; pgTAP for who gets them |
+| OT-104 | Walkthrough home: this month, progress by section, due date, flagged, past walkthroughs, all done; replaces the placeholder; View as |
+| OT-105 | Checklist: section tabs, group disclosures, Good / In-house / Ticket, inline in-house fix, Help |
+| OT-106 | Quick ticket sheet from an item; the walkthrough's Edit ticket; the walkthrough line on a ticket opens the walkthrough |
+| OT-107 | Quarterly tasks in the walkthrough |
+| OT-108 | In-house fixes from an item and from Review |
+| OT-109 | Review & submit, the partial warning, all tickets, the note for Ops |
+| OT-110 | Security and code quality pass over 6a |
+| OT-111 | 6a's done test; the note for 6a |
+| OT-112 | 6b backend: the rotation and own schedules, quarterly task overrides, checklist editor functions, `convert_inhouse_fix`, `send_walkthrough_reminder`, overview and history views, pgTAP |
+| OT-113 | Ops walkthroughs overview and one restaurant, Send reminder; View as |
+| OT-114 | Ops in-house fixes with Convert to ticket |
+| OT-115 | Walkthrough schedule |
+| OT-116 | Quarterly tasks |
+| OT-117 | Checklist editor (no board; follows Categories) |
+| OT-118 | Security and code quality pass over 6b |
+| OT-119 | The done test as one flow; the phase note |
+
+## Phase 5, for the record
+
+The plan's Phase 5 section says what shipped and what it works around. Done when logging a $397.40 Coldline visit on a ticket raises that unit's 2026 cost, Coldline's spend, and the Closed tab's month total by the same amount, with the invoice PDF openable from all three places. A service record is never deleted, so Edit service record has no Delete; contractors archive, and delete only with no service records. A ticket is optional on a service record (decided Nov 11, 2026): a record has its own `restaurant_id`, which every policy reads; with a ticket, its restaurant and unit are the ticket's, and without one the unit is optional. A visit with no ticket counts toward the unit's and contractor's spend and Invoices, not the Closed tab's month totals. Playwright runs it (`done-phase-5.spec.ts`).
 
 | PR    | Scope |
 | ----- | ----- |
@@ -167,7 +193,8 @@ The plan's Phase 5 section says what ships and what it works around. Done when l
 | OT-95 | Contractor detail with Visits and Invoices tabs; Add and Edit contractor; Archive / Restore and Delete sheet; lasting link `/c/<id>` and Share link |
 | OT-96 | Invoices tab: by month, Missing filter and count, sort, search, totals |
 | OT-97 | Security and code quality pass over Phase 5 |
-| OT-98 | The done test as one flow; the phase note |
+| OT-98 | The done test as one flow; the phase note; a closed Ops ticket lists its visits, so the invoice opens from Closed tickets |
+| OT-100 | Plan update: the contractor page tried live |
 | OT-99 | From feedback (Nov 12, 2026): a contractor has one or more trades, picked with chips; Trades for Ops and admins: add, rename, turn off and on, delete only if no contractor has it, logged |
 
 ## Phase 4, for the record
