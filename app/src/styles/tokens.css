@@ -76,6 +76,11 @@
   --wt-tag-border: #a9b3ae;
   --wt-tag-text: #2e3833;
 
+  /* Walkthrough progress: the bar's and ring's parts (WT-Home) */
+  --progress-good: var(--brand-fill);
+  --progress-inhouse: #c9a227;
+  --progress-ticket: var(--urgent);
+
   /* Small alert badge on a tab ("1 reopened") and the toast's action text */
   --alert-badge: #b8941f;
   --toast-action: #8fd4b8;
@@ -199,6 +204,9 @@
   --reopened-banner-text: #e9d9a6;
   --wt-tag-border: #4a5653;
   --wt-tag-text: #d6dcd8;
+  --progress-good: var(--brand-fill);
+  --progress-inhouse: #b8941f; /* derived: the alert badge's gold, which reads on dark */
+  --progress-ticket: var(--urgent);
 
   --alert-badge: #b8941f; /* derived: same gold reads on both */
   --toast-action: var(--brand-fill); /* derived: the toast turns light in dark mode */
@@ -281,6 +289,9 @@
   --color-reopened-banner-text: var(--reopened-banner-text);
   --color-wt-tag-border: var(--wt-tag-border);
   --color-wt-tag-text: var(--wt-tag-text);
+  --color-progress-good: var(--progress-good);
+  --color-progress-inhouse: var(--progress-inhouse);
+  --color-progress-ticket: var(--progress-ticket);
   --color-square-outline: var(--square-outline);
   --color-scrim: var(--scrim);
   --color-alert-badge: var(--alert-badge);

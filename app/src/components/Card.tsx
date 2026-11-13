@@ -200,22 +200,45 @@ export function KeyValueRow({ label, children }: { label: string; children: Reac
 /**
  * A list card under a heading that shows and hides it: a unit's closed tickets, the
  * directory's archived contractors. The heading is an eyebrow with a chevron and Show or
- * Hide; `label` names the group for a screen reader.
+ * Hide; `label` names the group for a screen reader. The `chevron` variant is the
+ * walkthrough's Past walkthroughs (WT-Home): the eyebrow alone, a chevron at the end
+ * that turns over when open.
  */
 export function DisclosureList({
   label,
   heading,
   defaultOpen = false,
+  variant = 'show-hide',
   className = '',
   children,
 }: {
   label: string
   heading: ReactNode
   defaultOpen?: boolean
+  variant?: 'show-hide' | 'chevron'
   className?: string
   children: ReactNode
 }) {
   const [open, setOpen] = useState(defaultOpen)
+  if (variant === 'chevron') {
+    return (
+      <section aria-label={label} className={`flex flex-none flex-col gap-1 ${className}`}>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+          className="flex min-h-tap items-center justify-between gap-2 text-left"
+        >
+          <span className="eyebrow">{heading}</span>
+          <IconChevronDown
+            size={16}
+            className={`flex-none text-text-secondary transition-transform ${open ? 'rotate-180' : ''}`}
+          />
+        </button>
+        {open && <ListCard>{children}</ListCard>}
+      </section>
+    )
+  }
   return (
     <section aria-label={label} className={`flex flex-none flex-col gap-2.5 ${className}`}>
       <button

@@ -29,6 +29,14 @@ import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
 import { TaskList, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
+import {
+  FlagChip,
+  FlagChips,
+  ProgressBar,
+  ProgressRing,
+  WalkthroughCardSkeleton,
+  WalkthroughSectionRow,
+} from '../../components/Walkthrough'
 import { EquipmentMenu, TicketMenu } from '../../components/TicketMenu'
 import { VisibilityToggle, Composer, ThreadEvent, ThreadMessage } from '../../components/Thread'
 import { ContractorCard } from '../../components/ContractorCard'
@@ -112,6 +120,7 @@ const SECTIONS = {
   restaurants: 'Restaurant names',
   avatars: 'Avatars',
   cards: 'Cards and rows',
+  walkthrough: 'Walkthrough progress',
   controls: 'Segmented and tabs',
   choices: 'Chips, radio cards and empty',
   fields: 'Fields',
@@ -228,6 +237,7 @@ export function KitPage() {
               </div>
               <div className="flex flex-wrap items-center gap-2.5">
                 <Button variant="medium">Ask admin for a new invite</Button>
+                <Button variant="outline">Review &amp; submit</Button>
                 <Button variant="done" disabled>
                   Request sent
                 </Button>
@@ -648,6 +658,35 @@ export function KitPage() {
                 spend="$2,140"
                 phone="(773) 555-0133"
               />
+            </Section>
+
+            <Section id="walkthrough">
+              <ProgressBar good={16} inhouse={2} tickets={2} total={50} label="20 of 50 checks done" />
+              <ProgressBar good={44} inhouse={3} tickets={3} total={50} label="50 of 50 checks done" />
+              <div className="flex items-center gap-3">
+                <ProgressRing done={0} total={24} />
+                <ProgressRing done={4} total={24} />
+                <ProgressRing done={16} total={24} />
+                <ProgressRing done={24} total={24} />
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <FlagChips tickets={2} fixes={1} />
+                <FlagChip tone="good">All good</FlagChip>
+                <FlagChip tone="missed">Not done</FlagChip>
+              </div>
+              <div className="overflow-hidden rounded-card border border-border bg-surface [&>*:last-child]:border-b-0">
+                <WalkthroughSectionRow to="/kit" name="Back of House" done={16} total={24} tickets={2} fixes={1} />
+                <WalkthroughSectionRow to="/kit" name="Front of House" done={4} total={24} tickets={0} fixes={0} />
+                <WalkthroughSectionRow name="Q4 location tasks" done={2} total={2} tickets={1} fixes={1} />
+              </div>
+              <DisclosureList label="Past walkthroughs" heading="Past walkthroughs" variant="chevron" defaultOpen>
+                <ListRow
+                  title="Sep"
+                  subtitle="Kitchen + Exterior"
+                  trailing={<FlagChip tone="ticket">5 tickets</FlagChip>}
+                />
+              </DisclosureList>
+              <WalkthroughCardSkeleton />
             </Section>
 
             <Section id="controls">
