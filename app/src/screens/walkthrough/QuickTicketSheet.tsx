@@ -10,13 +10,15 @@ import { useToast } from '../../components/Toast'
 import { IconClose } from '../../components/icons'
 import { PhotoPromptSheet } from '../tickets/PhotoPromptSheet'
 import { usePickedPhotos } from '../tickets/usePhotos'
+import { AREA_LABEL } from '../tickets/tickets'
+import type { CheckTarget } from './useChecklist'
 import { useCreateWalkthroughTicket, useQuickTicketOptions } from './useQuickTicket'
 
 export type QuickTicketTarget = {
-  itemId: string
-  itemTitle: string
-  groupName: string
-  sectionName: string
+  check: CheckTarget
+  /** Section, group and item, or the quarter and the task. */
+  chips: string[]
+  /** The section's area; a quarterly task has none, so categories from both are offered. */
   area: 'foh' | 'boh' | null
   /** The item's own category; with none, the sheet asks. */
   categoryId: string | null
@@ -63,7 +65,7 @@ export function QuickTicketSheet({
   const save = () =>
     create.mutate(
       {
-        itemId: target.itemId,
+        target: target.check,
         title: title.trim(),
         urgency,
         categoryId: target.categoryId ? null : categoryId,
@@ -103,7 +105,7 @@ export function QuickTicketSheet({
       >
         <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
           <div className="flex flex-wrap gap-1.5 text-12 font-semibold text-text-body">
-            {[target.sectionName, target.groupName, target.itemTitle].map((chip) => (
+            {target.chips.map((chip) => (
               <span key={chip} className="rounded-pill bg-surface-sunken px-[9px] py-1">
                 {chip}
               </span>
@@ -143,7 +145,7 @@ export function QuickTicketSheet({
               </option>
               {(categories.data ?? []).map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
+                  {target.area ? c.name : `${AREA_LABEL[c.area]} · ${c.name}`}
                 </option>
               ))}
             </Select>

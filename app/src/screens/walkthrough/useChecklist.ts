@@ -21,13 +21,13 @@ export function useChecklist(walkthroughId: string) {
       if (error) throw error
       if (!w) return null
 
-      const [sections, progress, checks, fixes, tickets] = await Promise.all([
+      const [sections, progress, checks, fixes, tickets, tasks] = await Promise.all([
         sb
           .from('walkthrough_sections')
           .select('id, name, area')
           .eq('template_id', w.template_id ?? ''),
         sb.from('v_walkthrough_progress').select('*').eq('walkthrough_id', w.id),
-        sb.from('walkthrough_checks').select('id, item_id, result').eq('walkthrough_id', w.id),
+        sb.from('walkthrough_checks').select('id, item_id, quarterly_task_id, result').eq('walkthrough_id', w.id),
         sb
           .from('inhouse_fixes')
           .select('id, check_id, title, done_at, created_at')
@@ -38,8 +38,10 @@ export function useChecklist(walkthroughId: string) {
           .select('id, display_id, title, urgency, status, walkthrough_check_id, created_at')
           .eq('walkthrough_id', w.id)
           .not('walkthrough_check_id', 'is', null),
+        // The quarter's tasks, each with the check that did it this quarter, whichever month.
+        sb.rpc('walkthrough_quarter_tasks', { p_walkthrough_id: w.id }),
       ])
-      for (const r of [sections, progress, checks, fixes, tickets]) if (r.error) throw r.error
+      for (const r of [sections, progress, checks, fixes, tickets, tasks]) if (r.error) throw r.error
       const { data: items, error: itemsError } = await sb
         .from('walkthrough_items')
         .select('id, section_id, group_name, title, sort_order, active, category_id')
@@ -60,6 +62,7 @@ export function useChecklist(walkthroughId: string) {
         checks: checks.data! as CheckRow[],
         fixes: fixes.data!,
         tickets: tickets.data!,
+        tasks: tasks.data!,
       }
     },
   })
@@ -67,34 +70,49 @@ export function useChecklist(walkthroughId: string) {
 
 type Checklist = NonNullable<ReturnType<typeof useChecklist>['data']>
 
+/** An item on the checklist, or one of the quarter's tasks. */
+export type CheckTarget = { itemId: string; taskId?: undefined } | { taskId: string; itemId?: undefined }
+
+const targetArgs = (t: CheckTarget) => (t.itemId ? { p_item_id: t.itemId } : { p_task_id: t.taskId! })
+const isFor = (t: CheckTarget) => (c: CheckRow) =>
+  t.itemId ? c.item_id === t.itemId : c.quarterly_task_id === t.taskId
+
 /**
- * Mark an item Good or take Good off. The button lights at once and goes back if the
- * database says no (an open fix or ticket, or a submitted walkthrough).
+ * Mark an item or task Good or take Good off. The button lights at once and goes back if
+ * the database says no (an open fix or ticket, or a submitted walkthrough).
  */
 export function useSetGood(walkthroughId: string) {
   const queryClient = useQueryClient()
   const key = ['walkthrough', walkthroughId]
   return useMutation({
-    mutationFn: async ({ itemId, good }: { itemId: string; good: boolean }) => {
+    mutationFn: async ({ target, good }: { target: CheckTarget; good: boolean }) => {
       const { error } = await requireSupabase().rpc('set_walkthrough_good', {
         p_walkthrough_id: walkthroughId,
-        p_item_id: itemId,
+        ...targetArgs(target),
         p_good: good,
       })
       if (error) throw error
     },
-    onMutate: async ({ itemId, good }) => {
+    onMutate: async ({ target, good }) => {
       await queryClient.cancelQueries({ queryKey: key })
       const before = queryClient.getQueryData<Checklist | null>(key)
       if (before) {
-        const others = before.checks.filter((c) => c.item_id !== itemId)
-        const mine = before.checks.find((c) => c.item_id === itemId)
+        const mine = before.checks.find(isFor(target))
+        const others = before.checks.filter((c) => c !== mine)
         const hasRecord =
           !!mine &&
           (before.fixes.some((f) => f.check_id === mine.id) ||
             before.tickets.some((t) => t.walkthrough_check_id === mine.id))
         const next: CheckRow[] = good
-          ? [...others, { id: mine?.id ?? `pending-${itemId}`, item_id: itemId, result: 'good' }]
+          ? [
+              ...others,
+              {
+                id: mine?.id ?? `pending-${target.itemId ?? target.taskId}`,
+                item_id: target.itemId ?? null,
+                quarterly_task_id: target.taskId ?? null,
+                result: 'good',
+              },
+            ]
           : hasRecord
             ? [...others, { ...mine!, result: 'in_house' }]
             : others
@@ -112,14 +130,14 @@ export function useSetGood(walkthroughId: string) {
   })
 }
 
-/** An in-house fix on an item. It joins the restaurant's In-house list, with the Walkthrough tag. */
+/** An in-house fix on an item or task. It joins the restaurant's In-house list, with the Walkthrough tag. */
 export function useAddFix(walkthroughId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ itemId, title }: { itemId: string; title: string }) => {
+    mutationFn: async ({ target, title }: { target: CheckTarget; title: string }) => {
       const { error } = await requireSupabase().rpc('add_walkthrough_fix', {
         p_walkthrough_id: walkthroughId,
-        p_item_id: itemId,
+        ...targetArgs(target),
         p_title: title,
       })
       if (error) throw error

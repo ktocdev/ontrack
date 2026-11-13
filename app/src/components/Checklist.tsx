@@ -252,3 +252,71 @@ export function ChecklistHelp() {
     </div>
   )
 }
+
+/**
+ * A quarterly task (design/screens/WT-Quarterly): its title and status, opening to the
+ * directions, the how-to video and its Result.
+ */
+export function TaskCard({
+  title,
+  status,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string
+  status: ReactNode
+  open: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  return (
+    <section aria-label={title} className="flex-none overflow-hidden rounded-card border border-border bg-surface">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={onToggle}
+        className="flex min-h-[60px] w-full items-center gap-2.5 px-3.5 py-2 text-left text-text transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0"
+      >
+        <span className="flex-1 text-15 font-semibold">{title}</span>
+        {status}
+        <IconChevronDown
+          size={16}
+          className={`flex-none text-text-secondary transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {open && <div className="flex flex-col gap-3 border-t border-border px-3.5 pb-3.5 pt-3">{children}</div>}
+    </section>
+  )
+}
+
+/** An eyebrow inside a task: Directions, Result. */
+export function TaskLabel({ children }: { children: ReactNode }) {
+  return <span className="eyebrow">{children}</span>
+}
+
+/**
+ * The task's how-to video: a dark card with a play button that opens the link in a new
+ * tab. Only a web address makes a card; anything else shows nothing.
+ */
+export function HowToVideo({ url, task }: { url: string; task: string }) {
+  if (!/^https?:\/\//i.test(url)) return null
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`How-to video for ${task} (opens in a new tab)`}
+      className="relative flex h-[150px] flex-none items-end overflow-hidden rounded-input bg-video-bg text-white no-underline hover:text-white"
+    >
+      <span className="absolute left-1/2 top-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-video-bg">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </span>
+      <span className="w-full bg-gradient-to-b from-transparent to-black/55 px-3 py-2.5 text-13 font-semibold">
+        How-to video
+      </span>
+    </a>
+  )
+}

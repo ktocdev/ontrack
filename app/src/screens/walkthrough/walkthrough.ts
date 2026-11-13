@@ -103,6 +103,13 @@ export const dueDate = (date: string) => day(date, { weekday: 'short', month: 's
 /** A moment ("2026-10-24T22:30:00Z") as the day it was here: "Sat, Oct 24". */
 export const onDay = (moment: string) =>
   new Date(moment).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+/** The quarter's last day, when its tasks are due: "Dec 31". */
+export function quarterEnd(period: string) {
+  const year = Number(period.slice(0, 4))
+  const lastMonth = Math.floor((Number(period.slice(5, 7)) - 1) / 3) * 3 + 3
+  const last = new Date(Date.UTC(year, lastMonth, 0, 12))
+  return last.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+}
 /** "Q4" */
 export const quarterOf = (period: string) => `Q${Math.floor((Number(period.slice(5, 7)) - 1) / 3) + 1}`
 

@@ -11,7 +11,12 @@ export type ItemRow = {
   sort_order: number
   active: boolean
 }
-export type CheckRow = { id: string; item_id: string | null; result: 'good' | 'in_house' | 'ticket' }
+export type CheckRow = {
+  id: string
+  item_id: string | null
+  quarterly_task_id?: string | null
+  result: 'good' | 'in_house' | 'ticket'
+}
 export type FixRow = { id: string; check_id: string | null; title: string; done_at: string | null; created_at: string }
 export type TicketRow = {
   id: string

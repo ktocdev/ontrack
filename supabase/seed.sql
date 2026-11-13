@@ -311,9 +311,9 @@ insert into public.invoices (service_record_id, number, amount_cents, status, pa
 -- The group schedule and the checklist come from the migration (20261113120000).
 update public.walkthrough_schedules set updated_by = '22222222-2222-4222-8222-000000000003' where restaurant_id is null;
 
-insert into public.quarterly_tasks (id, title, directions, months, sort_order) values
-  ('99999999-9999-4999-8999-000000000001', 'Organize utility areas', 'Clear floors, label shelves, check for leaks behind units.', '{1,4,7,10}', 1),
-  ('99999999-9999-4999-8999-000000000002', 'Degrease BOH floors', 'Move what rolls, scrub under the line and the dish pit, and check the floor drains run clear.', '{1,4,7,10}', 2);
+insert into public.quarterly_tasks (id, title, directions, video_url, months, sort_order) values
+  ('99999999-9999-4999-8999-000000000001', 'Organize utility areas', 'Clear at least 3 feet in front of the electrical panel and the water heater. Move chemicals off the floor and away from food storage, and toss empty boxes and broken equipment. Submit a ticket if the water heater shows rust or leaks at the base, or if the panel door doesn''t close.', 'https://example.com/how-to/organize-utility-areas', '{1,4,7,10}', 1),
+  ('99999999-9999-4999-8999-000000000002', 'Degrease BOH floors', 'Block off one section at a time. Apply degreaser per the label, let it sit 5 minutes, then scrub with a deck brush, focusing on grout and under equipment edges. Squeegee to the floor drain and rinse with clean water. Submit a ticket if a drain is slow or backs up.', null, '{1,4,7,10}', 2);
 
 insert into public.walkthroughs (id, restaurant_id, template_id, period, due_on, status, started_by) values
   ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001', '11111111-1111-4111-8111-000000000001', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-31', 'open', '22222222-2222-4222-8222-000000000001'),

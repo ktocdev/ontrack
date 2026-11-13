@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase, type Enums } from '../../lib/supabase'
 import { addTicketPhotos } from '../tickets/useCreateTicket'
 import type { PickedPhoto } from '../tickets/usePhotos'
+import type { CheckTarget } from './useChecklist'
 
 /**
  * Quick ticket from a checklist item: the categories for the section's area, for an item
@@ -37,7 +38,7 @@ export function useQuickTicketOptions(restaurantId: string, area: 'foh' | 'boh' 
 }
 
 export type QuickTicket = {
-  itemId: string
+  target: CheckTarget
   title: string
   urgency: Enums<'ticket_urgency'>
   categoryId: string | null
@@ -58,7 +59,7 @@ export function useCreateWalkthroughTicket(walkthroughId: string) {
       const sb = requireSupabase()
       const { data: id, error } = await sb.rpc('create_walkthrough_ticket', {
         p_walkthrough_id: walkthroughId,
-        p_item_id: t.itemId,
+        ...(t.target.itemId ? { p_item_id: t.target.itemId } : { p_task_id: t.target.taskId! }),
         p_title: t.title,
         p_urgency: t.urgency,
         ...(t.categoryId ? { p_category_id: t.categoryId } : {}),
