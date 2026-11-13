@@ -18,6 +18,8 @@ export type ProgressRow = {
   good_items: number | null
   inhouse_items: number | null
   ticket_items: number | null
+  open_tickets: number | null
+  open_fixes: number | null
 }
 
 export type Part = {
@@ -29,6 +31,9 @@ export type Part = {
   done: number
   tickets: number
   fixes: number
+  /** Still to do: fixes not checked off, tickets not closed. */
+  openTickets: number
+  openFixes: number
 }
 
 export type Progress = {
@@ -58,6 +63,8 @@ export function progressOf(rows: ProgressRow[], period: string): Progress {
             done: n(r.done),
             tickets: n(r.tickets),
             fixes: n(r.fixes),
+            openTickets: n(r.open_tickets),
+            openFixes: n(r.open_fixes),
           }
         : {
             key: r.section_id ?? '',
@@ -67,6 +74,8 @@ export function progressOf(rows: ProgressRow[], period: string): Progress {
             done: n(r.done),
             tickets: n(r.tickets),
             fixes: n(r.fixes),
+            openTickets: n(r.open_tickets),
+            openFixes: n(r.open_fixes),
           },
     )
   const sum = (pick: (r: ProgressRow) => number | null) => rows.reduce((s, r) => s + n(pick(r)), 0)

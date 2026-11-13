@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
+import { EmptyState } from '../../components/EmptyState'
 import { Textarea } from '../../components/Field'
 import { Notice } from '../../components/Notice'
-import { BackBar, Screen, ScreenBody, ScreenFooter } from '../../components/Screen'
+import { BackBar, Screen, ScreenBody, ScreenEmpty, ScreenFooter } from '../../components/Screen'
 import { ConfirmSheet } from '../../components/Sheet'
 import { GroupedListSkeleton } from '../../components/Skeleton'
 import { TaskList, TaskRow } from '../../components/TaskRow'
@@ -24,7 +25,7 @@ const SECTION = 'text-12 font-bold uppercase tracking-[.06em] text-text-secondar
 /**
  * Manager · Review & submit (design/screens/WT-Review, WT-Review-Partial). How the
  * walkthrough went: all done and how early, or how many checks are still to do and where;
- * the Good, In-house and Tickets counts (the last two open their lists); the tickets made;
+ * the Good count, and the in-house fixes and tickets still open (each opens its list); the tickets made;
  * the in-house fixes, to check off here; and a note for Ops. Submit walkthrough submits at
  * once when every check is done, and otherwise asks first (Keep going or Submit anyway),
  * since the database allows it. Once submitted it says when and by whom, with the note,
@@ -53,6 +54,30 @@ export function ReviewScreen() {
       </Screen>
     )
   }
+  if (fixes.isError || tickets.isError) {
+    return (
+      <Screen>
+        <BackBar to="/walkthrough" label="Back to walkthrough" />
+        <ScreenEmpty>
+          <EmptyState
+            tone="neutral"
+            titleSize={20}
+            icon={<IconWarning size={30} />}
+            title="We couldn't load the review"
+            body="Check your connection and try again."
+          >
+            <Button
+              variant="small"
+              className="w-full"
+              onClick={() => void Promise.all([fixes.refetch(), tickets.refetch()])}
+            >
+              Try again
+            </Button>
+          </EmptyState>
+        </ScreenEmpty>
+      </Screen>
+    )
+  }
   if (checklist.isError || !checklist.data || !fixes.data) return <NotFoundScreen />
 
   const w = checklist.data.walkthrough
@@ -61,8 +86,12 @@ export function ReviewScreen() {
   const canAct = open && !viewingAs
   const left = p.total - p.done
   const partsLeft = p.parts.filter((part) => part.total > part.done)
-  const allFixes = fixes.data.fixes
+  // Fixes still to do first, then the ones checked off, which stay on the record.
+  const allFixes = [...fixes.data.fixes].sort((a, b) => Number(!!a.done_at) - Number(!!b.done_at))
   const allTickets = tickets.data ?? []
+  // The counts are what is still open (from feedback, Nov 13, 2026); the lists keep everything.
+  const openFixes = allFixes.filter((f) => !f.done_at).length
+  const openTickets = allTickets.filter((t) => t.status !== 'closed').length
   const base = `/walkthrough/${w.id}`
   const submitter = (w.submitter as unknown as { full_name: string } | null)?.full_name
 
@@ -109,18 +138,18 @@ export function ReviewScreen() {
           <CountTile tone="good" count={p.good} label="Good" />
           <CountTile
             tone="inhouse"
-            count={allFixes.length}
+            count={openFixes}
             label="In-house"
             to={viewingAs ? undefined : `${base}/fixes`}
             state={{ backTo: `${base}/review` }}
-            ariaLabel={`${allFixes.length} in-house ${allFixes.length === 1 ? 'fix' : 'fixes'}, view and manage all`}
+            ariaLabel={`${openFixes} in-house ${openFixes === 1 ? 'fix' : 'fixes'} to do, view and manage all`}
           />
           <CountTile
             tone="ticket"
-            count={allTickets.length}
+            count={openTickets}
             label="Tickets"
             to={viewingAs ? undefined : `${base}/tickets`}
-            ariaLabel={`${allTickets.length} ${allTickets.length === 1 ? 'ticket' : 'tickets'}, view and edit all`}
+            ariaLabel={`${openTickets} open ${openTickets === 1 ? 'ticket' : 'tickets'}, view and edit all`}
           />
         </div>
 
@@ -168,7 +197,7 @@ export function ReviewScreen() {
         {allFixes.length > 0 && (
           <>
             <div className="flex flex-none items-baseline justify-between pt-1">
-              <span className={SECTION}>In-house to fix · {allFixes.length}</span>
+              <span className={SECTION}>In-house to fix · {openFixes}</span>
               {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
             </div>
             <TaskList>

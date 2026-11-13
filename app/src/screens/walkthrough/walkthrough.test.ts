@@ -27,6 +27,8 @@ const row = (over: Partial<ProgressRow>): ProgressRow => ({
   good_items: 0,
   inhouse_items: 0,
   ticket_items: 0,
+  open_tickets: 0,
+  open_fixes: 0,
   ...over,
 })
 

@@ -13,6 +13,7 @@ type Origin = {
 
 /**
  * Every ticket made on a walkthrough, oldest first, with the item or task it came from.
+ * Tickets and checks point at each other both ways, so the link to follow is named.
  * The key sits under 'tickets', so Realtime and any ticket change refresh it.
  */
 export function useWalkthroughTickets(walkthroughId: string) {
@@ -22,7 +23,7 @@ export function useWalkthroughTickets(walkthroughId: string) {
       const { data, error } = await requireSupabase()
         .from('tickets')
         .select(
-          'id, display_id, title, status, urgency, created_at, check:walkthrough_checks (item:walkthrough_items (title, group_name, section:walkthrough_sections (id, short_name, name)), task:quarterly_tasks (title))',
+          'id, display_id, title, status, urgency, created_at, check:walkthrough_checks!tickets_walkthrough_check_id_fkey (item:walkthrough_items (title, group_name, section:walkthrough_sections (id, short_name, name)), task:quarterly_tasks (title))',
         )
         .eq('walkthrough_id', walkthroughId)
         .order('created_at')
