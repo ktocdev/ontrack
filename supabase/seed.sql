@@ -6,7 +6,9 @@
 -- Fixed ids keep the pgTAP tests and fixtures readable:
 --   restaurants 1111…000N, users 2222…000N, categories 3333…00NN,
 --   equipment 4444…00NN, contractors 5555…00NN, tickets 6666…0NNNN,
---   service records 7777…00NN, invites 8888…000N.
+--   service records 7777…00NN, invites 8888…000N, walkthrough checklist
+--   8888…0001 (sections cccc…000N, items dddd…0001NN and …0002NN, from the
+--   migration), quarterly tasks 9999…000N, walkthroughs aaaa…000N.
 --
 -- Every seeded person signs in with the password below (local only).
 
@@ -303,41 +305,22 @@ insert into public.invoices (service_record_id, number, amount_cents, status, pa
   ('77777777-7777-4777-8777-000000000014', 'TP-77102',  68500, 'attached', '77777777-7777-4777-8777-000000000014/TechPoint_TP-77102.pdf', '22222222-2222-4222-8222-000000000004', '2026-10-13 17:35-05');
 
 -- ---------------------------------------------------------------------------
--- Walkthroughs: the group schedule, a starter template (the real checklist is
--- an open item), one quarterly task, October's walkthroughs, and Logan
+-- Walkthroughs: the board's two Q4 tasks, October's walkthroughs, and Logan
 -- Square's in-house fixes from the Manager in-house list.
 -- ---------------------------------------------------------------------------
-insert into public.walkthrough_schedules (restaurant_id, due_day, updated_by) values (null, 25, '22222222-2222-4222-8222-000000000003');
+-- The group schedule and the checklist come from the migration (20261113120000).
+update public.walkthrough_schedules set updated_by = '22222222-2222-4222-8222-000000000003' where restaurant_id is null;
 
-insert into public.walkthrough_templates (id, name) values ('88888888-8888-4888-8888-000000000001', 'Monthly walkthrough');
-
-insert into public.walkthrough_items (template_id, area, group_name, title, sort_order) values
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Electrical',  'Light bulbs',              1),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Electrical',  'Outlets',                  2),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Electrical',  'Feature lighting',         3),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Aesthetics',  'Surfaces and seating',     4),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Aesthetics',  'Paint',                    5),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Aesthetics',  'Signage and decor',        6),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Restrooms',   'Fixtures and partitions',  7),
-  ('88888888-8888-4888-8888-000000000001', 'foh', 'Restrooms',   'Dispensers and dryers',    8),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Electrical',  'Outlets',                  1),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Electrical',  'Feature',                  2),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Refrigeration', 'Door gaskets and closers', 3),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Refrigeration', 'Temperatures logged',    4),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Cooking',     'Pilots and ignition',      5),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Cooking',     'Knobs and thermostats',    6),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Ventilation', 'Hood filters',             7),
-  ('88888888-8888-4888-8888-000000000001', 'boh', 'Plumbing',    'Drains and floor sinks',   8);
-
-insert into public.quarterly_tasks (id, title, directions, months) values
-  ('99999999-9999-4999-8999-000000000001', 'Organize utility areas', 'Clear floors, label shelves, check for leaks behind units.', '{1,4,7,10}');
+insert into public.quarterly_tasks (id, title, directions, months, sort_order) values
+  ('99999999-9999-4999-8999-000000000001', 'Organize utility areas', 'Clear floors, label shelves, check for leaks behind units.', '{1,4,7,10}', 1),
+  ('99999999-9999-4999-8999-000000000002', 'Degrease BOH floors', 'Move what rolls, scrub under the line and the dish pit, and check the floor drains run clear.', '{1,4,7,10}', 2);
 
 insert into public.walkthroughs (id, restaurant_id, template_id, period, due_on, status, started_by) values
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001', '11111111-1111-4111-8111-000000000001', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-25', 'open', '22222222-2222-4222-8222-000000000001'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000002', '11111111-1111-4111-8111-000000000002', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-25', 'open', null),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000003', '11111111-1111-4111-8111-000000000003', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-25', 'open', null),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000004', '11111111-1111-4111-8111-000000000004', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-25', 'open', '22222222-2222-4222-8222-000000000002'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000005', '11111111-1111-4111-8111-000000000001', '88888888-8888-4888-8888-000000000001', '2026-09-01', '2026-09-25', 'submitted', '22222222-2222-4222-8222-000000000001');
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001', '11111111-1111-4111-8111-000000000001', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-31', 'open', '22222222-2222-4222-8222-000000000001'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000002', '11111111-1111-4111-8111-000000000002', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-31', 'open', null),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000003', '11111111-1111-4111-8111-000000000003', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-31', 'open', null),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000004', '11111111-1111-4111-8111-000000000004', '88888888-8888-4888-8888-000000000001', '2026-10-01', '2026-10-31', 'open', '22222222-2222-4222-8222-000000000002'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000005', '11111111-1111-4111-8111-000000000001', '88888888-8888-4888-8888-000000000001', '2026-09-01', '2026-09-30', 'submitted', '22222222-2222-4222-8222-000000000001');
 update public.walkthroughs set submitted_by = '22222222-2222-4222-8222-000000000001', submitted_at = '2026-09-24 17:30-05'
   where id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005';
 
