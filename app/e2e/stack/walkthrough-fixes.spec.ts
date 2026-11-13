@@ -80,7 +80,14 @@ test('a fix opens its item’s list, which shows all, checks off and deletes', a
   await expect(page.getByText(light)).toHaveCount(0)
   await testInfo.attach('all fixes', { body: await page.screenshot(), contentType: 'image/png' })
 
-  // Back goes to the checklist it came from.
+  // Back goes to the checklist it came from. With its only fix checked off, the item offers
+  // Good again and In-house is no longer lit, while the fix stays listed under it.
   await page.getByRole('link', { name: 'Back' }).click()
   await expect(page).toHaveURL(new RegExp(`/walkthrough/${RANALLIS_OCT}/${FOH}$`))
+  const windows = page.getByRole('group', { name: 'Windows and doors', exact: true })
+  await expect(windows.getByRole('button', { name: 'Good' })).toBeVisible()
+  await expect(windows.getByRole('button', { name: /in-house fix for Windows and doors/ })).not.toHaveClass(
+    /bg-choice-inhouse-bg/,
+  )
+  await expect(page.getByRole('link', { name: new RegExp(outlet) })).toBeVisible()
 })

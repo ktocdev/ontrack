@@ -107,3 +107,15 @@ export function openAfter(before: ChecklistGroup[], after: ChecklistGroup[], ope
   if (following) next.add(following.name)
   return next
 }
+
+/**
+ * Which of In-house and Ticket are lit: only while something is still to do. A fix checked
+ * off or a ticket closed stays listed under the item, but no longer holds its button on
+ * (from feedback, Nov 13, 2026).
+ */
+export function litChoices(fixes: Pick<FixRow, 'done_at'>[], tickets: Pick<TicketRow, 'status'>[]) {
+  return {
+    inhouse: fixes.some((f) => !f.done_at),
+    ticket: tickets.some((t) => t.status !== 'closed'),
+  }
+}

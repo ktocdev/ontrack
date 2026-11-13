@@ -17,8 +17,8 @@ const CHOICE = {
 
 /**
  * One of Good, In-house, Ticket: 40px as drawn, reaching 44px through a transparent layer
- * above and below. Lit once picked: Good when the item is Good, the others once the item
- * has a fix or a ticket.
+ * above and below. Lit once picked: Good when the item is Good, the others while the item
+ * has a fix not checked off or a ticket not closed.
  */
 export function CheckChoice({
   tone,

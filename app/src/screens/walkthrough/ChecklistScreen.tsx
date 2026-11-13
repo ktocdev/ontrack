@@ -18,7 +18,15 @@ import { GroupedListSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { FlagChip } from '../../components/Walkthrough'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
-import { firstOpen, groupsOf, openAfter, type ChecklistGroup as Group, type FixRow, type TicketRow } from './checklist'
+import {
+  firstOpen,
+  groupsOf,
+  litChoices,
+  openAfter,
+  type ChecklistGroup as Group,
+  type FixRow,
+  type TicketRow,
+} from './checklist'
 import { goodRefusal, useAddFix, useChecklist, useSetGood, type CheckTarget } from './useChecklist'
 import { QuickTicketSheet, type QuickTicketTarget } from './QuickTicketSheet'
 import { monthName, quarterEnd } from './walkthrough'
@@ -154,7 +162,7 @@ function useWork(data: Data, sectionKey: string, readOnly: boolean, linksOff: bo
         )}
         <CheckChoice
           tone="inhouse"
-          lit={thing.fixes.length > 0}
+          lit={litChoices(thing.fixes, thing.tickets).inhouse}
           disabled={readOnly}
           className={size}
           aria-label={
@@ -168,7 +176,7 @@ function useWork(data: Data, sectionKey: string, readOnly: boolean, linksOff: bo
         </CheckChoice>
         <CheckChoice
           tone="ticket"
-          lit={thing.tickets.length > 0}
+          lit={litChoices(thing.fixes, thing.tickets).ticket}
           disabled={readOnly}
           className={size}
           aria-label={

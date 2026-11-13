@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { firstOpen, groupsOf, openAfter, type CheckRow, type FixRow, type ItemRow, type TicketRow } from './checklist'
+import {
+  firstOpen,
+  groupsOf,
+  litChoices,
+  openAfter,
+  type CheckRow,
+  type FixRow,
+  type ItemRow,
+  type TicketRow,
+} from './checklist'
 
 const item = (id: string, group_name: string, sort_order: number, over: Partial<ItemRow> = {}): ItemRow => ({
   id,
@@ -98,5 +107,20 @@ describe('which groups are open', () => {
   it('leaves what was opened by hand when nothing filled', () => {
     const open = new Set(['Electrical', 'Envelope'])
     expect(openAfter(none, none, open)).toBe(open)
+  })
+})
+
+describe('litChoices', () => {
+  it('lights In-house and Ticket while something is still to do', () => {
+    expect(litChoices([{ done_at: null }], [{ status: 'in_progress' }])).toEqual({ inhouse: true, ticket: true })
+  })
+
+  it('lets them go once every fix is checked off and every ticket closed', () => {
+    expect(litChoices([{ done_at: '2026-11-13' }], [{ status: 'closed' }])).toEqual({ inhouse: false, ticket: false })
+    expect(litChoices([], [])).toEqual({ inhouse: false, ticket: false })
+  })
+
+  it('stays lit while one of several is still open', () => {
+    expect(litChoices([{ done_at: '2026-11-13' }, { done_at: null }], [])).toEqual({ inhouse: true, ticket: false })
   })
 })
