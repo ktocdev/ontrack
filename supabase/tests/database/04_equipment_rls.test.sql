@@ -24,7 +24,7 @@ select throws_ok($$
   values ('11111111-1111-4111-8111-000000000004', '33333333-3333-4333-8333-000000000012', 'Test: reach-in', '22222222-2222-4222-8222-000000000002')
 $$, '42501', null, 'manager without edit_equipment cannot add a unit');
 select is(
-  (select count(*)::int from public.categories), 16, 'but reads the shared categories');
+  (select count(*)::int from public.categories), 19, 'but reads the shared categories');
 select pg_temp.logout();
 
 select pg_temp.login('maya.reyes@example.com');

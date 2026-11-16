@@ -86,7 +86,13 @@ test('the filter sheet narrows by area and type, opens the types picked, and eac
   const sheet = page.getByRole('dialog', { name: 'Filter equipment' })
   await expect(sheet.getByText('Restaurant')).toHaveCount(0)
 
-  await sheet.getByRole('radio', { name: 'Front of House' }).click()
+  await expect(sheet.getByRole('radiogroup', { name: 'Area' }).getByRole('radio')).toHaveText([
+    'All',
+    'Front',
+    'Back',
+    'IT',
+  ])
+  await sheet.getByRole('radio', { name: 'Front', exact: true }).click()
   await expect(sheet.getByRole('button', { name: /^Show \d+ items?$/ })).toBeVisible()
   await page.waitForTimeout(250)
   await testInfo.attach('filter sheet', { body: await page.screenshot(), contentType: 'image/png' })
@@ -111,7 +117,10 @@ test('the filter sheet narrows by area and type, opens the types picked, and eac
   await expect(head(page, 'Plumbing')).toHaveAttribute('aria-expanded', 'false')
   await page.getByRole('button', { name: 'Remove Refrigeration' }).click()
   await page.getByRole('button', { name: 'Filter · 1' }).click()
-  await page.getByRole('dialog', { name: 'Filter equipment' }).getByRole('radio', { name: 'Front of House' }).click()
+  await page
+    .getByRole('dialog', { name: 'Filter equipment' })
+    .getByRole('radio', { name: 'Front', exact: true })
+    .click()
   await page.getByRole('button', { name: /^Show \d+ items?$/ }).click()
 
   await page.getByRole('button', { name: 'Remove Plumbing' }).click()

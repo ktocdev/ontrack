@@ -1,3 +1,4 @@
+import { AREA_SHORT } from '../../app/areas'
 import { lazy, Suspense, useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
@@ -26,7 +27,6 @@ import { useRestaurantScope } from './useRestaurantScope'
  * by the title, as on a manager's Open tickets. Under
  * View as, nothing leads anywhere.
  */
-const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
 const RestaurantOrderSheet = lazy(() => import('./RestaurantOrderSheet'))
 

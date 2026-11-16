@@ -1,3 +1,4 @@
+import { AREA_LABEL, AREA_SEGMENTS } from '../../app/areas'
 import { useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
@@ -97,17 +98,7 @@ export function EquipmentScreen() {
           ) : undefined
         }
       >
-        {!empty && !isError && (
-          <Segmented<Area>
-            label="Area"
-            value={area}
-            onChange={pick}
-            options={[
-              { value: 'foh', label: 'Front of House' },
-              { value: 'boh', label: 'Back of House' },
-            ]}
-          />
-        )}
+        {!empty && !isError && <Segmented<Area> label="Area" value={area} onChange={pick} options={AREA_SEGMENTS} />}
       </ScreenHeader>
 
       {isError ? (
@@ -152,7 +143,7 @@ export function EquipmentScreen() {
             <>
               {groups.length === 0 && (
                 <p className="px-3 py-7 text-center text-14 leading-normal text-text-body">
-                  No {area === 'foh' ? 'Front of House' : 'Back of House'} equipment yet.
+                  No {AREA_LABEL[area]} equipment yet.
                 </p>
               )}
               {groups.map((g) => (

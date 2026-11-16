@@ -1,3 +1,4 @@
+import { AREA_SEGMENTS, areaOr, type Area } from '../../app/areas'
 import { useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { CategoryTile } from '../../components/Card'
@@ -17,12 +18,11 @@ import { useCategories } from './useCreateTicket'
  * restaurant picks which, which has no board. It opens on Front of House, where the
  * board opens on Back (from feedback, Nov 4, 2026). Scan a QR code waits for Phase 4.
  */
-type Area = 'foh' | 'boh'
 
 export function CreateAreaScreen() {
   const { user, restaurants } = useUser()
   const [params, setParams] = useSearchParams()
-  const area: Area = params.get('area') === 'boh' ? 'boh' : 'foh'
+  const area: Area = areaOr(params.get('area'), 'foh')
   const restaurant =
     restaurants.find((r) => r.id === params.get('restaurant')) ??
     restaurants.find((r) => r.id === user.home_restaurant_id) ??
@@ -67,15 +67,7 @@ export function CreateAreaScreen() {
             ))}
           </Select>
         )}
-        <Segmented
-          label="Area"
-          value={area}
-          onChange={(value) => set({ area: value })}
-          options={[
-            { value: 'foh', label: 'Front of House' },
-            { value: 'boh', label: 'Back of House' },
-          ]}
-        />
+        <Segmented label="Area" value={area} onChange={(value) => set({ area: value })} options={AREA_SEGMENTS} />
       </ScreenHeader>
       <ScreenBody className="pb-4 pt-1">
         <div className="grid grid-cols-2 gap-2.5">

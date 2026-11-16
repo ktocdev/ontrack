@@ -1,3 +1,4 @@
+import { AREA_SEGMENTS } from '../../app/areas'
 import { useState } from 'react'
 import { Button } from '../../components/Button'
 import { ListCard, ListRow, ListRowButton } from '../../components/Card'
@@ -81,15 +82,7 @@ function Categories({ back, backLabel, crumb }: { back: string; backLabel: strin
           Shared by every restaurant, in Create ticket and on the equipment form. Turning one off takes it out of both;
           tickets and equipment that use it keep it.
         </p>
-        <Segmented<Area>
-          label="Area"
-          value={area}
-          onChange={setArea}
-          options={[
-            { value: 'foh', label: 'Front of House' },
-            { value: 'boh', label: 'Back of House' },
-          ]}
-        />
+        <Segmented<Area> label="Area" value={area} onChange={setArea} options={AREA_SEGMENTS} />
         {isError ? (
           <EmptyState
             tone="neutral"

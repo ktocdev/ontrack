@@ -1,3 +1,4 @@
+import { AREA_SEGMENTS, type Area } from '../../app/areas'
 import { useState, type FormEvent } from 'react'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
@@ -6,8 +7,6 @@ import { ErrorBanner } from '../../components/Notice'
 import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { useAddTask } from './useInHouse'
-
-type Area = 'foh' | 'boh'
 
 /**
  * Add an in-house task by hand (OT-83; no board draws it): what to fix, Front or Back,
@@ -75,15 +74,7 @@ export function AddTaskSheet({ open, onOpenChange }: { open: boolean; onOpenChan
             ))}
           </Select>
         )}
-        <Segmented<Area>
-          label="Area"
-          value={area}
-          onChange={setArea}
-          options={[
-            { value: 'foh', label: 'Front of House' },
-            { value: 'boh', label: 'Back of House' },
-          ]}
-        />
+        <Segmented<Area> label="Area" value={area} onChange={setArea} options={AREA_SEGMENTS} />
         {add.isError && <ErrorBanner title="Couldn't add this task.">Check your connection and try again.</ErrorBanner>}
         <Button type="submit" loading={add.isPending}>
           Add task

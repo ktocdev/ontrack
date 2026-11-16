@@ -1,3 +1,4 @@
+import { AREA_LABEL } from '../../app/areas'
 import { useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
@@ -91,7 +92,7 @@ export function OpsEquipmentScreen() {
     ...(filters.area
       ? [
           {
-            label: filters.area === 'foh' ? 'Front of House' : 'Back of House',
+            label: AREA_LABEL[filters.area],
             remove: () => filter({ ...filters, area: null }),
           },
         ]

@@ -1,3 +1,4 @@
+import { AREA_SEGMENTS } from '../../app/areas'
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
@@ -205,15 +206,7 @@ function Form({ ops, editing }: { ops: boolean; editing?: EquipmentToEdit }) {
               ))}
             </Select>
           )}
-          <Segmented<Area>
-            label="Area"
-            value={area}
-            onChange={pickArea}
-            options={[
-              { value: 'foh', label: 'Front of House' },
-              { value: 'boh', label: 'Back of House' },
-            ]}
-          />
+          <Segmented<Area> label="Area" value={area} onChange={pickArea} options={AREA_SEGMENTS} />
           <div className="grid grid-cols-2 gap-3">
             <Select label="Category" value={values.categoryId} onChange={set('categoryId')}>
               <option value="">Choose</option>

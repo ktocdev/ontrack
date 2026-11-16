@@ -190,3 +190,37 @@ test('Photo tips opens from beside Add photo and from the photo prompt', async (
   await expect(prompt).toBeVisible()
   await expect(page).toHaveURL(/\/tickets\/new\//)
 })
+
+test('IT is a third area, with its own categories, and a ticket under it says IT', async ({ page }, testInfo) => {
+  const title = `Receipt printer offline ${testInfo.project.name} ${Date.now() % 100000}`
+  await signIn(page, 'ari.kim@example.com')
+  await page.goto('/tickets/new')
+  const area = page.getByRole('radiogroup', { name: 'Area' })
+  await expect(area.getByRole('radio')).toHaveText(['Front of House', 'Back of House', 'IT'])
+  await area.getByRole('radio', { name: 'IT' }).click()
+  await expect(page).toHaveURL(/area=it/)
+  for (const name of ['POS & network', 'Website', 'Software']) {
+    await expect(page.getByRole('link', { name: new RegExp(`^${name}`) })).toBeVisible()
+  }
+  await expect(page.getByRole('link', { name: /^Refrigeration/ })).toHaveCount(0)
+  // All three fit on a phone, side by side.
+  const boxes = await area
+    .getByRole('radio')
+    .evaluateAll((els) =>
+      els.map((e) => ({ fits: e.scrollWidth <= e.clientWidth, top: e.getBoundingClientRect().top })),
+    )
+  expect(boxes.every((b) => b.fits && b.top === boxes[0].top)).toBe(true)
+  await page.waitForTimeout(300)
+  await testInfo.attach('create-area-it', { body: await page.screenshot(), contentType: 'image/png' })
+
+  await page.getByRole('link', { name: /^POS & network/ }).click()
+  await expect(page.getByText('IT › POS & network')).toBeVisible()
+  await page.getByLabel('Title').fill(title)
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  await page.getByRole('button', { name: 'Proceed without photo' }).click()
+  const card = page.getByRole('link', { name: new RegExp(title) })
+  await expect(card).toContainText('IT · POS & network')
+  await card.click()
+  await expect(page.getByRole('heading', { name: title })).toBeVisible()
+  await expect(page.getByText(/› IT › POS & network/)).toBeVisible()
+})
