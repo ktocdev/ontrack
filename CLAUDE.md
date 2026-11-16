@@ -172,10 +172,13 @@ The plan's Phase 6 section says what ships and what it works around. It ships in
 | OT-110 | Security and code quality pass over 6a |
 | OT-111 | 6a's done test; the note for 6a |
 | OT-112 | Plan update from the ops manager (Nov 16, 2026): IT works the same pool as Ops, chefs file tickets as managers do, Ops adds in-house tasks; no new roles |
-| OT-113 | Role names as the group's (`group_settings.role_names`, `save_role_names`) and a job title on each person (`profiles.title`), shown wherever a role or person is; pgTAP |
-| OT-114 | My categories backend: POS & network back for IT, `category_prefs` (Notify all / urgent only / off, Show on my lists), `notification_recipients` filters the pool by them, never a ticket you filed or are on; pgTAP |
-| OT-115 | My categories on Profile for every role; hidden categories off the lists with "N hidden · Show all"; View as; a stack flow |
-| 6b    | Numbered when 6a's done test passes, after OT-115; it also takes Ops' Add task and Hand back as in-house task (optional unit and category, a link to the ticket, one notification): Ops backend, overview and one restaurant, in-house fixes with Convert to ticket, schedule (rotations restaurants share), quarterly tasks, Import checklist from a spreadsheet, checklist editor, security pass, done test |
+| OT-113 | Plan update: the ops manager's answers, and IT as an area of its own (Nov 16, 2026); renumbers what follows |
+| OT-114 | Role names as the group's (`group_settings.role_names`, `save_role_names`); this group's are Reporters (manager) and Support Team (ops), set by an admin, never in code; pgTAP |
+| OT-115 | IT as a third area: `it` on `area` (its own migration), POS & network, Website and Software; a third segment and group wherever Front / Back show; the seed's IT person, POS terminal and ticket |
+| OT-116 | My categories backend: `area_prefs` and `category_prefs` (Notify all / urgent only / off, Show on my lists; a category's own wins over its area's); `notification_recipients` filters the pool by them, never a ticket you filed or are on; pgTAP |
+| OT-117 | Job titles as the group's list (admin, logged, archive and delete rule), each with a starting view per area applied once when given: Chef starts with Front of House off, IT with Front and Back off, Ops manager with IT on Notify Off; picked on Invite user and User profile; grants nothing; pgTAP |
+| OT-118 | My categories on Profile for every role; hidden categories off the lists with "N hidden · Show all"; View as; a stack flow |
+| 6b    | Numbered when 6a's done test passes, after OT-118; it also takes Ops' Add task and Hand back as in-house task (optional unit and category, a link to the ticket, one notification): Ops backend, overview and one restaurant, in-house fixes with Convert to ticket, schedule (rotations restaurants share), quarterly tasks, Import checklist from a spreadsheet, checklist editor, security pass, done test |
 
 ## Phase 5, for the record
 
