@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Nov 12, 2026 with Phases 1 to 5 as built and the Phase 6 pull requests
+Oct 28, 2026 · Katie · updated Nov 16, 2026 with Phases 1 to 5 as built, the Phase 6 pull requests, and who does what between 6a and 6b
 
 ## How to read this
 
@@ -23,6 +23,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 4 · Equipment · first demo | Done, except the real-iPhone checks; tried on the live app (Nov 11, 2026) | OT-65 plan update, then OT-66 to OT-88 (see Phase 4). QR labels (OT-74) are deferred until the iPhone link check |
 | 5 · Contractors, service records and invoices | Done, except the real-iPhone checks; the contractor page tried on the live app (Nov 12, 2026), the done test waits for a try there | OT-89 plan update, then OT-90 to OT-100 (see Phase 5) |
 | 6 · Monthly walkthroughs | In progress: 6a (the manager's walkthrough), then 6b (Ops and the schedule) | OT-101 plan update, then OT-102 to OT-111 for 6a; 6b numbered after 6a (see Phase 6) |
+| Between 6a and 6b · Who does what | Planned (Nov 16, 2026) | OT-112 plan update, then OT-113 to OT-115: role names and job titles, My categories (see its section after Phase 6) |
 
 Phase 0 notes:
 
@@ -89,7 +90,7 @@ The app talks to Supabase directly and Edge Functions handle only the jobs that 
 | Repo and CI | One GitHub repo (`app/`, `supabase/`), GitHub Actions: lint, typecheck, Vitest, Playwright, pgTAP and type generation on every PR; Supabase migrations on merge to main. Cloudflare Workers Builds deploys the app itself | Solo, AI-assisted build: every change goes through the same gate |
 | Offline | Later (Phase 8). v1 caches what you have read; writes need a connection | The queued-ticket flow in the design is real work on its own |
 | Archive and delete | Things people pick from (restaurants, people, equipment, contractors, categories, templates) are archived, not deleted; records of what happened (tickets, walkthroughs, updates, service records, invoices) are never archived or deleted; anything can be deleted only while nothing points to it | Keeps every history and every report intact while still letting an admin clear a mistake or a test entry. The full table is under Archive and delete below and in `CLAUDE.md` |
-| Permissions | Four roles with defaults from the Roles & rights screen, overridable per person | Managers can be granted equipment edits and cost visibility by an admin; the database checks the grant, not the screen |
+| Permissions | Four roles with defaults from the Roles & rights screen, overridable per person. The roles' names are the group's, and a job title on each person says who they are (Nov 16, 2026) | Managers can be granted equipment edits and cost visibility by an admin; the database checks the grant, not the screen. A chef files tickets like a manager and IT works tickets like Ops, so neither needs a role of its own |
 | Avatars | Initials follow the boards: the color comes from the role, and pending and expired invites have their own. An admin can turn profile photos off for the whole group | The color says who is talking on a ticket thread and matches the design. The switch is enforced in the database and keeps the files, so it can be reversed |
 | Group name and domains | The group's name is a field in the database, never in the code. Each group gets its own subdomain: `fourcorners.ontrack-app.app`, later `hogsalt.ontrack-app.app` | Another restaurant group may want the app someday, and nothing about Four Corners should have to be edited out of the code when that happens |
 
@@ -478,7 +479,7 @@ Managers walk a checklist each month, log fixes and tickets as they go, and Ops 
 
 - Ops walkthroughs overview: this month's progress per restaurant, submitted dates, days left, and the last 6 months as On time, Late, Missed or In progress; the restaurant picker scopes it as on the dashboard
 - One restaurant's walkthrough: progress by section, who is working on it, what is flagged so far, past walkthroughs, and Send reminder with when the last one went
-- Ops in-house fixes, read-only, with Convert to ticket: the fix leaves the restaurant's in-house list, becomes a ticket with the Walkthrough tag, and the manager is notified
+- Ops in-house fixes, read-only, with Convert to ticket: the fix leaves the restaurant's in-house list, becomes a ticket with the Walkthrough tag, and the manager is notified. Ops can also add a task to a restaurant's list and hand a ticket back as one (decided Nov 16, 2026; see Between 6a and 6b)
 - Walkthrough schedule: the group rotation (a cycle of months, each with its own checklist, like "A · Kitchen + Exterior, B · Back of House + Front of House"), a restaurant's own rotation and Switch back to group schedule, the year's preview, the restaurant list with Group or Own, and the settings (due date, reminders)
 - Quarterly tasks: the group list with per-restaurant removals, restores, changes and additions; the task editor with directions and a video link
 - Import checklist from a spreadsheet (asked for, Nov 12, 2026): download a template, fill in sections, groups, items, directions and video links, upload it, see what changes, and replace the checklist. A walkthrough already open keeps the checklist it opened with. Built so Phase 7's contractor and equipment imports can reuse it
@@ -520,6 +521,56 @@ Managers walk a checklist each month, log fixes and tickets as they go, and Ops 
 - **In-house fixes** keep the rules from OT-30, OT-83 and OT-84: a fix checked off once stays on the record and loses its Delete; one never checked off can be deleted. A walkthrough's fix is added by the function that records the check, never by a direct insert, so the Walkthrough tag can't be claimed.
 - **Leadership's read-only walkthrough is Phase 7's;** its tab stays a placeholder.
 - **View as:** each screen scopes its data from `useUser()` and hides every control that writes when `viewingAs` is set.
+
+## Between 6a and 6b · Who does what, and what each person sees
+
+From a talk with the ops manager (Nov 16, 2026). Three things the app didn't fit:
+
+- **IT works the same pool.** POS and tech problems go to the IT department, who use the same tickets as Ops. The ops manager sees every IT ticket but doesn't take them; IT takes them and closes them. Nov 12's removal of POS & tech ("Ops doesn't handle it") is reversed, since IT will be in the app.
+- **Chefs file tickets too.** They are in effect back-of-house managers. What matters is that they file tickets for their restaurant, not their title.
+- **Ops makes in-house tasks for the restaurants.** Sometimes new, sometimes a ticket handed back with more detail ("replace the bulb, it's the 2-pin kind"). In his old system a task and a ticket were the same thing; ours keeps the manager's In-house list a plain checklist and lets Ops add to it.
+
+**Decided (Nov 16, 2026)**
+
+- **No new roles.** A role is a default set of rights; the four stay as they are in the database. What changes is what people see: the names of the roles are the group's, kept in `group_settings` and edited by an admin on Roles & rights, so this group can call them, say, Restaurant team and Support team and another group something else. Defaults are today's names, so nothing changes until an admin renames them. A chef is the manager role with the title Chef; an IT person is the Ops role with the title IT, with costs and contractors switched off by override if the admin wants.
+- **A job title on each person.** Free text, up to 40 characters (Chef, IT, Ops manager), set by an admin on Invite user and User profile and by the person on Profile. It grants nothing. It shows on Profile, User profile, the Users list and the badge naming who is on a ticket.
+- **Everyone chooses what they see, and starts by seeing everything.** A new My categories screen on Profile, for every role, lists the group's categories under Front of House and Back of House, each with:
+  - **Notify me:** All, Urgent only, or Off. Default All.
+  - **Show on my lists:** on or off. Default on.
+
+  So the ops manager keeps IT's categories on his lists with Notify Off; IT turns other categories to Off or Urgent only; a chef may hide Front of House. A category added later starts at All and on for everyone. Only exceptions to the default are stored.
+- **What the setting filters.** The shared pool: new and reopened tickets, and Ops' emails about another Ops person picking up or closing a ticket. Never a ticket you filed or are working on: its updates and status changes always reach you, in any category. Walkthrough reminders keep their own switch. The switches per kind on Profile still apply; a notification goes only where both allow it.
+- **Hidden is never lost.** A list with categories hidden says so on a line at the top ("3 categories hidden · Show all"), and Show all lasts until you leave the screen. A lasting link `/t/OT-1042`, search and a unit's Tickets tab always show the ticket. The setting is a view, not a permission: the database still decides what a person may read, and View as shows the viewed person's settings.
+- **IT's categories.** POS & network comes back in Front of House, as a new category (the old one was deleted, so this is not a restore); whether IT wants more (Network & Wi-Fi, Music & TVs) is asked of the ops manager. IT closes its own tickets, with Update status, as Ops does.
+- **In-house tasks from Ops, two ways in (in 6b).** *Add task* on Ops' in-house list for a restaurant: a title, a note, and an optional unit, which brings its category. *Hand back as in-house task* on an Ops ticket: Ops writes what to do, and one step closes the ticket with that note and adds the task with the ticket's unit and category and a link back to the ticket. Either way the restaurant's people with Create tickets there get one notification (by their My categories setting), and the task sits in the same In-house list with a line naming who sent it and the unit. A manager's own tasks stay as they are, with no category or unit asked for. Both are checked, logged functions; a direct insert still makes only a manager's own plain task. Hand back is the reverse of Convert to ticket, which 6b already has.
+
+**Screens.** No board draws My categories, the job title fields, the role names editor or the two Ops task sheets. They follow the Profile and sheet patterns: My categories is a Profile sub-screen like Notifications, with a row per category and a sheet for its two settings; Add task and Hand back are sheets like Close ticket; role names sit on Roles & rights beside the group name; the job title is one more field on Invite user, User profile and Profile. Each new piece goes on `/kit` and the docs site first.
+
+**Backend**
+
+- `group_settings.role_names` (one name per role, 1 to 30 characters), written only through `save_role_names`, which checks for an admin and logs, like `save_group_name`.
+- `profiles.title`, 0 to 40 characters, written by the person for their own row and by `set_person_access` for an admin; logged when an admin changes it.
+- `category_prefs (user_id, category_id, notify, shown)`, `notify` one of `all`, `urgent`, `off`; each person reads and writes only their own rows, through `can()`'s session checks (`my_role() is not null`); a category's delete takes its rows with it.
+- `notification_recipients` reads `category_prefs` for the pool kinds only, by the ticket's category and urgency; pgTAP for each case, including that a ticket you filed or are on still reaches you.
+- 6b: `inhouse_fixes` gains an optional `equipment_id`, `category_id` and `from_ticket_id`; `add_inhouse_task` (Ops with Update status at the restaurant) and `hand_back_ticket` (closes the ticket and adds the task in one step), definer, checked and logged; a notification kind for a task from Ops, with its own switch on Profile.
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-112 | This plan update |
+| OT-113 | Role names and job titles: `role_names` and `save_role_names`, `profiles.title`; the names on Roles & rights, the title on Invite user, User profile, Profile, Users and the ticket badge; every place that shows a role reads its name from `group_settings`; pgTAP |
+| OT-114 | My categories backend: POS & network, `category_prefs`, `notification_recipients` by category and urgency; pgTAP for who gets what |
+| OT-115 | My categories on Profile; hidden categories left off the Ops dashboard, Closed tickets, a manager's Open tickets and In-house, with the "N hidden · Show all" line; View as; a stack flow for the ops manager hiding IT's notifications while IT still gets them |
+| 6b | Add task and Hand back as in-house task, in 6b's Ops backend and in-house PRs |
+
+These come after OT-111 and before 6b is numbered, so 6b's Ops screens are built on the role names and the category settings.
+
+**Questions for the ops manager**
+
+- Which categories IT wants besides POS & network.
+- What this group calls the two roles, if not Manager and Ops.
+- Whether a chef should start with Front of House hidden, or see everything like everyone else (the plan says everything).
 - **Security and code quality pass (OT-110, Nov 13, 2026).** What 6a added was read through, from `20261113120000` on, with the walkthrough screens, their links and routes, and the reminder in `send-push`, and probed on the local stack as each seeded role, signed out, deactivated, with Create tickets switched off, and as an admin who owes a second step. Three fixes in the database, in `20261113160000_phase6a_audit.sql` with `47_phase6a_audit.test.sql`. (1) Ops could give any ticket the Walkthrough tag or link it to a walkthrough, and take both off a walkthrough's ticket, with a plain update through the API: Ops may change where a ticket came from, and the rule that only the walkthrough makes a walkthrough ticket watched inserts only. It now covers updates too, for everyone. (2) Deleting an item's only in-house fix left its check behind, saying In-house with nothing under it. Nothing counted it as done, but 6b keeps a turned-off item on a walkthrough that already checked it, and would have kept these. Deleting the last fix now removes the check, and the ones already left were removed. (3) Before 6b lets Ops edit them: a how-to video link is a web address and nothing else, since people tap it (the app already showed only a web address), and a schedule's months are 1 to 12 and its reminder days 0 to 31. One fix in the app: a ticket linked to a walkthrough but to no item, like the seed's and like 6b's Convert to ticket will make, showed "From the October walkthrough" as a link to a page that doesn't exist; it now opens that walkthrough's review. Accepted: Good stays on an item whose ticket is later reopened or whose fix is unchecked, and the screens show it as open, with Good hidden until it is done again; a fix never checked off can still be deleted after the walkthrough is submitted, as the boards draw Delete on every open fix, which takes one item off a submitted walkthrough's count and is in the audit log (a question for Ops before 6b's overview: should a submitted walkthrough's fixes lose Delete?); Ops can work a walkthrough through the API, as planned; any signed-in person reads the checklist, the schedule and the quarterly tasks, which are the group's. Checked and fine: every walkthrough function refuses another restaurant's walkthrough with the same words as one that doesn't exist, and refuses leadership, admins, a deactivated person, someone with Create tickets off, an archived restaurant and a submitted walkthrough; an item from another checklist and another restaurant's quarterly task are refused; a ticket from an item still goes through the unit, category and title checks every ticket does; nothing writes walkthroughs, checks, the checklist, schedules, quarterly tasks or the outbox through the API; the functions that open the month and queue reminders run only for the scheduled job, and nobody signed in can reach `cron`; every new function sets its search path and is closed to signed-out visitors; reminders go only to managers at that restaurant, and nobody reads another person's deliveries; the reminder email escapes what it shows and links only to this app; the fixes screen's Back goes through `safeReturnPath`; no new origins in the content security policy. Code quality: the checklist and Review hide their buttons from someone without Create tickets, where each tap used to fail with a message; the list heading style repeated in four screens is the `eyebrow` utility; the box a list shows when it has no rows is one `TaskListEmpty`, on `/kit` and the docs site; "still open" is worked out in one place for items and quarterly tasks. Left alone: a dropped connection on the checklist says the page wasn't found, as the other detail screens do, which is worth its own look across the app.
 
 ## Phase 7 · Leadership, Admin tickets and imports
@@ -615,6 +666,7 @@ The slide deck is for people, not agents. If a screen in the deck and the same s
 - [x] For Google sign-in (OT-59): is the group on Google Workspace, with addresses on its own domain, not ordinary `@gmail.com` ones? Yes, on its own domain (Nov 4, 2026, from Ops)
 - [ ] For Google sign-in: who runs the group's Google admin account, to help set up the sign-in connection? An IT person does, not yet involved; Ops was unsure how they would take the change, so Katie will try to reach them, or the other Ops manager first for more background
 - [x] For Google sign-in: does everyone have a work Google account, including every manager, Ops, leadership and any outside people? Yes (Nov 4, 2026, from Ops)
+- [ ] IT will use the app for POS and tech tickets (Nov 16, 2026), which may be the way to reach the group's IT person for Google sign-in
 - [ ] For Google sign-in: is anyone on an iPhone? If so, the installed-app test decides the approach. Not known yet; the managers need asking
 - [ ] The real walkthrough checklist items per section (the design has 48 placeholders), and what each month of the rotation covers, from Ops, before 6a is tried on the live app; a migration loads them until Import checklist in 6b
 - [ ] Who at Four Corners is the first admin, and whether the head of ops wants admin or ops (Katie holds the only admin account until then, and an only admin who loses their phone and backup codes can be recovered only by a line of SQL, so a second admin removes that risk)
