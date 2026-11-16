@@ -1,5 +1,6 @@
 import { Navigate, useParams } from 'react-router'
-import { ROLE_HOME, ROLE_LABEL, ticketPath } from '../../app/roles'
+import { useRoleNames } from '../../auth/group'
+import { ROLE_HOME, ticketPath } from '../../app/roles'
 import { useAuth } from '../../auth/context'
 import { NoAccessScreen } from '../errors/NoAccessScreen'
 import { useTicketLink } from './useTicketLink'
@@ -15,6 +16,7 @@ import { useTicketLink } from './useTicketLink'
 export function TicketLinkScreen() {
   const { id = '' } = useParams()
   const auth = useAuth()
+  const names = useRoleNames()
   const role = auth.status === 'signed-in' ? auth.user.role : null
   const ticket = useTicketLink(id, role !== null && ticketPath(role, id) !== null)
   if (auth.status !== 'signed-in' || ticket.loading) return null
@@ -26,8 +28,8 @@ export function TicketLinkScreen() {
       title="Tickets don't open here yet"
       body={
         <>
-          This link opens for <b className="text-text">Manager</b> and <b className="text-text">Ops Manager</b>{' '}
-          accounts. You are signed in as {ROLE_LABEL[auth.user.role]}.
+          This link opens for <b className="text-text">{names.name('manager')}</b> and{' '}
+          <b className="text-text">{names.name('ops')}</b> accounts. You are signed in as {names.name(auth.user.role)}.
         </>
       }
       backTo={ROLE_HOME[auth.user.role]}

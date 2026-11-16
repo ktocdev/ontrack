@@ -1,5 +1,6 @@
 import { Navigate, useParams } from 'react-router'
-import { equipmentPath, ROLE_HOME, ROLE_LABEL } from '../../app/roles'
+import { useRoleNames } from '../../auth/group'
+import { equipmentPath, ROLE_HOME } from '../../app/roles'
 import { useAuth } from '../../auth/context'
 import { NoAccessScreen } from '../errors/NoAccessScreen'
 
@@ -13,6 +14,7 @@ import { NoAccessScreen } from '../errors/NoAccessScreen'
 export function EquipmentLinkScreen() {
   const { id = '' } = useParams()
   const auth = useAuth()
+  const names = useRoleNames()
   if (auth.status !== 'signed-in') return null
 
   const path = equipmentPath(auth.user.role, id)
@@ -22,8 +24,8 @@ export function EquipmentLinkScreen() {
       title="Equipment doesn't open here"
       body={
         <>
-          This link opens for <b className="text-text">Manager</b> and <b className="text-text">Ops Manager</b>{' '}
-          accounts. You are signed in as {ROLE_LABEL[auth.user.role]}.
+          This link opens for <b className="text-text">{names.name('manager')}</b> and{' '}
+          <b className="text-text">{names.name('ops')}</b> accounts. You are signed in as {names.name(auth.user.role)}.
         </>
       }
       backTo={ROLE_HOME[auth.user.role]}

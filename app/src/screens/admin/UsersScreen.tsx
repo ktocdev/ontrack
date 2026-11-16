@@ -10,7 +10,7 @@ import { Screen, ScreenBody, ScreenEmpty } from '../../components/Screen'
 import { PeopleListSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { IconChevronRight, IconPerson, IconPlus, IconUserPlus } from '../../components/icons'
-import { ROLE_LABEL } from '../../app/roles'
+import { useRoleNames } from '../../auth/group'
 import { useUser } from '../../auth/context'
 import { useAvatarUrl } from '../profile/useProfile'
 import { AdminHeader } from './AdminHeader'
@@ -28,6 +28,7 @@ type Filter = 'all' | 'pending' | 'managers' | 'ops'
 
 export function UsersScreen() {
   const { user } = useUser()
+  const roleNames = useRoleNames()
   const { data, isPending } = useUsers()
   const [filter, setFilter] = useState<Filter>('all')
   const [opened, setOpened] = useState<InviteRow | null>(null)
@@ -52,8 +53,8 @@ export function UsersScreen() {
   const chips: { value: Filter; label: string }[] = [
     { value: 'all', label: data ? `All · ${invites.length + people.length}` : 'All' },
     { value: 'pending', label: data ? `Pending · ${invites.length}` : 'Pending' },
-    { value: 'managers', label: 'Managers' },
-    { value: 'ops', label: 'Ops' },
+    { value: 'managers', label: roleNames.name('manager', 'Managers') },
+    { value: 'ops', label: roleNames.name('ops', 'Ops') },
   ]
 
   if (justYou) {
@@ -67,7 +68,7 @@ export function UsersScreen() {
                   <IconPerson />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                  <RowBody name="You" tag={ROLE_LABEL[you.role]} scope={you.scope} />
+                  <RowBody name="You" tag={roleNames.name(you.role)} scope={you.scope} />
                 </span>
               </div>
             </ListCard>
@@ -143,6 +144,7 @@ function RowBody({ name, tag, scope, dim }: { name: string; tag: string; scope: 
 }
 
 function PersonRowView({ person: p }: { person: PersonRow }) {
+  const roleNames = useRoleNames()
   const photo = useAvatarUrl(p.avatarPath)
   return (
     <Link
@@ -151,7 +153,7 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
     >
       <Avatar name={p.name} role={p.role} size={38} src={photo.data} />
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <RowBody name={p.name} tag={ROLE_LABEL[p.role]} scope={p.scope} dim={p.deactivated} />
+        <RowBody name={p.name} tag={roleNames.name(p.role)} scope={p.scope} dim={p.deactivated} />
         {p.deactivated && <span className="text-12 font-semibold text-text-muted">Deactivated</span>}
       </span>
       <IconChevronRight size={16} className="flex-none text-text-secondary" />
@@ -160,6 +162,7 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
 }
 
 function InviteRowView({ invite: i, onOpen }: { invite: InviteRow; onOpen: () => void }) {
+  const roleNames = useRoleNames()
   const resend = useResendInvite()
   const toast = useToast()
   return (
@@ -168,7 +171,7 @@ function InviteRowView({ invite: i, onOpen }: { invite: InviteRow; onOpen: () =>
       <button type="button" onClick={onOpen} aria-label={`${i.name}, invite options`} className="absolute inset-0" />
       <Avatar name={i.name} role={i.expired ? 'expired' : 'pending'} size={38} />
       <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <RowBody name={i.name} tag={ROLE_LABEL[i.role]} scope={i.scope} />
+        <RowBody name={i.name} tag={roleNames.name(i.role)} scope={i.scope} />
         <span className="flex items-center justify-between gap-2">
           <span
             role={resend.isError ? 'alert' : undefined}

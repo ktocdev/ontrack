@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRoleNames } from '../../auth/group'
 import { Chip } from '../../components/Chip'
 import { RadioCard } from '../../components/RadioCard'
 import type { Restaurant } from '../../auth/types'
@@ -56,6 +57,7 @@ export function AccessFields({
   /** Called before any change, so a form can clear its last error. */
   onEdit?: () => void
 }) {
+  const roleNames = useRoleNames()
   const edit =
     <T,>(apply: (value: T) => void) =>
     (value: T) => {
@@ -73,7 +75,7 @@ export function AccessFields({
             <RadioCard
               key={r.value}
               checked={choice.role === r.value}
-              title={r.name}
+              title={roleNames.name(r.value, r.name)}
               subtitle={r.desc}
               onSelect={() => edit(choice.pickRole)(r.value)}
             />

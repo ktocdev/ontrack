@@ -227,14 +227,14 @@ isOneToOne: false
                   ]
                 },"group_settings": {
                   Row: {
-                    "id": boolean,"name": string,"profile_photos": boolean,"short_name": string | null,"time_zone": string,"updated_at": string
+                    "id": boolean,"name": string,"profile_photos": boolean,"role_names": NonNullable<Json>,"short_name": string | null,"time_zone": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"time_zone"?: string,"updated_at"?: string
+                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"role_names"?: NonNullable<Json>,"short_name"?: string | null,"time_zone"?: string,"updated_at"?: string
                   }
                   Update: {
-                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"short_name"?: string | null,"time_zone"?: string,"updated_at"?: string
+                    "id"?: boolean,"name"?: string,"profile_photos"?: boolean,"role_names"?: NonNullable<Json>,"short_name"?: string | null,"time_zone"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -1936,6 +1936,9 @@ isOneToOne: false
 "reopen_ticket":
 { Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
                            },
+"role_names_ok":
+{ Args: { "p": Json }; Returns: boolean
+                           },
 "save_contractor":
 { Args: { "p_contact_name"?: string,"p_email"?: string,"p_id": string,"p_insurance_until"?: string,"p_name": string,"p_notes"?: string,"p_phone"?: string,"p_preferred"?: boolean,"p_trade_ids": (string)[] }; Returns: string
                            },
@@ -1947,6 +1950,9 @@ isOneToOne: false
                            },
 "save_role_defaults":
 { Args: { "p_changes": Json }; Returns: undefined
+                           },
+"save_role_names":
+{ Args: { "p_names": Json }; Returns: undefined
                            },
 "service_check_input":
 { Args: { "p_contractor_changed": boolean,"p_contractor_id": string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents": number,"p_parts_cents": number,"p_service_date": string,"p_trip_cents": number }; Returns: undefined

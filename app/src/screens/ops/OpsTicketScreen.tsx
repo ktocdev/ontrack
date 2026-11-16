@@ -21,7 +21,8 @@ import { TicketService } from '../service/TicketService'
 import { longDate } from '../tickets/closed'
 import { AREA_LABEL, scheduledLabel } from '../tickets/tickets'
 import { ThreadFeed } from '../tickets/ThreadFeed'
-import { threadItems } from '../tickets/thread'
+import { ROLE_WORD, threadItems } from '../tickets/thread'
+import { useRoleNames } from '../../auth/group'
 import { EquipmentCard, TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
 import { useCloseTicket } from '../tickets/useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
@@ -65,6 +66,7 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 export function OpsTicketScreen() {
   const { id = '' } = useParams()
   const { user, viewingAs } = useUser()
+  const roleNames = useRoleNames()
   const { data, isPending } = useOpsTicket(id)
   const setStatus = useSetTicketStatus(id)
   const take = useTakeTicket(id)
@@ -135,7 +137,10 @@ export function OpsTicketScreen() {
       },
     })
 
-  const items = threadItems(data.updates, user.id, data.names, { ops: true })
+  const items = threadItems(data.updates, user.id, data.names, {
+    ops: true,
+    roleWord: (role) => roleNames.name(role, ROLE_WORD[role]),
+  })
   const count = items.filter((i) => i.type === 'message').length
   const othersTicket = !!ticket.assignee_id && ticket.assignee_id !== user.id
   const onIt = ticket.assignee_id === user.id ? 'You' : (ticket.assignee?.full_name ?? 'Nobody yet')

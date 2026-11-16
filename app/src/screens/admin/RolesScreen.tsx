@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRoleNames } from '../../auth/group'
 import { useNavigate } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
 import { CloseBar, Screen, ScreenBody, ScreenFooter } from '../../components/Screen'
@@ -28,7 +29,6 @@ import {
  * board says people are notified, which stays off: rights changes notify nobody. The
  * group's settings sit under Edit defaults; no board draws them.
  */
-const ROLE_HEAD: Record<AppRole, string> = { manager: 'Mgr', ops: 'Ops', leadership: 'Lead', admin: 'Admin' }
 
 const cellText = (key: RightKey, on: boolean) => (key === 'see_all_tickets' ? (on ? 'All' : 'Own') : on ? 'Yes' : 'No')
 
@@ -55,6 +55,7 @@ function Grid({
   /** Present while editing. */
   onTap?: (role: AppRole, key: RightKey) => void
 }) {
+  const roleNames = useRoleNames()
   return (
     <div className="flex-none overflow-hidden rounded-card border border-border bg-surface">
       <table className="w-full border-collapse text-13">
@@ -72,7 +73,7 @@ function Grid({
                 scope="col"
                 className="px-0.5 py-2.5 text-11 font-bold tracking-[.02em] text-text-secondary"
               >
-                {ROLE_HEAD[role]}
+                {roleNames.short(role)}
               </th>
             ))}
           </tr>
@@ -99,7 +100,7 @@ function Grid({
                     <button
                       type="button"
                       aria-disabled={locked}
-                      aria-label={`${name}, ${ROLE_HEAD[role]}: ${cellText(key, on)}${locked ? ', locked' : ', tap to change'}`}
+                      aria-label={`${name}, ${roleNames.short(role)}: ${cellText(key, on)}${locked ? ', locked' : ', tap to change'}`}
                       onClick={() => !locked && onTap(role, key)}
                       className={`inline-flex h-10 w-11 items-center justify-center rounded-control border transition-colors active:duration-0 ${
                         changed ? 'border-brand bg-brand-tint-soft' : 'border-transparent'
@@ -119,6 +120,7 @@ function Grid({
 }
 
 function Help() {
+  const roleNames = useRoleNames()
   const [open, setOpen] = useState(false)
   return (
     <div className="flex-none">
@@ -135,13 +137,13 @@ function Help() {
       {open && (
         <div className="flex flex-col gap-1 pb-1.5 pt-0.5 text-13 leading-[1.45] text-text-body">
           <span>
-            <b>Mgr</b> Restaurant manager
+            <b>{roleNames.short('manager')}</b> {roleNames.name('manager', 'Restaurant manager')}
           </span>
           <span>
-            <b>Ops</b> Operations manager
+            <b>{roleNames.short('ops')}</b> {roleNames.name('ops', 'Operations manager')}
           </span>
           <span>
-            <b>Lead</b> Leadership (read-only)
+            <b>{roleNames.short('leadership')}</b> {roleNames.name('leadership')} (read-only)
           </span>
           <span>
             <b>Own</b> Only the restaurants assigned to them
@@ -204,6 +206,7 @@ export function EditRolesScreen() {
 }
 
 function EditForm({ defaults, people }: { defaults: Map<string, boolean>; people: Map<AppRole, number> }) {
+  const roleNames = useRoleNames()
   const navigate = useNavigate()
   const toast = useToast()
   const save = useSaveDefaults()
@@ -269,7 +272,7 @@ function EditForm({ defaults, people }: { defaults: Map<string, boolean>; people
               className="flex items-center gap-2.5 border-t border-border px-3.5 py-2.5 text-14 first:border-t-0"
             >
               <span className="flex-1">
-                {cell.name} · {ROLE_HEAD[cell.role]}
+                {cell.name} · {roleNames.short(cell.role)}
               </span>
               <span className="whitespace-nowrap font-mono text-12 font-medium text-text-secondary">
                 {cellText(cell.key, !allowed)} → {cellText(cell.key, allowed)}

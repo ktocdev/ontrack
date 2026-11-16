@@ -16,6 +16,7 @@ import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useAvatarUrl } from '../profile/useProfile'
 import { useRequestReset } from '../reset/useReset'
 import { AccessFields, ROLE_CHOICES, useAccessChoice } from './AccessFields'
+import { useRoleNames } from '../../auth/group'
 import { countRights, overrideFor } from './rightsDraft'
 import {
   defaultKey,
@@ -78,7 +79,8 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
   const isAdminTarget = profile.role === 'admin'
   const isYou = profile.id === user.id
   const deactivated = profile.deactivated_at !== null
-  const roleName = ROLE_CHOICES.find((r) => r.value === profile.role)?.name ?? profile.role
+  const roleNames = useRoleNames()
+  const roleName = roleNames.name(profile.role, ROLE_CHOICES.find((r) => r.value === profile.role)?.name)
 
   const [draft, setDraft] = useState(new Map<RightKey, boolean>())
   const [changing, setChanging] = useState(false)
