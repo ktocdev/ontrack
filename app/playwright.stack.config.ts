@@ -34,9 +34,25 @@ export default defineConfig({
       ],
     },
   },
+  // `last/` holds flows that change what the others expect (6a's done test opens a new month,
+  // which becomes every restaurant's current walkthrough), so they run after the rest. CI runs
+  // each browser on its own stack (`--project=chromium --project=chromium-last`); here both
+  // browsers share one, so each waits for both.
   projects: [
-    { name: 'chromium', use: { ...devices['Pixel 7'] } },
-    { name: 'webkit', use: { ...devices['iPhone 14'] } },
+    { name: 'chromium', testIgnore: 'last/**', use: { ...devices['Pixel 7'] } },
+    { name: 'webkit', testIgnore: 'last/**', use: { ...devices['iPhone 14'] } },
+    {
+      name: 'chromium-last',
+      testMatch: 'last/**',
+      dependencies: CI ? ['chromium'] : ['chromium', 'webkit'],
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'webkit-last',
+      testMatch: 'last/**',
+      dependencies: CI ? ['webkit'] : ['chromium', 'webkit'],
+      use: { ...devices['iPhone 14'] },
+    },
   ],
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,

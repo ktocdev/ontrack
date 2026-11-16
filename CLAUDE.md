@@ -25,6 +25,7 @@ app/                 the PWA
   src/screens/            one folder per area; errors/ and loading/ hold the boards
   e2e/                    Playwright on the mock build (smoke, frame, kit, profile)
   e2e/stack/              Playwright against the seeded local stack (playwright.stack.config.ts, CI only)
+  e2e/stack/last/         flows that change what the others expect, run after them (`*-last` projects)
   scripts/icons.mjs       regenerates public/ icons from the mark
   wrangler.jsonc          Cloudflare Worker: serves dist, SPA fallback
 supabase/
@@ -312,7 +313,7 @@ Auth's own emails are set per project: `supabase/templates/` is what `config.tom
 
 ## Database work
 
-Docker Desktop runs on the dev machine, so the database and the data flows are checked locally before pushing (CI checks them again): `npx -y supabase@2.122.0 start -x studio,imgproxy,logflare,vector,postgres-meta`, then `npx -y supabase@2.122.0 test db`, then `npm run test:e2e:stack` in `app/` with `VITE_SUPABASE_URL=http://127.0.0.1:54321` and `VITE_SUPABASE_ANON_KEY` set to the `PUBLISHABLE_KEY` the start command prints. `npx -y supabase@2.122.0 db reset` puts the seed back. A new Edge Function, or a change to `config.toml`, needs `supabase stop` and `start` before it is served. Use the same CLI version as CI. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Every new function ends with `revoke all on function … from public, anon`, then its own grants, because Supabase grants `anon` every new function by default; `18_anon_functions.test.sql` fails CI on one left open. Keep the seed in step with the design's sample data.
+Docker Desktop runs on the dev machine, so the database and the data flows are checked locally before pushing (CI checks them again): `npx -y supabase@2.122.0 start -x studio,imgproxy,logflare,vector,postgres-meta`, then `npx -y supabase@2.122.0 test db`, then `npm run test:e2e:stack` in `app/` with `VITE_SUPABASE_URL=http://127.0.0.1:54321` and `VITE_SUPABASE_ANON_KEY` set to the `PUBLISHABLE_KEY` the start command prints, and `STACK_SECRET_KEY` to its `SECRET_KEY` (the flows that act as the scheduled job need it; `supabase status -o env` prints both). 6a's done test opens a month and submits a walkthrough, so a second run of the suite needs `db reset` first. `npx -y supabase@2.122.0 db reset` puts the seed back. A new Edge Function, or a change to `config.toml`, needs `supabase stop` and `start` before it is served. Use the same CLI version as CI. Add a migration as a new timestamped file; never edit one that is on `main`. Every new table gets RLS, policies that go through `can()`, and a pgTAP file. Every new function ends with `revoke all on function … from public, anon`, then its own grants, because Supabase grants `anon` every new function by default; `18_anon_functions.test.sql` fails CI on one left open. Keep the seed in step with the design's sample data.
 
 ## Commands
 
