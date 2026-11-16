@@ -143,6 +143,9 @@ jobs:
           eval "$(supabase status -o env)"
           echo "VITE_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
           echo "VITE_SUPABASE_ANON_KEY=${PUBLISHABLE_KEY:-$ANON_KEY}" >> "$GITHUB_ENV"
+          # The local stack's throwaway service key, for flows that act as the scheduled job
+          # (6a's done test opens a month). Never a VITE_ variable, so never in the bundle.
+          echo "STACK_SECRET_KEY=${SECRET_KEY:-$SERVICE_ROLE_KEY}" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:
@@ -163,9 +166,9 @@ jobs:
           PW=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")
           docker run --rm --network host --ipc host \
             -v "$PWD:/app" -w /app \
-            -e CI -e VITE_SUPABASE_URL -e VITE_SUPABASE_ANON_KEY \
+            -e CI -e VITE_SUPABASE_URL -e VITE_SUPABASE_ANON_KEY -e STACK_SECRET_KEY \
             "mcr.microsoft.com/playwright:v$PW-noble" \
-            npm run test:e2e:stack -- --project=${{ matrix.browser }}
+            npm run test:e2e:stack -- --project=${{ matrix.browser }} --project=${{ matrix.browser }}-last
 
       # Always: the report carries screenshots of screens on real data for design review.
       - uses: actions/upload-artifact@v4

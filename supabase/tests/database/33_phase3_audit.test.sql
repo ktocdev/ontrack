@@ -116,6 +116,12 @@ select throws_ok(format($$ update public.tickets set status = 'open' where id = 
 select pg_temp.login('bert.velilla@example.com');
 select throws_ok(format($$ update public.tickets set status = 'in_progress' where id = %L $$, :t1028),
   '42501', null, 'nor can Ops bring a closed ticket back that way');
+-- The seed closed 1028 on Oct 15, 2026, so its 30 days to reopen ran out on Nov 14; close it
+-- yesterday instead, so this keeps testing the reason and not the calendar.
+select pg_temp.su();
+alter table public.tickets disable trigger tickets_guard;
+update public.tickets set closed_at = now() - interval '1 day' where id = :t1028;
+alter table public.tickets enable trigger tickets_guard;
 select pg_temp.login('maya.reyes@example.com');
 select lives_ok(format($$ select public.reopen_ticket(%L, 'Still leaking') $$, :t1028),
   'Reopen, with a reason, still works');
