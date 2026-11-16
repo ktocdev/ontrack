@@ -10,7 +10,8 @@ import { Screen, ScreenBody, ScreenFooter, SectionLabel, TitleBar } from '../../
 import { ThemeControl } from '../../components/ThemeControl'
 import { useToast } from '../../components/Toast'
 import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
-import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
+import { ROLE_HOME } from '../../app/roles'
+import { useRoleNames } from '../../auth/group'
 import { useUser } from '../../auth/context'
 import { useProfilePhotosOn } from '../../auth/group'
 import { InstallRow } from './InstallRow'
@@ -29,6 +30,7 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  */
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
+  const roleNames = useRoleNames()
   const [name, setName] = useState(user.full_name)
   const [phone, setPhone] = useState(user.phone ?? '')
   const [notice, setNotice] = useState<string | null>(null)
@@ -152,7 +154,7 @@ export function ProfileScreen() {
             clearSaveError()
             setPhone(e.target.value)
           }}
-          hint="Optional. Lets your Ops Manager call you about a ticket."
+          hint={`Optional. Lets your ${roleNames.name('ops')} call you about a ticket.`}
         />
 
         <ListCard>
@@ -162,7 +164,7 @@ export function ProfileScreen() {
           <StackedRow label="Role">
             <span className="flex items-center justify-between gap-2">
               {scope}
-              <RoleTag>{ROLE_LABEL[user.role]}</RoleTag>
+              <RoleTag>{roleNames.name(user.role)}</RoleTag>
             </span>
           </StackedRow>
         </ListCard>

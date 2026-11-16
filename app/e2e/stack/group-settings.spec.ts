@@ -160,3 +160,53 @@ test('someone can remove their own photo while they are off', async ({ browser, 
   })
   expect(await files.json()).toEqual([])
 })
+
+test('an admin names the roles, and the grid, the users list and the access picker follow', async ({
+  page,
+  request,
+}, testInfo) => {
+  const secret = process.env.STACK_SECRET_KEY ?? ''
+  expect(secret, 'STACK_SECRET_KEY puts the names back afterwards').not.toBe('')
+  await signIn(page, 'admin@example.com')
+  await page.goto('/admin/roles')
+  await expect(page.getByText('Manager · Ops Manager · Leadership · Admin')).toBeVisible()
+  await expect(page.getByRole('columnheader', { name: 'Mgr' })).toBeVisible()
+  try {
+    await page.getByRole('button', { name: 'Edit role names' }).click()
+    const sheet = page.getByRole('dialog', { name: 'Edit role names' })
+    const reporters = sheet.getByRole('group', { name: 'Creates tickets for their restaurant(s)' })
+    const support = sheet.getByRole('group', { name: 'Works tickets, logs costs and contractors' })
+    await expect(reporters.getByLabel('Name', { exact: true })).toHaveValue('Manager')
+    await reporters.getByLabel('Name', { exact: true }).fill('Reporter')
+    await reporters.getByLabel(/Short name/).fill('Rep')
+    await support.getByLabel('Name', { exact: true }).fill('Support Team')
+    await support.getByLabel(/Short name/).fill('')
+    await expect(sheet.getByRole('button', { name: 'Save names' })).toBeDisabled()
+    await support.getByLabel(/Short name/).fill('Support')
+    await page.waitForTimeout(400) // let the sheet finish sliding up
+    await testInfo.attach('role-names-sheet', { body: await page.screenshot(), contentType: 'image/png' })
+    await sheet.getByRole('button', { name: 'Save names' }).click()
+    await expect(page.getByRole('status').filter({ hasText: 'Role names saved.' })).toBeVisible()
+
+    await expect(page.getByText('Reporter · Support Team · Leadership · Admin')).toBeVisible()
+    await expect(page.getByRole('columnheader', { name: 'Rep' })).toBeVisible()
+    await expect(page.getByRole('columnheader', { name: 'Support' })).toBeVisible()
+    await testInfo.attach('roles-renamed', {
+      body: await page.screenshot({ fullPage: true }),
+      contentType: 'image/png',
+    })
+
+    await page.goto('/admin/users')
+    await expect(page.getByRole('button', { name: 'Reporter', exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Maya Reyes/ })).toContainText('Reporter')
+    await page.goto('/admin/users/new')
+    await expect(page.getByRole('radio', { name: /^Reporter/ })).toBeVisible()
+    await expect(page.getByRole('radio', { name: /^Support Team/ })).toBeVisible()
+  } finally {
+    const res = await request.patch(`${SUPABASE}/rest/v1/group_settings?id=eq.true`, {
+      headers: { apikey: secret, 'Content-Type': 'application/json' },
+      data: { role_names: {} },
+    })
+    expect(res.ok(), await res.text()).toBe(true)
+  }
+})

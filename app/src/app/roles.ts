@@ -27,11 +27,51 @@ export const ROLE_HOME: Record<AppRole, string> = {
   leadership: '/lead',
 }
 
+/** A role's tag as the boards draw it, until the group names the role (`useRoleNames`). */
 export const ROLE_LABEL: Record<AppRole, string> = {
   manager: 'Manager',
   ops: 'Ops Manager',
   admin: 'Admin',
   leadership: 'Leadership',
+}
+
+/** The Roles & rights grid's narrow column heads, until the group names the role. */
+export const ROLE_HEAD: Record<AppRole, string> = { manager: 'Mgr', ops: 'Ops', leadership: 'Lead', admin: 'Admin' }
+
+export type RoleName = { name: string; short: string }
+export const ROLES: AppRole[] = ['manager', 'ops', 'leadership', 'admin']
+
+/**
+ * The roles the group has named (OT-114), from `group_settings.role_names`; anything
+ * malformed is left out. A role not named keeps the words each screen's board uses, so
+ * nothing changes until an admin renames one.
+ */
+export function namedRoles(stored: unknown): Partial<Record<AppRole, RoleName>> {
+  const out: Partial<Record<AppRole, RoleName>> = {}
+  if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return out
+  for (const role of ROLES) {
+    const v = (stored as Record<string, unknown>)[role] as Partial<RoleName> | undefined
+    if (v && typeof v.name === 'string' && v.name.trim() && typeof v.short === 'string' && v.short.trim()) {
+      out[role] = { name: v.name.trim(), short: v.short.trim() }
+    }
+  }
+  return out
+}
+
+/** What a screen calls a role: the group's name for it, or the screen's own word. */
+export type RoleNames = {
+  named: Partial<Record<AppRole, RoleName>>
+  name: (role: AppRole, fallback?: string) => string
+  short: (role: AppRole) => string
+}
+
+export function roleNames(stored: unknown): RoleNames {
+  const named = namedRoles(stored)
+  return {
+    named,
+    name: (role, fallback = ROLE_LABEL[role]) => named[role]?.name ?? fallback,
+    short: (role) => named[role]?.short ?? ROLE_HEAD[role],
+  }
 }
 
 export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {

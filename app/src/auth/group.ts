@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { roleNames } from '../app/roles'
 import { supabase } from '../lib/supabase'
 import { MOCK_GROUP_LABEL } from './mock'
 
@@ -20,7 +22,10 @@ export function useGroup() {
     enabled: !__E2E_MOCK__ && Boolean(supabase),
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const { data, error } = await supabase!.from('group_settings').select('name, short_name, profile_photos').single()
+      const { data, error } = await supabase!
+        .from('group_settings')
+        .select('name, short_name, profile_photos, role_names')
+        .single()
       if (error) throw error
       return data
     },
@@ -33,6 +38,15 @@ export function useGroupLabel() {
   const group = useGroup()
   if (__E2E_MOCK__) return MOCK_GROUP_LABEL
   return group ? groupLabel(group) : ''
+}
+
+/**
+ * What each role is called: the group's names (OT-114), or the defaults until they load
+ * or where the group hasn't named a role.
+ */
+export function useRoleNames() {
+  const stored = useGroup()?.role_names
+  return useMemo(() => roleNames(stored), [stored])
 }
 
 /**

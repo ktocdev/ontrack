@@ -2,7 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router'
 import type { AppRole } from '../lib/supabase'
 import { LiveTickets } from '../app/LiveTickets'
-import { ROLE_HOME, ROLE_LABEL } from '../app/roles'
+import { ROLE_HOME } from '../app/roles'
+import { useRoleNames } from './group'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotConfiguredScreen } from '../screens/errors/NotConfiguredScreen'
 import { ServerErrorScreen } from '../screens/errors/ServerErrorScreen'
@@ -74,6 +75,7 @@ export function RequireAuth({ children }: { children?: ReactNode }) {
 /** Only these roles may enter; everyone else sees the no-access screen. */
 export function RequireRole({ roles, area, children }: { roles: AppRole[]; area: string; children?: ReactNode }) {
   const auth = useAuth()
+  const names = useRoleNames()
   if (auth.status !== 'signed-in') return null
   if (!roles.includes(auth.user.role)) {
     return (
@@ -81,8 +83,8 @@ export function RequireRole({ roles, area, children }: { roles: AppRole[]; area:
         title={`You don't have access to ${area}`}
         body={
           <>
-            This area is for <b className="text-text">{roles.map((r) => ROLE_LABEL[r]).join(' and ')}</b> accounts. You
-            are signed in as {ROLE_LABEL[auth.user.role]}.
+            This area is for <b className="text-text">{roles.map((r) => names.name(r)).join(' and ')}</b> accounts. You
+            are signed in as {names.name(auth.user.role)}.
           </>
         }
         backTo={ROLE_HOME[auth.user.role]}

@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
-import { GROUP_KEY, groupLabel, useGroup } from '../../auth/group'
+import { ROLE_HEAD, ROLE_LABEL, ROLES, type RoleName } from '../../app/roles'
+import { GROUP_KEY, groupLabel, useGroup, useRoleNames } from '../../auth/group'
+import type { AppRole } from '../../lib/supabase'
+import { ROLE_CHOICES } from './AccessFields'
 import { Button } from '../../components/Button'
 import { ListCard, ListRow } from '../../components/Card'
 import { Input } from '../../components/Field'
@@ -12,6 +15,8 @@ import { requireSupabase } from '../../lib/supabase'
 
 const MAX_NAME = 80
 const MAX_SHORT_NAME = 12
+const MAX_ROLE_NAME = 30
+const MAX_ROLE_SHORT = 8
 
 /**
  * The group's name and the profile photo switch, on Roles & rights. No board draws
@@ -22,6 +27,8 @@ export function GroupSettings() {
   const group = useGroup()
   const [editing, setEditing] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const [naming, setNaming] = useState(false)
+  const roleNames = useRoleNames()
   if (!group) return null
   return (
     <>
@@ -37,6 +44,15 @@ export function GroupSettings() {
           }
         />
         <ListRow
+          title="Role names"
+          subtitle={ROLES.map((r) => roleNames.name(r)).join(' · ')}
+          trailing={
+            <Button variant="ghost" aria-label="Edit role names" onClick={() => setNaming(true)}>
+              Edit
+            </Button>
+          }
+        />
+        <ListRow
           title="Profile photos"
           subtitle={group.profile_photos ? 'People can add a photo' : 'Off · everyone shows initials'}
           trailing={
@@ -46,6 +62,7 @@ export function GroupSettings() {
       </ListCard>
       {editing && <NameSheet group={group} onClose={() => setEditing(false)} />}
       {confirming && <PhotosSheet on={group.profile_photos} onClose={() => setConfirming(false)} />}
+      {naming && <RoleNamesSheet named={roleNames.named} onClose={() => setNaming(false)} />}
     </>
   )
 }
@@ -160,6 +177,99 @@ function PhotosSheet({ on, onClose }: { on: boolean; onClose: () => void }) {
           That didn&apos;t go through. Check your connection and try again.
         </span>
       )}
+    </Sheet>
+  )
+}
+
+/**
+ * What each role is called (OT-114): a name, shown wherever the app names the role or
+ * beside a person, and a short name for the grid's narrow columns. A role whose words are
+ * the defaults is not stored, so each screen keeps the wording its board draws.
+ */
+function RoleNamesSheet({ named, onClose }: { named: Partial<Record<AppRole, RoleName>>; onClose: () => void }) {
+  const [draft, setDraft] = useState<Record<AppRole, RoleName>>(
+    () =>
+      Object.fromEntries(ROLES.map((r) => [r, named[r] ?? { name: ROLE_LABEL[r], short: ROLE_HEAD[r] }])) as Record<
+        AppRole,
+        RoleName
+      >,
+  )
+  const toast = useToast()
+  const refresh = useRefreshGroup()
+  const ready = ROLES.every((r) => draft[r].name.trim() && draft[r].short.trim())
+  const save = useMutation({
+    mutationFn: async () => {
+      const names = Object.fromEntries(
+        ROLES.flatMap((r) => {
+          const name = draft[r].name.trim()
+          const short = draft[r].short.trim()
+          return name === ROLE_LABEL[r] && short === ROLE_HEAD[r] ? [] : [[r, { name, short }]]
+        }),
+      )
+      const { error } = await requireSupabase().rpc('save_role_names', { p_names: names })
+      if (error) throw error
+    },
+    onSuccess: refresh,
+  })
+  const set = (role: AppRole, field: keyof RoleName, value: string) =>
+    setDraft((d) => ({ ...d, [role]: { ...d[role], [field]: value } }))
+  const submit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!ready) return
+    save.mutate(undefined, {
+      onSuccess: () => {
+        toast.show('Role names saved.')
+        onClose()
+      },
+    })
+  }
+  return (
+    <Sheet
+      open
+      onOpenChange={(open) => !open && onClose()}
+      title="Edit role names"
+      description="What each role is called on every screen, and beside a person's name. The short name heads the grid. What each role may do stays the same."
+    >
+      <form
+        onSubmit={submit}
+        onChange={() => {
+          if (save.isError) save.reset()
+        }}
+        className="flex flex-col gap-4"
+        noValidate
+      >
+        {ROLES.map((role) => (
+          <fieldset key={role} className="flex flex-col gap-2.5">
+            <legend className="mb-1 text-13 font-semibold text-text-body">
+              {ROLE_CHOICES.find((c) => c.value === role)?.desc}
+            </legend>
+            <Input
+              label="Name"
+              maxLength={MAX_ROLE_NAME}
+              value={draft[role].name}
+              onChange={(e) => set(role, 'name', e.target.value)}
+            />
+            <Input
+              label="Short name"
+              maxLength={MAX_ROLE_SHORT}
+              value={draft[role].short}
+              onChange={(e) => set(role, 'short', e.target.value)}
+              hint={`Up to ${MAX_ROLE_SHORT} characters, for the grid.`}
+            />
+          </fieldset>
+        ))}
+        <Button type="submit" loading={save.isPending} disabled={!ready}>
+          Save names
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        {save.isError && (
+          <span role="alert" className="text-13 font-semibold text-danger">
+            That didn&apos;t go through. Check your connection and try again.
+          </span>
+        )}
+      </form>
     </Sheet>
   )
 }

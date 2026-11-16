@@ -86,7 +86,11 @@ export function threadItems(
   updates: Update[],
   me: string,
   names: Map<string, string>,
-  { now = new Date(), ops = false }: { now?: Date; ops?: boolean } = {},
+  {
+    now = new Date(),
+    ops = false,
+    roleWord = (role) => ROLE_WORD[role],
+  }: { now?: Date; ops?: boolean; roleWord?: (role: Author['role']) => string } = {},
 ): ThreadItem[] {
   const items: ThreadItem[] = []
   const isMe = (u: Update) => u.author?.id === me
@@ -106,7 +110,7 @@ export function threadItems(
       type: 'message',
       key: `${u.id}-message`,
       updateId: u.id,
-      who: mine ? 'You' : u.author ? `${name}, ${ROLE_WORD[u.author.role]}` : name,
+      who: mine ? 'You' : u.author ? `${name}, ${roleWord(u.author.role)}` : name,
       when: when === 'just now' ? 'Just now' : when,
       text: u.body ?? '',
       mine,

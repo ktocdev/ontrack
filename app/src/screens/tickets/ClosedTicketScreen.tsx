@@ -15,6 +15,7 @@ import { longDate, money, reopenDaysLeft, timeline, timeToClose } from './closed
 import { ClosingComment, Fact, Step, Timeline } from './ClosedParts'
 import { TicketBar, TicketPhotos, useScrolled } from './TicketParts'
 import { ROLE_WORD, type Update } from './thread'
+import { useRoleNames } from '../../auth/group'
 import { useClosedFacts, useReopenTicket } from './useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
 import type { useTicket } from './useTicket'
@@ -50,6 +51,7 @@ export function ClosedTicketScreen({
   const [params] = useSearchParams()
   const fromList = params.get('from') === 'closed'
   const facts = useClosedFacts(ticket.id).data
+  const roleNames = useRoleNames()
   const reopen = useReopenTicket(ticket.id)
   const picked = usePickedPhotos()
   const paths = photos.filter((p) => !p.update_id).map((p) => p.path)
@@ -137,7 +139,7 @@ export function ClosedTicketScreen({
         <Card className="overflow-hidden">
           {facts?.resolution && (
             <ClosingComment
-              heading={`Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${ROLE_WORD[facts.closer.role]}` : ''}`}
+              heading={`Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${roleNames.name(facts.closer.role, ROLE_WORD[facts.closer.role])}` : ''}`}
             >
               {facts.resolution}
             </ClosingComment>

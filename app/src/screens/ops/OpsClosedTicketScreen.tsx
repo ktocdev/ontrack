@@ -11,6 +11,7 @@ import { LogServiceLink, TicketService } from '../service/TicketService'
 import { money, timeline } from '../tickets/closed'
 import { ClosingComment, Fact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
+import { useRoleNames } from '../../auth/group'
 import { AREA_LABEL } from '../tickets/tickets'
 import { useClosedFacts } from '../tickets/useCloseTicket'
 import { useSignedPhotos } from '../tickets/usePhotos'
@@ -35,6 +36,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
   const canLog = useRight('log_cost') && !viewingAs
   const seeCosts = useRight('see_costs')
   const facts = useClosedFacts(ticket.id).data
+  const roleNames = useRoleNames()
   const paths = data.photos.filter((p) => !p.update_id).map((p) => p.path)
   const urls = useSignedPhotos(paths)
   const [viewing, setViewing] = useState<string | null>(null)
@@ -93,7 +95,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
                   heading={
                     facts.closer?.id === user.id
                       ? 'Your closing comment'
-                      : `Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${ROLE_WORD[facts.closer.role]}` : ''}`
+                      : `Closing comment${facts.closer ? ` · ${facts.closer.full_name}, ${roleNames.name(facts.closer.role, ROLE_WORD[facts.closer.role])}` : ''}`
                   }
                 >
                   {facts.resolution}

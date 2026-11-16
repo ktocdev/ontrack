@@ -1,5 +1,6 @@
 import { Navigate, useParams } from 'react-router'
-import { contractorPath, ROLE_HOME, ROLE_LABEL } from '../../app/roles'
+import { useRoleNames } from '../../auth/group'
+import { contractorPath, ROLE_HOME } from '../../app/roles'
 import { useAuth } from '../../auth/context'
 import { NoAccessScreen } from '../errors/NoAccessScreen'
 
@@ -12,6 +13,7 @@ import { NoAccessScreen } from '../errors/NoAccessScreen'
 export function ContractorLinkScreen() {
   const { id = '' } = useParams()
   const auth = useAuth()
+  const names = useRoleNames()
   if (auth.status !== 'signed-in') return null
 
   const path = contractorPath(auth.user.role, id)
@@ -21,8 +23,8 @@ export function ContractorLinkScreen() {
       title="Contractors don't open here"
       body={
         <>
-          This link opens for <b className="text-text">Ops Manager</b> accounts. You are signed in as{' '}
-          {ROLE_LABEL[auth.user.role]}.
+          This link opens for <b className="text-text">{names.name('ops')}</b> accounts. You are signed in as{' '}
+          {names.name(auth.user.role)}.
         </>
       }
       backTo={ROLE_HOME[auth.user.role]}

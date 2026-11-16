@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { equipmentPath, ticketPath } from './roles'
+import { equipmentPath, roleNames, ticketPath } from './roles'
 
 describe('a ticket link', () => {
   it('opens the screen for each role, and none for those without one', () => {
@@ -24,5 +24,31 @@ describe('an equipment link', () => {
 
   it('keeps a strange id inside its path', () => {
     expect(equipmentPath('manager', '../admin/users')).toBe('/equipment/..%2Fadmin%2Fusers')
+  })
+})
+
+describe('role names', () => {
+  it("keep each screen's own words until the group names a role", () => {
+    const names = roleNames({})
+    expect(names.name('manager')).toBe('Manager')
+    expect(names.name('ops', 'Ops')).toBe('Ops')
+    expect(names.short('leadership')).toBe('Lead')
+  })
+
+  it("use the group's name and short name where it has one", () => {
+    const names = roleNames({
+      manager: { name: 'Reporter', short: 'Rep' },
+      ops: { name: 'Support Team', short: 'Support' },
+    })
+    expect(names.name('manager', 'Restaurant manager')).toBe('Reporter')
+    expect(names.short('ops')).toBe('Support')
+    expect(names.name('admin')).toBe('Admin')
+  })
+
+  it('ignore anything that is not a name and a short name', () => {
+    const names = roleNames({ manager: { name: '  ', short: 'R' }, ops: 'Support', chef: { name: 'Chef', short: 'C' } })
+    expect(names.named).toEqual({})
+    expect(roleNames(null).named).toEqual({})
+    expect(roleNames(['manager']).named).toEqual({})
   })
 })

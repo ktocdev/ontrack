@@ -15,7 +15,8 @@ import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { ClosedTicketScreen } from './ClosedTicketScreen'
 import { CloseTicketSheet } from './CloseTicketSheet'
 import { EquipmentCard, TicketBar, TicketPhotos, useScrolled } from './TicketParts'
-import { threadItems } from './thread'
+import { ROLE_WORD, threadItems } from './thread'
+import { useRoleNames } from '../../auth/group'
 import { ThreadFeed } from './ThreadFeed'
 import { scheduledLabel } from './tickets'
 import { usePickedPhotos, useSignedPhotos } from './usePhotos'
@@ -38,6 +39,7 @@ const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 export function TicketScreen() {
   const { id = '' } = useParams()
   const { user } = useUser()
+  const roleNames = useRoleNames()
   const { data, isPending } = useTicket(id)
   const post = usePostUpdate(id)
   const [draft, setDraft] = useState('')
@@ -78,7 +80,9 @@ export function TicketScreen() {
     )
   }
 
-  const items = threadItems(data.updates, user.id, data.names)
+  const items = threadItems(data.updates, user.id, data.names, {
+    roleWord: (role) => roleNames.name(role, ROLE_WORD[role]),
+  })
   const count = items.filter((i) => i.type === 'message').length
 
   const send = () =>
