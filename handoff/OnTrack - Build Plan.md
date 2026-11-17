@@ -22,8 +22,9 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | 3 · Ops dashboard and ticket work | Done, except the real-iPhone checks | OT-36 plan update, then OT-37 to OT-64 (see Phase 3). The buzz and its badge were tried on Android (Nov 5, 2026). Google sign-in (OT-59) is deferred until the group's IT person is involved |
 | 4 · Equipment · first demo | Done, except the real-iPhone checks; tried on the live app (Nov 11, 2026) | OT-65 plan update, then OT-66 to OT-88 (see Phase 4). QR labels (OT-74) are deferred until the iPhone link check |
 | 5 · Contractors, service records and invoices | Done, except the real-iPhone checks; the contractor page tried on the live app (Nov 12, 2026), the done test waits for a try there | OT-89 plan update, then OT-90 to OT-100 (see Phase 5) |
-| 6 · Monthly walkthroughs | 6a done, except the real-iPhone checks and a try on the live app (Nov 16, 2026); 6b (Ops and the schedule) next, after the work between them | OT-101 plan update, then OT-102 to OT-111 for 6a; 6b numbered after OT-118 (see Phase 6) |
-| Between 6a and 6b · Who does what | Planned (Nov 16, 2026) | OT-112 and OT-113 plan updates, then OT-114 to OT-118: role names, the IT area, My categories' backend, job titles, My categories (see its section after Phase 6) |
+| 6 · Monthly walkthroughs | 6a done, except the real-iPhone checks and a try on the live app (Nov 16, 2026); 6b (Ops and the schedule) next, after the work between them | OT-101 plan update, then OT-102 to OT-111 for 6a; 6b numbered after OT-124 (see Phase 6) |
+| Between 6a and 6b · Who does what | Done (Nov 17, 2026) | OT-112 and OT-113 plan updates, then OT-114 to OT-120: role names, the IT area, My categories' backend, job titles, My categories and its switches (see its section after Phase 6) |
+| Between 6a and 6b · Admin on any role | Planned (Nov 17, 2026) | OT-121 plan update, then OT-122 to OT-124: Admin held on top of a role, the shield and the admin view, a security pass (see its section after Phase 6) |
 
 Phase 0 notes:
 
@@ -588,9 +589,64 @@ OT-112 planned this; OT-113 adds the ops manager's answers and makes IT an area 
 | OT-120 | From feedback (Nov 17, 2026): each area on My categories is one All row, with its switch, and its categories folded under it, closed to begin with; while closed it says how many are set on their own; the area's in-between choices are a last row inside, for the Support Team |
 | 6b | Add task and Hand back as in-house task, in 6b's Ops backend and in-house PRs |
 
-These come after OT-111 and before 6b is numbered, so 6b's Ops screens are built on the role names, the IT area and the category settings.
+These came after OT-111 and before 6b is numbered, so 6b's Ops screens are built on the role names, the IT area and the category settings.
 
 **Answered by the ops manager (Nov 16, 2026):** IT also wants Website and Software (the bill payment software); the roles are Reporters and Support Team; chefs start with Front of House off and IT with Back of House off. With IT an area of its own (Katie, the same day), IT starts with Front of House off as well, so it sees only IT.
+
+## Between 6a and 6b · Admin on any role
+
+When Katie said the group would need an admin to add people and set their roles, the ops manager said it would be the head ops manager, not an IT person. Today Admin is a role, and a role is one thing: an admin has the admin tabs, no dashboard, no Ops rights and no new-ticket notifications, and writes nothing in a thread. So the head ops manager could not be both. OT-121 plans this (Nov 17, 2026).
+
+**Decided (Nov 17, 2026)**
+
+- **Admin is something a person holds on top of their role, not a role of its own.** The head ops manager stays on the Support Team with the Ops manager title: the same dashboard, notifications, rights and ticket actions as the rest of the Support Team, under their own name. Holding Admin adds the admin screens: Users (and Job titles), Roles & rights (and the group settings), and Restaurants (and Categories). Any role can hold it. A title still grants nothing.
+- **Admin powers are the group's, whatever the person's restaurants.** An admin who is a Reporter at one restaurant can still invite and manage anyone; what they work on (tickets, equipment, walkthroughs) still follows their role and restaurants.
+- **The plain Admin role stays for an account that does nothing else,** like the seeded admin@ and Katie's own. It keeps today's screens. Invite user stops offering it as a role and offers Admin as a switch instead, for an admin to give.
+- **The way in is a shield button in the header, on home screens only,** to the left of the avatar, shown only to someone who holds Admin (not on detail screens, which have a back arrow and no avatar). It leads to the admin view, which has its own tab bar: **Users, Roles & rights, Restaurants.** The admin role's read-only Tickets tab is not in it, since the head ops manager has the real dashboard; a plain Admin account keeps it for Phase 7. In the admin view the shield is filled and tapping it goes back to the person's home screen, and the group's name sits top left instead of the restaurant picker, so the two views don't look alike. The address decides which tab bar shows (anything under `/admin` shows the admin's), so the back button, links and reloads all work with nothing to remember. View as stays inside the admin view.
+- **A Profile row was considered and dropped** as the way in (Katie: not intuitive).
+- **What stays as strict as today:**
+  - Holding Admin requires 2-step verification, whatever the role underneath.
+  - Only an admin gives or takes Admin, nobody changes their own, and the last active admin can't lose it or be deactivated.
+  - Every change to who holds Admin is in the audit log.
+  - Nobody can be viewed as while they hold Admin, as an admin can't be viewed today.
+  - View as stays read-only.
+- **Why this is safe enough.** The concern with an admin who also works tickets is that the most powerful account is used all day on a phone. It is managed rather than avoided: 2-step on every admin session, the 12-hour sign-in cap, and the audit log. The rule that admins write nothing in a thread was about an admin outside the work (an office or IT person); it stays for the plain Admin role, and an admin on the Support Team writes as the Support Team does.
+
+**Backend**
+
+- `profiles.is_admin` (boolean, default false), set to true for everyone whose role is admin, and changed only through `set_admin(p_user, p_on)`: definer, admin only, never your own, refuses taking the last active admin's away, writes `audit_log`. `protect_profile_columns` refuses any other change to it, the service role aside.
+- `is_admin()` reads the flag instead of the role. It already decides 52 policies and functions, so most of the change is here. The direct checks of the admin role move to the flag too: `two_step_required()` and the two 2-step functions that test for an admin; the `rights_guard` rule that locks an admin's own rights (it follows the flag, so an admin on the Support Team keeps the Support Team's rights but can't change their own); `set_person_access`, which refuses giving the Admin role and keeps its other checks; deactivation refuses the last active admin; and View as refuses anyone who holds Admin.
+- `can('invite_users')` and `can('manage_rights')` answer true for anyone who holds Admin; every other right follows their role and overrides as now.
+- `notification_recipients` is unchanged: it goes by role, so an admin on the Support Team is notified as the Support Team is, and a plain Admin account as now.
+- `invites.is_admin`, set by `invite-user` only when an admin sends it, and taken by `handle_new_user`. `invite-user` and `revoke-user` decide "is the caller an admin" by the flag. The invite email's role wording comes from the group's role names, not the "Admin / IT" it says today.
+- The seed: a head ops manager on the Support Team, at all restaurants, with the Ops manager title, holding Admin, with an authenticator secret like admin@'s, so flows can sign in. So that a fourth Ops person doesn't change who every new ticket notifies, they start with every area on Notify off and shown, which the flows that count recipients already allow for.
+- pgTAP: who may give and take Admin, never your own, never the last active admin; 2-step required for a flagged Support Team member; their rights follow their role; `is_admin()` and every admin-only function work for them; nothing reads privilege from the role where the flag should be; the audit rows.
+
+**Screens**
+
+- `useUser()` says whether the person holds Admin. `RequireRole` on the admin routes lets in anyone who holds it.
+- The shield (`AdminLink`) goes beside `ProfileLink` in the headers of the home screens, as one shared piece, with a filled state for the admin view. The admin view's shell picks its tab bar from the address.
+- Users and User profile show who holds Admin, and User profile has an Admin switch with a confirm sheet that says what it opens and that it needs 2-step. Invite user drops Admin from the role picker and has the same switch. Role names keep naming the four roles; Admin is shown as "Admin" wherever someone holds it.
+- New pieces go on `/kit` and the docs site first. No board draws any of this; it follows `ScreenHeader`, `TabBar` and the confirm sheets already in the kit.
+
+**Done when** the seeded head ops manager signs in with their authenticator code, sees the shield on the dashboard, goes to Users and gives Chris (Support Team) Admin, comes back to the dashboard by the shield and takes a ticket under their own name; Chris, at his next sign-in, is asked to set up 2-step before anything else; and pgTAP shows that nobody can take their own Admin away, nor the last admin's.
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-121 | The plan for this |
+| OT-122 | Backend: `profiles.is_admin` and `set_admin`, `is_admin()` and the direct role checks moved to the flag, the rights and 2-step rules, the last admin, invites carrying Admin, `invite-user` and `revoke-user`, the invite email's role wording, the seeded head ops manager; pgTAP |
+| OT-123 | The shield and the admin view with its own tab bar; the Admin switch on User profile and Invite user; Admin shown on Users; View as; a stack flow for the done test |
+| OT-124 | Security and code quality pass over OT-122 and OT-123 |
+
+6b is numbered after OT-124.
+
+**Open questions**
+
+- Who is the head ops manager in the seed? The plan adds a new person rather than making Bert or Chris an admin, since every flow that signs in as them would then need an authenticator code.
+- Katie's own live account is the plain Admin role. It keeps today's screens; giving the head ops manager Admin on the live app is a step for Katie once OT-123 ships.
+- If Katie renamed the Admin role on Roles & rights ("Admin / IT"), set it back to Admin; IT is a job title.
 
 ## Phase 7 · Leadership, Admin tickets and imports
 

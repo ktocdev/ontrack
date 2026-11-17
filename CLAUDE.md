@@ -183,7 +183,11 @@ The plan's Phase 6 section says what ships and what it works around. It ships in
 | OT-118 | My categories on Profile for every role; hidden categories off the lists with "N hidden · Show all"; View as; a stack flow |
 | OT-119 | From feedback (Nov 17, 2026): a switch on each My categories row turns it all on or off at once; the row's text opens the sheet for the in-between choices |
 | OT-120 | From feedback (Nov 17, 2026): each area on My categories is one All row, with its switch, and its categories folded under it, closed to begin with; while closed it says how many are set on their own; the area's in-between choices are a last row inside, for the Support Team |
-| 6b    | Numbered when 6a's done test passes, after OT-118; it also takes Ops' Add task and Hand back as in-house task (optional unit and category, a link to the ticket, one notification): Ops backend, overview and one restaurant, in-house fixes with Convert to ticket, schedule (rotations restaurants share), quarterly tasks, Import checklist from a spreadsheet, checklist editor, security pass, done test |
+| OT-121 | Plan update (Nov 17, 2026): Admin as something held on top of any role, for the head ops manager on the Support Team; a shield on home screens opens the admin view with its own tab bar |
+| OT-122 | Admin backend: `profiles.is_admin` and `set_admin` (admin only, never your own, never the last admin, logged), `is_admin()` and the direct role checks read the flag, 2-step required, invites carry Admin, the seeded head ops manager; pgTAP |
+| OT-123 | The shield and the admin view (Users, Roles & rights, Restaurants); the Admin switch on User profile and Invite user; a stack flow |
+| OT-124 | Security and code quality pass over OT-122 and OT-123 |
+| 6b    | Numbered when 6a's done test passes, after OT-124; it also takes Ops' Add task and Hand back as in-house task (optional unit and category, a link to the ticket, one notification): Ops backend, overview and one restaurant, in-house fixes with Convert to ticket, schedule (rotations restaurants share), quarterly tasks, Import checklist from a spreadsheet, checklist editor, security pass, done test |
 
 ## Phase 5, for the record
 
