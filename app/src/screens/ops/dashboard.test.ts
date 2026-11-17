@@ -35,6 +35,16 @@ describe('byPriority', () => {
     ]
     expect([...list].sort(byPriority).map((t) => t.id)).toEqual(['front', 'none'])
   })
+
+  it('puts IT after Back of House, and urgent IT still on top', () => {
+    const list = [
+      ticket('it', 'normal', 'it', '2026-10-01T10:00:00Z'),
+      ticket('back', 'normal', 'boh', '2026-10-03T10:00:00Z'),
+      ticket('none', 'normal', null, '2026-10-02T10:00:00Z'),
+      ticket('urgent-it', 'urgent', 'it', '2026-10-04T10:00:00Z'),
+    ]
+    expect([...list].sort(byPriority).map((t) => t.id)).toEqual(['urgent-it', 'back', 'it', 'none'])
+  })
 })
 
 describe('groupByRestaurant', () => {

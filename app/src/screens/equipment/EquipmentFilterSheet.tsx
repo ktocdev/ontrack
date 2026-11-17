@@ -1,3 +1,4 @@
+import { AREA_SEGMENTS_SHORT } from '../../app/areas'
 import { Button } from '../../components/Button'
 import { Chip } from '../../components/Chip'
 import { Segmented } from '../../components/Segmented'
@@ -50,11 +51,7 @@ export function EquipmentFilterSheet({
             label="Area"
             value={filters.area ?? 'all'}
             onChange={(v) => onChange({ ...filters, area: v === 'all' ? null : v })}
-            options={[
-              { value: 'all', label: 'All' },
-              { value: 'foh', label: 'Front of House' },
-              { value: 'boh', label: 'Back of House' },
-            ]}
+            options={[{ value: 'all', label: 'All' }, ...AREA_SEGMENTS_SHORT]}
           />
         </div>
         <div className="flex flex-col gap-2">

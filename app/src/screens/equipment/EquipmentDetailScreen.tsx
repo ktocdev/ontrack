@@ -1,3 +1,4 @@
+import { AREA_SHORT } from '../../app/areas'
 import { useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
@@ -55,7 +56,6 @@ import { useEquipmentDetail, useEquipmentService } from './useEquipmentDetail'
  * ticket or a link, with a Retired label and no Create ticket. Under View as nothing
  * leads anywhere.
  */
-const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 const TABS = [undefined, 'tickets', 'service'] as const
 
 export function EquipmentDetailScreen() {

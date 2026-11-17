@@ -1,3 +1,4 @@
+import { AREA_LABEL, AREA_SEGMENTS } from '../../app/areas'
 import { useState, type FormEvent } from 'react'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
@@ -13,11 +14,6 @@ import {
   type Area,
   type ManagedCategory,
 } from './useCategoryAdmin'
-
-const AREAS = [
-  { value: 'foh' as const, label: 'Front of House' },
-  { value: 'boh' as const, label: 'Back of House' },
-]
 
 function Failed({ error }: { error: unknown }) {
   return (
@@ -85,7 +81,7 @@ export function AddCategorySheet({
           }}
           error={missing ? 'Give it a name.' : undefined}
         />
-        <Segmented<Area> label="Area" value={area} onChange={setArea} options={AREAS} />
+        <Segmented<Area> label="Area" value={area} onChange={setArea} options={AREA_SEGMENTS} />
         {add.isError && <Failed error={add.error} />}
         <Button type="submit" loading={add.isPending}>
           Add category
@@ -208,7 +204,7 @@ export function CategorySheet({ category: c, onClose }: { category: ManagedCateg
       </>
     )
 
-  const area = c.area === 'foh' ? 'Front of House' : 'Back of House'
+  const area = AREA_LABEL[c.area]
   const title =
     step === 'rename'
       ? `Rename ${c.name}`

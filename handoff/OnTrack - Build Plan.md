@@ -569,7 +569,7 @@ OT-112 planned this; OT-113 adds the ops manager's answers and makes IT an area 
 - `area_prefs (user_id, area, notify, shown)` and `category_prefs (user_id, category_id, notify, shown)`, `notify` one of `all`, `urgent`, `off`. Each person reads and writes only their own rows, with `my_role() is not null`; a category's delete takes its rows with it.
 - `notification_recipients` reads them for the pool kinds only, by the ticket's category, its area and its urgency; pgTAP for each case, including that a ticket you filed or are on still reaches you.
 - `job_titles (name, active, starting view per area)`, the group's, read by anyone signed in and changed only through `add_job_title`, `save_job_title`, `set_job_title_active` and `delete_job_title` (admin, definer, logged; delete only while nobody has it). `profiles.job_title_id`, set only by an admin through `set_person_access` and by an invite (`invites.job_title_id`, taken by `handle_new_user`); a turned-off title is given to nobody new. Giving a title writes its starting view into `area_prefs` in the same step. The four titles come in a migration.
-- The seed gains an IT person on the Support Team with the IT title, a POS terminal at Logan Square and an open POS ticket, for the flows.
+- The seed gains a POS terminal and an open POS ticket at West Loop (OT-115; West Loop, since no other flow counts its lists), and an IT person on the Support Team (OT-116, with the recipient rules, since a third Ops person changes who every new ticket notifies).
 - 6b: `inhouse_fixes` gains an optional `equipment_id`, `category_id` and `from_ticket_id`; `add_inhouse_task` (Ops with Update status at the restaurant) and `hand_back_ticket` (closes the ticket and adds the task in one step), definer, checked and logged; a notification kind for a task from Ops, with its own switch on Profile.
 
 **Pull requests**
@@ -579,8 +579,8 @@ OT-112 planned this; OT-113 adds the ops manager's answers and makes IT an area 
 | OT-112 | The plan for this |
 | OT-113 | Plan update: the ops manager's answers, and IT as an area of its own; renumbers what follows |
 | OT-114 | Role names: `role_names` and `save_role_names`, set to Reporters and Support Team for this group by an admin on Roles & rights (not a migration, since the group is data); every place that shows a role reads its name from `group_settings`; pgTAP |
-| OT-115 | The IT area: `it` on `area`, POS & network, Website and Software; the third segment and group on every screen that shows areas; the seed's IT person, POS terminal and ticket; pgTAP, and the stack flows that pick an area |
-| OT-116 | My categories backend: `area_prefs`, `category_prefs`, `notification_recipients` by area, category and urgency; pgTAP for who gets what |
+| OT-115 | The IT area: `it` on `area`, POS & network, Website and Software; the third segment and group on every screen that shows areas, from one module (`app/areas.ts`); the seed's POS terminal and ticket; pgTAP, and the stack flows that pick an area |
+| OT-116 | My categories backend: the seed's IT person, `area_prefs`, `category_prefs`, `notification_recipients` by area, category and urgency; pgTAP for who gets what |
 | OT-117 | Job titles: the list and its functions, starting views written on giving a title, the invite carrying one; the Job titles screen, the picker on Invite user and User profile, the title on Profile, Users and the ticket badge; pgTAP |
 | OT-118 | My categories on Profile; hidden categories left off the Ops dashboard, Closed tickets, a Reporter's Open tickets and In-house, with the "N hidden · Show all" line; View as; a stack flow: the seeded IT person gets a push for the POS ticket and none for a Back of House one, and the ops manager with the Ops manager title sees the POS ticket on the dashboard without a push |
 | 6b | Add task and Hand back as in-house task, in 6b's Ops backend and in-house PRs |

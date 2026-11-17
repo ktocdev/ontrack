@@ -11,6 +11,7 @@ import { IconClose } from '../../components/icons'
 import { PhotoPromptSheet } from '../tickets/PhotoPromptSheet'
 import { usePickedPhotos } from '../tickets/usePhotos'
 import { AREA_LABEL } from '../tickets/tickets'
+import type { Area } from '../../app/areas'
 import type { CheckTarget } from './useChecklist'
 import { useCreateWalkthroughTicket, useQuickTicketOptions } from './useQuickTicket'
 
@@ -19,7 +20,7 @@ export type QuickTicketTarget = {
   /** Section, group and item, or the quarter and the task. */
   chips: string[]
   /** The section's area; a quarterly task has none, so categories from both are offered. */
-  area: 'foh' | 'boh' | null
+  area: Area | null
   /** The item's own category; with none, the sheet asks. */
   categoryId: string | null
   /** Its tickets still open, by number. */

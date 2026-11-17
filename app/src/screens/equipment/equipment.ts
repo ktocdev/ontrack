@@ -1,6 +1,7 @@
+import { AREA_RANK, type Area } from '../../app/areas'
 /** How the equipment lists search, filter and group their units. */
 
-export type Area = 'foh' | 'boh'
+export type { Area } from '../../app/areas'
 
 export type Unit = {
   id: string
@@ -37,7 +38,7 @@ export function matchesFilters(u: Unit, f: Filters) {
 
 /** Back of House first, as the board lists it, then each area's own order. */
 function categoryRank(c: Unit['category']) {
-  return c ? (c.area === 'boh' ? 0 : 100) + c.sort_order : 1000
+  return c ? AREA_RANK[c.area] * 100 + c.sort_order : 1000
 }
 
 /**

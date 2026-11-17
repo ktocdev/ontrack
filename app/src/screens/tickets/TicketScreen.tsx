@@ -1,3 +1,4 @@
+import { AREA_SHORT } from '../../app/areas'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
@@ -34,7 +35,6 @@ import { monthName } from '../walkthrough/walkthrough'
  * has its own screen, which stays up after reopening it until the person leaves. A ticket
  * made on a walkthrough says which, and the line opens that part of the checklist.
  */
-const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
 export function TicketScreen() {
   const { id = '' } = useParams()

@@ -1,3 +1,4 @@
+import { AREA_SHORT } from '../../app/areas'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
@@ -31,8 +32,6 @@ import type { useTicket } from './useTicket'
  */
 type Data = NonNullable<ReturnType<typeof useTicket>['data']>
 type Ticket = NonNullable<Data['ticket']>
-
-const AREA_SHORT = { foh: 'FOH', boh: 'BOH' }
 
 export function ClosedTicketScreen({
   ticket,

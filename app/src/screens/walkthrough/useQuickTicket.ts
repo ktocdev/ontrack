@@ -1,3 +1,4 @@
+import type { Area } from '../../app/areas'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase, type Enums } from '../../lib/supabase'
 import { addTicketPhotos } from '../tickets/useCreateTicket'
@@ -8,7 +9,7 @@ import type { CheckTarget } from './useChecklist'
  * Quick ticket from a checklist item: the categories for the section's area, for an item
  * that names none, and the restaurant's units in the category, for the optional equipment.
  */
-export function useQuickTicketOptions(restaurantId: string, area: 'foh' | 'boh' | null, categoryId: string) {
+export function useQuickTicketOptions(restaurantId: string, area: Area | null, categoryId: string) {
   const categories = useQuery({
     queryKey: ['quick-ticket', 'categories', area],
     queryFn: async () => {

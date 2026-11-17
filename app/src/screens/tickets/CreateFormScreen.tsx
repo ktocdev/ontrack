@@ -16,6 +16,7 @@ import { ReportSheet } from '../profile/ReportSheet'
 import { PhotoPromptSheet } from './PhotoPromptSheet'
 import { PhotoTipsLink, PhotoTipsSheet } from './PhotoTips'
 import { AREA_LABEL } from './tickets'
+import type { Area } from '../../app/areas'
 import { useCreateTicket, useTicketForm, type Urgency } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
 
@@ -65,7 +66,7 @@ function CreateForm({
 }: {
   restaurantId: string
   restaurantName: string
-  category: { id: string; name: string; area: 'foh' | 'boh' }
+  category: { id: string; name: string; area: Area }
   equipment: { id: string; name: string; serial: string | null }[]
   backTo: string
 }) {
