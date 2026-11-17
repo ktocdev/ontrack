@@ -39,7 +39,9 @@ insert into seed_people values
   ('22222222-2222-4222-8222-000000000005', 'Lee Chen',            'lee.chen@example.com',     null,             'leadership', '[]'),
   ('22222222-2222-4222-8222-000000000006', 'Four Corners Admin',  'admin@example.com',        null,             'admin',      '[]'),
   -- Not on the boards: Phase 2's done test needs a manager at Porter.
-  ('22222222-2222-4222-8222-000000000007', 'Dana Ortiz',          'dana.ortiz@example.com',   '(312) 555-0107', 'manager',    '["11111111-1111-4111-8111-000000000003"]');
+  ('22222222-2222-4222-8222-000000000007', 'Dana Ortiz',          'dana.ortiz@example.com',   '(312) 555-0107', 'manager',    '["11111111-1111-4111-8111-000000000003"]'),
+  -- Not on the boards: the group's IT person, on the Ops role (Support Team) everywhere (OT-116).
+  ('22222222-2222-4222-8222-000000000008', 'Theo Grant',          'theo.grant@example.com',   '(312) 555-0108', 'ops',        '[]');
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -81,12 +83,23 @@ insert into public.invites (id, email, full_name, role, restaurant_ids, token_ha
 
 -- ---------------------------------------------------------------------------
 -- Rights: the role defaults come from a migration. These are Maya's two
--- overrides (the design shows her with See costs and Add / edit equipment granted).
+-- overrides (the design shows her with See costs and Add / edit equipment granted),
+-- and Theo's.
 -- ---------------------------------------------------------------------------
 
 insert into public.rights (user_id, key, allowed, updated_by) values
   ('22222222-2222-4222-8222-000000000001', 'see_costs',      true, '22222222-2222-4222-8222-000000000006'),
-  ('22222222-2222-4222-8222-000000000001', 'edit_equipment', true, '22222222-2222-4222-8222-000000000006');
+  ('22222222-2222-4222-8222-000000000001', 'edit_equipment', true, '22222222-2222-4222-8222-000000000006'),
+  -- Theo works IT tickets, so costs and contractors are switched off for him.
+  ('22222222-2222-4222-8222-000000000008', 'see_costs',      false, '22222222-2222-4222-8222-000000000006'),
+  ('22222222-2222-4222-8222-000000000008', 'log_cost',       false, '22222222-2222-4222-8222-000000000006'),
+  ('22222222-2222-4222-8222-000000000008', 'see_contractors', false, '22222222-2222-4222-8222-000000000006');
+
+-- My categories (OT-116): Theo sees and hears only IT, the IT job title's starting view
+-- (OT-117), so a Front or Back of House ticket notifies the same two Ops people as before.
+insert into public.area_prefs (user_id, area, notify, shown) values
+  ('22222222-2222-4222-8222-000000000008', 'foh', 'off', false),
+  ('22222222-2222-4222-8222-000000000008', 'boh', 'off', false);
 
 -- ---------------------------------------------------------------------------
 -- Categories come from a migration (20261031140000), with the ids used below.
