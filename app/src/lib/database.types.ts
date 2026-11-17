@@ -23,7 +23,33 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "audit_log": {
+            "area_prefs": {
+                  Row: {
+                    "area": Database["public"]['Enums']["area"],"notify": Database["public"]['Enums']["notify_level"],"shown": boolean,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "area": Database["public"]['Enums']["area"],"notify"?: Database["public"]['Enums']["notify_level"],"shown"?: boolean,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "area"?: Database["public"]['Enums']["area"],"notify"?: Database["public"]['Enums']["notify_level"],"shown"?: boolean,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "area_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "area_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
+                },"audit_log": {
                   Row: {
                     "action": string,"actor_id": string | null,"created_at": string,"id": number,"meta": NonNullable<Json>,"target_restaurant_id": string | null,"target_user_id": string | null
                   }
@@ -92,6 +118,44 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"category_prefs": {
+                  Row: {
+                    "category_id": string,"notify": Database["public"]['Enums']["notify_level"] | null,"shown": boolean | null,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"notify"?: Database["public"]['Enums']["notify_level"] | null,"shown"?: boolean | null,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "category_id"?: string,"notify"?: Database["public"]['Enums']["notify_level"] | null,"shown"?: boolean | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "category_prefs_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "category_prefs_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "v_category_history"
+      referencedColumns: ["category_id"]
+    },{
+      foreignKeyName: "category_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "category_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
                   ]
                 },"contractor_trades": {
                   Row: {
@@ -2080,7 +2144,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "app_role": "manager"|"ops"|"leadership"|"admin","area": "foh"|"boh"|"it","check_result": "good"|"in_house"|"ticket","invite_status": "pending"|"accepted"|"revoked","invoice_status": "attached"|"missing","line_item_kind": "labor"|"parts"|"trip","service_kind": "in_house"|"contractor","ticket_source": "reported"|"walkthrough","ticket_status": "open"|"in_progress"|"waiting_parts"|"scheduled"|"reopened"|"closed","ticket_urgency": "low"|"normal"|"urgent","update_kind": "message"|"created"|"assigned"|"status_changed"|"closed"|"reopened","walkthrough_status": "open"|"submitted"
+            "app_role": "manager"|"ops"|"leadership"|"admin","area": "foh"|"boh"|"it","check_result": "good"|"in_house"|"ticket","invite_status": "pending"|"accepted"|"revoked","invoice_status": "attached"|"missing","line_item_kind": "labor"|"parts"|"trip","notify_level": "all"|"urgent"|"off","service_kind": "in_house"|"contractor","ticket_source": "reported"|"walkthrough","ticket_status": "open"|"in_progress"|"waiting_parts"|"scheduled"|"reopened"|"closed","ticket_urgency": "low"|"normal"|"urgent","update_kind": "message"|"created"|"assigned"|"status_changed"|"closed"|"reopened","walkthrough_status": "open"|"submitted"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -2200,7 +2264,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["manager", "ops", "leadership", "admin"],"area": ["foh", "boh", "it"],"check_result": ["good", "in_house", "ticket"],"invite_status": ["pending", "accepted", "revoked"],"invoice_status": ["attached", "missing"],"line_item_kind": ["labor", "parts", "trip"],"service_kind": ["in_house", "contractor"],"ticket_source": ["reported", "walkthrough"],"ticket_status": ["open", "in_progress", "waiting_parts", "scheduled", "reopened", "closed"],"ticket_urgency": ["low", "normal", "urgent"],"update_kind": ["message", "created", "assigned", "status_changed", "closed", "reopened"],"walkthrough_status": ["open", "submitted"]
+            "app_role": ["manager", "ops", "leadership", "admin"],"area": ["foh", "boh", "it"],"check_result": ["good", "in_house", "ticket"],"invite_status": ["pending", "accepted", "revoked"],"invoice_status": ["attached", "missing"],"line_item_kind": ["labor", "parts", "trip"],"notify_level": ["all", "urgent", "off"],"service_kind": ["in_house", "contractor"],"ticket_source": ["reported", "walkthrough"],"ticket_status": ["open", "in_progress", "waiting_parts", "scheduled", "reopened", "closed"],"ticket_urgency": ["low", "normal", "urgent"],"update_kind": ["message", "created", "assigned", "status_changed", "closed", "reopened"],"walkthrough_status": ["open", "submitted"]
           }
         }
 } as const
