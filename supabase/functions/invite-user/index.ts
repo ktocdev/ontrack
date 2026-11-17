@@ -47,6 +47,7 @@ type Invite = {
   full_name: string
   role: Role
   restaurant_ids: string[]
+  job_title_id: string | null
   status: 'pending' | 'accepted' | 'revoked'
   invited_by: string | null
   sent_at: string
@@ -135,11 +136,21 @@ async function send(req: Request, body: Record<string, unknown>) {
   if (!ids || !ids.every(isUuid)) return refuse('bad_restaurants', 422)
   // Empty means every restaurant, which a manager invite may not be.
   if (role === 'manager' && ids.length === 0) return refuse('manager_needs_restaurant', 422)
+  const rawTitle = body.job_title_id ?? null
+  if (rawTitle !== null && !isUuid(rawTitle)) return refuse('bad_job_title', 422)
+  const jobTitleId = rawTitle as string | null
 
   const caller = await checkInviter(req, role, ids as string[])
   if (caller instanceof Response) return caller
+  // A title grants nothing, but it is the admin's to give (OT-117), as on User profile.
+  if (jobTitleId !== null && !(await isAdmin(caller))) return refuse('admin_only', 403)
 
   const db = service()
+  if (jobTitleId !== null) {
+    const { data, error } = await db.from('job_titles').select('id').eq('id', jobTitleId).eq('active', true)
+    if (error) throw error
+    if ((data ?? []).length !== 1) return refuse('bad_job_title', 422)
+  }
   if (ids.length) {
     const { data, error } = await db.from('restaurants').select('id').in('id', ids).is('archived_at', null)
     if (error) throw error
@@ -178,6 +189,7 @@ async function send(req: Request, body: Record<string, unknown>) {
       full_name: fullName,
       role,
       restaurant_ids: ids,
+      job_title_id: jobTitleId,
       token_hash: await hashToken(token),
       invited_by: caller.id,
       expires_at: expiry(),
@@ -200,7 +212,7 @@ async function send(req: Request, body: Record<string, unknown>) {
 
   await db
     .from('audit_log')
-    .insert({ actor_id: caller.id, action: 'invite.send', meta: { invite_id: invite.id, email, role } })
+    .insert({ actor_id: caller.id, action: 'invite.send', meta: { invite_id: invite.id, email, role, job_title_id: jobTitleId } })
   return json({ id: invite.id })
 }
 

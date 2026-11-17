@@ -95,8 +95,13 @@ insert into public.rights (user_id, key, allowed, updated_by) values
   ('22222222-2222-4222-8222-000000000008', 'log_cost',       false, '22222222-2222-4222-8222-000000000006'),
   ('22222222-2222-4222-8222-000000000008', 'see_contractors', false, '22222222-2222-4222-8222-000000000006');
 
--- My categories (OT-116): Theo sees and hears only IT, the IT job title's starting view
--- (OT-117), so a Front or Back of House ticket notifies the same two Ops people as before.
+-- Job titles come from a migration (20261118120000). Maya is a General manager, which
+-- starts with everything on; Theo is IT.
+update public.profiles set job_title_id = 'eeeeeeee-eeee-4eee-8eee-000000000001' where id = '22222222-2222-4222-8222-000000000001';
+update public.profiles set job_title_id = 'eeeeeeee-eeee-4eee-8eee-000000000004' where id = '22222222-2222-4222-8222-000000000008';
+
+-- My categories (OT-116): Theo sees and hears only IT, the IT job title's starting view,
+-- so a Front or Back of House ticket notifies the same two Ops people as before.
 insert into public.area_prefs (user_id, area, notify, shown) values
   ('22222222-2222-4222-8222-000000000008', 'foh', 'off', false),
   ('22222222-2222-4222-8222-000000000008', 'boh', 'off', false);

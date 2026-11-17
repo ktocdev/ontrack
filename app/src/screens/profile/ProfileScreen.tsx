@@ -11,6 +11,7 @@ import { ThemeControl } from '../../components/ThemeControl'
 import { useToast } from '../../components/Toast'
 import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
 import { ROLE_HOME } from '../../app/roles'
+import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { useRoleNames } from '../../auth/group'
 import { useUser } from '../../auth/context'
 import { useProfilePhotosOn } from '../../auth/group'
@@ -31,6 +32,7 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
   const roleNames = useRoleNames()
+  const jobTitle = useJobTitleName()(user.job_title_id)
   const [name, setName] = useState(user.full_name)
   const [phone, setPhone] = useState(user.phone ?? '')
   const [notice, setNotice] = useState<string | null>(null)
@@ -161,6 +163,7 @@ export function ProfileScreen() {
           <StackedRow label="Email">
             <span className="[overflow-wrap:anywhere]">{user.email}</span>
           </StackedRow>
+          {jobTitle && <StackedRow label="Job title">{jobTitle}</StackedRow>}
           <StackedRow label="Role">
             <span className="flex items-center justify-between gap-2">
               {scope}
@@ -169,7 +172,7 @@ export function ProfileScreen() {
           </StackedRow>
         </ListCard>
         <span className="-mt-1 text-12 text-text-muted">
-          Your email, role and restaurants are managed by your admin.
+          Your email, {jobTitle ? 'job title, ' : ''}role and restaurants are managed by your admin.
         </span>
 
         <SectionLabel className="-mb-0.5">Sign-in &amp; security</SectionLabel>

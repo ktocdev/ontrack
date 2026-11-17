@@ -131,11 +131,21 @@ export function useSavePersonRights(id: string) {
 export function useSetPersonAccess(id: string) {
   const refresh = useRefreshPerson(id)
   return useMutation({
-    mutationFn: async ({ role, restaurantIds }: { role: AppRole; restaurantIds: string[] }) => {
+    mutationFn: async ({
+      role,
+      restaurantIds,
+      jobTitleId,
+    }: {
+      role: AppRole
+      restaurantIds: string[]
+      jobTitleId: string | null
+    }) => {
       const { error } = await requireSupabase().rpc('set_person_access', {
         p_user: id,
         p_role: role,
         p_restaurants: restaurantIds,
+        // Null takes the title off; the generated types can't say an argument may be null.
+        p_job_title: jobTitleId as string,
       })
       if (error) throw error
     },

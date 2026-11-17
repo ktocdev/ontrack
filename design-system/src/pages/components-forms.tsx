@@ -22,6 +22,7 @@ import { Segmented } from '@app/components/Segmented'
 import { Sheet } from '@app/components/Sheet'
 import { StatusMenu } from '@app/components/StatusMenu'
 import { Switch, SwitchRow } from '@app/components/Switch'
+import { ViewSettingFields, viewSummary, type ViewSetting } from '@app/components/ViewSetting'
 import { TabBar } from '@app/components/TabBar'
 import { TabAlert } from '@app/components/Pill'
 import { EquipmentMenu, TicketMenu } from '@app/components/TicketMenu'
@@ -160,6 +161,7 @@ export function ChoicesPage() {
           'components/Chip.tsx',
           'components/RadioCard.tsx',
           'components/Switch.tsx',
+          'components/ViewSetting.tsx',
         ]}
       >
         <p>
@@ -278,6 +280,13 @@ export function ChoicesPage() {
               label="Preferred contractor"
             />
           </Card>
+        </Example>
+      </Section>
+      <Section title="View setting">
+        <Example
+          code={`<ViewSettingFields label="Front of House" value={{ notify: 'urgent', shown: false }} onChange={setView} />`}
+        >
+          <ViewSettingDemo />
         </Example>
       </Section>
       <Section title="Guidance">
@@ -571,5 +580,17 @@ export function SheetsPage() {
         />
       </Section>
     </>
+  )
+}
+
+/** Notify me and Show on my lists, for an area or a category (OT-116, OT-117). */
+function ViewSettingDemo() {
+  const [view, setView] = useState<ViewSetting>({ notify: 'urgent', shown: false })
+  return (
+    <Card className="flex flex-col gap-1.5 px-3.5 py-3">
+      <span className="text-14 font-semibold">Front of House</span>
+      <span className="text-12 text-text-muted">{viewSummary(view)}</span>
+      <ViewSettingFields label="Front of House" value={view} onChange={setView} />
+    </Card>
   )
 }

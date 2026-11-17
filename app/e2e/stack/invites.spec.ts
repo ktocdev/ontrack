@@ -36,11 +36,12 @@ const unique = (name: string, testInfo: { project: { name: string } }) =>
 // Restaurants tests see (a restaurant with no manager would take them on).
 const RESTAURANT = 'Ranalli’s Logan Square'
 
-async function invite(page: Page, name: string, email: string) {
+async function invite(page: Page, name: string, email: string, jobTitle?: string) {
   await page.goto('/admin/users/new')
   await page.getByLabel('Full name').fill(name)
   await page.getByLabel('Work email').fill(email)
   await page.getByRole('button', { name: RESTAURANT }).click()
+  if (jobTitle) await page.getByRole('button', { name: jobTitle, exact: true }).click()
   await page.getByRole('button', { name: 'Send invite' }).click()
   await expect(page.getByRole('status').filter({ hasText: `Invite sent to ${name}.` })).toBeVisible()
 }
@@ -55,10 +56,11 @@ test('an admin invites a manager, who sets up the account and lands in their res
   await page.goto('/admin/users/new')
   await expect(page.getByRole('heading', { name: 'Invite a user' })).toBeVisible()
   await testInfo.attach('invite-user', { body: await page.screenshot(), contentType: 'image/png' })
-  await invite(page, 'Nina Manager', email)
+  await invite(page, 'Nina Manager', email, 'Chef')
 
   await expect(page).toHaveURL(/\/admin\/users$/)
   await expect(page.getByText('Invite pending · sent today').first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Nina Manager, invite options' }).first()).toBeVisible()
   await testInfo.attach('users', { body: await page.screenshot(), contentType: 'image/png' })
 
   // A second phone: nobody signed in, opening the link from the email.
@@ -92,9 +94,18 @@ test('an admin invites a manager, who sets up the account and lands in their res
     data: { email, password: NEW_PASSWORD },
     headers: { apikey: KEY },
   })
-  const { user } = (await signedIn.json()) as { user: { user_metadata: Record<string, unknown> } }
+  const { user, access_token } = (await signedIn.json()) as {
+    user: { user_metadata: Record<string, unknown> }
+    access_token: string
+  }
   expect(user.user_metadata.full_name).toBe('Nina Manager')
   expect(user.user_metadata.invite_token).toBeUndefined()
+
+  // The invite's job title came with it, and its starting view (OT-117).
+  const prefs = await request.get(`${SUPABASE}/rest/v1/area_prefs?select=area,notify,shown`, {
+    headers: { apikey: KEY, Authorization: `Bearer ${access_token}` },
+  })
+  expect(await prefs.json()).toEqual([{ area: 'foh', notify: 'off', shown: false }])
 
   // The link is spent.
   const spent = await inviteLink(request, email)
@@ -104,7 +115,7 @@ test('an admin invites a manager, who sets up the account and lands in their res
 
   // The admin now sees a person, not an invite.
   await page.reload()
-  await expect(page.getByRole('link', { name: /Nina Manager/ }).first()).toBeVisible()
+  await expect(page.getByRole('link', { name: /Nina Manager Chef/ }).first()).toBeVisible()
 })
 
 test('resending replaces the link and revoking kills it', async ({ page, request }, testInfo) => {

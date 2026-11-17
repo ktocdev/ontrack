@@ -423,6 +423,12 @@ export const router = createBrowserRouter([
                     lazy: async () => ({ Component: (await import('../screens/admin/UsersScreen')).UsersScreen }),
                   },
                   {
+                    path: '/admin/users/titles',
+                    lazy: async () => ({
+                      Component: (await import('../screens/jobtitles/JobTitlesScreen')).JobTitlesScreen,
+                    }),
+                  },
+                  {
                     path: '/admin/roles',
                     lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).RolesScreen }),
                   },
