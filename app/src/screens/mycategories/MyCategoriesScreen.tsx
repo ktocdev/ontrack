@@ -2,22 +2,24 @@ import { useState, type FormEvent } from 'react'
 import { AREAS, AREA_LABEL, type Area } from '../../app/areas'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
-import { ListCard, ListRow, ListRowButton } from '../../components/Card'
+import { ListCard, ListRow } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
 import { Screen, ScreenBody, ScreenEmpty, SectionLabel, TitleBar } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '../../components/ViewSetting'
-import { IconChevronRight, IconWarning } from '../../components/icons'
+import { Switch, SwitchListRow } from '../../components/Switch'
+import { IconWarning } from '../../components/icons'
 import { useAllCategories, useMyPrefs, useSaveArea, useSaveCategory, type MyCategory } from './useMyCategories'
-import { categoryView, hasOwn, type Prefs } from './view'
+import { categoryView, hasOwn, isOn, switched, type Prefs } from './view'
 
 /**
  * Profile · My categories (OT-118; no board draws it). Every role picks, per area and per
  * category, whether it shows on their lists and, for the Support Team, whether the shared
- * pool notifies them. A row per area, then its categories; each opens a sheet with the two
- * settings and Save. A category with nothing of its own follows its area, and a setting
+ * pool notifies them. A row per area, then its categories. Each row's switch turns it on or
+ * off at once (OT-119, from feedback); its text opens a sheet with the two settings and
+ * Save, for the in-between choices. A category with nothing of its own follows its area, and a setting
  * saved the same as its area's goes back to following it. Notify shows only where the pool
  * reaches the person (the Ops role, OT-116): Reporters get it with 6b's tasks from the
  * Support Team. Under View as, the rows only show.
@@ -30,6 +32,10 @@ export function MyCategoriesScreen() {
   const categories = useAllCategories()
   const [editing, setEditing] = useState<Editing | null>(null)
   const withNotify = user.role === 'ops'
+  const saveArea = useSaveArea()
+  const saveCategory = useSaveCategory()
+  const toast = useToast()
+  const failedToSave = () => toast.show('Couldn’t save that. Check your connection and try again.')
 
   const failed = prefs.isError || categories.isError
   const ready = prefs.data && categories.data
@@ -71,27 +77,40 @@ export function MyCategoriesScreen() {
           ) : (
             AREAS.map((area) => {
               const inArea = categories.data.filter((c) => c.area === area && (c.active || hasOwn(prefs.data, c.id)))
+              const areaView = prefs.data.areas[area]
               return (
                 <section key={area} aria-label={AREA_LABEL[area]} className="flex flex-none flex-col gap-2">
                   <SectionLabel className="-mb-0.5">{AREA_LABEL[area]}</SectionLabel>
                   <ListCard>
                     <Row
                       title={`All of ${AREA_LABEL[area]}`}
-                      subtitle={viewSummary(prefs.data.areas[area], withNotify)}
+                      subtitle={viewSummary(areaView, withNotify)}
+                      on={isOn(areaView, withNotify)}
                       onOpen={viewingAs ? undefined : () => setEditing({ area })}
+                      onSwitch={(on) =>
+                        saveArea.mutate({ area, view: switched(areaView, on, withNotify) }, { onError: failedToSave })
+                      }
                     />
-                    {inArea.map((c) => (
-                      <Row
-                        key={c.id}
-                        title={c.active ? c.name : `${c.name} (turned off)`}
-                        subtitle={
-                          hasOwn(prefs.data, c.id)
-                            ? viewSummary(categoryView(prefs.data, c.id, area), withNotify)
-                            : `Same as ${AREA_LABEL[area]}`
-                        }
-                        onOpen={viewingAs ? undefined : () => setEditing({ area, category: c })}
-                      />
-                    ))}
+                    {inArea.map((c) => {
+                      const view = categoryView(prefs.data, c.id, area)
+                      return (
+                        <Row
+                          key={c.id}
+                          title={c.active ? c.name : `${c.name} (turned off)`}
+                          subtitle={
+                            hasOwn(prefs.data, c.id) ? viewSummary(view, withNotify) : `Same as ${AREA_LABEL[area]}`
+                          }
+                          on={isOn(view, withNotify)}
+                          onOpen={viewingAs ? undefined : () => setEditing({ area, category: c })}
+                          onSwitch={(on) =>
+                            saveCategory.mutate(
+                              { prefs: prefs.data, category: c, view: switched(view, on, withNotify) },
+                              { onError: failedToSave },
+                            )
+                          }
+                        />
+                      )
+                    })}
                   </ListCard>
                 </section>
               )
@@ -113,16 +132,38 @@ export function MyCategoriesScreen() {
   )
 }
 
-function Row({ title, subtitle, onOpen }: { title: string; subtitle: string; onOpen?: () => void }) {
+/**
+ * The text opens the sheet and the switch saves at once (OT-119). Under View as there is
+ * nothing to tap, and the switch only shows where the person stands.
+ */
+function Row({
+  title,
+  subtitle,
+  on,
+  onOpen,
+  onSwitch,
+}: {
+  title: string
+  subtitle: string
+  on: boolean
+  onOpen?: () => void
+  onSwitch: (on: boolean) => void
+}) {
   return onOpen ? (
-    <ListRowButton
+    <SwitchListRow
       title={title}
       subtitle={subtitle}
-      onClick={onOpen}
-      trailing={<IconChevronRight className="text-text-muted" />}
+      onOpen={onOpen}
+      label={title}
+      checked={on}
+      onCheckedChange={onSwitch}
     />
   ) : (
-    <ListRow title={title} subtitle={subtitle} />
+    <ListRow
+      title={title}
+      subtitle={subtitle}
+      trailing={<Switch label={title} checked={on} disabled onCheckedChange={() => {}} />}
+    />
   )
 }
 

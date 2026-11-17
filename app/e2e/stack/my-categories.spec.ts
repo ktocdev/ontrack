@@ -120,6 +120,22 @@ test('hidden categories stay off the dashboard until Show all, and My categories
     .getByRole('button', { name: 'Same as Back of House' })
     .click()
   await expect(back.getByRole('button', { name: /^Refrigeration.*Same as Back of House/ })).toBeVisible()
+
+  // The switch on a row turns it all on or off at once (OT-119), and stays after a reload.
+  const backSwitch = back.getByRole('switch', { name: 'All of Back of House' })
+  await expect(backSwitch).not.toBeChecked()
+  await backSwitch.click()
+  await expect(back.getByRole('button', { name: /All of Back of House.*Notify all · Shown/ })).toBeVisible()
+  await page.reload()
+  await expect(backSwitch).toBeChecked()
+  await testInfo.attach('switches', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.goto('/ops')
+  await expect(fridge).toBeVisible()
+  await page.goto('/profile/categories')
+  await backSwitch.click()
+  await expect(back.getByRole('button', { name: /All of Back of House.*Notify off · Hidden/ })).toBeVisible()
+  await page.reload()
+  await expect(backSwitch).not.toBeChecked()
 })
 
 test('IT hears of a POS ticket and not a Back of House one; the Ops manager title sees it without a push', async ({

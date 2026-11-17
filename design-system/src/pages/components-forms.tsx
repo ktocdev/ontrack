@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@app/components/Button'
-import { Card } from '@app/components/Card'
+import { Card, ListCard } from '@app/components/Card'
 import { Chip, ChoiceChips, FilterButton, FilterChip } from '@app/components/Chip'
 import { CodeInput, StepBars } from '@app/components/CodeInput'
 import { EmptyState } from '@app/components/EmptyState'
@@ -21,7 +21,7 @@ import {
 import { Segmented } from '@app/components/Segmented'
 import { Sheet } from '@app/components/Sheet'
 import { StatusMenu } from '@app/components/StatusMenu'
-import { Switch, SwitchRow } from '@app/components/Switch'
+import { Switch, SwitchListRow, SwitchRow } from '@app/components/Switch'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '@app/components/ViewSetting'
 import { HiddenCategories } from '@app/components/HiddenCategories'
 import { TabBar } from '@app/components/TabBar'
@@ -281,6 +281,20 @@ export function ChoicesPage() {
               label="Preferred contractor"
             />
           </Card>
+        </Example>
+        <Example
+          code={`<SwitchListRow title="Refrigeration" subtitle="Notify all · Shown" onOpen={openSheet} checked={on} onCheckedChange={setOn} label="Refrigeration" />`}
+        >
+          <ListCard>
+            <SwitchListRow
+              title="Refrigeration"
+              subtitle={sw ? 'Notify all · Shown' : 'Notify off · Hidden'}
+              onOpen={() => undefined}
+              checked={sw}
+              onCheckedChange={setSw}
+              label="Refrigeration"
+            />
+          </ListCard>
         </Example>
       </Section>
       <Section title="View setting">

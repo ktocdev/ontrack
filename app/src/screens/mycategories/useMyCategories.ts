@@ -83,9 +83,30 @@ export function listed(t: {
   return { category_id: t.category_id, area: t.category?.area, created_by: t.created_by, assignee_id: t.assignee_id }
 }
 
+/**
+ * Saves change the screen at once and go back if the save fails, so a switch moves as it's
+ * tapped; the settings are reread afterwards either way.
+ */
+function useOptimistic(userId: string) {
+  const queryClient = useQueryClient()
+  const key = prefsKey(userId)
+  return {
+    apply: async (change: (prefs: Prefs) => Prefs) => {
+      await queryClient.cancelQueries({ queryKey: key })
+      const before = queryClient.getQueryData<Prefs>(key)
+      if (before) queryClient.setQueryData<Prefs>(key, change(before))
+      return { before }
+    },
+    restore: (context: { before?: Prefs } | undefined) => {
+      if (context?.before) queryClient.setQueryData(key, context.before)
+    },
+    reread: () => queryClient.invalidateQueries({ queryKey: key }),
+  }
+}
+
 export function useSaveArea() {
   const { user } = useUser()
-  const queryClient = useQueryClient()
+  const cache = useOptimistic(user.id)
   return useMutation({
     mutationFn: async ({ area, view }: { area: Area; view: ViewSetting }) => {
       const table = requireSupabase().from('area_prefs')
@@ -94,13 +115,15 @@ export function useSaveArea() {
         : await table.upsert({ user_id: user.id, area, notify: view.notify, shown: view.shown })
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: prefsKey(user.id) }),
+    onMutate: ({ area, view }) => cache.apply((prefs) => ({ ...prefs, areas: { ...prefs.areas, [area]: view } })),
+    onError: (_error, _vars, context) => cache.restore(context),
+    onSettled: cache.reread,
   })
 }
 
 export function useSaveCategory() {
   const { user } = useUser()
-  const queryClient = useQueryClient()
+  const cache = useOptimistic(user.id)
   return useMutation({
     /** `view` null puts the category back to following its area. */
     mutationFn: async ({ prefs, category, view }: { prefs: Prefs; category: MyCategory; view: ViewSetting | null }) => {
@@ -111,6 +134,15 @@ export function useSaveCategory() {
         : await table.delete().eq('user_id', user.id).eq('category_id', category.id)
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: prefsKey(user.id) }),
+    onMutate: ({ prefs, category, view }) =>
+      cache.apply((current) => {
+        const row = view && categoryRow(prefs, category.area, view)
+        const categories = new Map(current.categories)
+        if (row) categories.set(category.id, row)
+        else categories.delete(category.id)
+        return { ...current, categories }
+      }),
+    onError: (_error, _vars, context) => cache.restore(context),
+    onSettled: cache.reread,
   })
 }

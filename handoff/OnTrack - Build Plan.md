@@ -584,6 +584,7 @@ OT-112 planned this; OT-113 adds the ops manager's answers and makes IT an area 
 | OT-116 | My categories backend: the seed's IT person, `area_prefs`, `category_prefs`, `notification_recipients` by area, category and urgency; pgTAP for who gets what |
 | OT-117 | Job titles: the list and its functions, starting views written on giving a title, the invite carrying one; the Job titles screen, the picker on Invite user and User profile, the title on Profile, Users and the ticket badge; pgTAP |
 | OT-118 | My categories on Profile; hidden categories left off the Ops dashboard, Closed tickets, a Reporter's Open tickets and In-house, with the "N hidden · Show all" line; View as; a stack flow: the seeded IT person gets a push for the POS ticket and none for a Back of House one, and the ops manager with the Ops manager title sees the POS ticket on the dashboard without a push |
+| OT-119 | From feedback (Nov 17, 2026): a switch on each My categories row, saved at once: on is Notify all and Shown, off is Notify off and Hidden (only Show for anyone the pool doesn't reach), and anything in between reads as on; the row's text opens the sheet for the in-between choices |
 | 6b | Add task and Hand back as in-house task, in 6b's Ops backend and in-house PRs |
 
 These come after OT-111 and before 6b is numbered, so 6b's Ops screens are built on the role names, the IT area and the category settings.

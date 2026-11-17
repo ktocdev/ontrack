@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { categoryRow, categoryView, hiddenCount, isShown, NO_PREFS, toPrefs } from './view'
+import { categoryRow, categoryView, hiddenCount, isOn, isShown, NO_PREFS, switched, toPrefs } from './view'
 
 const ME = 'me'
 const POS = 'pos'
@@ -84,5 +84,21 @@ describe('hiddenCount', () => {
   it('counts the categories that are hidden, leaving out turned-off ones', () => {
     expect(hiddenCount(itView, categories)).toBe(2)
     expect(hiddenCount(NO_PREFS, categories)).toBe(0)
+  })
+})
+
+describe('the row switch', () => {
+  it('reads anything shown or notifying as on', () => {
+    expect(isOn({ notify: 'off', shown: true }, true)).toBe(true)
+    expect(isOn({ notify: 'urgent', shown: false }, true)).toBe(true)
+    expect(isOn({ notify: 'off', shown: false }, true)).toBe(false)
+    expect(isOn({ notify: 'urgent', shown: false }, false)).toBe(false)
+  })
+
+  it('turns everything on or off for the Support Team, and only Show for anyone else', () => {
+    expect(switched({ notify: 'urgent', shown: true }, false, true)).toEqual({ notify: 'off', shown: false })
+    expect(switched({ notify: 'off', shown: false }, true, true)).toEqual({ notify: 'all', shown: true })
+    expect(switched({ notify: 'off', shown: true }, false, false)).toEqual({ notify: 'off', shown: false })
+    expect(switched({ notify: 'off', shown: false }, true, false)).toEqual({ notify: 'off', shown: true })
   })
 })
