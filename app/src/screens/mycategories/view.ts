@@ -80,3 +80,21 @@ export function isShown(prefs: Prefs, userId: string, item: Listed) {
 export function hiddenCount(prefs: Prefs, categories: { id: string; area: Area; active: boolean }[]) {
   return categories.filter((c) => c.active && !categoryView(prefs, c.id, c.area).shown).length
 }
+
+/**
+ * The switch on a My categories row (OT-119). On means it's on your radar: shown, or for
+ * the Support Team, shown or notifying. Anything in between, like shown with Notify off,
+ * reads as on, and the row's subtitle says which.
+ */
+export function isOn(v: ViewSetting, withNotify: boolean) {
+  return v.shown || (withNotify && v.notify !== 'off')
+}
+
+/**
+ * What the switch sets. With Notify, on is everything and off is nothing, as a job title's
+ * starting view puts it. Without it, only Show changes, and Notify stays as it was.
+ */
+export function switched(v: ViewSetting, on: boolean, withNotify: boolean): ViewSetting {
+  if (!withNotify) return { ...v, shown: on }
+  return on ? DEFAULT_VIEW : { notify: 'off', shown: false }
+}

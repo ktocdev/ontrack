@@ -91,7 +91,7 @@ import {
   PeopleListSkeleton,
   Spinner,
 } from '../../components/Skeleton'
-import { Switch, SwitchRow } from '../../components/Switch'
+import { Switch, SwitchListRow, SwitchRow } from '../../components/Switch'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '../../components/ViewSetting'
 import { HiddenCategories } from '../../components/HiddenCategories'
 import { ThemeControl } from '../../components/ThemeControl'
@@ -1032,6 +1032,16 @@ export function KitPage() {
                   label="Preferred contractor"
                 />
               </Card>
+              <ListCard>
+                <SwitchListRow
+                  title="Refrigeration"
+                  subtitle={sw ? 'Notify all · Shown' : 'Notify off · Hidden'}
+                  onOpen={() => toast.show('Opens the sheet with more settings.')}
+                  checked={sw}
+                  onCheckedChange={setSw}
+                  label="Refrigeration"
+                />
+              </ListCard>
               <SectionLabel>View setting (My categories, a job title&apos;s starting view)</SectionLabel>
               <ViewSettingDemo />
             </Section>
