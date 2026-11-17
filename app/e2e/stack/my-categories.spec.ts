@@ -96,7 +96,13 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await page.getByRole('link', { name: /^My categories/ }).click()
   await expect(page.getByRole('heading', { name: 'My categories' })).toBeVisible()
   const back = page.getByRole('region', { name: 'Back of House' })
-  await expect(back.getByRole('button', { name: /All of Back of House.*Notify off · Hidden/ })).toBeVisible()
+  const allBack = back.getByRole('button', { name: /^All/ })
+  await expect(allBack).toHaveAccessibleName(/Notify off · Hidden/)
+  // Its categories are folded under All until it is opened (OT-120).
+  await expect(back.getByRole('button', { name: /^Refrigeration/ })).toHaveCount(0)
+  await allBack.click()
+  await expect(allBack).toHaveAttribute('aria-expanded', 'true')
+  await expect(back.getByRole('button', { name: /^More settings for all of Back of House/ })).toBeVisible()
   await expect(back.getByRole('button', { name: /^Refrigeration.*Same as Back of House/ })).toBeVisible()
   await testInfo.attach('my-categories', { body: await page.screenshot(), contentType: 'image/png' })
 
@@ -107,6 +113,9 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await testInfo.attach('category-sheet', { body: await page.screenshot(), contentType: 'image/png' })
   await sheet.getByRole('button', { name: 'Save' }).click()
   await expect(back.getByRole('button', { name: /^Refrigeration.*Notify off · Shown/ })).toBeVisible()
+  // Folded, All says a category is set on its own.
+  await allBack.click()
+  await expect(allBack).toHaveAccessibleName(/Notify off · Hidden · 1 set on its own/)
 
   await page.goto('/ops')
   await expect(fridge).toBeVisible()
@@ -114,6 +123,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
 
   // Back to following the area.
   await page.goto('/profile/categories')
+  await allBack.click()
   await back.getByRole('button', { name: /^Refrigeration/ }).click()
   await page
     .getByRole('dialog', { name: 'Refrigeration' })
@@ -125,7 +135,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   const backSwitch = back.getByRole('switch', { name: 'All of Back of House' })
   await expect(backSwitch).not.toBeChecked()
   await backSwitch.click()
-  await expect(back.getByRole('button', { name: /All of Back of House.*Notify all · Shown/ })).toBeVisible()
+  await expect(allBack).toHaveAccessibleName(/Notify all · Shown/)
   await page.reload()
   await expect(backSwitch).toBeChecked()
   await testInfo.attach('switches', { body: await page.screenshot(), contentType: 'image/png' })
@@ -133,7 +143,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await expect(fridge).toBeVisible()
   await page.goto('/profile/categories')
   await backSwitch.click()
-  await expect(back.getByRole('button', { name: /All of Back of House.*Notify off · Hidden/ })).toBeVisible()
+  await expect(allBack).toHaveAccessibleName(/Notify off · Hidden/)
   await page.reload()
   await expect(backSwitch).not.toBeChecked()
 })

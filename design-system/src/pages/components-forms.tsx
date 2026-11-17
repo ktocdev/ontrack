@@ -287,6 +287,15 @@ export function ChoicesPage() {
         >
           <ListCard>
             <SwitchListRow
+              title="All"
+              subtitle="Notify off · Hidden · 1 set on its own"
+              expanded={!sw}
+              onOpen={() => setSw(!sw)}
+              checked={false}
+              onCheckedChange={() => undefined}
+              label="All of Back of House"
+            />
+            <SwitchListRow
               title="Refrigeration"
               subtitle={sw ? 'Notify all · Shown' : 'Notify off · Hidden'}
               onOpen={() => undefined}
