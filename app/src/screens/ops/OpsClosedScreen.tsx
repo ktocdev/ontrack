@@ -64,7 +64,7 @@ export function OpsClosedScreen() {
             }}
           />
         </div>
-        <ProfileLink />
+        <ProfileLink shield={false} />
       </div>
 
       {isError ? (

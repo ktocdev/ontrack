@@ -9,17 +9,20 @@ import type { AppRole } from '../../lib/supabase'
  * Role and restaurants, as on Invite user and the User profile's Change sheet. A
  * manager must have at least one restaurant, so for them All restaurants means
  * each one by name; any other role with All gets the all-restaurants scope, which
- * also covers restaurants added later.
+ * also covers restaurants added later. Admin is not offered as a role (OT-123): it is
+ * the Admin switch, held on top of a role. Someone already on the Admin role still sees it,
+ * so their Change sheet can keep it or move them off it.
  */
 export const ROLE_CHOICES: { value: AppRole; name: string; desc: string }[] = [
   { value: 'manager', name: 'Restaurant manager', desc: 'Creates tickets for their restaurant(s)' },
   { value: 'ops', name: 'Operations manager', desc: 'Works tickets, logs costs and contractors' },
   { value: 'leadership', name: 'Leadership', desc: 'Read-only view of everything' },
-  { value: 'admin', name: 'Admin / IT', desc: 'Full access, manages users and rights' },
+  { value: 'admin', name: 'Admin', desc: 'Only the admin screens: users, rights and restaurants' },
 ]
 
 export function useAccessChoice(restaurants: Restaurant[], initial: { role: AppRole; picked: string[]; all: boolean }) {
   const [role, setRole] = useState(initial.role)
+  const wasAdmin = initial.role === 'admin'
   const [picked, setPicked] = useState(initial.picked)
   const [all, setAll] = useState(initial.all)
 
@@ -27,6 +30,8 @@ export function useAccessChoice(restaurants: Restaurant[], initial: { role: AppR
     role,
     picked,
     all,
+    /** The roles offered: the Admin role only to someone already on it. */
+    choices: ROLE_CHOICES.filter((r) => r.value !== 'admin' || wasAdmin),
     ready: all || picked.length > 0,
     /** What to save: the restaurants by id, or none for the all-restaurants scope. */
     restaurantIds: all ? (role === 'manager' ? restaurants.map((r) => r.id) : []) : picked,
@@ -71,7 +76,7 @@ export function AccessFields({
           Role
         </span>
         <div role="radiogroup" aria-labelledby="access-role" className="flex flex-col gap-2">
-          {ROLE_CHOICES.map((r) => (
+          {choice.choices.map((r) => (
             <RadioCard
               key={r.value}
               checked={choice.role === r.value}

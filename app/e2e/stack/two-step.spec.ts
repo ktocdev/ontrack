@@ -30,21 +30,30 @@ async function newestMail(request: APIRequestContext, to: string, subject: strin
   return text
 }
 
-/** Admin invites someone; they set up the account on their own phone and land signed in. */
+/**
+ * Admin invites someone; they set up the account on their own phone and land signed in. A
+ * new admin is an Operations manager with the Admin switch on, since Admin is held on top of
+ * a role (OT-123).
+ */
 async function newPerson(
   browser: Browser,
   admin: Page,
   request: APIRequestContext,
   testInfo: TestInfo,
   name: string,
-  role: 'Restaurant manager' | 'Admin / IT',
+  role: 'Restaurant manager' | 'Operations manager + Admin',
 ) {
   const email = `${name.toLowerCase().replace(/ /g, '.')}.${testInfo.project.name}.${Date.now() % 1_000_000}@example.com`
   await admin.goto('/admin/users/new')
   await admin.getByLabel('Full name').fill(name)
   await admin.getByLabel('Work email').fill(email)
-  await admin.getByRole('radio', { name: new RegExp(role.replace('/', '\\/')) }).click()
-  if (role === 'Restaurant manager') await admin.getByRole('button', { name: RESTAURANT }).click()
+  if (role === 'Restaurant manager') {
+    await admin.getByRole('radio', { name: /Restaurant manager/ }).click()
+    await admin.getByRole('button', { name: RESTAURANT }).click()
+  } else {
+    await admin.getByRole('radio', { name: /Operations manager/ }).click()
+    await admin.getByRole('switch', { name: 'Admin' }).click()
+  }
   await admin.getByRole('button', { name: 'Send invite' }).click()
   await expect(admin.getByRole('status').filter({ hasText: `Invite sent to ${name}.` })).toBeVisible()
 
@@ -276,7 +285,7 @@ test('someone turns it on, then signs in by code, by backup code and by a rememb
 
 test('a new admin must set it up before anything works', async ({ browser, page, request }, testInfo) => {
   await signIn(page, 'admin@example.com')
-  const person = await newPerson(browser, page, request, testInfo, 'Ada Admin', 'Admin / IT')
+  const person = await newPerson(browser, page, request, testInfo, 'Ada Admin', 'Operations manager + Admin')
   const phone = person.page
 
   await expect(phone.getByRole('heading', { name: 'Turn on 2-step verification' })).toBeVisible()
@@ -302,8 +311,14 @@ test('a new admin must set it up before anything works', async ({ browser, page,
   expect(invite.status()).toBe(403)
 
   await finishSetup(phone, testInfo)
+  // Set up, they reach Users, which they asked for; the filled shield takes them to their
+  // role's dashboard, and the shield there brings them back.
   await expect(phone.getByRole('heading', { name: 'Users' })).toBeVisible()
   await expect(phone.getByRole('link', { name: /Maya Reyes/ }).first()).toBeVisible()
+  await phone.getByRole('link', { name: 'Leave admin' }).click()
+  await expect(phone.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+  await phone.getByRole('link', { name: 'Admin', exact: true }).click()
+  await expect(phone.getByRole('heading', { name: 'Users' })).toBeVisible()
   await person.close()
 })
 

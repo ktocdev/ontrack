@@ -153,6 +153,20 @@ export function useSetPersonAccess(id: string) {
   })
 }
 
+/** Give or take Admin, on top of the person's role (OT-122); checked and logged by set_admin. */
+export function useSetAdmin(id: string) {
+  const refresh = useRefreshPerson(id)
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (on: boolean) => {
+      const { error } = await requireSupabase().rpc('set_admin', { p_user: id, p_on: on })
+      if (error) throw error
+    },
+    // Holding Admin makes 2-step required, which the security row shows.
+    onSuccess: () => Promise.all([refresh(), queryClient.invalidateQueries({ queryKey: personTwoStepKey(id) })]),
+  })
+}
+
 const personTwoStepKey = (id: string) => ['admin', 'person-two-step', id]
 
 export function usePersonTwoStep(id: string) {

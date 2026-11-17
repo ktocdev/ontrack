@@ -5,9 +5,16 @@ import { expect, type APIRequestContext, type Page } from '@playwright/test'
 export const SEED_PASSWORD = 'ontrack-demo-2026'
 
 /** The seeded admin's authenticator secret (supabase/seed.sql). */
-const ADMIN_EMAIL = 'admin@example.com'
 const ADMIN_SECRET = 'JBSWY3DPEHPK3PXP'
-const ADMIN_FACTOR = '33333333-3333-4333-8333-000000000006'
+
+/**
+ * The seeded people who hold Admin and so sign in with a code (supabase/seed.sql): admin@,
+ * and Rosa, the head ops manager, on the Support Team (OT-122).
+ */
+const SECOND_STEP: Record<string, { secret: string; factor: string }> = {
+  'admin@example.com': { secret: ADMIN_SECRET, factor: '33333333-3333-4333-8333-000000000006' },
+  'rosa.delgado@example.com': { secret: 'KRUGKZLBMRWWS3TT', factor: '33333333-3333-4333-8333-000000000009' },
+}
 
 const SUPABASE = process.env.VITE_SUPABASE_URL ?? 'http://127.0.0.1:54321'
 const KEY = process.env.VITE_SUPABASE_ANON_KEY ?? ''
@@ -24,19 +31,20 @@ export function totp(secret: string) {
   return String((mac.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).padStart(6, '0')
 }
 
-/** An API token, as an app would hold after signing in; the seeded admin's has done its second step. */
+/** An API token, as an app would hold after signing in; a seeded admin's has done its second step. */
 export async function tokenFor(request: APIRequestContext, email: string, password = SEED_PASSWORD) {
   const res = await request.post(`${SUPABASE}/auth/v1/token?grant_type=password`, {
     data: { email, password },
     headers: { apikey: KEY },
   })
   const token = ((await res.json()) as { access_token?: string }).access_token
-  if (!token || email !== ADMIN_EMAIL) return token
+  const step = SECOND_STEP[email]
+  if (!token || !step) return token
   const headers = { apikey: KEY, Authorization: `Bearer ${token}` }
-  const challenge = await request.post(`${SUPABASE}/auth/v1/factors/${ADMIN_FACTOR}/challenge`, { headers })
+  const challenge = await request.post(`${SUPABASE}/auth/v1/factors/${step.factor}/challenge`, { headers })
   const { id } = (await challenge.json()) as { id: string }
-  const verified = await request.post(`${SUPABASE}/auth/v1/factors/${ADMIN_FACTOR}/verify`, {
-    data: { challenge_id: id, code: totp(ADMIN_SECRET) },
+  const verified = await request.post(`${SUPABASE}/auth/v1/factors/${step.factor}/verify`, {
+    data: { challenge_id: id, code: totp(step.secret) },
     headers,
   })
   return ((await verified.json()) as { access_token: string }).access_token
@@ -69,7 +77,8 @@ export async function signIn(page: Page, email: string, password = SEED_PASSWORD
   await page.getByLabel('Work email').fill(email)
   await page.getByLabel('Password', { exact: true }).fill(password)
   await page.getByRole('button', { name: 'Sign in' }).click()
-  if (email === ADMIN_EMAIL) await passTwoStep(page)
+  const step = SECOND_STEP[email]
+  if (step) await passTwoStep(page, step.secret)
   await expect(page.getByRole('link', { name: 'Your profile' })).toBeVisible()
 }
 

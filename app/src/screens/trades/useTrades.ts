@@ -18,7 +18,7 @@ export type ManagedTrade = Trade & {
 export function useCanEditTrades() {
   const { user, viewingAs } = useUser()
   const logsCost = useRight('log_cost')
-  return !viewingAs && (user.role === 'admin' || (user.role === 'ops' && logsCost === true))
+  return !viewingAs && (user.is_admin || (user.role === 'ops' && logsCost === true))
 }
 
 /** The group's trades, on and off, in the list's order. The pickers offer the ones on. */

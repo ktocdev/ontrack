@@ -142,12 +142,28 @@ export function UsersScreen() {
 
 const ROW = 'flex items-center gap-3 border-t border-border px-3.5 py-3 first:border-t-0'
 
-function RowBody({ name, tag, scope, dim }: { name: string; tag: string; scope: string; dim?: boolean }) {
+/** A person's or invite's name, their title or role, and Admin beside it when held on top of a role (OT-123). */
+function RowBody({
+  name,
+  tag,
+  admin,
+  scope,
+  dim,
+}: {
+  name: string
+  tag: string
+  admin?: boolean
+  scope: string
+  dim?: boolean
+}) {
   return (
     <>
       <span className="flex items-center justify-between gap-2">
         <span className={`min-w-0 truncate text-15 font-semibold ${dim ? 'text-text-secondary' : ''}`}>{name}</span>
-        <RoleTag>{tag}</RoleTag>
+        <span className="flex flex-none items-center gap-1">
+          <RoleTag>{tag}</RoleTag>
+          {admin && <RoleTag>Admin</RoleTag>}
+        </span>
       </span>
       <span className="text-13 leading-[1.35] text-text-secondary [overflow-wrap:anywhere]">{scope}</span>
     </>
@@ -168,6 +184,7 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
         <RowBody
           name={p.name}
           tag={titleName(p.jobTitleId) ?? roleNames.name(p.role)}
+          admin={p.admin && p.role !== 'admin'}
           scope={p.scope}
           dim={p.deactivated}
         />
@@ -189,7 +206,12 @@ function InviteRowView({ invite: i, onOpen }: { invite: InviteRow; onOpen: () =>
       <button type="button" onClick={onOpen} aria-label={`${i.name}, invite options`} className="absolute inset-0" />
       <Avatar name={i.name} role={i.expired ? 'expired' : 'pending'} size={38} />
       <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <RowBody name={i.name} tag={titleName(i.jobTitleId) ?? roleNames.name(i.role)} scope={i.scope} />
+        <RowBody
+          name={i.name}
+          tag={titleName(i.jobTitleId) ?? roleNames.name(i.role)}
+          admin={i.admin && i.role !== 'admin'}
+          scope={i.scope}
+        />
         <span className="flex items-center justify-between gap-2">
           <span
             role={resend.isError ? 'alert' : undefined}

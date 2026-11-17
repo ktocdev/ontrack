@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
+import { Card } from '../../components/Card'
+import { SwitchRow } from '../../components/Switch'
 import { CloseBar, Screen, ScreenBody, ScreenFooter } from '../../components/Screen'
 import { useToast } from '../../components/Toast'
 import { IconMail } from '../../components/icons'
@@ -15,7 +17,8 @@ import { useSendInvite } from './useUsers'
 /**
  * Admin · Invite user (design/screens/Admin-Invite). Name, work email, role and
  * the restaurants they get, and a job title, which no board draws (OT-117). Add restaurant links here with its new restaurant
- * already picked. The board says invites last 7 days; they last 72 hours.
+ * already picked. The board says invites last 7 days; they last 72 hours. Admin is a switch
+ * on top of the role (OT-123), not a role to pick.
  */
 
 const EMAIL_ERRORS: Record<string, string> = {
@@ -44,6 +47,7 @@ export function InviteUserScreen() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [jobTitleId, setJobTitleId] = useState<string | null>(null)
+  const [admin, setAdmin] = useState(false)
   const access = useAccessChoice(restaurants, {
     role: 'manager',
     picked: preset && restaurants.some((r) => r.id === preset) ? [preset] : [],
@@ -70,6 +74,7 @@ export function InviteUserScreen() {
         role: access.role,
         restaurantIds: access.restaurantIds,
         jobTitleId,
+        admin,
       },
       {
         onSuccess: () => {
@@ -112,6 +117,18 @@ export function InviteUserScreen() {
               setJobTitleId(id)
             }}
           />
+          <Card className="px-3.5 py-1">
+            <SwitchRow
+              title="Admin"
+              subtitle="Users, Roles & rights and Restaurants, on top of their role. They set up 2-step verification when they first sign in."
+              label="Admin"
+              checked={admin}
+              onCheckedChange={(on) => {
+                clearError()
+                setAdmin(on)
+              }}
+            />
+          </Card>
         </ScreenBody>
         <ScreenFooter>
           {formError && (

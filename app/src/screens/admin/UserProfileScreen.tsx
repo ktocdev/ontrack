@@ -29,6 +29,7 @@ import {
   useResetTwoStep,
   useRoleDefaults,
   useSavePersonRights,
+  useSetAdmin,
   useSetDeactivated,
   useSetPersonAccess,
   type RightKey,
@@ -88,6 +89,9 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
   const [draft, setDraft] = useState(new Map<RightKey, boolean>())
   const [changing, setChanging] = useState(false)
   const [sheet, setSheet] = useState<'deactivate' | 'delete' | null>(null)
+  const [adminSheet, setAdminSheet] = useState<boolean | null>(null)
+  // Nobody changes their own rights (OT-122), and the Admin role's are locked.
+  const rightsLocked = isAdminTarget || isYou
   const twoStep = usePersonTwoStep(id)
   const [resettingTwoStep, setResettingTwoStep] = useState(false)
   const [twoStepNotice, setTwoStepNotice] = useState<string | null>(null)
@@ -160,7 +164,28 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
           )}
         </div>
 
-        {!isYou && !isAdminTarget && !deactivated && (
+        <div className="flex flex-none items-center gap-3 rounded-input border border-border bg-surface px-3.5 py-2.5">
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-12 font-semibold text-text-secondary">Admin</span>
+            <span className="text-14 leading-[1.35] text-text-body">
+              {isAdminTarget
+                ? 'Always, since their role is Admin'
+                : profile.is_admin
+                  ? 'Users, Roles & rights and Restaurants, on top of their role'
+                  : isYou
+                    ? 'Not an admin'
+                    : `Gives ${first} the admin screens, on top of their role`}
+            </span>
+          </div>
+          <Switch
+            label="Admin"
+            checked={profile.is_admin}
+            disabled={isYou || isAdminTarget || (deactivated && !profile.is_admin)}
+            onCheckedChange={setAdminSheet}
+          />
+        </div>
+
+        {!isYou && !profile.is_admin && !deactivated && (
           <>
             <ButtonLink to={`/admin/users/${id}/view`} variant="secondary" className="flex-none" icon={<IconEye />}>
               View as {first}
@@ -183,7 +208,7 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
 
         <div className="flex flex-none items-center justify-between pt-3">
           <SectionLabel className="!pt-0">Rights for {first}</SectionLabel>
-          {!isAdminTarget && (
+          {!rightsLocked && (
             <button
               type="button"
               disabled={overridden === 0}
@@ -239,16 +264,18 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
                 <Switch
                   label={name}
                   checked={on}
-                  disabled={isAdminTarget}
+                  disabled={rightsLocked}
                   onCheckedChange={(next) => setDraft((d) => new Map(d).set(key, next))}
                 />
               </div>
             )
           })}
         </ListCard>
-        {isAdminTarget && (
+        {rightsLocked && (
           <span className="-mt-1 flex-none text-12 text-text-secondary">
-            Admin rights can&apos;t be changed, so there&apos;s always someone who can manage access.
+            {isAdminTarget
+              ? 'Admin rights can’t be changed, so there’s always someone who can manage access.'
+              : 'Nobody changes their own rights. Another admin can.'}
           </span>
         )}
 
@@ -328,7 +355,7 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
         )}
       </ScreenBody>
 
-      {!isAdminTarget && (
+      {!rightsLocked && (
         <ScreenFooter>
           {save.isError && (
             <span role="alert" className="text-13 font-semibold text-danger">
@@ -359,6 +386,7 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
           }}
         />
       )}
+      {adminSheet !== null && <AdminSheet id={id} on={adminSheet} first={first} onClose={() => setAdminSheet(null)} />}
       {changing && <AccessSheet id={id} person={person} first={first} onClose={() => setChanging(false)} />}
       {sheet && (
         <AccountSheet id={id} mode={sheet} first={first} deactivated={deactivated} onClose={() => setSheet(null)} />
@@ -490,7 +518,56 @@ function AccessSheet({
   )
 }
 
+/**
+ * Give or take Admin (OT-123; no board draws it). It says what changes: the admin screens on
+ * top of their role, and 2-step before anything else at their next sign-in. The database
+ * refuses taking it from the last active admin.
+ */
+function AdminSheet({ id, on, first, onClose }: { id: string; on: boolean; first: string; onClose: () => void }) {
+  const setAdmin = useSetAdmin(id)
+  const toast = useToast()
+  const last = (setAdmin.error as { code?: string } | null)?.code === '23514'
+  return (
+    <Sheet
+      open
+      onOpenChange={(open) => !open && onClose()}
+      title={on ? `Give ${first} Admin?` : `Take Admin away from ${first}?`}
+      description={
+        on
+          ? `${first} gets Users, Roles & rights and Restaurants on top of their role, with a shield on their home screen to reach them. ${first} sets up 2-step verification before anything else at their next sign-in. This is logged.`
+          : `${first} keeps their role, restaurants and rights; the admin screens go. This is logged.`
+      }
+    >
+      <Button
+        variant={on ? 'primary' : 'danger'}
+        loading={setAdmin.isPending}
+        onClick={() =>
+          setAdmin.mutate(on, {
+            onSuccess: () => {
+              toast.show(on ? `${first} is now an admin.` : `${first} is no longer an admin.`)
+              onClose()
+            },
+          })
+        }
+      >
+        {on ? 'Give Admin' : 'Take Admin away'}
+      </Button>
+      <Button variant="secondary" onClick={onClose}>
+        Cancel
+      </Button>
+      {setAdmin.isError && (
+        <span role="alert" className="text-13 font-semibold text-danger">
+          {last
+            ? `${first} is the last active admin, so keeps it.`
+            : "That didn't go through. Check your connection and try again."}
+        </span>
+      )}
+    </Sheet>
+  )
+}
+
 const ACCOUNT_ERRORS: Record<string, string> = {
+  last_admin: 'They’re the last active admin, so they stay.',
   has_history: 'This account has history now, so it can only be deactivated.',
   not_yourself: "You can't do that to your own account.",
   admin_only: 'Only an admin can do that.',

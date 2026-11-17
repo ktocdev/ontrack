@@ -21,7 +21,7 @@ export type ManagedCategory = {
 export function useCanEditCategories() {
   const { user, viewingAs } = useUser()
   const editsEquipment = useRight('edit_equipment')
-  return !viewingAs && (user.role === 'admin' || (user.role === 'ops' && editsEquipment === true))
+  return !viewingAs && (user.is_admin || (user.role === 'ops' && editsEquipment === true))
 }
 
 /** Every category, on or off, with whether anything has used it. The group's, so no restaurant scope. */
