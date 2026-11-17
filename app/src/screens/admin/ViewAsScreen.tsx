@@ -51,8 +51,8 @@ export function ViewAsScreen() {
       </div>
     )
   }
-  // Admins, the deactivated and unknown people can't be viewed; the database refused to log it.
-  if (!viewed || logged.isError || viewed.user.role === 'admin') return <NotFoundScreen />
+  // Anyone holding Admin, the deactivated and unknown people can't be viewed; the database refused to log it.
+  if (!viewed || logged.isError || viewed.user.is_admin) return <NotFoundScreen />
 
   const role = viewed.user.role as Exclude<AppRole, 'admin'>
   const first = firstName(viewed.user.full_name) ?? viewed.user.full_name

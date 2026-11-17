@@ -1,22 +1,24 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, type ReactNode } from 'react'
-import { Outlet } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 import { TabBar } from '../components/TabBar'
 import { useUser } from '../auth/context'
 import { syncPush } from '../pwa/push'
 import { InstallOnce } from '../pwa/InstallOnce'
-import { ROLE_TABS } from './roles'
+import { tabsFor } from './roles'
 
 /**
  * The frame every signed-in screen renders inside: the screen fills the
  * viewport column and the role's tab bar stays at the bottom. Detail screens
  * that hide the tab bar render outside this layout. The first one opened on a phone that
- * can install the app offers it, once (OT-72).
+ * can install the app offers it, once (OT-72). Someone who holds Admin on top of their role
+ * gets the admin view's tab bar under /admin and their role's everywhere else (OT-123).
  */
 export function Shell() {
   const { user, viewingAs } = useUser()
   const queryClient = useQueryClient()
-  const tabs = ROLE_TABS[user.role]
+  const { pathname } = useLocation()
+  const tabs = tabsFor(user, pathname)
   // Nothing depends on this working: a device that misses it just tries again next time.
   // It may turn push back on, so Profile's switch reads the device again after.
   useEffect(() => {

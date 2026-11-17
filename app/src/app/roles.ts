@@ -113,6 +113,29 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
   },
 }
 
+/**
+ * The admin view's tabs for someone who holds Admin on top of their role (OT-123): no
+ * Tickets tab, since they have their role's own ticket screens. A plain Admin account keeps
+ * ROLE_TABS.admin, with the Tickets tab Phase 7 fills.
+ */
+export const ADMIN_VIEW_TABS: { label: string; items: TabItem[] } = {
+  label: 'Admin',
+  items: [
+    { to: '/admin/users', label: 'Users', icon: IconUsers },
+    { to: '/admin/roles', label: 'Roles & rights', icon: IconShieldCheck },
+    { to: '/admin/restaurants', label: 'Restaurants', icon: IconBuilding },
+  ],
+}
+
+/** Whether an address is in the admin view, whose tab bar is the admin's. */
+export const inAdminView = (pathname: string) => pathname === '/admin' || pathname.startsWith('/admin/')
+
+/** The tab bar for a screen: the admin view's under /admin, the person's role's anywhere else. */
+export function tabsFor(user: { role: AppRole; is_admin: boolean }, pathname: string) {
+  if (user.role === 'admin') return ROLE_TABS.admin
+  return user.is_admin && inAdminView(pathname) ? ADMIN_VIEW_TABS : ROLE_TABS[user.role]
+}
+
 /** Where a ticket's lasting link leads for each role; admin and leadership have no ticket screen until Phase 7. */
 export function ticketPath(role: AppRole, id: string) {
   const safe = encodeURIComponent(id)

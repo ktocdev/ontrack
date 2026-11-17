@@ -81,7 +81,7 @@ export function useManagedJobTitles() {
 /** Only an admin looks after the list, and nobody under View as. */
 export function useCanEditJobTitles() {
   const { user, viewingAs } = useUser()
-  return !viewingAs && user.role === 'admin'
+  return !viewingAs && user.is_admin
 }
 
 /** What the database takes: only the areas off the defaults. */

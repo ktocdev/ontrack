@@ -96,6 +96,27 @@ export function RequireRole({ roles, area, children }: { roles: AppRole[]; area:
   return children ?? <Outlet />
 }
 
+/**
+ * The admin screens, for anyone who holds Admin, whatever their role (OT-123). The database
+ * decides what each one may do; this keeps the screens from offering what it would refuse.
+ */
+export function RequireAdmin({ children }: { children?: ReactNode }) {
+  const auth = useAuth()
+  if (auth.status !== 'signed-in') return null
+  if (!auth.user.is_admin) {
+    return (
+      <NoAccessScreen
+        title="You don't have access to the admin screens"
+        body={<>This area is for admins. Ask an admin if you need it.</>}
+        backTo={ROLE_HOME[auth.user.role]}
+        email={auth.user.email}
+        onSwitchAccount={auth.signOut}
+      />
+    )
+  }
+  return children ?? <Outlet />
+}
+
 /** "/" sends each role to its home tab. */
 export function RoleHome() {
   const auth = useAuth()

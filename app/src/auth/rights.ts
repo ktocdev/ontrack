@@ -8,7 +8,8 @@ import { useUser } from './context'
  * override, else their role's default, as can() reads it. The database still decides
  * what any write or read returns; this only keeps the screen from offering what it
  * would refuse. It answers for useUser(), so under View as it is the person viewed.
- * Undefined until it has loaded.
+ * Undefined until it has loaded. Holding Admin gives Invite users and Manage rights,
+ * whatever the role (OT-122), as can() does.
  */
 export function useRight(key: RightKey): boolean | undefined {
   const { user } = useUser()
@@ -26,5 +27,6 @@ export function useRight(key: RightKey): boolean | undefined {
       return { own, role }
     },
   })
+  if (user.is_admin && (key === 'invite_users' || key === 'manage_rights')) return true
   return data && (data.own.get(key) ?? data.role.get(key) ?? false)
 }

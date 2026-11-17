@@ -94,6 +94,7 @@ import {
 import { Switch, SwitchListRow, SwitchRow } from '../../components/Switch'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '../../components/ViewSetting'
 import { HiddenCategories } from '../../components/HiddenCategories'
+import { AdminShield } from '../../components/AdminShield'
 import { ThemeControl } from '../../components/ThemeControl'
 import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
@@ -441,6 +442,11 @@ export function KitPage() {
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
               <HiddenCategoriesDemo />
+              <div className="flex items-center gap-3">
+                <AdminShield to="/kit" active={false} />
+                <AdminShield to="/kit" active />
+                <span className="text-13 text-text-secondary">Admin shield: to the admin view, and back</span>
+              </div>
               <Notice tone="info">Closed tickets also appear on each piece of equipment, with their costs.</Notice>
               <Notice tone="waiting">
                 <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list. You&apos;ll get a notification when

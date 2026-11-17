@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@app/components/Button'
 import { Card, ListCard } from '@app/components/Card'
+import { AdminShield } from '@app/components/AdminShield'
 import { Chip, ChoiceChips, FilterButton, FilterChip } from '@app/components/Chip'
 import { CodeInput, StepBars } from '@app/components/CodeInput'
 import { EmptyState } from '@app/components/EmptyState'
@@ -334,7 +335,11 @@ export function ChoicesPage() {
 export function NavigationPage() {
   return (
     <>
-      <PageHeader eyebrow="Components" title="Navigation" source={['components/Screen.tsx', 'components/TabBar.tsx']}>
+      <PageHeader
+        eyebrow="Components"
+        title="Navigation"
+        source={['components/Screen.tsx', 'components/TabBar.tsx', 'components/AdminShield.tsx']}
+      >
         <p>
           Home screens sit in the tab bar shell; detail screens get a back bar instead. Every screen is built from{' '}
           <code>Screen</code>, <code>ScreenHeader</code> and <code>ScreenBody</code>.
@@ -343,6 +348,17 @@ export function NavigationPage() {
       <Section title="Screen header">
         <Example bare code={`<ScreenHeader title="Open tickets" action={<OverflowMenu … />} />`}>
           <ScreenHeader title="Open tickets" />
+        </Example>
+      </Section>
+      <Section
+        title="Admin shield"
+        intro="Left of the avatar on a home screen, for someone who holds Admin on top of their role. Outlined, it opens the admin view; filled, they are in it and it leads back home. Never on detail screens."
+      >
+        <Example code={`<AdminShield to={inAdmin ? home : '/admin/users'} active={inAdmin} />`}>
+          <div className="flex items-center gap-3">
+            <AdminShield to="#" active={false} />
+            <AdminShield to="#" active />
+          </div>
         </Example>
       </Section>
       <Section title="Bars" intro="Back, close and title bars for detail screens; the brand bar over a cover.">

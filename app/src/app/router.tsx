@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router'
-import { RequireAuth, RequireRole, RoleHome } from '../auth/guards'
+import { RequireAdmin, RequireAuth, RequireRole, RoleHome } from '../auth/guards'
 import { SignInScreen } from '../screens/auth/SignInScreen'
 import { NoAccessScreen } from '../screens/errors/NoAccessScreen'
 import { NotFoundScreen } from '../screens/errors/NotFoundScreen'
@@ -418,7 +418,7 @@ export const router = createBrowserRouter([
 
           // Admin
           {
-            element: <RequireRole roles={['admin']} area="the admin screens" />,
+            element: <RequireAdmin />,
             children: [
               {
                 element: <Shell />,

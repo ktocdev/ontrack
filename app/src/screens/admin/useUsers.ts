@@ -16,6 +16,8 @@ export type PersonRow = {
   name: string
   role: AppRole
   jobTitleId: string | null
+  /** Holds Admin on top of their role (OT-122). */
+  admin: boolean
   scope: string
   avatarPath: string | null
   deactivated: boolean
@@ -28,6 +30,7 @@ export type InviteRow = {
   email: string
   role: AppRole
   jobTitleId: string | null
+  admin: boolean
   scope: string
   expired: boolean
   line: string
@@ -44,12 +47,15 @@ export function useUsers() {
     queryFn: async () => {
       const sb = requireSupabase()
       const [profiles, memberships, restaurants, invites] = await Promise.all([
-        sb.from('profiles').select('id, full_name, role, job_title_id, avatar_path, deactivated_at').order('full_name'),
+        sb
+          .from('profiles')
+          .select('id, full_name, role, is_admin, job_title_id, avatar_path, deactivated_at')
+          .order('full_name'),
         sb.from('memberships').select('user_id, restaurant_id'),
         sb.from('restaurants').select('id, name').order('sort_order'),
         sb
           .from('invites')
-          .select('id, full_name, email, role, job_title_id, restaurant_ids, sent_at, expires_at')
+          .select('id, full_name, email, role, is_admin, job_title_id, restaurant_ids, sent_at, expires_at')
           .eq('status', 'pending')
           .order('sent_at', { ascending: false }),
       ])
@@ -67,6 +73,7 @@ export function useUsers() {
           name: p.full_name,
           role: p.role,
           jobTitleId: p.job_title_id,
+          admin: p.is_admin,
           scope: scopeLine(p.role, all ? null : names(mine.map((m) => m.restaurant_id as string))),
           avatarPath: p.avatar_path,
           deactivated: p.deactivated_at !== null,
@@ -79,6 +86,7 @@ export function useUsers() {
         email: i.email,
         role: i.role,
         jobTitleId: i.job_title_id,
+        admin: i.is_admin,
         scope: scopeLine(i.role, i.restaurant_ids.length ? names(i.restaurant_ids) : null),
         expired: new Date(i.expires_at).getTime() <= now.getTime(),
         line: inviteLine(i, now),
@@ -108,6 +116,8 @@ export type NewInvite = {
   role: AppRole
   restaurantIds: string[]
   jobTitleId: string | null
+  /** Admin on top of the role; only an admin can send it (OT-122). */
+  admin: boolean
 }
 
 export function useSendInvite() {
@@ -121,6 +131,7 @@ export function useSendInvite() {
         role: i.role,
         restaurant_ids: i.restaurantIds,
         job_title_id: i.jobTitleId,
+        is_admin: i.admin,
       }),
     onSuccess: refresh,
   })
