@@ -2,10 +2,13 @@ import { Link } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
+import { HiddenCategories } from '../../components/HiddenCategories'
 import { Screen, ScreenBody, ScreenEmpty } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
+import { TaskListEmpty } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconChevronLeft, IconWarning } from '../../components/icons'
+import { listed, useListView } from '../mycategories/useMyCategories'
 import { longDate } from './closed'
 import { AREA_LABEL } from './tickets'
 import { CLOSED_LIST_LIMIT, useClosedTickets } from './useClosedTickets'
@@ -13,11 +16,14 @@ import { CLOSED_LIST_LIMIT, useClosedTickets } from './useClosedTickets'
 /**
  * Manager · Closed tickets, opened from the menu on Open tickets. A simple list with
  * the newest first, and no board: the boards only reach a closed ticket through
- * Equipment Tickets in Phase 4, which misses any ticket with no equipment.
+ * Equipment Tickets in Phase 4, which misses any ticket with no equipment. Hidden
+ * categories are left off, as on Open tickets (OT-118).
  */
 export function ClosedTicketsScreen() {
   const { restaurants } = useUser()
   const { data, isPending, isError, refetch } = useClosedTickets(restaurants.map((r) => r.id))
+  const view = useListView()
+  const shown = (data ?? []).filter((t) => view.shows(listed(t)))
   const only = restaurants.length === 1
   const placeOf = new Map(restaurants.map((r) => [r.id, r]))
 
@@ -64,7 +70,16 @@ export function ClosedTicketsScreen() {
             <CardFeedSkeleton label="Loading closed tickets" />
           ) : (
             <>
-              {data.map((t) => (
+              <HiddenCategories
+                count={view.hidden}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+                className="-my-1"
+              />
+              {shown.length === 0 && (
+                <TaskListEmpty>Nothing closed in the categories you show. Show all lists the rest.</TaskListEmpty>
+              )}
+              {shown.map((t) => (
                 <TicketCard
                   key={t.id}
                   to={`/tickets/${t.id}?from=closed`}

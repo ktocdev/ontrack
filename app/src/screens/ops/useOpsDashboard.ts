@@ -16,7 +16,7 @@ export function useOpsDashboard(restaurantIds: string[]) {
       const { data, error } = await requireSupabase()
         .from('tickets')
         .select(
-          'id, display_id, title, status, urgency, source, restaurant_id, assignee_id, created_at, scheduled_for, category:categories (name, area), assignee:profiles!tickets_assignee_id_fkey (full_name, job_title_id)',
+          'id, display_id, title, status, urgency, source, restaurant_id, category_id, created_by, assignee_id, created_at, scheduled_for, category:categories (name, area), assignee:profiles!tickets_assignee_id_fkey (full_name, job_title_id)',
         )
         .in('restaurant_id', restaurantIds)
         .neq('status', 'closed')

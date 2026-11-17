@@ -187,11 +187,12 @@ test('closed tasks from the last 30 days show, and older ones wait behind Show o
   await page.route('**/rest/v1/inhouse_fixes?*', async (route) => {
     if (route.request().method() !== 'GET') return route.fallback()
     const response = await route.fetch()
-    const tasks = (await response.json()) as { title: string; done_at: string | null }[]
+    // Open tickets reads the open tasks too, for its count, without their titles.
+    const tasks = (await response.json()) as { title?: string; done_at: string | null }[]
     const old = new Date(Date.now() - 60 * 86_400_000).toISOString()
     await route.fulfill({
       response,
-      json: tasks.map((t) => (t.title.startsWith('Re-glue') ? { ...t, done_at: old } : t)),
+      json: tasks.map((t) => (t.title?.startsWith('Re-glue') ? { ...t, done_at: old } : t)),
     })
   })
   await openInHouse(page, 'maya.reyes@example.com')

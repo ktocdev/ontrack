@@ -27,7 +27,7 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  * Then password, theme, help and sign out, with Save changes fixed at the
  * bottom. Three things the board does not draw come from the build plan: the
  * phone field, the theme control and Notifications, and Install the app while this
- * browser can install it (OT-72).
+ * browser can install it (OT-72). My categories (OT-118) opens from under Notifications.
  */
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
@@ -214,6 +214,19 @@ export function ProfileScreen() {
         <InstallRow />
 
         <NotificationsSection />
+
+        <ListCard>
+          <ListRowLink
+            to="/profile/categories"
+            title="My categories"
+            subtitle={
+              user.role === 'ops'
+                ? 'Which tickets notify you and show on your lists'
+                : 'Which tickets show on your lists'
+            }
+            trailing={<IconChevronRight className="text-text-muted" />}
+          />
+        </ListCard>
 
         <SectionLabel className="-mb-0.5">Appearance</SectionLabel>
         <ThemeControl />

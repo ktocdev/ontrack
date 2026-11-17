@@ -31,7 +31,9 @@ export function useClosedMonth(restaurantIds: string[], month: string, enabled: 
       const { from, to } = monthRange(month)
       const { data, error } = await sb
         .from('tickets')
-        .select('id, display_id, title, restaurant_id, closed_at')
+        .select(
+          'id, display_id, title, restaurant_id, category_id, created_by, assignee_id, closed_at, category:categories (area)',
+        )
         .in('restaurant_id', restaurantIds)
         .eq('status', 'closed')
         .gte('closed_at', from)

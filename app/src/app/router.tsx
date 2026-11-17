@@ -148,6 +148,12 @@ export const router = createBrowserRouter([
                 lazy: async () => ({ Component: (await import('../screens/profile/HelpScreen')).HelpScreen }),
               },
               {
+                path: 'categories',
+                lazy: async () => ({
+                  Component: (await import('../screens/mycategories/MyCategoriesScreen')).MyCategoriesScreen,
+                }),
+              },
+              {
                 path: '2-step',
                 lazy: async () => ({
                   Component: (await import('../screens/twostep/TurnOnTwoStepScreen')).TurnOnTwoStepScreen,

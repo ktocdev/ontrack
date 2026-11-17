@@ -3,14 +3,17 @@ import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
+import { HiddenCategories } from '../../components/HiddenCategories'
 import { OverflowMenu } from '../../components/Menu'
 import { CountBadge } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader, UnderlineTabs } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
+import { TaskListEmpty } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconPlus, IconWarning } from '../../components/icons'
 import { activityLine, AREA_LABEL, scheduledLabel } from './tickets'
+import { listed, useListView } from '../mycategories/useMyCategories'
 import { expectNothingOpen, useOpenTickets } from './useOpenTickets'
 
 /**
@@ -22,8 +25,10 @@ import { expectNothingOpen, useOpenTickets } from './useOpenTickets'
  * layouts it found last time on this device. A manager with more than one
  * restaurant sees which one each card is for. The boards' QR buttons wait for
  * Phase 4, when a scan has something to open. The menu beside the title, which no
- * board draws, leads to closed tickets. Under View as, nothing here leads anywhere
- * or changes anything.
+ * board draws, leads to closed tickets. The categories someone hides in My categories
+ * are left off, apart from tickets they filed or are on, with the line that says so and
+ * Show all (OT-118); the In-house count leaves off hidden areas too. Under View as,
+ * nothing here leads anywhere or changes anything, and the viewed person's settings apply.
  */
 export function OpenTicketsScreen() {
   const { restaurants, viewingAs } = useUser()
@@ -31,12 +36,14 @@ export function OpenTicketsScreen() {
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const colorOf = new Map(restaurants.map((r) => [r.id, r]))
+  const view = useListView()
   const all = data?.tickets ?? []
+  const shown = all.filter((t) => view.shows(listed(t)))
   const noneAtAll = data !== undefined && all.length === 0
   // Loads in the layout it expects, so an empty list doesn't jump when it arrives.
   const [expectEmpty] = useState(() => expectNothingOpen(restaurants.map((r) => r.id)))
   const waitingForEmpty = isPending && expectEmpty
-  const inHouseCount = data?.inHouseCount ?? 0
+  const inHouseCount = (data?.inHouseOpen ?? []).filter((t) => view.shows(t)).length
   const menu = viewingAs ? null : (
     <OverflowMenu label="More ticket options" items={[{ to: '/tickets/closed', label: 'View Closed Tickets' }]} />
   )
@@ -70,7 +77,7 @@ export function OpenTicketsScreen() {
                 end: true,
                 label: (
                   <>
-                    Tickets <CountBadge count={all.length} active />
+                    Tickets <CountBadge count={shown.length} active />
                   </>
                 ),
               },
@@ -123,29 +130,40 @@ export function OpenTicketsScreen() {
           {isPending ? (
             <CardFeedSkeleton />
           ) : (
-            all.map((t) => {
-              const place = only ? undefined : colorOf.get(t.restaurant_id)
-              return (
-                <TicketCard
-                  key={t.id}
-                  to={viewingAs ? undefined : `/tickets/${t.id}`}
-                  displayId={t.display_id ?? ''}
-                  title={t.title}
-                  status={t.status}
-                  statusLabel={
-                    t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
-                  }
-                  walkthrough={t.source === 'walkthrough'}
-                  place={[t.category && AREA_LABEL[t.category.area], t.category?.name, t.equipment?.name]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  restaurant={place}
-                  who={t.assignee ? `${t.assignee.full_name} is on it` : 'Not picked up yet'}
-                  when={activityLine(t)}
-                  createdAt={t.created_at}
-                />
-              )
-            })
+            <>
+              <HiddenCategories
+                count={view.hidden}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+                className="-my-1"
+              />
+              {shown.length === 0 && (
+                <TaskListEmpty>Nothing open in the categories you show. Show all lists the rest.</TaskListEmpty>
+              )}
+              {shown.map((t) => {
+                const place = only ? undefined : colorOf.get(t.restaurant_id)
+                return (
+                  <TicketCard
+                    key={t.id}
+                    to={viewingAs ? undefined : `/tickets/${t.id}`}
+                    displayId={t.display_id ?? ''}
+                    title={t.title}
+                    status={t.status}
+                    statusLabel={
+                      t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
+                    }
+                    walkthrough={t.source === 'walkthrough'}
+                    place={[t.category && AREA_LABEL[t.category.area], t.category?.name, t.equipment?.name]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    restaurant={place}
+                    who={t.assignee ? `${t.assignee.full_name} is on it` : 'Not picked up yet'}
+                    when={activityLine(t)}
+                    createdAt={t.created_at}
+                  />
+                )
+              })}
+            </>
           )}
         </ScreenBody>
       )}

@@ -5,6 +5,7 @@ import { useRight } from '../../auth/rights'
 import { firstName } from '../../auth/session'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
+import { HiddenCategories } from '../../components/HiddenCategories'
 import { Notice } from '../../components/Notice'
 import { CountBadge, WalkthroughTag } from '../../components/Pill'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
@@ -13,6 +14,7 @@ import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
 import { useToast } from '../../components/Toast'
 import { IconChevronDown, IconPlus, IconWarning } from '../../components/icons'
+import { listed, useListView } from '../mycategories/useMyCategories'
 import { AddTaskSheet } from './AddTaskSheet'
 import { DeleteTaskSheet } from './DeleteTaskSheet'
 import { RECENT_DAYS, splitClosed } from './inHouse'
@@ -30,6 +32,8 @@ import { useOpenTickets } from './useOpenTickets'
  * hand-added one says who added it and when. Under View as the boxes only show their
  * state and Add is gone. Closed shows what was checked off in the last 30 days, latest
  * first; older ones wait behind Show older, still there to look at (from feedback, OT-85).
+ * A task has an area and no category, so an area hidden in My categories leaves its tasks
+ * off, apart from the person's own, with the line that says so and Show all (OT-118).
  */
 export function InHouseScreen() {
   const { restaurants, viewingAs } = useUser()
@@ -45,7 +49,8 @@ export function InHouseScreen() {
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const placeOf = new Map(restaurants.map((r) => [r.id, r]))
-  const all = data ?? []
+  const view = useListView()
+  const all = (data ?? []).filter((t) => view.shows(t))
   const open = all.filter((t) => !t.done_at)
   const { recent, older } = splitClosed(all)
   const closed = [...recent, ...older]
@@ -118,7 +123,8 @@ export function InHouseScreen() {
               end: true,
               label: (
                 <>
-                  Tickets <CountBadge count={openTickets.data?.tickets.length ?? 0} />
+                  Tickets{' '}
+                  <CountBadge count={(openTickets.data?.tickets ?? []).filter((t) => view.shows(listed(t))).length} />
                 </>
               ),
             },
@@ -154,6 +160,12 @@ export function InHouseScreen() {
             <CardFeedSkeleton label="Loading in-house tasks" />
           ) : (
             <>
+              <HiddenCategories
+                count={view.areaHidden ? view.hidden : 0}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+                className="-my-1"
+              />
               <div className="flex flex-none items-baseline justify-between">
                 <span className="eyebrow">To fix · {open.length}</span>
                 {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
