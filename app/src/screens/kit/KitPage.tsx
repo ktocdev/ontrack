@@ -277,7 +277,7 @@ export function KitPage() {
                   Disabled
                 </Button>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <OverflowMenu label="More options" items={[{ to: '/kit', label: 'A menu item' }]} />
                 <TicketMenu displayId="OT-1042" title="Walk-in cooler not holding temp" />
                 <EquipmentMenu id="kit" name="Walk-in Cooler 1" />
