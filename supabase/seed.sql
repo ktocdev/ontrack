@@ -346,8 +346,169 @@ insert into public.invoices (service_record_id, number, amount_cents, status, pa
 -- Walkthroughs: the board's two Q4 tasks, October's walkthroughs, and Logan
 -- Square's in-house fixes from the Manager in-house list.
 -- ---------------------------------------------------------------------------
--- The group schedule and the checklist come from the migration (20261113120000).
-update public.walkthrough_schedules set updated_by = '22222222-2222-4222-8222-000000000003' where restaurant_id is null;
+-- The checklists and rotations from the schedule board (WT-Ops-Schedule, OT-126). The
+-- migration's checklist (20261113120000) is B, the full walkthrough; A looks closer at the
+-- kitchen and the outside. The group's cycle starts in January, so October is B and
+-- November A, as the board's preview shows. Ranalli's has its own three months. Item ids
+-- are …0kNN, k the section's number below and NN the item's place in its list.
+update public.walkthrough_templates
+set name = 'Back of House + Front of House', description = 'Full walkthrough', short_name = 'BOH + FOH'
+where id = '88888888-8888-4888-8888-000000000001';
+
+insert into public.walkthrough_templates (id, name, description, short_name) values
+  ('88888888-8888-4888-8888-000000000002', 'Kitchen + Exterior', 'A closer look', 'Kitchen + Exterior'),
+  ('88888888-8888-4888-8888-000000000003', 'Kitchen + Bar', 'A closer look', 'Kitchen + Bar'),
+  ('88888888-8888-4888-8888-000000000004', 'Dining room + Patio', 'A closer look', 'Dining + Patio'),
+  ('88888888-8888-4888-8888-000000000005', 'Exterior + Storage', 'A closer look', 'Exterior + Storage');
+
+insert into public.walkthrough_sections (id, template_id, name, short_name, area, sort_order) values
+  ('cccccccc-cccc-4ccc-8ccc-000000000003', '88888888-8888-4888-8888-000000000002', 'Kitchen', 'Kitchen', 'boh', 1),
+  ('cccccccc-cccc-4ccc-8ccc-000000000004', '88888888-8888-4888-8888-000000000002', 'Exterior', 'Exterior', null, 2),
+  ('cccccccc-cccc-4ccc-8ccc-000000000005', '88888888-8888-4888-8888-000000000003', 'Kitchen', 'Kitchen', 'boh', 1),
+  ('cccccccc-cccc-4ccc-8ccc-000000000006', '88888888-8888-4888-8888-000000000003', 'Bar', 'Bar', 'foh', 2),
+  ('cccccccc-cccc-4ccc-8ccc-000000000007', '88888888-8888-4888-8888-000000000004', 'Dining room', 'Dining', 'foh', 1),
+  ('cccccccc-cccc-4ccc-8ccc-000000000008', '88888888-8888-4888-8888-000000000004', 'Patio', 'Patio', 'foh', 2),
+  ('cccccccc-cccc-4ccc-8ccc-000000000009', '88888888-8888-4888-8888-000000000005', 'Exterior', 'Exterior', null, 1),
+  ('cccccccc-cccc-4ccc-8ccc-000000000010', '88888888-8888-4888-8888-000000000005', 'Storage', 'Storage', 'boh', 2);
+
+-- Category ids by their last two digits (33333333-…-0000000000NN), where one plainly fits.
+with lists (list, n, group_name, title, cat) as (values
+  ('kitchen', 1,  'Electrical',          'Appliances (plugs, etc.)',     '14'),
+  ('kitchen', 2,  'Electrical',          'Light bulbs',                  '15'),
+  ('kitchen', 3,  'Electrical',          'Emergency lights and signs',   '15'),
+  ('kitchen', 4,  'Electrical',          'Outlets',                      '14'),
+  ('kitchen', 5,  'Electrical',          'Feature',                      '14'),
+  ('kitchen', 6,  'Plumbing',            'Hand sinks',                   '13'),
+  ('kitchen', 7,  'Plumbing',            'Floor drains',                 '13'),
+  ('kitchen', 8,  'Plumbing',            'Grease trap',                  '13'),
+  ('kitchen', 9,  'Hood and ventilation','Hood filters',                 '17'),
+  ('kitchen', 10, 'Hood and ventilation','Exhaust fan',                  '17'),
+  ('kitchen', 11, 'Hood and ventilation','Fire suppression tags',        '17'),
+  ('kitchen', 12, 'Refrigeration',       'Walk-in door gasket',          '12'),
+  ('kitchen', 13, 'Refrigeration',       'Reach-in temperatures',        '12'),
+  ('kitchen', 14, 'Refrigeration',       'Ice machine',                  '12'),
+  ('kitchen', 15, 'Cooking line',        'Burners and pilots',           '11'),
+  ('kitchen', 16, 'Cooking line',        'Fryer',                        '11'),
+  ('kitchen', 17, 'Cooking line',        'Oven door and seals',          '11'),
+  ('kitchen', 18, 'Dish',                'Dish machine',                 '16'),
+  ('kitchen', 19, 'Dish',                'Three-compartment sink',       '16'),
+  ('kitchen', 20, 'Floors and walls',    'Floor tiles and grout',        null),
+  ('kitchen', 21, 'Floors and walls',    'Wall panels',                  null),
+  ('kitchen', 22, 'Health and safety',   'First aid kit',                null),
+  ('kitchen', 23, 'Health and safety',   'Fire extinguishers',           null),
+  ('kitchen', 24, 'Storage',             'Dry storage shelving',         '18'),
+  ('exterior', 1,  'Lighting',           'Parking lot lights',           null),
+  ('exterior', 2,  'Lighting',           'Entrance lights',              null),
+  ('exterior', 3,  'Lighting',           'Sign lights',                  null),
+  ('exterior', 4,  'Lighting',           'Timers',                       null),
+  ('exterior', 5,  'Roof and gutters',   'Gutters and downspouts',       null),
+  ('exterior', 6,  'Roof and gutters',   'Roof drains',                  null),
+  ('exterior', 7,  'Roof and gutters',   'Rooftop units',                null),
+  ('exterior', 8,  'Doors and windows',  'Back door closes and locks',   null),
+  ('exterior', 9,  'Doors and windows',  'Front door hardware',          null),
+  ('exterior', 10, 'Doors and windows',  'Glass and frames',             null),
+  ('exterior', 11, 'Signage',            'Main sign',                    null),
+  ('exterior', 12, 'Signage',            'Hours and address',            null),
+  ('exterior', 13, 'Signage',            'Accessible parking signs',     null),
+  ('exterior', 14, 'Walks and parking',  'Sidewalk and curbs',           null),
+  ('exterior', 15, 'Walks and parking',  'Lot surface and striping',     null),
+  ('exterior', 16, 'Walks and parking',  'Ramps and rails',              null),
+  ('exterior', 17, 'Patio',              'Furniture',                    null),
+  ('exterior', 18, 'Patio',              'Heaters',                      null),
+  ('exterior', 19, 'Patio',              'Fencing and planters',         null),
+  ('exterior', 20, 'Trash and grease',   'Dumpster area clean',          null),
+  ('exterior', 21, 'Trash and grease',   'Grease bin lid and pad',       null),
+  ('exterior', 22, 'Trash and grease',   'Enclosure gate',               null),
+  ('exterior', 23, 'Landscaping',        'Beds and trees',               null),
+  ('exterior', 24, 'Landscaping',        'Irrigation',                   null),
+  ('bar', 1,  'Electrical',              'Light bulbs',                  '01'),
+  ('bar', 2,  'Electrical',              'Outlets',                      '03'),
+  ('bar', 3,  'Electrical',              'Under-bar lights',             '01'),
+  ('bar', 4,  'Plumbing',                'Bar sinks',                    '02'),
+  ('bar', 5,  'Plumbing',                'Floor drains',                 '02'),
+  ('bar', 6,  'Plumbing',                'Soda gun lines',               '02'),
+  ('bar', 7,  'Refrigeration',           'Back bar coolers',             null),
+  ('bar', 8,  'Refrigeration',           'Keg cooler temperature',       null),
+  ('bar', 9,  'Refrigeration',           'Draft lines and taps',         null),
+  ('bar', 10, 'Refrigeration',           'Ice bin',                      null),
+  ('bar', 11, 'Surfaces',                'Bar top',                      '05'),
+  ('bar', 12, 'Surfaces',                'Stools',                       '05'),
+  ('bar', 13, 'Surfaces',                'Floor mats',                   null),
+  ('bar', 14, 'Health and safety',       'Glass washer',                 null),
+  ('bar', 15, 'Health and safety',       'Chemical storage',             null),
+  ('bar', 16, 'Inventory control',       'Liquor room lock',             null),
+  ('dining', 1,  'Electrical',           'Light bulbs',                  '01'),
+  ('dining', 2,  'Electrical',           'Dimmers',                      '01'),
+  ('dining', 3,  'Electrical',           'Emergency lights and signs',   '01'),
+  ('dining', 4,  'Electrical',           'Outlets',                      '03'),
+  ('dining', 5,  'Plumbing',             'Restroom fixtures',            '02'),
+  ('dining', 6,  'Plumbing',             'Restroom drains',              '02'),
+  ('dining', 7,  'HVAC',                 'Maintaining temp',             '06'),
+  ('dining', 8,  'HVAC',                 'Vents and returns',            '06'),
+  ('dining', 9,  'Envelope',             'Windows and doors',            '09'),
+  ('dining', 10, 'Envelope',             'Walls',                        null),
+  ('dining', 11, 'Envelope',             'Floors',                       null),
+  ('dining', 12, 'Aesthetics',           'Paint',                        null),
+  ('dining', 13, 'Aesthetics',           'Art and decor',                '04'),
+  ('dining', 14, 'Aesthetics',           'Signage',                      '04'),
+  ('dining', 15, 'Furniture',            'Tables level',                 '05'),
+  ('dining', 16, 'Furniture',            'Chairs and booths',            '05'),
+  ('dining', 17, 'Furniture',            'Host stand',                   '05'),
+  ('dining', 18, 'Audio and video',      'Speakers',                     '07'),
+  ('dining', 19, 'Audio and video',      'TVs',                          '07'),
+  ('dining', 20, 'Health and safety',    'Exits clear',                  null),
+  ('patio', 1,  'Lighting',              'String lights',                '01'),
+  ('patio', 2,  'Lighting',              'Path lights',                  '01'),
+  ('patio', 3,  'Comfort',               'Heaters',                      null),
+  ('patio', 4,  'Comfort',               'Umbrellas',                    null),
+  ('patio', 5,  'Comfort',               'Fans',                         null),
+  ('patio', 6,  'Furniture',             'Tables level',                 '05'),
+  ('patio', 7,  'Furniture',             'Chairs',                       '05'),
+  ('patio', 8,  'Furniture',             'Cushions',                     '05'),
+  ('patio', 9,  'Structure',             'Fencing',                      null),
+  ('patio', 10, 'Structure',             'Planters',                     null),
+  ('patio', 11, 'Structure',             'Retractable roof',             '09'),
+  ('patio', 12, 'Surfaces',              'Pavers',                       null),
+  ('patio', 13, 'Surfaces',              'Drainage',                     null),
+  ('patio', 14, 'Health and safety',     'Gate latch',                   null),
+  ('patio', 15, 'Health and safety',     'Fire extinguisher',            null),
+  ('patio', 16, 'Inventory control',     'Furniture count',              null),
+  ('storage', 1, 'Storage',              'Dry storage shelving',         '18'),
+  ('storage', 2, 'Storage',              'Walk-in shelving',             '18'),
+  ('storage', 3, 'Storage',              'Basement and back hall',       '18'),
+  ('storage', 4, 'Storage',              'Chemical storage',             '18')
+),
+sections (k, list) as (values
+  (3, 'kitchen'), (4, 'exterior'), (5, 'kitchen'), (6, 'bar'),
+  (7, 'dining'), (8, 'patio'), (9, 'exterior'), (10, 'storage')
+)
+insert into public.walkthrough_items (id, section_id, group_name, title, sort_order, category_id)
+select format('dddddddd-dddd-4ddd-8ddd-%s', lpad((s.k * 100 + l.n)::text, 12, '0'))::uuid,
+       format('cccccccc-cccc-4ccc-8ccc-%s', lpad(s.k::text, 12, '0'))::uuid,
+       l.group_name, l.title, l.n,
+       case when l.cat is not null then format('33333333-3333-4333-8333-0000000000%s', l.cat)::uuid end
+from sections s join lists l on l.list = s.list;
+
+-- The group's rotation, A then B from January; Ranalli's own, three months from January.
+update public.walkthrough_rotations
+set starts_on = '2026-01-01', updated_by = '22222222-2222-4222-8222-000000000003'
+where is_group;
+delete from public.walkthrough_rotation_months
+where rotation_id = (select id from public.walkthrough_rotations where is_group);
+insert into public.walkthrough_rotation_months (rotation_id, position, template_id)
+select g.id, m.position, m.template_id::uuid
+from public.walkthrough_rotations g
+cross join (values (0, '88888888-8888-4888-8888-000000000002'), (1, '88888888-8888-4888-8888-000000000001')) as m (position, template_id)
+where g.is_group;
+
+insert into public.walkthrough_rotations (id, name, starts_on, updated_by) values
+  ('bbbbbbbb-bbbb-4bbb-8bbb-000000000001', 'Ranalli’s', '2026-01-01', '22222222-2222-4222-8222-000000000003');
+insert into public.walkthrough_rotation_months (rotation_id, position, template_id) values
+  ('bbbbbbbb-bbbb-4bbb-8bbb-000000000001', 0, '88888888-8888-4888-8888-000000000003'),
+  ('bbbbbbbb-bbbb-4bbb-8bbb-000000000001', 1, '88888888-8888-4888-8888-000000000004'),
+  ('bbbbbbbb-bbbb-4bbb-8bbb-000000000001', 2, '88888888-8888-4888-8888-000000000005');
+insert into public.restaurant_rotations (restaurant_id, rotation_id, updated_by) values
+  ('11111111-1111-4111-8111-000000000004', 'bbbbbbbb-bbbb-4bbb-8bbb-000000000001', '22222222-2222-4222-8222-000000000003');
 
 insert into public.quarterly_tasks (id, title, directions, video_url, months, sort_order) values
   ('99999999-9999-4999-8999-000000000001', 'Organize utility areas', 'Clear at least 3 feet in front of the electrical panel and the water heater. Move chemicals off the floor and away from food storage, and toss empty boxes and broken equipment. Submit a ticket if the water heater shows rust or leaks at the base, or if the panel door doesn''t close.', 'https://example.com/how-to/organize-utility-areas', '{1,4,7,10}', 1),

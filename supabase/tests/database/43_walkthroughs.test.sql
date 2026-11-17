@@ -29,7 +29,7 @@ end $$;
 \set utility '''99999999-9999-4999-8999-000000000001'''
 \set boh_electrical '''33333333-3333-4333-8333-000000000014'''
 
--- The default checklist: two sections of 24 items, and the group schedule names it.
+-- The default checklist: two sections of 24 items, and the group's rotation has it.
 select results_eq(
   $$select s.short_name, count(i.id)::int from public.walkthrough_sections s
     join public.walkthrough_items i on i.section_id = s.id
@@ -37,9 +37,10 @@ select results_eq(
   $$values ('BOH'::text, 24), ('FOH', 24)$$,
   'the default checklist has Back and Front of House, 24 items each'
 );
-select is(
-  (select template_id from public.walkthrough_schedules where restaurant_id is null),
-  '88888888-8888-4888-8888-000000000001'::uuid, 'the group schedule names the default checklist');
+select ok(
+  exists (select 1 from public.walkthrough_rotation_months m join public.walkthrough_rotations g on g.id = m.rotation_id
+          where g.is_group and m.template_id = '88888888-8888-4888-8888-000000000001'),
+  'the group''s rotation has the default checklist');
 select is(public.walkthrough_due_on('2026-02-01', null), '2026-02-28'::date, 'due on the last day of the month');
 select is(public.walkthrough_due_on('2026-02-01', 10), '2026-02-10'::date, 'or on the schedule''s day');
 select is((select count(*)::int from cron.job where jobname = 'open-walkthroughs'), 1, 'the daily job is scheduled');
@@ -51,8 +52,10 @@ select is(public.open_walkthroughs('2026-12-01'), 0, 'opening it again opens not
 select is(
   (select due_on from public.walkthroughs where restaurant_id = :logan and period = '2026-12-01'),
   '2026-12-31'::date, 'due on Dec 31');
-update public.walkthrough_schedules set months = '{1,2,3,4,5,6,7,8,9,10,11}' where restaurant_id is null;
-select is(public.open_walkthroughs('2027-12-01'), 0, 'a month the schedule leaves out opens nothing');
+update public.restaurants set archived_at = now() where id = :logan;
+select is(public.open_walkthroughs('2027-12-01'),
+  (select count(*)::int from public.restaurants where archived_at is null), 'an archived restaurant gets none');
+update public.restaurants set archived_at = null where id = :logan;
 
 select pg_temp.login('maya.reyes@example.com');
 select throws_ok($$select public.open_walkthroughs('2027-01-01')$$, '42501', null, 'a manager can''t open walkthroughs');

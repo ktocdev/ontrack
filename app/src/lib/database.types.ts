@@ -785,6 +785,56 @@ isOneToOne: false
       referencedColumns: ["restaurant_id"]
     }
                   ]
+                },"restaurant_rotations": {
+                  Row: {
+                    "restaurant_id": string,"rotation_id": string,"updated_at": string,"updated_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "restaurant_id": string,"rotation_id": string,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Update: {
+                    "restaurant_id"?: string,"rotation_id"?: string,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "restaurant_rotations_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: true
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "restaurant_rotations_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: true
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "restaurant_rotations_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: true
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "restaurant_rotations_rotation_id_fkey"
+      columns: ["rotation_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_rotations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "restaurant_rotations_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "restaurant_rotations_updated_by_fkey"
+      columns: ["updated_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
                 },"restaurants": {
                   Row: {
                     "address": string | null,"archived_at": string | null,"archived_by": string | null,"color": string,"created_at": string,"id": string,"manager_id": string | null,"name": string,"phone": string | null,"sort_order": number,"updated_at": string
@@ -1373,50 +1423,52 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"walkthrough_schedules": {
+                },"walkthrough_rotation_months": {
                   Row: {
-                    "active": boolean,"due_day": number | null,"id": string,"months": (number)[],"reminder_days": (number)[],"restaurant_id": string | null,"template_id": string | null,"updated_at": string,"updated_by": string | null
+                    "position": number,"rotation_id": string,"template_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"due_day"?: number | null,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"template_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                    "position": number,"rotation_id": string,"template_id": string
                   }
                   Update: {
-                    "active"?: boolean,"due_day"?: number | null,"id"?: string,"months"?: (number)[],"reminder_days"?: (number)[],"restaurant_id"?: string | null,"template_id"?: string | null,"updated_at"?: string,"updated_by"?: string | null
+                    "position"?: number,"rotation_id"?: string,"template_id"?: string
                   }
                   Relationships: [
                     {
-      foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
-      columns: ["restaurant_id"]
-isOneToOne: true
-      referencedRelation: "restaurants"
+      foreignKeyName: "walkthrough_rotation_months_rotation_id_fkey"
+      columns: ["rotation_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_rotations"
       referencedColumns: ["id"]
     },{
-      foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
-      columns: ["restaurant_id"]
-isOneToOne: true
-      referencedRelation: "v_restaurant_history"
-      referencedColumns: ["restaurant_id"]
-    },{
-      foreignKeyName: "walkthrough_schedules_restaurant_id_fkey"
-      columns: ["restaurant_id"]
-isOneToOne: true
-      referencedRelation: "v_restaurant_open_counts"
-      referencedColumns: ["restaurant_id"]
-    },{
-      foreignKeyName: "walkthrough_schedules_template_id_fkey"
+      foreignKeyName: "walkthrough_rotation_months_template_id_fkey"
       columns: ["template_id"]
 isOneToOne: false
       referencedRelation: "walkthrough_templates"
       referencedColumns: ["id"]
-    },{
-      foreignKeyName: "walkthrough_schedules_updated_by_fkey"
+    }
+                  ]
+                },"walkthrough_rotations": {
+                  Row: {
+                    "created_at": string,"due_day": number | null,"id": string,"is_group": boolean,"name": string,"reminder_days": (number)[],"starts_on": string,"updated_at": string,"updated_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"due_day"?: number | null,"id"?: string,"is_group"?: boolean,"name": string,"reminder_days"?: (number)[],"starts_on"?: string,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"due_day"?: number | null,"id"?: string,"is_group"?: boolean,"name"?: string,"reminder_days"?: (number)[],"starts_on"?: string,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthrough_rotations_updated_by_fkey"
       columns: ["updated_by"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
-      foreignKeyName: "walkthrough_schedules_updated_by_fkey"
+      foreignKeyName: "walkthrough_rotations_updated_by_fkey"
       columns: ["updated_by"]
 isOneToOne: false
       referencedRelation: "v_person_history"
@@ -1445,14 +1497,14 @@ isOneToOne: false
                   ]
                 },"walkthrough_templates": {
                   Row: {
-                    "active": boolean,"created_at": string,"id": string,"name": string,"updated_at": string
+                    "active": boolean,"created_at": string,"description": string | null,"id": string,"name": string,"short_name": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"created_at"?: string,"id"?: string,"name": string,"updated_at"?: string
+                    "active"?: boolean,"created_at"?: string,"description"?: string | null,"id"?: string,"name": string,"short_name"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "active"?: boolean,"created_at"?: string,"id"?: string,"name"?: string,"updated_at"?: string
+                    "active"?: boolean,"created_at"?: string,"description"?: string | null,"id"?: string,"name"?: string,"short_name"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -2010,6 +2062,9 @@ isOneToOne: false
 "delete_restaurant":
 { Args: { "p_id": string }; Returns: undefined
                            },
+"delete_rotation":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "delete_trade":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -2099,8 +2154,14 @@ isOneToOne: false
 "reopen_ticket":
 { Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
                            },
+"restaurant_rotation":
+{ Args: { "p_restaurant": string }; Returns: string
+                           },
 "role_names_ok":
 { Args: { "p": Json }; Returns: boolean
+                           },
+"rotation_template":
+{ Args: { "p_period": string,"p_rotation": string }; Returns: string
                            },
 "save_contractor":
 { Args: { "p_contact_name"?: string,"p_email"?: string,"p_id": string,"p_insurance_until"?: string,"p_name": string,"p_notes"?: string,"p_phone"?: string,"p_preferred"?: boolean,"p_trade_ids": (string)[] }; Returns: string
@@ -2119,6 +2180,9 @@ isOneToOne: false
                            },
 "save_role_names":
 { Args: { "p_names": Json }; Returns: undefined
+                           },
+"save_rotation":
+{ Args: { "p_due_day": number,"p_id": string,"p_name": string,"p_reminder_days": (number)[],"p_starts_on": string,"p_templates": (string)[] }; Returns: string
                            },
 "service_check_input":
 { Args: { "p_contractor_changed": boolean,"p_contractor_id": string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents": number,"p_parts_cents": number,"p_service_date": string,"p_trip_cents": number }; Returns: undefined
@@ -2158,6 +2222,9 @@ isOneToOne: false
                            },
 "set_restaurant_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
+                           },
+"set_restaurant_rotation":
+{ Args: { "p_restaurant": string,"p_rotation": string }; Returns: undefined
                            },
 "set_service_amount":
 { Args: { "p_cents": number,"p_id": string,"p_kind": Database["public"]['Enums']["line_item_kind"] }; Returns: undefined

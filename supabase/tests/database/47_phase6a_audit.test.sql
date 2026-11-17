@@ -85,10 +85,10 @@ select throws_ok(format($$update public.quarterly_tasks set video_url = 'javascr
   '23514', null, 'a video link is a web address');
 select throws_ok(format($$update public.walkthrough_items set video_url = 'https://example.com/a b' where id = %L$$, :outlets),
   '23514', null, 'with no spaces in it');
-select throws_ok($$update public.walkthrough_schedules set months = '{0,13}' where restaurant_id is null$$,
-  '23514', null, 'a schedule''s months are 1 to 12');
-select throws_ok($$update public.walkthrough_schedules set reminder_days = '{7,45}' where restaurant_id is null$$,
-  '23514', null, 'and its reminder days 0 to 31');
+select throws_ok($$update public.walkthrough_rotation_months set position = 12 where position = 0$$,
+  '23514', null, 'a rotation has at most 12 months');
+select throws_ok($$update public.walkthrough_rotations set reminder_days = '{7,45}' where is_group$$,
+  '23514', null, 'and its reminder days are 0 to 31');
 
 select * from finish();
 rollback;
