@@ -22,7 +22,8 @@ const SUPABASE = process.env.VITE_SUPABASE_URL ?? 'http://127.0.0.1:54321'
 const SECRET = process.env.STACK_SECRET_KEY ?? ''
 const NOVEMBER = '2026-11-01'
 const BERT = 'bert.velilla@example.com'
-const BOH = 'cccccccc-cccc-4ccc-8ccc-000000000001'
+// November is month A of the group's rotation (OT-126), Kitchen + Exterior.
+const KITCHEN = 'cccccccc-cccc-4ccc-8ccc-000000000003'
 const RESTAURANTS = {
   logan: '11111111-1111-4111-8111-000000000001',
   westLoop: '11111111-1111-4111-8111-000000000002',
@@ -78,7 +79,7 @@ test('next month opens for every restaurant, a manager submits it with two ticke
   const fix = `Re-seat the mixer plug ${stamp}`
   const note = 'Front of House next week, short-staffed'
 
-  // 1. The database opens November for all four restaurants, from the schedule, due on its
+  // 1. The database opens November for all four restaurants, from their rotations, due on its
   //    last day. Safe to repeat, so the other browser's run may already have opened it.
   await service(request, 'rpc/open_walkthroughs', { p_period: NOVEMBER })
   const opened = (await service(
@@ -96,8 +97,8 @@ test('next month opens for every restaurant, a manager submits it with two ticke
   await page.goto('/walkthrough')
   await expect(page.getByText(/November/).first()).toBeVisible()
   await shot(page, testInfo, 'home · November')
-  await page.getByRole('link', { name: /^Back of House/ }).click()
-  await expect(page).toHaveURL(new RegExp(`/walkthrough/${mine.id}/${BOH}$`))
+  await page.getByRole('link', { name: /^Kitchen/ }).click()
+  await expect(page).toHaveURL(new RegExp(`/walkthrough/${mine.id}/${KITCHEN}$`))
   await expect(page.getByText(`November walkthrough · ${manager.name}`)).toBeVisible()
 
   // 3. Walking Electrical: two items Good, one in-house fix, two tickets.

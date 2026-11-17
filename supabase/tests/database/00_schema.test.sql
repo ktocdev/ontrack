@@ -9,7 +9,7 @@ from unnest(array[
   'equipment', 'categories',
   'tickets', 'ticket_updates', 'ticket_photos',
   'contractors', 'service_records', 'service_line_items', 'invoices',
-  'walkthrough_schedules', 'walkthrough_templates', 'walkthrough_items', 'walkthroughs',
+  'walkthrough_rotations', 'walkthrough_templates', 'walkthrough_items', 'walkthroughs',
   'walkthrough_checks', 'inhouse_fixes', 'quarterly_tasks',
   'support_reports'
 ]) as t;
