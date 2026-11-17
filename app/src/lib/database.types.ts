@@ -373,6 +373,12 @@ isOneToOne: false
       foreignKeyName: "inhouse_fixes_walkthrough_id_fkey"
       columns: ["walkthrough_id"]
 isOneToOne: false
+      referencedRelation: "v_walkthrough_summary"
+      referencedColumns: ["walkthrough_id"]
+    },{
+      foreignKeyName: "inhouse_fixes_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
       referencedRelation: "walkthroughs"
       referencedColumns: ["id"]
     }
@@ -595,6 +601,12 @@ isOneToOne: false
       foreignKeyName: "notification_deliveries_walkthrough_id_fkey"
       columns: ["walkthrough_id"]
 isOneToOne: false
+      referencedRelation: "v_walkthrough_summary"
+      referencedColumns: ["walkthrough_id"]
+    },{
+      foreignKeyName: "notification_deliveries_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
       referencedRelation: "walkthroughs"
       referencedColumns: ["id"]
     }
@@ -655,6 +667,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "tickets"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notifications_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "v_walkthrough_summary"
+      referencedColumns: ["walkthrough_id"]
     },{
       foreignKeyName: "notifications_walkthrough_id_fkey"
       columns: ["walkthrough_id"]
@@ -1219,6 +1237,12 @@ isOneToOne: false
       foreignKeyName: "tickets_walkthrough_fk"
       columns: ["walkthrough_id"]
 isOneToOne: false
+      referencedRelation: "v_walkthrough_summary"
+      referencedColumns: ["walkthrough_id"]
+    },{
+      foreignKeyName: "tickets_walkthrough_fk"
+      columns: ["walkthrough_id"]
+isOneToOne: false
       referencedRelation: "walkthroughs"
       referencedColumns: ["id"]
     }
@@ -1387,6 +1411,12 @@ isOneToOne: false
       foreignKeyName: "walkthrough_checks_walkthrough_id_fkey"
       columns: ["walkthrough_id"]
 isOneToOne: false
+      referencedRelation: "v_walkthrough_summary"
+      referencedColumns: ["walkthrough_id"]
+    },{
+      foreignKeyName: "walkthrough_checks_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
       referencedRelation: "walkthroughs"
       referencedColumns: ["id"]
     }
@@ -1511,17 +1541,29 @@ isOneToOne: false
                   ]
                 },"walkthroughs": {
                   Row: {
-                    "created_at": string,"due_on": string,"id": string,"period": string,"restaurant_id": string,"started_by": string | null,"status": Database["public"]['Enums']["walkthrough_status"],"submitted_at": string | null,"submitted_by": string | null,"submitted_note": string | null,"template_id": string | null
+                    "created_at": string,"due_on": string,"id": string,"last_reminded_at": string | null,"last_reminded_by": string | null,"period": string,"restaurant_id": string,"started_by": string | null,"status": Database["public"]['Enums']["walkthrough_status"],"submitted_at": string | null,"submitted_by": string | null,"submitted_note": string | null,"template_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"due_on": string,"id"?: string,"period": string,"restaurant_id": string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"submitted_note"?: string | null,"template_id"?: string | null
+                    "created_at"?: string,"due_on": string,"id"?: string,"last_reminded_at"?: string | null,"last_reminded_by"?: string | null,"period": string,"restaurant_id": string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"submitted_note"?: string | null,"template_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"due_on"?: string,"id"?: string,"period"?: string,"restaurant_id"?: string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"submitted_note"?: string | null,"template_id"?: string | null
+                    "created_at"?: string,"due_on"?: string,"id"?: string,"last_reminded_at"?: string | null,"last_reminded_by"?: string | null,"period"?: string,"restaurant_id"?: string,"started_by"?: string | null,"status"?: Database["public"]['Enums']["walkthrough_status"],"submitted_at"?: string | null,"submitted_by"?: string | null,"submitted_note"?: string | null,"template_id"?: string | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "walkthroughs_last_reminded_by_fkey"
+      columns: ["last_reminded_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_last_reminded_by_fkey"
+      columns: ["last_reminded_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
       foreignKeyName: "walkthroughs_restaurant_id_fkey"
       columns: ["restaurant_id"]
 isOneToOne: false
@@ -1960,6 +2002,74 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"v_walkthrough_summary": {
+                  Row: {
+                    "days_left": number | null,"done": number | null,"due_on": string,"fixes": number | null,"last_reminded_at": string | null,"last_reminded_by": string | null,"period": string,"restaurant_id": string,"standing": string | null,"started_by": string | null,"status": Database["public"]['Enums']["walkthrough_status"],"submitted_at": string | null,"submitted_by": string | null,"template_description": string | null,"template_id": string | null,"template_name": string | null,"template_short_name": string | null,"tickets": number | null,"total": number | null,"walkthrough_id": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthroughs_last_reminded_by_fkey"
+      columns: ["last_reminded_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_last_reminded_by_fkey"
+      columns: ["last_reminded_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "walkthroughs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "walkthroughs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "walkthroughs_started_by_fkey"
+      columns: ["started_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_started_by_fkey"
+      columns: ["started_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "walkthroughs_submitted_by_fkey"
+      columns: ["submitted_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthroughs_submitted_by_fkey"
+      columns: ["submitted_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "walkthroughs_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Functions: {
@@ -2184,6 +2294,9 @@ isOneToOne: false
 "save_rotation":
 { Args: { "p_due_day": number,"p_id": string,"p_name": string,"p_reminder_days": (number)[],"p_starts_on": string,"p_templates": (string)[] }; Returns: string
                            },
+"send_walkthrough_reminder":
+{ Args: { "p_walkthrough": string }; Returns: string
+                           },
 "service_check_input":
 { Args: { "p_contractor_changed": boolean,"p_contractor_id": string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents": number,"p_parts_cents": number,"p_service_date": string,"p_trip_cents": number }; Returns: undefined
                            },
@@ -2291,6 +2404,8 @@ isOneToOne: false
               "created_at": string,
 "due_on": string,
 "id": string,
+"last_reminded_at": string | null,
+"last_reminded_by": string | null,
 "period": string,
 "restaurant_id": string,
 "started_by": string | null,

@@ -141,3 +141,41 @@ test('send-push refuses anyone without the secret', async ({ request }) => {
   const signedIn = await request.post(url, { headers: await headers(request, BERT), data: {} })
   expect(signedIn.status()).toBe(401)
 })
+
+test('a reminder Ops sends by hand reaches the restaurant’s Reporter, saying who sent it', async ({
+  request,
+}, testInfo) => {
+  // October's open walkthroughs; each browser takes its own, since one goes out an hour.
+  const [walkthrough, reporter] =
+    testInfo.project.use.defaultBrowserType === 'webkit'
+      ? ['aaaaaaaa-aaaa-4aaa-8aaa-000000000004', ARI]
+      : ['aaaaaaaa-aaaa-4aaa-8aaa-000000000003', DANA]
+  const res = await request.post(`${SUPABASE}/rest/v1/rpc/send_walkthrough_reminder`, {
+    headers: await headers(request, BERT),
+    data: { p_walkthrough: walkthrough },
+  })
+  expect(res.ok()).toBe(true)
+  const sentAt = Date.now()
+
+  // Mailpit keeps earlier runs' mail, so wait for one newer than this send.
+  const newest = async () => {
+    const search = await request.get(
+      `${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${reporter} walkthrough`)}`,
+    )
+    const { messages } = (await search.json()) as { messages: { ID: string; Subject: string; Created: string }[] }
+    return messages.find((m) => Date.parse(m.Created) > sentAt - 2_000)
+  }
+  await expect.poll(newest, { timeout: 20_000, intervals: [500] }).toBeTruthy()
+  const mail = (await newest())!
+  // October is past its due day, which only a reminder sent by hand can be.
+  expect(mail.Subject).toMatch(/^October walkthrough overdue · /)
+  const message = await request.get(`${MAILPIT}/api/v1/message/${mail.ID}`)
+  expect(((await message.json()) as { Text: string }).Text).toContain('from Bert Velilla')
+
+  const rows = await request.get(
+    `${SUPABASE}/rest/v1/notification_deliveries?select=kind,channel&walkthrough_id=eq.${walkthrough}`,
+    { headers: await headers(request, reporter) },
+  )
+  const delivered = ((await rows.json()) as { kind: string; channel: string }[]).map((r) => `${r.kind}:${r.channel}`)
+  expect(delivered).toContain('walkthrough_reminder:email')
+})
