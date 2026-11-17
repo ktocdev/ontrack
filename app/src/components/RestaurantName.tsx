@@ -30,21 +30,23 @@ type Props = {
   name: string
   color: string
   size?: number
-  /** 'label' is the 14px semibold header form; 'meta' the 12px bold form on cards. */
-  variant?: 'label' | 'meta' | 'plain'
+  /** 'label' is the 14px semibold header form; 'meta' the 12px bold form on cards; 'row' the 15px semibold name heading a list row (WT-Ops-Overview). */
+  variant?: 'label' | 'meta' | 'row' | 'plain'
   className?: string
 }
 
 export function RestaurantName({ name, color, size, variant = 'label', className = '' }: Props) {
   const text =
     variant === 'label'
-      ? 'text-14 font-semibold text-text'
-      : variant === 'meta'
-        ? 'text-12 font-bold text-text-body'
-        : 'text-text-body'
+      ? 'gap-1.5 text-14 font-semibold text-text'
+      : variant === 'row'
+        ? 'gap-2 text-15 font-semibold text-text'
+        : variant === 'meta'
+          ? 'gap-1.5 text-12 font-bold text-text-body'
+          : 'gap-1.5 text-text-body'
   const sq = size ?? (variant === 'meta' ? 9 : 10)
   return (
-    <span className={`inline-flex min-w-0 items-center gap-1.5 ${text} ${className}`}>
+    <span className={`inline-flex min-w-0 items-center ${text} ${className}`}>
       <RestaurantSquare color={color} size={sq} />
       <span className="truncate">{name}</span>
     </span>

@@ -45,6 +45,10 @@ import {
   CountTile,
   FlagChip,
   FlagChips,
+  HistoryLegend,
+  HistorySquare,
+  ProgressLine,
+  StandingPill,
   LeftRow,
   ProgressBar,
   ProgressRing,
@@ -100,6 +104,7 @@ import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
 import { UpdateBar } from '../../components/UpdateBar'
 import {
+  IconCalendar,
   IconChevronLeft,
   IconChevronRight,
   IconClose,
@@ -272,7 +277,7 @@ export function KitPage() {
                   Disabled
                 </Button>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <OverflowMenu label="More options" items={[{ to: '/kit', label: 'A menu item' }]} />
                 <TicketMenu displayId="OT-1042" title="Walk-in cooler not holding temp" />
                 <EquipmentMenu id="kit" name="Walk-in Cooler 1" />
@@ -285,6 +290,9 @@ export function KitPage() {
                 <IconButton label="Scan QR code" framed>
                   <IconQr />
                 </IconButton>
+                <ButtonLink to="/kit" variant="small" className="px-3" icon={<IconCalendar />}>
+                  Schedule
+                </ButtonLink>
               </div>
             </Section>
 
@@ -311,6 +319,7 @@ export function KitPage() {
                   <RestaurantName key={r.id} name={r.name} color={r.color} />
                 ))}
                 <RestaurantName name="Porter" color="#9A6A00" variant="meta" />
+                <RestaurantName name="Porter" color="#9A6A00" variant="row" />
                 <span className="flex items-center gap-1.5 text-14 font-semibold">
                   <AllRestaurantsSquare colors={MOCK_RESTAURANTS.map((r) => r.color)} />
                   All restaurants (4)
@@ -699,6 +708,22 @@ export function KitPage() {
                 <FlagChips tickets={2} fixes={1} />
                 <FlagChip tone="good">All good</FlagChip>
                 <FlagChip tone="missed">Not done</FlagChip>
+              </div>
+              <ProgressLine done={20} total={50} label="20 of 50 checks done" />
+              <div className="flex flex-wrap items-center gap-1.5">
+                <StandingPill standing="not_started" />
+                <StandingPill standing="in_progress" />
+                <StandingPill standing="on_time" submitted="Oct 18" />
+                <StandingPill standing="missed" />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border bg-surface">
+                <div className="flex items-center gap-3 px-3.5 py-3">
+                  <HistorySquare standing="on_time" label="On time" />
+                  <HistorySquare standing="late" label="Late" />
+                  <HistorySquare standing="missed" label="Missed" />
+                  <HistorySquare standing="in_progress" label="In progress" />
+                </div>
+                <HistoryLegend />
               </div>
               <div className="overflow-hidden rounded-card border border-border bg-surface [&>*:last-child]:border-b-0">
                 <WalkthroughSectionRow to="/kit" name="Back of House" done={16} total={24} tickets={2} fixes={1} />

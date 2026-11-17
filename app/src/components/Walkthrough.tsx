@@ -62,12 +62,13 @@ export function ProgressBar({
 
 const FLAG = {
   ticket: 'bg-status-open-bg text-status-open-text',
+  progress: 'bg-status-progress-bg text-status-progress-text',
   inhouse: 'bg-status-waiting-bg text-status-waiting-text',
   good: 'bg-status-fixed-bg text-status-fixed-text',
   missed: 'bg-status-closed-bg text-status-closed-text',
 }
 
-/** "2 tickets", "1 in-house", "All good", "Not done": 11px bold on a status tint. */
+/** "2 tickets", "1 in-house", "All good", "Not done", "In progress": 11px bold on a status tint. */
 export function FlagChip({ tone, children }: { tone: keyof typeof FLAG; children: ReactNode }) {
   return (
     <span
@@ -281,6 +282,76 @@ export function LeftRow({ to, name, left }: { to?: string; name: string; left: n
     <div className={row}>
       {name}
       {count}
+    </div>
+  )
+}
+
+/** How a walkthrough stands (v_walkthrough_summary.standing, OT-127). */
+export type Standing = 'on_time' | 'late' | 'missed' | 'in_progress' | 'not_started'
+
+/** A restaurant's month on the Ops overview (WT-Ops-Overview): one brand bar on a 6px track. */
+export function ProgressLine({ done, total, label }: { done: number; total: number; label: string }) {
+  const share = total > 0 ? Math.min(done / total, 1) : 0
+  return (
+    <div role="img" aria-label={label} className="h-1.5 overflow-hidden rounded-[3px] bg-surface-sunken">
+      <span className="block h-full bg-progress-good" style={{ width: `${share * 100}%` }} />
+    </div>
+  )
+}
+
+/** The pill on a restaurant's month: Not started, In progress, Missed, or Submitted with its day. */
+export function StandingPill({ standing, submitted }: { standing: Standing; submitted?: string | null }) {
+  if (standing === 'on_time' || standing === 'late') {
+    return <FlagChip tone="good">{submitted ? `Submitted ${submitted}` : 'Submitted'}</FlagChip>
+  }
+  if (standing === 'missed') return <FlagChip tone="missed">Missed</FlagChip>
+  if (standing === 'in_progress') return <FlagChip tone="progress">In progress</FlagChip>
+  return <FlagChip tone="ticket">Not started</FlagChip>
+}
+
+const SQUARE: Record<Standing, string> = {
+  on_time: 'bg-standing-on-time',
+  late: 'bg-standing-late',
+  missed: 'border-2 border-standing-missed bg-surface',
+  not_started: 'border-2 border-standing-missed bg-surface',
+  in_progress: 'border-[1.5px] border-progress-good',
+}
+
+/** A month in the history table: filled on time, gold late, an empty outline missed, striped in progress. */
+export function HistorySquare({ standing, label, size = 20 }: { standing: Standing; label?: string; size?: 12 | 20 }) {
+  return (
+    <span
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      className={`inline-block flex-none rounded-chip align-middle ${size === 20 ? 'size-5' : 'size-3'} ${SQUARE[standing]}`}
+      style={
+        standing === 'in_progress'
+          ? {
+              background: 'repeating-linear-gradient(45deg, var(--status-fixed-bg) 0 4px, var(--surface) 4px 8px)',
+            }
+          : undefined
+      }
+    />
+  )
+}
+
+/** What the squares mean, under the history table. */
+export function HistoryLegend() {
+  const items: [Standing, string][] = [
+    ['on_time', 'On time'],
+    ['late', 'Late'],
+    ['missed', 'Missed'],
+    ['in_progress', 'In progress'],
+  ]
+  return (
+    <div className="flex flex-wrap gap-3 border-t border-surface-muted px-3.5 pb-3 pt-2 text-11 text-text-secondary">
+      {items.map(([standing, label]) => (
+        <span key={standing} className="flex items-center gap-1">
+          <HistorySquare standing={standing} size={12} />
+          {label}
+        </span>
+      ))}
     </div>
   )
 }

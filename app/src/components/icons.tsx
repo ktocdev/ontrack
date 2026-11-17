@@ -100,6 +100,13 @@ export const IconTrash = (p: IconProps) => (
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
   </svg>
 )
+/** A calendar (WT-Ops-Overview's Schedule button). */
+export const IconCalendar = (p: IconProps) => (
+  <svg {...base({ size: 16, ...p })}>
+    <rect x="3" y="5" width="18" height="16" rx="2" />
+    <path d="M3 10h18M8 3v4M16 3v4" />
+  </svg>
+)
 export const IconChevronLeft = (p: IconProps) => (
   <svg {...base({ size: 22, ...p })}>
     <path d="m15 18-6-6 6-6" />

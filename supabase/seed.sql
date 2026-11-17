@@ -523,6 +523,46 @@ insert into public.walkthroughs (id, restaurant_id, template_id, period, due_on,
 update public.walkthroughs set submitted_by = '22222222-2222-4222-8222-000000000001', submitted_at = '2026-09-24 17:30-05'
   where id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005';
 
+-- The Ops overview's last six months (WT-Ops-Overview, OT-129), May to September; October
+-- is above, and so is Logan Square's September. Each month has its rotation's checklist and
+-- nothing checked. On time is submitted on the 26th, late on the 3rd of the next month, and
+-- missed is still open. Ids …0001NN.
+with history (n, restaurant_id, month, standing, person) as (values
+  (1,  '11111111-1111-4111-8111-000000000001', date '2026-05-01', 'on_time', '22222222-2222-4222-8222-000000000001'),
+  (2,  '11111111-1111-4111-8111-000000000001', date '2026-06-01', 'missed',  '22222222-2222-4222-8222-000000000001'),
+  (3,  '11111111-1111-4111-8111-000000000001', date '2026-07-01', 'missed',  null),
+  (4,  '11111111-1111-4111-8111-000000000001', date '2026-08-01', 'on_time', '22222222-2222-4222-8222-000000000001'),
+  (5,  '11111111-1111-4111-8111-000000000002', date '2026-05-01', 'on_time', null),
+  (6,  '11111111-1111-4111-8111-000000000002', date '2026-06-01', 'on_time', null),
+  (7,  '11111111-1111-4111-8111-000000000002', date '2026-07-01', 'late',    null),
+  (8,  '11111111-1111-4111-8111-000000000002', date '2026-08-01', 'on_time', null),
+  (9,  '11111111-1111-4111-8111-000000000002', date '2026-09-01', 'on_time', null),
+  (10, '11111111-1111-4111-8111-000000000003', date '2026-05-01', 'late',    '22222222-2222-4222-8222-000000000007'),
+  (11, '11111111-1111-4111-8111-000000000003', date '2026-06-01', 'missed',  null),
+  (12, '11111111-1111-4111-8111-000000000003', date '2026-07-01', 'late',    '22222222-2222-4222-8222-000000000007'),
+  (13, '11111111-1111-4111-8111-000000000003', date '2026-08-01', 'missed',  '22222222-2222-4222-8222-000000000007'),
+  (14, '11111111-1111-4111-8111-000000000003', date '2026-09-01', 'late',    '22222222-2222-4222-8222-000000000007'),
+  (15, '11111111-1111-4111-8111-000000000004', date '2026-05-01', 'on_time', '22222222-2222-4222-8222-000000000002'),
+  (16, '11111111-1111-4111-8111-000000000004', date '2026-06-01', 'on_time', '22222222-2222-4222-8222-000000000002'),
+  (17, '11111111-1111-4111-8111-000000000004', date '2026-07-01', 'on_time', '22222222-2222-4222-8222-000000000002'),
+  (18, '11111111-1111-4111-8111-000000000004', date '2026-08-01', 'on_time', '22222222-2222-4222-8222-000000000002'),
+  (19, '11111111-1111-4111-8111-000000000004', date '2026-09-01', 'on_time', '22222222-2222-4222-8222-000000000002')
+)
+insert into public.walkthroughs (id, restaurant_id, template_id, period, due_on, status, started_by, submitted_by, submitted_at)
+select format('aaaaaaaa-aaaa-4aaa-8aaa-%s', lpad((100 + h.n)::text, 12, '0'))::uuid,
+       h.restaurant_id::uuid,
+       public.rotation_template(public.restaurant_rotation(h.restaurant_id::uuid), h.month),
+       h.month,
+       (h.month + interval '1 month - 1 day')::date,
+       case when h.standing = 'missed' then 'open' else 'submitted' end::public.walkthrough_status,
+       h.person::uuid,
+       case when h.standing <> 'missed' then h.person::uuid end,
+       case h.standing
+         when 'on_time' then format('%s 17:30-05', h.month + 25)::timestamptz
+         when 'late' then format('%s 10:00-05', (h.month + interval '1 month')::date + 2)::timestamptz
+       end
+from history h;
+
 -- A link, not activity: the lists show these tickets' times as the boards do.
 alter table public.tickets disable trigger tickets_updated_at;
 update public.tickets set walkthrough_id = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'
