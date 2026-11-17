@@ -179,3 +179,57 @@ test('a reminder Ops sends by hand reaches the restaurant’s Reporter, saying w
   const delivered = ((await rows.json()) as { kind: string; channel: string }[]).map((r) => `${r.kind}:${r.channel}`)
   expect(delivered).toContain('walkthrough_reminder:email')
 })
+
+test('tasks from Ops reach the restaurant’s Reporter: one added, a ticket handed back, a task made a ticket', async ({
+  browser,
+  request,
+}, testInfo) => {
+  const PORTER = '11111111-1111-4111-8111-000000000003'
+  const DANA_ID = '22222222-2222-4222-8222-000000000007'
+  const REFRIGERATION = '33333333-3333-4333-8333-000000000012'
+  const stamp = `${testInfo.project.name} ${Date.now() % 100000}`
+  const bert = await headers(request, BERT)
+  const rpc = async (fn: string, data: Record<string, unknown>) => {
+    const res = await request.post(`${SUPABASE}/rest/v1/rpc/${fn}`, { headers: bert, data })
+    expect(res.ok(), await res.text()).toBe(true)
+    return res.json()
+  }
+  /** The text of Dana's email with these words in it, once it arrives. */
+  const mail = async (words: string) => {
+    const find = async () => {
+      const res = await request.get(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${DANA} "${words}"`)}`)
+      return ((await res.json()) as { messages: { ID: string; Subject: string }[] }).messages[0]
+    }
+    await expect.poll(find, { timeout: 20_000, intervals: [500] }).toBeTruthy()
+    const found = (await find())!
+    const res = await request.get(`${MAILPIT}/api/v1/message/${found.ID}`)
+    return { subject: found.Subject, text: ((await res.json()) as { Text: string }).Text }
+  }
+
+  // 1. A task added for Porter.
+  await rpc('add_inhouse_task', { p_restaurant: PORTER, p_title: `Wipe the gasket ${stamp}` })
+  const added = await mail(`Wipe the gasket ${stamp}`)
+  expect(added.subject).toBe('In-house task from Bert Velilla · Porter')
+
+  // 2. Dana's ticket handed back: one notification, the task, and no Closed of its own.
+  const { id } = await newTicket(browser, testInfo, 'Handed')
+  await rpc('hand_back_ticket', { p_ticket: id, p_title: `Replace the bulb ${stamp}`, p_note: 'It’s the 2-pin kind' })
+  const back = await mail(`Replace the bulb ${stamp}`)
+  expect(back.subject).toBe('In-house task from Bert Velilla · Porter')
+  expect(back.text).toContain('It’s the 2-pin kind')
+  expect(back.text).toMatch(/Handed back from OT-\d+/)
+  expect((await sent(request, DANA, id)).filter((s) => s.startsWith('status_change'))).toEqual([])
+
+  // 3. Dana's own task, made a ticket by Bert.
+  const dana = await headers(request, DANA)
+  const own = await request.post(`${SUPABASE}/rest/v1/inhouse_fixes`, {
+    headers: { ...dana, Prefer: 'return=representation' },
+    data: { restaurant_id: PORTER, title: `Cooler rattles ${stamp}`, created_by: DANA_ID },
+  })
+  expect(own.ok(), await own.text()).toBe(true)
+  const [task] = (await own.json()) as { id: string }[]
+  await rpc('convert_inhouse_fix', { p_id: task!.id, p_category_id: REFRIGERATION })
+  const converted = await mail(`Cooler rattles ${stamp}`)
+  expect(converted.subject).toBe('In-house fix is now a ticket · Porter')
+  expect(converted.text).toContain('Bert Velilla made it a ticket')
+})

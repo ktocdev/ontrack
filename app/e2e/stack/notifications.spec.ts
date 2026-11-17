@@ -213,6 +213,7 @@ test('each role sees the kinds it is sent, and a switch stays as set', async ({ 
     await expect(page.getByRole('switch', { name })).toBeChecked()
   }
   await expect(page.getByRole('switch', { name: 'Walkthrough reminders' })).toHaveCount(0)
+  await expect(page.getByRole('switch', { name: /^Tasks from / })).toHaveCount(0)
   await page.getByRole('switch', { name: 'New tickets' }).click()
   await expect(page.getByRole('switch', { name: 'New tickets' })).not.toBeChecked()
   await page.reload()
@@ -227,6 +228,8 @@ test('each role sees the kinds it is sent, and a switch stays as set', async ({ 
   await expect(manager.getByRole('switch', { name: 'Status changes' })).toBeChecked()
   await expect(manager.getByRole('switch', { name: 'Updates' })).toBeChecked()
   await expect(manager.getByRole('switch', { name: 'Walkthrough reminders' })).toBeChecked()
+  // Named with the group's name for the Ops role (OT-128).
+  await expect(manager.getByRole('switch', { name: /^Tasks from / })).toBeChecked()
   await expect(manager.getByRole('switch', { name: 'New tickets' })).toHaveCount(0)
   await manager.getByRole('switch', { name: 'Updates' }).scrollIntoViewIfNeeded()
   await manager.waitForTimeout(300)

@@ -4,6 +4,7 @@ import { SectionLabel } from '../../components/Screen'
 import { Switch } from '../../components/Switch'
 import { useToast } from '../../components/Toast'
 import { useUser } from '../../auth/context'
+import { useRoleNames } from '../../auth/group'
 import { pushSupport } from '../../pwa/push'
 import { kindsFor, useNotificationPrefs, usePushDevice, useTestPush } from './useNotifications'
 
@@ -29,7 +30,8 @@ export function NotificationsSection() {
   const test = useTestPush()
   const { prefs, set } = useNotificationPrefs()
   const support = pushSupport()
-  const kinds = kindsFor(user.role)
+  const roleNames = useRoleNames()
+  const kinds = kindsFor(user.role, roleNames.name('ops', 'Ops'))
   const isOn = !!device.data
   const busy = on.isPending || off.isPending
   const emailOn = !prefs.data?.has('email')
