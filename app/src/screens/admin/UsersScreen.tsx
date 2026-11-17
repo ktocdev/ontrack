@@ -2,16 +2,17 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Avatar } from '../../components/Avatar'
 import { ButtonLink } from '../../components/Button'
-import { ListCard } from '../../components/Card'
+import { ListCard, ListRowLink } from '../../components/Card'
 import { Chip } from '../../components/Chip'
 import { EmptyState } from '../../components/EmptyState'
 import { RoleTag } from '../../components/Pill'
-import { Screen, ScreenBody, ScreenEmpty } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenEmpty, SectionLabel } from '../../components/Screen'
 import { PeopleListSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { IconChevronRight, IconPerson, IconPlus, IconUserPlus } from '../../components/icons'
 import { useRoleNames } from '../../auth/group'
 import { useUser } from '../../auth/context'
+import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { useAvatarUrl } from '../profile/useProfile'
 import { AdminHeader } from './AdminHeader'
 import { InviteSheet } from './InviteSheet'
@@ -29,6 +30,7 @@ type Filter = 'all' | 'pending' | 'managers' | 'ops'
 export function UsersScreen() {
   const { user } = useUser()
   const roleNames = useRoleNames()
+  const titleName = useJobTitleName()
   const { data, isPending } = useUsers()
   const [filter, setFilter] = useState<Filter>('all')
   const [opened, setOpened] = useState<InviteRow | null>(null)
@@ -68,7 +70,7 @@ export function UsersScreen() {
                   <IconPerson />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                  <RowBody name="You" tag={roleNames.name(you.role)} scope={you.scope} />
+                  <RowBody name="You" tag={titleName(you.jobTitleId) ?? roleNames.name(you.role)} scope={you.scope} />
                 </span>
               </div>
             </ListCard>
@@ -123,6 +125,15 @@ export function UsersScreen() {
             ))}
           </ListCard>
         )}
+        <SectionLabel className="pb-3">Shared by everyone</SectionLabel>
+        <ListCard>
+          <ListRowLink
+            to="/admin/users/titles"
+            title="Job titles"
+            subtitle="What people are called, and the view each starts with"
+            trailing={<IconChevronRight className="text-text-muted" />}
+          />
+        </ListCard>
       </ScreenBody>
       {opened && <InviteSheet invite={opened} onClose={() => setOpened(null)} />}
     </Screen>
@@ -145,6 +156,7 @@ function RowBody({ name, tag, scope, dim }: { name: string; tag: string; scope: 
 
 function PersonRowView({ person: p }: { person: PersonRow }) {
   const roleNames = useRoleNames()
+  const titleName = useJobTitleName()
   const photo = useAvatarUrl(p.avatarPath)
   return (
     <Link
@@ -153,7 +165,12 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
     >
       <Avatar name={p.name} role={p.role} size={38} src={photo.data} />
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <RowBody name={p.name} tag={roleNames.name(p.role)} scope={p.scope} dim={p.deactivated} />
+        <RowBody
+          name={p.name}
+          tag={titleName(p.jobTitleId) ?? roleNames.name(p.role)}
+          scope={p.scope}
+          dim={p.deactivated}
+        />
         {p.deactivated && <span className="text-12 font-semibold text-text-muted">Deactivated</span>}
       </span>
       <IconChevronRight size={16} className="flex-none text-text-secondary" />
@@ -163,6 +180,7 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
 
 function InviteRowView({ invite: i, onOpen }: { invite: InviteRow; onOpen: () => void }) {
   const roleNames = useRoleNames()
+  const titleName = useJobTitleName()
   const resend = useResendInvite()
   const toast = useToast()
   return (
@@ -171,7 +189,7 @@ function InviteRowView({ invite: i, onOpen }: { invite: InviteRow; onOpen: () =>
       <button type="button" onClick={onOpen} aria-label={`${i.name}, invite options`} className="absolute inset-0" />
       <Avatar name={i.name} role={i.expired ? 'expired' : 'pending'} size={38} />
       <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <RowBody name={i.name} tag={roleNames.name(i.role)} scope={i.scope} />
+        <RowBody name={i.name} tag={titleName(i.jobTitleId) ?? roleNames.name(i.role)} scope={i.scope} />
         <span className="flex items-center justify-between gap-2">
           <span
             role={resend.isError ? 'alert' : undefined}

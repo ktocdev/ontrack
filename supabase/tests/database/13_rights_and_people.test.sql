@@ -84,22 +84,22 @@ select pg_temp.logout();
 -- Role and restaurants
 -- ---------------------------------------------------------------------------
 select pg_temp.login('ari.kim@example.com');
-select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000001', 'ops', '{}') $$,
+select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000001', 'ops', '{}', null) $$,
   '42501', null, 'only an admin changes a role');
 select pg_temp.logout();
 
 select pg_temp.login('admin@example.com');
-select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000006', 'ops', '{}') $$,
+select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000006', 'ops', '{}', null) $$,
   '42501', null, 'not even their own');
-select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000004', 'manager', '{}') $$,
+select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000004', 'manager', '{}', null) $$,
   '23514', null, 'a manager needs a restaurant');
 
 -- Chris (ops) becomes the manager of Porter, which has none, then goes back.
-select lives_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000004', 'manager', '{11111111-1111-4111-8111-000000000003}') $$,
+select lives_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000004', 'manager', '{11111111-1111-4111-8111-000000000003}', null) $$,
   'an admin moves someone');
 select is((select manager_id from public.restaurants where id = '11111111-1111-4111-8111-000000000003'),
   '22222222-2222-4222-8222-000000000004'::uuid, 'who takes a restaurant with no manager');
-select lives_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000004', 'ops', '{}') $$, 'and back');
+select lives_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000004', 'ops', '{}', null) $$, 'and back');
 select is((select manager_id from public.restaurants where id = '11111111-1111-4111-8111-000000000003'), null,
   'which frees it again');
 select pg_temp.logout();
@@ -109,7 +109,7 @@ select is(
 
 -- Ari holds an override from above, which could not be removed once an admin.
 select pg_temp.login('admin@example.com');
-select public.set_person_access('22222222-2222-4222-8222-000000000002', 'admin', '{}');
+select public.set_person_access('22222222-2222-4222-8222-000000000002', 'admin', '{}', null);
 select pg_temp.logout();
 select is((select count(*)::int from public.rights where user_id = '22222222-2222-4222-8222-000000000002'), 0,
   'becoming an admin clears personal overrides');

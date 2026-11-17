@@ -379,14 +379,14 @@ isOneToOne: false
                   ]
                 },"invites": {
                   Row: {
-                    "accepted_at": string | null,"created_at": string,"email": string,"expires_at": string,"full_name": string,"id": string,"invited_by": string | null,"renewal_requested_at": string | null,"restaurant_ids": (string)[],"revoked_at": string | null,"role": Database["public"]['Enums']["app_role"],"sent_at": string,"status": Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id": string | null
+                    "accepted_at": string | null,"created_at": string,"email": string,"expires_at": string,"full_name": string,"id": string,"invited_by": string | null,"job_title_id": string | null,"renewal_requested_at": string | null,"restaurant_ids": (string)[],"revoked_at": string | null,"role": Database["public"]['Enums']["app_role"],"sent_at": string,"status": Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "accepted_at"?: string | null,"created_at"?: string,"email": string,"expires_at"?: string,"full_name": string,"id"?: string,"invited_by"?: string | null,"renewal_requested_at"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role": Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id"?: string | null
+                    "accepted_at"?: string | null,"created_at"?: string,"email": string,"expires_at"?: string,"full_name": string,"id"?: string,"invited_by"?: string | null,"job_title_id"?: string | null,"renewal_requested_at"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role": Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash": string,"user_id"?: string | null
                   }
                   Update: {
-                    "accepted_at"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"full_name"?: string,"id"?: string,"invited_by"?: string | null,"renewal_requested_at"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash"?: string,"user_id"?: string | null
+                    "accepted_at"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"full_name"?: string,"id"?: string,"invited_by"?: string | null,"job_title_id"?: string | null,"renewal_requested_at"?: string | null,"restaurant_ids"?: (string)[],"revoked_at"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"sent_at"?: string,"status"?: Database["public"]['Enums']["invite_status"],"token_hash"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -401,6 +401,18 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "invites_job_title_id_fkey"
+      columns: ["job_title_id"]
+isOneToOne: false
+      referencedRelation: "job_titles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invites_job_title_id_fkey"
+      columns: ["job_title_id"]
+isOneToOne: false
+      referencedRelation: "v_job_title_history"
+      referencedColumns: ["job_title_id"]
     },{
       foreignKeyName: "invites_user_id_fkey"
       columns: ["user_id"]
@@ -458,6 +470,46 @@ isOneToOne: true
       referencedRelation: "v_service_record_totals"
       referencedColumns: ["service_record_id"]
     }
+                  ]
+                },"job_title_areas": {
+                  Row: {
+                    "area": Database["public"]['Enums']["area"],"job_title_id": string,"notify": Database["public"]['Enums']["notify_level"],"shown": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "area": Database["public"]['Enums']["area"],"job_title_id": string,"notify"?: Database["public"]['Enums']["notify_level"],"shown"?: boolean
+                  }
+                  Update: {
+                    "area"?: Database["public"]['Enums']["area"],"job_title_id"?: string,"notify"?: Database["public"]['Enums']["notify_level"],"shown"?: boolean
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "job_title_areas_job_title_id_fkey"
+      columns: ["job_title_id"]
+isOneToOne: false
+      referencedRelation: "job_titles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "job_title_areas_job_title_id_fkey"
+      columns: ["job_title_id"]
+isOneToOne: false
+      referencedRelation: "v_job_title_history"
+      referencedColumns: ["job_title_id"]
+    }
+                  ]
+                },"job_titles": {
+                  Row: {
+                    "active": boolean,"created_at": string,"id": string,"name": string,"sort_order": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "active"?: boolean,"created_at"?: string,"id"?: string,"name": string,"sort_order": number
+                  }
+                  Update: {
+                    "active"?: boolean,"created_at"?: string,"id"?: string,"name"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    
                   ]
                 },"memberships": {
                   Row: {
@@ -627,14 +679,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_path": string | null,"created_at": string,"deactivated_at": string | null,"email": string,"full_name": string,"home_restaurant_id": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
+                    "avatar_path": string | null,"created_at": string,"deactivated_at": string | null,"email": string,"full_name": string,"home_restaurant_id": string | null,"id": string,"job_title_id": string | null,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_path"?: string | null,"created_at"?: string,"deactivated_at"?: string | null,"email": string,"full_name": string,"home_restaurant_id"?: string | null,"id": string,"phone"?: string | null,"role": Database["public"]['Enums']["app_role"],"updated_at"?: string
+                    "avatar_path"?: string | null,"created_at"?: string,"deactivated_at"?: string | null,"email": string,"full_name": string,"home_restaurant_id"?: string | null,"id": string,"job_title_id"?: string | null,"phone"?: string | null,"role": Database["public"]['Enums']["app_role"],"updated_at"?: string
                   }
                   Update: {
-                    "avatar_path"?: string | null,"created_at"?: string,"deactivated_at"?: string | null,"email"?: string,"full_name"?: string,"home_restaurant_id"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
+                    "avatar_path"?: string | null,"created_at"?: string,"deactivated_at"?: string | null,"email"?: string,"full_name"?: string,"home_restaurant_id"?: string | null,"id"?: string,"job_title_id"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -655,6 +707,18 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_restaurant_open_counts"
       referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "profiles_job_title_id_fkey"
+      columns: ["job_title_id"]
+isOneToOne: false
+      referencedRelation: "job_titles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "profiles_job_title_id_fkey"
+      columns: ["job_title_id"]
+isOneToOne: false
+      referencedRelation: "v_job_title_history"
+      referencedColumns: ["job_title_id"]
     }
                   ]
                 },"push_subscriptions": {
@@ -1694,6 +1758,20 @@ isOneToOne: false
       referencedColumns: ["restaurant_id"]
     }
                   ]
+                },"v_job_title_history": {
+                  Row: {
+                    "in_use": boolean | null,"job_title_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "in_use"?: never,"job_title_id"?: string | null
+                         }
+                        Update: {
+                           "in_use"?: never,"job_title_id"?: string | null
+                         }
+                        Relationships: [
+                    
+                  ]
                 },"v_missing_invoices": {
                   Row: {
                     "contractor_id": string | null,"equipment_id": string | null,"restaurant_id": string,"service_date": string,"service_record_id": string,"ticket_id": string | null,"total_cents": number | null
@@ -1836,6 +1914,9 @@ isOneToOne: false
             "add_category":
 { Args: { "p_area": Database["public"]['Enums']["area"],"p_name": string }; Returns: string
                            },
+"add_job_title":
+{ Args: { "p_name": string,"p_view": Json }; Returns: string
+                           },
 "add_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
                            },
@@ -1844,6 +1925,9 @@ isOneToOne: false
                            },
 "add_walkthrough_fix":
 { Args: { "p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_walkthrough_id": string }; Returns: string
+                           },
+"apply_job_title_view":
+{ Args: { "p_title": string,"p_user": string }; Returns: undefined
                            },
 "attach_invoice":
 { Args: { "p_id": string,"p_path": string }; Returns: undefined
@@ -1920,6 +2004,9 @@ isOneToOne: false
 "delete_inhouse_fix":
 { Args: { "p_id": string }; Returns: undefined
                            },
+"delete_job_title":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "delete_restaurant":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -1946,6 +2033,18 @@ isOneToOne: false
                            },
 "is_service":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"job_title_in_use":
+{ Args: { "p_id": string }; Returns: boolean
+                           },
+"job_title_name_taken":
+{ Args: { "p_except": string,"p_name": string }; Returns: boolean
+                           },
+"job_title_view":
+{ Args: { "p_id": string }; Returns: Json
+                           },
+"job_title_write_view":
+{ Args: { "p_id": string,"p_view": Json }; Returns: undefined
                            },
 "log_service":
 { Args: { "p_contractor_id"?: string,"p_equipment_id"?: string,"p_invoice_number"?: string,"p_kind": Database["public"]['Enums']["service_kind"],"p_labor_cents"?: number,"p_notes"?: string,"p_parts_cents"?: number,"p_restaurant_id"?: string,"p_service_date"?: string,"p_technician"?: string,"p_ticket_id"?: string,"p_title"?: string,"p_trip_cents"?: number }; Returns: string
@@ -2009,6 +2108,9 @@ isOneToOne: false
 "save_group_name":
 { Args: { "p_name": string,"p_short_name": string }; Returns: undefined
                            },
+"save_job_title":
+{ Args: { "p_id": string,"p_name": string,"p_view": Json }; Returns: undefined
+                           },
 "save_push_subscription":
 { Args: { "p_auth": string,"p_endpoint": string,"p_p256dh": string }; Returns: undefined
                            },
@@ -2039,8 +2141,11 @@ isOneToOne: false
 "set_inhouse_fix_done":
 { Args: { "p_done": boolean,"p_id": string }; Returns: undefined
                            },
+"set_job_title_active":
+{ Args: { "p_active": boolean,"p_id": string }; Returns: undefined
+                           },
 "set_person_access":
-{ Args: { "p_restaurants": (string)[],"p_role": Database["public"]['Enums']["app_role"],"p_user": string }; Returns: undefined
+{ Args: { "p_job_title": string,"p_restaurants": (string)[],"p_role": Database["public"]['Enums']["app_role"],"p_user": string }; Returns: undefined
                            },
 "set_person_rights":
 { Args: { "p_rights": Json,"p_user": string }; Returns: undefined

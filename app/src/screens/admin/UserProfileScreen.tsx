@@ -15,6 +15,8 @@ import { FunctionError } from '../../lib/functions'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useAvatarUrl } from '../profile/useProfile'
 import { useRequestReset } from '../reset/useReset'
+import { JobTitlePicker } from '../jobtitles/JobTitlePicker'
+import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { AccessFields, ROLE_CHOICES, useAccessChoice } from './AccessFields'
 import { useRoleNames } from '../../auth/group'
 import { countRights, overrideFor } from './rightsDraft'
@@ -81,6 +83,7 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
   const deactivated = profile.deactivated_at !== null
   const roleNames = useRoleNames()
   const roleName = roleNames.name(profile.role, ROLE_CHOICES.find((r) => r.value === profile.role)?.name)
+  const jobTitle = useJobTitleName()(profile.job_title_id)
 
   const [draft, setDraft] = useState(new Map<RightKey, boolean>())
   const [changing, setChanging] = useState(false)
@@ -144,8 +147,10 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
 
         <div className="flex flex-none items-center gap-3 rounded-input border border-border bg-surface px-3.5 py-2.5">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-12 font-semibold text-text-secondary">Role</span>
-            <span className="text-15 font-semibold">{roleName}</span>
+            <span className="text-12 font-semibold text-text-secondary">
+              {jobTitle ? 'Job title and role' : 'Role'}
+            </span>
+            <span className="text-15 font-semibold">{jobTitle ? `${jobTitle} · ${roleName}` : roleName}</span>
             <span className="text-14 leading-[1.35] text-text-body [overflow-wrap:anywhere]">{scope}</span>
           </div>
           {!isYou && !deactivated && (
@@ -440,21 +445,30 @@ function AccessSheet({
     picked: person.allRestaurants ? [] : person.restaurantIds,
     all: person.allRestaurants,
   })
+  const [jobTitleId, setJobTitleId] = useState(person.profile.job_title_id)
   return (
     <Sheet
       open
       onOpenChange={(open) => !open && onClose()}
       title={`Change ${first}'s role`}
-      description="This changes what they can see and do as soon as you save. Personal overrides stay."
+      description="This changes what they can see and do as soon as you save. Personal overrides stay. A new job title also starts them on its view of the categories."
     >
       <AccessFields choice={choice} restaurants={restaurants} onEdit={() => set.isError && set.reset()} />
+      <JobTitlePicker
+        value={jobTitleId}
+        current={person.profile.job_title_id}
+        onChange={(next) => {
+          if (set.isError) set.reset()
+          setJobTitleId(next)
+        }}
+      />
       <Button
         loading={set.isPending}
         disabled={!choice.ready}
         onClick={() =>
           // As in submit above: saving a new role replaces the form this sheet is in.
           void set
-            .mutateAsync({ role: choice.role, restaurantIds: choice.restaurantIds })
+            .mutateAsync({ role: choice.role, restaurantIds: choice.restaurantIds, jobTitleId })
             .then(() => {
               toast.show(`${first}'s role saved.`)
               onClose()

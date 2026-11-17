@@ -8,12 +8,13 @@ import { IconMail } from '../../components/icons'
 import { useUser } from '../../auth/context'
 import { looksLikeEmail } from '../../auth/validation'
 import { FunctionError } from '../../lib/functions'
+import { JobTitlePicker } from '../jobtitles/JobTitlePicker'
 import { AccessFields, useAccessChoice } from './AccessFields'
 import { useSendInvite } from './useUsers'
 
 /**
  * Admin · Invite user (design/screens/Admin-Invite). Name, work email, role and
- * the restaurants they get. Add restaurant links here with its new restaurant
+ * the restaurants they get, and a job title, which no board draws (OT-117). Add restaurant links here with its new restaurant
  * already picked. The board says invites last 7 days; they last 72 hours.
  */
 
@@ -27,6 +28,7 @@ const FORM_ERRORS: Record<string, string> = {
   email_failed: "The invite email couldn't be sent, so nothing was saved. Try again in a moment.",
   not_allowed: "You don't have permission to invite people.",
   admin_only: 'Only an admin can invite someone to this role.',
+  bad_job_title: 'That job title was turned off. Pick another, or none.',
   outside_your_scope: 'You can only give access to restaurants you have yourself.',
   network: "Can't reach OnTrack. Check your connection and try again.",
 }
@@ -41,6 +43,7 @@ export function InviteUserScreen() {
   const preset = params.get('restaurant')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [jobTitleId, setJobTitleId] = useState<string | null>(null)
   const access = useAccessChoice(restaurants, {
     role: 'manager',
     picked: preset && restaurants.some((r) => r.id === preset) ? [preset] : [],
@@ -61,7 +64,13 @@ export function InviteUserScreen() {
     e.preventDefault()
     if (!ready) return
     send.mutate(
-      { fullName: name.trim(), email: email.trim(), role: access.role, restaurantIds: access.restaurantIds },
+      {
+        fullName: name.trim(),
+        email: email.trim(),
+        role: access.role,
+        restaurantIds: access.restaurantIds,
+        jobTitleId,
+      },
       {
         onSuccess: () => {
           toast.show(`Invite sent to ${name.trim()}.`)
@@ -96,6 +105,13 @@ export function InviteUserScreen() {
             error={emailError}
           />
           <AccessFields choice={access} restaurants={restaurants} onEdit={clearError} />
+          <JobTitlePicker
+            value={jobTitleId}
+            onChange={(id) => {
+              clearError()
+              setJobTitleId(id)
+            }}
+          />
         </ScreenBody>
         <ScreenFooter>
           {formError && (

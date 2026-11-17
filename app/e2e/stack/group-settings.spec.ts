@@ -198,7 +198,8 @@ test('an admin names the roles, and the grid, the users list and the access pick
 
     await page.goto('/admin/users')
     await expect(page.getByRole('button', { name: 'Reporter', exact: true })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Maya Reyes/ })).toContainText('Reporter')
+    // Ari has no job title, so his row names the role (Maya's names her title, OT-117).
+    await expect(page.getByRole('link', { name: /Ari Kim/ })).toContainText('Reporter')
     await page.goto('/admin/users/new')
     await expect(page.getByRole('radio', { name: /^Reporter/ })).toBeVisible()
     await expect(page.getByRole('radio', { name: /^Support Team/ })).toBeVisible()

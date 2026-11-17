@@ -92,6 +92,7 @@ import {
   Spinner,
 } from '../../components/Skeleton'
 import { Switch, SwitchRow } from '../../components/Switch'
+import { ViewSettingFields, viewSummary, type ViewSetting } from '../../components/ViewSetting'
 import { ThemeControl } from '../../components/ThemeControl'
 import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
@@ -1029,6 +1030,8 @@ export function KitPage() {
                   label="Preferred contractor"
                 />
               </Card>
+              <SectionLabel>View setting (My categories, a job title&apos;s starting view)</SectionLabel>
+              <ViewSettingDemo />
             </Section>
 
             <Section id="overlays">
@@ -1155,5 +1158,16 @@ export function KitPage() {
         </ScreenBody>
       </Screen>
     </div>
+  )
+}
+
+function ViewSettingDemo() {
+  const [view, setView] = useState<ViewSetting>({ notify: 'urgent', shown: false })
+  return (
+    <Card className="flex flex-col gap-1.5 px-3.5 py-3">
+      <span className="text-14 font-semibold">Front of House</span>
+      <span className="text-12 text-text-muted">{viewSummary(view)}</span>
+      <ViewSettingFields label="Front of House" value={view} onChange={setView} />
+    </Card>
   )
 }

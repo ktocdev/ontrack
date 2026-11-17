@@ -12,6 +12,7 @@ import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
+import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { groupByRestaurant } from './dashboard'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantOrder } from './useRestaurantOrder'
@@ -32,6 +33,12 @@ const RestaurantOrderSheet = lazy(() => import('./RestaurantOrderSheet'))
 
 export function OpsDashboardScreen() {
   const { user, restaurants, viewingAs } = useUser()
+  const titleName = useJobTitleName()
+  // The badge names who is on a ticket, with their job title when they have one (OT-117).
+  const workerName = (p: { full_name: string; job_title_id: string | null }) => {
+    const title = titleName(p.job_title_id)
+    return title ? `${p.full_name} · ${title}` : p.full_name
+  }
   const scope = useRestaurantScope()
   const { ordered, reorder } = useRestaurantOrder()
   const [reordering, setReordering] = useState(false)
@@ -132,7 +139,7 @@ export function OpsDashboardScreen() {
                     ]
                       .filter(Boolean)
                       .join(' · ')}
-                    worker={t.assignee_id === user.id ? null : t.assignee?.full_name}
+                    worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
                   />
                 ))}
               </section>

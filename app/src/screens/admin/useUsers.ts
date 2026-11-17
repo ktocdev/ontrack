@@ -15,6 +15,7 @@ export type PersonRow = {
   id: string
   name: string
   role: AppRole
+  jobTitleId: string | null
   scope: string
   avatarPath: string | null
   deactivated: boolean
@@ -26,6 +27,7 @@ export type InviteRow = {
   name: string
   email: string
   role: AppRole
+  jobTitleId: string | null
   scope: string
   expired: boolean
   line: string
@@ -42,12 +44,12 @@ export function useUsers() {
     queryFn: async () => {
       const sb = requireSupabase()
       const [profiles, memberships, restaurants, invites] = await Promise.all([
-        sb.from('profiles').select('id, full_name, role, avatar_path, deactivated_at').order('full_name'),
+        sb.from('profiles').select('id, full_name, role, job_title_id, avatar_path, deactivated_at').order('full_name'),
         sb.from('memberships').select('user_id, restaurant_id'),
         sb.from('restaurants').select('id, name').order('sort_order'),
         sb
           .from('invites')
-          .select('id, full_name, email, role, restaurant_ids, sent_at, expires_at')
+          .select('id, full_name, email, role, job_title_id, restaurant_ids, sent_at, expires_at')
           .eq('status', 'pending')
           .order('sent_at', { ascending: false }),
       ])
@@ -64,6 +66,7 @@ export function useUsers() {
           id: p.id,
           name: p.full_name,
           role: p.role,
+          jobTitleId: p.job_title_id,
           scope: scopeLine(p.role, all ? null : names(mine.map((m) => m.restaurant_id as string))),
           avatarPath: p.avatar_path,
           deactivated: p.deactivated_at !== null,
@@ -75,6 +78,7 @@ export function useUsers() {
         name: i.full_name,
         email: i.email,
         role: i.role,
+        jobTitleId: i.job_title_id,
         scope: scopeLine(i.role, i.restaurant_ids.length ? names(i.restaurant_ids) : null),
         expired: new Date(i.expires_at).getTime() <= now.getTime(),
         line: inviteLine(i, now),
@@ -98,7 +102,13 @@ function useRefreshUsers() {
     ])
 }
 
-export type NewInvite = { fullName: string; email: string; role: AppRole; restaurantIds: string[] }
+export type NewInvite = {
+  fullName: string
+  email: string
+  role: AppRole
+  restaurantIds: string[]
+  jobTitleId: string | null
+}
 
 export function useSendInvite() {
   const refresh = useRefreshUsers()
@@ -110,6 +120,7 @@ export function useSendInvite() {
         email: i.email,
         role: i.role,
         restaurant_ids: i.restaurantIds,
+        job_title_id: i.jobTitleId,
       }),
     onSuccess: refresh,
   })

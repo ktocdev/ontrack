@@ -273,7 +273,9 @@ test('a manager is refused by the database, whatever the app shows', async ({ re
     })
   expect((await rpc('save_role_defaults', { p_changes: [] })).status()).toBe(403)
   expect((await rpc('set_person_rights', { p_user: MAYA, p_rights: [] })).status()).toBe(403)
-  expect((await rpc('set_person_access', { p_user: MAYA, p_role: 'ops', p_restaurants: [] })).status()).toBe(403)
+  expect(
+    (await rpc('set_person_access', { p_user: MAYA, p_role: 'ops', p_restaurants: [], p_job_title: null })).status(),
+  ).toBe(403)
   expect((await rpc('log_view_as', { p_user: MAYA })).status()).toBe(403)
   const remove = await request.post(`${SUPABASE}/functions/v1/revoke-user`, {
     data: { action: 'delete', user_id: MAYA },
