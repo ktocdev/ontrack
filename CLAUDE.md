@@ -189,8 +189,22 @@ The plan's Phase 6 section says what ships and what it works around. It ships in
 | OT-121 | Plan update (Nov 17, 2026): Admin as something held on top of any role, for the head ops manager on the Support Team; a shield on home screens opens the admin view with its own tab bar |
 | OT-122 | Admin backend: `profiles.is_admin` and `set_admin` (admin only, never your own, never the last admin, logged), `is_admin()` and the direct role checks read the flag, 2-step required, invites carry Admin, the seeded head ops manager; pgTAP |
 | OT-123 | The shield and the admin view (Users, Roles & rights, Restaurants); the Admin switch on User profile and Invite user; a stack flow |
-| OT-124 | Security and code quality pass over OT-122 and OT-123 |
-| 6b    | Numbered when 6a's done test passes, after OT-124; it also takes Ops' Add task and Hand back as in-house task (optional unit and category, a link to the ticket, one notification): Ops backend, overview and one restaurant, in-house fixes with Convert to ticket, schedule (rotations restaurants share), quarterly tasks, Import checklist from a spreadsheet, checklist editor, security pass, done test |
+| OT-124 | Security and code quality pass over OT-122 and OT-123: no direct writes to role, restaurants or status, admins included; only an admin changes an admin's rights |
+| OT-125 | Plan update: 6b numbered (Nov 17, 2026) |
+| OT-126 | Rotations backend: a named cycle of months, each with its checklist and label, shared by restaurants (group's by default, a restaurant's own otherwise); due day and reminder days on the rotation; `open_walkthroughs` reads it; `set_walkthrough_schedule`, logged; the seed's A / B and Ranalli's three months; pgTAP |
+| OT-127 | Overview backend: the month per restaurant and the last six months (On time, Late, Missed, In progress) as `security_invoker` views; `send_walkthrough_reminder` with when the last went; pgTAP |
+| OT-128 | In-house tasks from Ops backend: unit, category and `from_ticket_id` on `inhouse_fixes`; `convert_inhouse_fix`, `add_inhouse_task`, `hand_back_ticket` (definer, Update status, logged); a notification kind for a task from Ops with its Profile switch; pgTAP |
+| OT-129 | Ops overview: month stepper, N of 4 submitted, a row per restaurant, Last 6 months; restaurant picker; replaces the placeholder; View as |
+| OT-130 | One restaurant: progress by section, who is on it, flagged, past walkthroughs, Send reminder |
+| OT-131 | Ops in-house fixes with Convert to ticket; Add task; sender and unit on the manager's In-house; Notify on My categories for Reporters |
+| OT-132 | Hand back as in-house task on an Ops ticket |
+| OT-133 | Schedule: the rotation's months, the year's preview, restaurants with their rotation, a restaurant's own and Switch back, due date and reminders |
+| OT-134 | Quarterly tasks backend: the group's tasks and a restaurant's removals, changes, additions and restores; logged; pgTAP |
+| OT-135 | Quarterly tasks screen and the task editor |
+| OT-136 | Checklist editor (like Categories), with its backend and pgTAP |
+| OT-137 | Import checklist from a spreadsheet: template, upload, what changes, replace; reusable for Phase 7's imports |
+| OT-138 | Security and code quality pass over 6b |
+| OT-139 | 6b's done test; the phase note |
 
 ## Phase 5, for the record
 
