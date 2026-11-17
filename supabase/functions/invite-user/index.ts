@@ -28,17 +28,21 @@ const LIFETIME_HOURS = 72
 const ROLES = ['manager', 'ops', 'leadership', 'admin'] as const
 type Role = (typeof ROLES)[number]
 
-const ROLE_PHRASE: Record<Role, string> = {
-  manager: 'a Restaurant manager',
-  ops: 'an Operations manager',
-  leadership: 'a member of Leadership',
-  admin: 'an Admin',
-}
+/** A role as the app names it when the group hasn't named it (group_settings.role_names, OT-114). */
 const ROLE_LABEL: Record<Role, string> = {
   manager: 'Restaurant manager',
   ops: 'Operations manager',
   leadership: 'Leadership',
-  admin: 'Admin / IT',
+  admin: 'Admin',
+}
+
+/** The role's name as the group calls it, and " · Admin" when the invite carries Admin (OT-122). */
+async function roleLine(db: SupabaseClient, role: Role, admin: boolean) {
+  const { data, error } = await db.from('group_settings').select('role_names').single()
+  if (error) throw error
+  const stored = (data.role_names ?? {}) as Partial<Record<Role, string>>
+  const name = stored[role]?.trim() || ROLE_LABEL[role]
+  return admin && role !== 'admin' ? `${name} · Admin` : name
 }
 
 type Invite = {
@@ -48,6 +52,7 @@ type Invite = {
   role: Role
   restaurant_ids: string[]
   job_title_id: string | null
+  is_admin: boolean
   status: 'pending' | 'accepted' | 'revoked'
   invited_by: string | null
   sent_at: string
@@ -83,15 +88,21 @@ async function restaurantNames(db: SupabaseClient, ids: string[]) {
 const listNames = (names: string[]) =>
   names.length < 2 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
 
-async function sendInviteEmail(db: SupabaseClient, invite: Pick<Invite, 'email' | 'full_name' | 'role' | 'restaurant_ids'>, token: string, inviterId: string) {
+async function sendInviteEmail(
+  db: SupabaseClient,
+  invite: Pick<Invite, 'email' | 'full_name' | 'role' | 'restaurant_ids' | 'is_admin'>,
+  token: string,
+  inviterId: string,
+) {
   const appUrl = Deno.env.get('APP_URL')
   if (!appUrl) throw new Error('APP_URL is not set')
   // A fragment never reaches a server or its logs. The app reads it and posts it here.
   const link = `${appUrl.replace(/\/$/, '')}/invite#${token}`
-  const [group, inviter, names] = await Promise.all([
+  const [group, inviter, names, role] = await Promise.all([
     groupLabel(db),
     db.from('profiles').select('full_name').eq('id', inviterId).single(),
     restaurantNames(db, invite.restaurant_ids),
+    roleLine(db, invite.role, invite.is_admin),
   ])
   if (inviter.error) throw inviter.error
 
@@ -99,16 +110,19 @@ async function sendInviteEmail(db: SupabaseClient, invite: Pick<Invite, 'email' 
   const where = names ? listNames(names) : 'all restaurants'
   const place = invite.role === 'manager' ? 'in your restaurant' : 'across your restaurants'
   const use = `Use OnTrack to report equipment issues, follow repairs and see the history of every piece of equipment ${place}.`
+  // The role's name is the group's (Reporters, Support Team), so it stands on its own.
+  const roleSentence = `Your role: ${role}.${invite.is_admin ? ' As an admin, you set up 2-step verification when you first sign in.' : ''}`
   const closing = `This link expires in ${LIFETIME_HOURS} hours. If you weren't expecting this invite, you can ignore this email.`
   const e = escapeHtml
 
   await sendEmail({
     to: invite.email,
     subject: "You're invited to OnTrack",
-    text: `Hi ${first}, your team is on OnTrack.\n\n${inviter.data.full_name} invited you to join ${group} as ${ROLE_PHRASE[invite.role]} for ${where}.\n\n${use}\n\nSet up your account: ${link}\n\n${closing}`,
+    text: `Hi ${first}, your team is on OnTrack.\n\n${inviter.data.full_name} invited you to join ${group} for ${where}.\n\n${roleSentence}\n\n${use}\n\nSet up your account: ${link}\n\n${closing}`,
     html: emailFrame(`
 <h1 style="${s.h1}">Hi ${e(first)}, your team is on OnTrack.</h1>
-<p style="${s.p}">${e(inviter.data.full_name)} invited you to join <b>${e(group)}</b> as <b>${e(ROLE_PHRASE[invite.role])}</b> for <b>${e(where)}</b>.</p>
+<p style="${s.p}">${e(inviter.data.full_name)} invited you to join <b>${e(group)}</b> for <b>${e(where)}</b>.</p>
+<p style="${s.p}">${e(roleSentence)}</p>
 <p style="${s.p}">${e(use)}</p>
 <a href="${e(link)}" style="${s.button}">Set up your account</a>
 <p style="${s.small}">${e(closing)}</p>`),
@@ -120,7 +134,9 @@ async function checkInviter(req: Request, role: Role, restaurantIds: string[]) {
   const caller = await getCaller(req)
   if (!caller) return refuse('not_signed_in', 401)
   if (!(await can(caller, 'invite_users'))) return refuse('not_allowed', 403)
-  if (role !== 'manager' && !(await isAdmin(caller))) return refuse('admin_only', 403)
+  // An admin's powers are the group's, whatever their own restaurants (OT-122).
+  if (await isAdmin(caller)) return caller
+  if (role !== 'manager') return refuse('admin_only', 403)
   if (!(await coversScope(caller, restaurantIds))) return refuse('outside_your_scope', 403)
   return caller
 }
@@ -139,11 +155,16 @@ async function send(req: Request, body: Record<string, unknown>) {
   const rawTitle = body.job_title_id ?? null
   if (rawTitle !== null && !isUuid(rawTitle)) return refuse('bad_job_title', 422)
   const jobTitleId = rawTitle as string | null
+  const rawAdmin = body.is_admin ?? false
+  if (typeof rawAdmin !== 'boolean') return refuse('bad_request', 422)
+  const admin = rawAdmin || role === 'admin'
 
   const caller = await checkInviter(req, role, ids as string[])
   if (caller instanceof Response) return caller
   // A title grants nothing, but it is the admin's to give (OT-117), as on User profile.
   if (jobTitleId !== null && !(await isAdmin(caller))) return refuse('admin_only', 403)
+  // Only an admin gives Admin, on an invite as on User profile.
+  if (admin && !(await isAdmin(caller))) return refuse('admin_only', 403)
 
   const db = service()
   if (jobTitleId !== null) {
@@ -190,6 +211,7 @@ async function send(req: Request, body: Record<string, unknown>) {
       role,
       restaurant_ids: ids,
       job_title_id: jobTitleId,
+      is_admin: admin,
       token_hash: await hashToken(token),
       invited_by: caller.id,
       expires_at: expiry(),
@@ -202,7 +224,12 @@ async function send(req: Request, body: Record<string, unknown>) {
   }
 
   try {
-    await sendInviteEmail(db, { email, full_name: fullName, role, restaurant_ids: ids as string[] }, token, caller.id)
+    await sendInviteEmail(
+      db,
+      { email, full_name: fullName, role, restaurant_ids: ids as string[], is_admin: admin },
+      token,
+      caller.id,
+    )
   } catch (e) {
     console.error(e)
     // Nobody received a link, so leave nothing behind and let the admin try again.
@@ -212,7 +239,7 @@ async function send(req: Request, body: Record<string, unknown>) {
 
   await db
     .from('audit_log')
-    .insert({ actor_id: caller.id, action: 'invite.send', meta: { invite_id: invite.id, email, role, job_title_id: jobTitleId } })
+    .insert({ actor_id: caller.id, action: 'invite.send', meta: { invite_id: invite.id, email, role, job_title_id: jobTitleId, is_admin: admin } })
   return json({ id: invite.id })
 }
 
@@ -226,6 +253,7 @@ async function resend(req: Request, body: Record<string, unknown>) {
 
   const caller = await checkInviter(req, invite.role, invite.restaurant_ids)
   if (caller instanceof Response) return caller
+  if (invite.is_admin && !(await isAdmin(caller))) return refuse('admin_only', 403)
   if (invite.status !== 'pending') return refuse('not_pending', 409)
 
   const token = newToken()
@@ -283,7 +311,7 @@ async function check(body: Record<string, unknown>) {
     state,
     email: invite.email,
     full_name: invite.full_name,
-    summary: `${ROLE_LABEL[invite.role]} · ${names ? listNames(names) : 'All restaurants'}`,
+    summary: `${await roleLine(db, invite.role, invite.is_admin)} · ${names ? listNames(names) : 'All restaurants'}`,
   })
 }
 

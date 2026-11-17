@@ -644,7 +644,7 @@ When Katie said the group would need an admin to add people and set their roles,
 
 **Open questions**
 
-- Who is the head ops manager in the seed? The plan adds a new person rather than making Bert or Chris an admin, since every flow that signs in as them would then need an authenticator code.
+- Who is the head ops manager in the seed? A new person, Rosa Delgado (OT-122), rather than Bert or Chris, since every flow that signs in as them would then need an authenticator code.
 - Katie's own live account is the plain Admin role. It keeps today's screens; giving the head ops manager Admin on the live app is a step for Katie once OT-123 ships.
 - If Katie renamed the Admin role on Roles & rights ("Admin / IT"), set it back to Admin; IT is a job title.
 
