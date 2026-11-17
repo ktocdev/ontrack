@@ -93,6 +93,7 @@ import {
 } from '../../components/Skeleton'
 import { Switch, SwitchRow } from '../../components/Switch'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '../../components/ViewSetting'
+import { HiddenCategories } from '../../components/HiddenCategories'
 import { ThemeControl } from '../../components/ThemeControl'
 import { TabBar } from '../../components/TabBar'
 import { useToast } from '../../components/Toast'
@@ -439,6 +440,7 @@ export function KitPage() {
                 ]}
               />
               <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
+              <HiddenCategoriesDemo />
               <Notice tone="info">Closed tickets also appear on each piece of equipment, with their costs.</Notice>
               <Notice tone="waiting">
                 <b>Reopened and sent to Ops.</b> It&apos;s back on the Ops list. You&apos;ll get a notification when
@@ -1159,6 +1161,12 @@ export function KitPage() {
       </Screen>
     </div>
   )
+}
+
+/** A list's "N hidden · Show all" line (OT-118), both ways. */
+function HiddenCategoriesDemo() {
+  const [showAll, setShowAll] = useState(false)
+  return <HiddenCategories count={3} showAll={showAll} onShowAll={setShowAll} />
 }
 
 function ViewSettingDemo() {

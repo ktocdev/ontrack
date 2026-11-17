@@ -4,7 +4,7 @@ import { byActivity } from './tickets'
 
 /**
  * Manager · Open tickets. Everything not closed at the restaurants passed in, and
- * how many in-house tasks are still to do there. The caller passes them from
+ * the in-house tasks still to do there. The caller passes them from
  * useUser(), so View as shows the person viewed and not what the admin may read.
  */
 const nothingOpenKey = (restaurantIds: string[]) => `ontrack.nothingOpen.${restaurantIds.join(',')}`
@@ -41,20 +41,17 @@ export function useOpenTickets(restaurantIds: string[]) {
         sb
           .from('tickets')
           .select(
-            'id, display_id, title, status, source, restaurant_id, created_at, updated_at, reopened_at, scheduled_for, category:categories (name, area), equipment (name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
+            'id, display_id, title, status, source, restaurant_id, category_id, created_by, assignee_id, created_at, updated_at, reopened_at, scheduled_for, category:categories (name, area), equipment (name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
           )
           .in('restaurant_id', restaurantIds)
           .neq('status', 'closed'),
-        sb
-          .from('inhouse_fixes')
-          .select('id', { count: 'exact', head: true })
-          .in('restaurant_id', restaurantIds)
-          .is('done_at', null),
+        sb.from('inhouse_fixes').select('id, area, created_by').in('restaurant_id', restaurantIds).is('done_at', null),
       ])
       if (tickets.error) throw tickets.error
       if (inHouse.error) throw inHouse.error
-      rememberNothingOpen(restaurantIds, tickets.data.length === 0 && !inHouse.count)
-      return { tickets: [...tickets.data].sort(byActivity), inHouseCount: inHouse.count ?? 0 }
+      rememberNothingOpen(restaurantIds, tickets.data.length === 0 && inHouse.data.length === 0)
+      // The tasks still to do, for the In-house tab's count, which leaves off hidden areas (OT-118).
+      return { tickets: [...tickets.data].sort(byActivity), inHouseOpen: inHouse.data }
     },
   })
 }

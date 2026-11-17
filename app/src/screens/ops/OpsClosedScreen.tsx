@@ -4,11 +4,15 @@ import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { ClosedTicketRow, MonthHeading } from '../../components/ClosedTicketRow'
 import { EmptyState } from '../../components/EmptyState'
+import { HiddenCategories } from '../../components/HiddenCategories'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenEmpty, TitleBar } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
+import { TaskListEmpty } from '../../components/TaskRow'
 import { IconTray, IconWarning } from '../../components/icons'
 import { money } from '../tickets/closed'
+import { listed, useListView } from '../mycategories/useMyCategories'
+import type { Listed } from '../mycategories/view'
 import { monthName, shownMonths, type ClosedMonth } from './closedMonths'
 import { useClosedMonth, useClosedMonths } from './useOpsClosed'
 import { useRestaurantOrder } from './useRestaurantOrder'
@@ -22,8 +26,10 @@ import { Notice } from '../../components/Notice'
  * own. This month comes first, four tickets to a month until Show more, and See <month>
  * adds the month before. The board's note that closed tickets also appear on each unit
  * is back now each unit has a page; the empty board's line that a closed ticket is saved
- * to its unit's service history is left off, since closing logs no service. View as
- * never reaches this screen.
+ * to its unit's service history is left off, since closing logs no service. Hidden
+ * categories leave their tickets off each month (OT-118), while the month's count and
+ * total stay the restaurant's, so the money is never short. View as never reaches this
+ * screen.
  */
 const FIRST_ROWS = 4
 
@@ -37,6 +43,7 @@ export function OpsClosedScreen() {
   const { shown, next } = shownMonths(data ?? [], extra)
   const emptyMonth = shown[0]?.closed_count === 0
   const seeCosts = useRight('see_costs')
+  const view = useListView()
   const seeNext = next && (
     <Button variant="small" className="w-full flex-none" onClick={() => setExtra(extra + 1)}>
       See {monthName(next.month)} · {next.closed_count} closed
@@ -80,6 +87,12 @@ export function OpsClosedScreen() {
         </ScreenBody>
       ) : (
         <ScreenBody className="gap-2.5 pb-4">
+          <HiddenCategories
+            count={view.hidden}
+            showAll={view.showAll}
+            onShowAll={view.setShowAll}
+            className="-mb-2.5 mt-1.5"
+          />
           {!emptyMonth && (
             <Notice tone="info" className="mt-3.5">
               Closed tickets also appear on each piece of equipment{seeCosts ? ', with their costs' : ''}.
@@ -92,6 +105,7 @@ export function OpsClosedScreen() {
               month={m}
               restaurantIds={scope.ids}
               restaurants={ordered}
+              shows={view.shows}
             >
               {seeNext}
             </Month>
@@ -107,11 +121,14 @@ function Month({
   month,
   restaurantIds,
   restaurants,
+  shows,
   children,
 }: {
   month: ClosedMonth
   restaurantIds: string[]
   restaurants: Restaurant[]
+  /** Whether My categories leaves a ticket on the list. */
+  shows: (item: Listed) => boolean
   /** The way to the month before, which an empty month offers itself. */
   children: ReactNode
 }) {
@@ -119,7 +136,7 @@ function Month({
   const { data, isPending, isError, refetch } = useClosedMonth(restaurantIds, month.month, !empty)
   const [all, setAll] = useState(false)
   const name = monthName(month.month)
-  const rows = data ?? []
+  const rows = (data ?? []).filter((t) => shows(listed(t)))
   const visible = all ? rows : rows.slice(0, FIRST_ROWS)
   const more = rows.length - visible.length
 
@@ -147,19 +164,23 @@ function Month({
         <CardFeedSkeleton label={`Loading ${name}`} />
       ) : (
         <>
-          <Card className="overflow-hidden rounded-input">
-            {visible.map((t) => (
-              <ClosedTicketRow
-                key={t.id}
-                to={`/ops/tickets/${t.id}`}
-                title={t.title}
-                displayId={t.display_id ?? ''}
-                restaurant={restaurants.find((r) => r.id === t.restaurant_id)}
-                date={new Date(t.closed_at!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                cost={t.totalCents === null ? undefined : money(t.totalCents)}
-              />
-            ))}
-          </Card>
+          {rows.length === 0 ? (
+            <TaskListEmpty>None in the categories you show. Show all lists them.</TaskListEmpty>
+          ) : (
+            <Card className="overflow-hidden rounded-input">
+              {visible.map((t) => (
+                <ClosedTicketRow
+                  key={t.id}
+                  to={`/ops/tickets/${t.id}`}
+                  title={t.title}
+                  displayId={t.display_id ?? ''}
+                  restaurant={restaurants.find((r) => r.id === t.restaurant_id)}
+                  date={new Date(t.closed_at!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  cost={t.totalCents === null ? undefined : money(t.totalCents)}
+                />
+              ))}
+            </Card>
+          )}
           {more > 0 && (
             <button
               type="button"

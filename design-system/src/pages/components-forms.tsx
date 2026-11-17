@@ -23,6 +23,7 @@ import { Sheet } from '@app/components/Sheet'
 import { StatusMenu } from '@app/components/StatusMenu'
 import { Switch, SwitchRow } from '@app/components/Switch'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '@app/components/ViewSetting'
+import { HiddenCategories } from '@app/components/HiddenCategories'
 import { TabBar } from '@app/components/TabBar'
 import { TabAlert } from '@app/components/Pill'
 import { EquipmentMenu, TicketMenu } from '@app/components/TicketMenu'
@@ -392,6 +393,7 @@ export function FeedbackPage() {
           'components/Toast.tsx',
           'components/EmptyState.tsx',
           'components/UpdateBar.tsx',
+          'components/HiddenCategories.tsx',
         ]}
       >
         <p>Notices stay on a screen, toasts confirm and leave, empty states say what belongs here and how to add it.</p>
@@ -406,6 +408,14 @@ export function FeedbackPage() {
             <b>Reopened and sent to Ops.</b> You&apos;ll get a notification when work starts.
           </Notice>
           <ErrorBanner title="Couldn't save yet.">Everything you entered is still here.</ErrorBanner>
+        </Example>
+      </Section>
+      <Section
+        title="Hidden categories"
+        intro="The line at the top of a list that leaves off the categories someone hides in My categories. Show all lasts until they leave the screen."
+      >
+        <Example code={`<HiddenCategories count={3} showAll={showAll} onShowAll={setShowAll} />`}>
+          <HiddenCategoriesDemo />
         </Example>
       </Section>
       <Section title="Toast">
@@ -584,6 +594,11 @@ export function SheetsPage() {
 }
 
 /** Notify me and Show on my lists, for an area or a category (OT-116, OT-117). */
+function HiddenCategoriesDemo() {
+  const [showAll, setShowAll] = useState(false)
+  return <HiddenCategories count={3} showAll={showAll} onShowAll={setShowAll} />
+}
+
 function ViewSettingDemo() {
   const [view, setView] = useState<ViewSetting>({ notify: 'urgent', shown: false })
   return (

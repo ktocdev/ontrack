@@ -25,8 +25,9 @@ const SHOW_OPTIONS: { value: 'shown' | 'hidden'; label: string }[] = [
   { value: 'hidden', label: 'Hidden' },
 ]
 
-/** A row's one-line summary: "All · Shown", "Urgent only · Hidden". */
-export function viewSummary(v: ViewSetting) {
+/** A row's one-line summary: "Notify all · Shown", "Urgent only · Hidden"; only Shown or Hidden without Notify. */
+export function viewSummary(v: ViewSetting, withNotify = true) {
+  if (!withNotify) return v.shown ? 'Shown' : 'Hidden'
   const notify = v.notify === 'all' ? 'Notify all' : v.notify === 'urgent' ? 'Urgent only' : 'Notify off'
   return `${notify} · ${v.shown ? 'Shown' : 'Hidden'}`
 }
@@ -35,23 +36,30 @@ export function ViewSettingFields({
   label,
   value,
   onChange,
+  withNotify = true,
 }: {
   /** What the settings are for, read with each control: "Front of House". */
   label: string
   value: ViewSetting
   onChange: (next: ViewSetting) => void
+  /** False leaves out Notify me, for someone the shared pool doesn't reach (My categories). */
+  withNotify?: boolean
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-12 font-semibold text-text-secondary">Notify me</span>
-      <Segmented
-        size="sm"
-        label={`${label}: notify me`}
-        value={value.notify}
-        options={NOTIFY_OPTIONS}
-        onChange={(notify) => onChange({ ...value, notify })}
-      />
-      <span className="pt-1 text-12 font-semibold text-text-secondary">Show on my lists</span>
+      {withNotify && (
+        <>
+          <span className="text-12 font-semibold text-text-secondary">Notify me</span>
+          <Segmented
+            size="sm"
+            label={`${label}: notify me`}
+            value={value.notify}
+            options={NOTIFY_OPTIONS}
+            onChange={(notify) => onChange({ ...value, notify })}
+          />
+        </>
+      )}
+      <span className={`${withNotify ? 'pt-1 ' : ''}text-12 font-semibold text-text-secondary`}>Show on my lists</span>
       <Segmented
         size="sm"
         label={`${label}: show on my lists`}

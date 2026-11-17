@@ -47,9 +47,7 @@ test('another restaurant’s tickets stay out', async ({ page }) => {
 
 test('with nothing open it says so and offers Create ticket, without a QR button', async ({ page }, testInfo) => {
   await page.route('**/rest/v1/tickets*', (route) => route.fulfill({ json: [] }))
-  await page.route('**/rest/v1/inhouse_fixes*', (route) =>
-    route.fulfill({ status: 200, headers: { 'content-range': '*/0' }, body: '' }),
-  )
+  await page.route('**/rest/v1/inhouse_fixes*', (route) => route.fulfill({ json: [] }))
   await signIn(page, 'maya.reyes@example.com')
   await expect(page.getByRole('heading', { name: 'No open tickets' })).toBeVisible()
   await expect(page.getByText('Everything at Federale’s Logan Square is working.')).toBeVisible()
@@ -71,9 +69,7 @@ test('it loads in the layout it found last time, so an empty list does not jump'
     return answer === 'empty' ? route.fulfill({ json: [] }) : route.continue()
   })
   await page.route('**/rest/v1/inhouse_fixes*', (route) =>
-    answer === 'empty'
-      ? route.fulfill({ status: 200, headers: { 'content-range': '*/0' }, body: '' })
-      : route.continue(),
+    answer === 'empty' ? route.fulfill({ json: [] }) : route.continue(),
   )
   const holdAndReload = async () => {
     held = new Promise<void>((resolve) => (release = resolve))

@@ -4,15 +4,18 @@ import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
+import { HiddenCategories } from '../../components/HiddenCategories'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
+import { TaskListEmpty } from '../../components/TaskRow'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
 import { useJobTitleName } from '../jobtitles/useJobTitles'
+import { listed, useListView } from '../mycategories/useMyCategories'
 import { groupByRestaurant } from './dashboard'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantOrder } from './useRestaurantOrder'
@@ -25,8 +28,10 @@ import { useRestaurantScope } from './useRestaurantScope'
  * always on top, then Front of House before Back, then the oldest, and the time on a
  * card is how long ago it was opened, so the order can be read. Nobody assigns a ticket: it is picked up by
  * marking it In progress, and a badge says who else is on it. Closed tickets are in the menu
- * by the title, as on a manager's Open tickets. Under
- * View as, nothing leads anywhere.
+ * by the title, as on a manager's Open tickets. The categories someone hides in My
+ * categories are left off, apart from tickets they are on, with the line that says so and
+ * Show all (OT-118). Under View as, nothing leads anywhere, and the viewed person's
+ * settings apply.
  */
 
 const RestaurantOrderSheet = lazy(() => import('./RestaurantOrderSheet'))
@@ -44,8 +49,12 @@ export function OpsDashboardScreen() {
   const [reordering, setReordering] = useState(false)
   const { data, isPending, isError, refetch } = useOpsDashboard(scope.ids)
 
+  const view = useListView()
   const inScope = scope.selected ? [scope.selected] : ordered
-  const groups = groupByRestaurant(data ?? [], inScope)
+  const groups = groupByRestaurant(
+    (data ?? []).filter((t) => view.shows(listed(t))),
+    inScope,
+  )
 
   return (
     <Screen>
@@ -111,39 +120,50 @@ export function OpsDashboardScreen() {
           {isPending ? (
             <CardFeedSkeleton />
           ) : (
-            groups.map(({ restaurant, tickets }) => (
-              <section key={restaurant.id} aria-label={restaurant.name} className="flex flex-none flex-col gap-2.5">
-                <h2 className="eyebrow flex items-center gap-1.5">
-                  <RestaurantSquare color={restaurant.color} />
-                  <span className="min-w-0 truncate">
-                    {restaurant.name} · {tickets.length}
-                  </span>
-                </h2>
-                {tickets.map((t) => (
-                  <OpsTicketCard
-                    key={t.id}
-                    to={viewingAs ? undefined : `/ops/tickets/${t.id}`}
-                    displayId={t.display_id ?? ''}
-                    title={t.title}
-                    status={t.status}
-                    statusLabel={
-                      t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
-                    }
-                    urgent={t.urgency === 'urgent'}
-                    walkthrough={t.source === 'walkthrough'}
-                    createdAt={t.created_at}
-                    meta={[
-                      t.category && AREA_SHORT[t.category.area],
-                      t.category?.name,
-                      ago(new Date(t.created_at), new Date()),
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                    worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
-                  />
-                ))}
-              </section>
-            ))
+            <>
+              <HiddenCategories
+                count={view.hidden}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+                className="-mb-3"
+              />
+              {groups.length === 0 && (
+                <TaskListEmpty>Nothing open in the categories you show. Show all lists the rest.</TaskListEmpty>
+              )}
+              {groups.map(({ restaurant, tickets }) => (
+                <section key={restaurant.id} aria-label={restaurant.name} className="flex flex-none flex-col gap-2.5">
+                  <h2 className="eyebrow flex items-center gap-1.5">
+                    <RestaurantSquare color={restaurant.color} />
+                    <span className="min-w-0 truncate">
+                      {restaurant.name} · {tickets.length}
+                    </span>
+                  </h2>
+                  {tickets.map((t) => (
+                    <OpsTicketCard
+                      key={t.id}
+                      to={viewingAs ? undefined : `/ops/tickets/${t.id}`}
+                      displayId={t.display_id ?? ''}
+                      title={t.title}
+                      status={t.status}
+                      statusLabel={
+                        t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
+                      }
+                      urgent={t.urgency === 'urgent'}
+                      walkthrough={t.source === 'walkthrough'}
+                      createdAt={t.created_at}
+                      meta={[
+                        t.category && AREA_SHORT[t.category.area],
+                        t.category?.name,
+                        ago(new Date(t.created_at), new Date()),
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                      worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
+                    />
+                  ))}
+                </section>
+              ))}
+            </>
           )}
         </ScreenBody>
       )}
