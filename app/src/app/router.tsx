@@ -305,7 +305,12 @@ export const router = createBrowserRouter([
                     path: '/ops/closed',
                     lazy: async () => ({ Component: (await import('../screens/ops/OpsClosedScreen')).OpsClosedScreen }),
                   },
-                  { path: '/ops/walkthroughs', ...placeholder('Walkthroughs', 'Phase 6b') },
+                  {
+                    path: '/ops/walkthroughs',
+                    lazy: async () => ({
+                      Component: (await import('../screens/ops/OpsWalkthroughsScreen')).OpsWalkthroughsScreen,
+                    }),
+                  },
                   {
                     path: '/ops/equipment',
                     lazy: async () => ({
@@ -329,6 +334,9 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
+                  // OT-133 and OT-130 replace these.
+                  { path: '/ops/walkthroughs/schedule', ...placeholder('Walkthrough schedule', 'Phase 6b') },
+                  { path: '/ops/walkthroughs/:id', ...placeholder('Walkthrough', 'Phase 6b') },
                   {
                     path: '/ops/equipment/new',
                     lazy: async () => ({

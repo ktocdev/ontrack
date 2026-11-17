@@ -81,6 +81,12 @@
   --progress-inhouse: #c9a227;
   --progress-ticket: var(--urgent);
 
+  /* Walkthrough history: a month's square on the Ops overview (WT-Ops-Overview), the same
+     values as the progress bar's Good and in-house; missed is an empty outlined square */
+  --standing-on-time: var(--progress-good);
+  --standing-late: var(--progress-inhouse);
+  --standing-missed: var(--border-muted);
+
   /* Walkthrough checklist: Good, In-house and Ticket once picked (WT-Checklist) */
   --choice-good-bg: #d4f0de;
   --choice-good-border: #2e8b57;
@@ -316,6 +322,9 @@
   --color-progress-good: var(--progress-good);
   --color-progress-inhouse: var(--progress-inhouse);
   --color-progress-ticket: var(--progress-ticket);
+  --color-standing-on-time: var(--standing-on-time);
+  --color-standing-late: var(--standing-late);
+  --color-standing-missed: var(--standing-missed);
   --color-choice-good-bg: var(--choice-good-bg);
   --color-choice-good-border: var(--choice-good-border);
   --color-choice-good-text: var(--choice-good-text);

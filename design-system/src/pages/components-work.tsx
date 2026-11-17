@@ -36,6 +36,10 @@ import {
   CountTile,
   FlagChip,
   FlagChips,
+  HistoryLegend,
+  HistorySquare,
+  ProgressLine,
+  StandingPill,
   LeftRow,
   ProgressBar,
   ProgressRing,
@@ -451,6 +455,36 @@ export function WalkthroughPage() {
               <FlagChips tickets={2} fixes={1} />
               <FlagChip tone="good">All good</FlagChip>
               <FlagChip tone="missed">Not done</FlagChip>
+            </div>
+          </div>
+        </Example>
+      </Section>
+      <Section
+        title="A month across restaurants"
+        intro="The Ops overview (WT-Ops-Overview): each restaurant's progress as one 6px bar, its standing as a pill, and the last six months as squares."
+      >
+        <Example
+          code={`<ProgressLine done={20} total={50} label="20 of 50 checks done" />
+<StandingPill standing="on_time" submitted="Oct 18" />
+<HistorySquare standing="late" label="Porter, July: Late" />
+<HistoryLegend />`}
+        >
+          <div className="flex flex-col gap-3">
+            <ProgressLine done={20} total={50} label="20 of 50 checks done" />
+            <div className="flex flex-wrap items-center gap-1.5">
+              <StandingPill standing="not_started" />
+              <StandingPill standing="in_progress" />
+              <StandingPill standing="on_time" submitted="Oct 18" />
+              <StandingPill standing="missed" />
+            </div>
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <div className="flex items-center gap-3 px-3.5 py-3">
+                <HistorySquare standing="on_time" label="On time" />
+                <HistorySquare standing="late" label="Late" />
+                <HistorySquare standing="missed" label="Missed" />
+                <HistorySquare standing="in_progress" label="In progress" />
+              </div>
+              <HistoryLegend />
             </div>
           </div>
         </Example>

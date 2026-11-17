@@ -3,7 +3,7 @@ import { signIn, tokenFor } from './helpers'
 
 /**
  * Manager · Walkthrough home against the seed. October's walkthroughs are open and due
- * Oct 31; Logan Square also has September's, submitted. Dana's Porter walkthrough gets
+ * Oct 31; each restaurant also has May to September (OT-129), the Ops overview's history. Dana's Porter walkthrough gets
  * three items marked Good and one in-house fix first, through the functions the checklist
  * will use, and no tickets, so no other flow's counts move. Each step is safe to repeat.
  */
@@ -60,9 +60,9 @@ test('a manager sees this month by section, its flags and the way to review', as
   await expect(card.getByRole('link', { name: /^Front of House/ })).toContainText('0 of 24')
   await expect(card.getByRole('link', { name: /^Q4 location tasks/ })).toContainText('0 of 2')
 
-  // Not done yet, so Review & submit is the outline button, and nothing is past at Porter.
+  // Not done yet, so Review & submit is the outline button; Porter's past months stay folded.
   await expect(card.getByRole('link', { name: 'Review & submit' })).toHaveClass(/border-brand/)
-  await expect(page.getByRole('button', { name: 'Past walkthroughs' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Past walkthroughs' })).toHaveAttribute('aria-expanded', 'false')
   await testInfo.attach('walkthrough home', { body: await page.screenshot(), contentType: 'image/png' })
 
   // A section opens its checklist (OT-105 builds it).
@@ -79,7 +79,9 @@ test('past walkthroughs open under the card and say how each month went', async 
   await expect(past).toHaveAttribute('aria-expanded', 'false')
   await past.click()
   const list = page.getByRole('region', { name: 'Past walkthroughs' })
-  await expect(list.getByText('Sep')).toBeVisible()
-  await expect(list.getByText('BOH + FOH')).toBeVisible()
-  await expect(list.getByText('All good')).toBeVisible()
+  // Newest first: September, all good; then the months Maya missed say so.
+  const sep = list.locator('div', { hasText: /^Sep/ }).last()
+  await expect(sep).toContainText('BOH + FOH')
+  await expect(sep).toContainText('All good')
+  await expect(list.locator('div', { hasText: /^Jun/ }).last()).toContainText('Not done')
 })
