@@ -8,7 +8,8 @@ import { pushServer, sendPush } from '../_shared/push.ts'
  * and it takes nothing from the request: who gets what comes from notification_recipients,
  * and the words from the tables. Knowing the secret can only make it send sooner.
  * It still reports each delivery when a push service or email fails, and carries on. A row is
- * about a ticket, or for a reminder (OT-103), a walkthrough.
+ * about a ticket, or for a reminder (OT-103), a walkthrough, or for a task from Ops (OT-128),
+ * an in-house task and maybe its ticket.
  */
 
 const DAY = 24 * 60 * 60 * 1000
@@ -28,7 +29,8 @@ type Row = {
   id: string
   ticket_id: string | null
   walkthrough_id: string | null
-  kind: 'new_ticket' | 'reopened' | 'status_change' | 'update' | 'walkthrough_reminder'
+  inhouse_fix_id: string | null
+  kind: 'new_ticket' | 'reopened' | 'status_change' | 'update' | 'walkthrough_reminder' | 'inhouse_task'
   actor_id: string | null
   body: string | null
   internal: boolean
@@ -67,7 +69,8 @@ function describe(n: Row, ticketLabel: string, restaurant: string, actor: string
         words: words ?? 'Sent a photo.',
       }
     case 'walkthrough_reminder':
-      throw new Error('a reminder is not about a ticket')
+    case 'inhouse_task':
+      throw new Error('not about a ticket alone')
   }
 }
 
@@ -92,6 +95,7 @@ serve(async (req) => {
       if (Date.now() - new Date(n.created_at).getTime() > DAY) continue
       try {
         if (n.walkthrough_id) await deliverReminder(db, server, appUrl, n, n.walkthrough_id)
+        else if (n.inhouse_fix_id) await deliverTask(db, server, appUrl, n, n.inhouse_fix_id)
         else await deliver(db, server, appUrl, n)
       } catch (e) {
         // One notification's trouble doesn't stop the others.
@@ -123,6 +127,7 @@ async function sendTo(db: Db, server: Server, n: Row, people: Person[], message:
       user_id,
       ticket_id: n.ticket_id,
       walkthrough_id: n.walkthrough_id,
+      inhouse_fix_id: n.inhouse_fix_id,
       kind: n.kind,
       channel,
       status,
@@ -261,5 +266,53 @@ async function deliverReminder(db: Db, server: Server, appUrl: string, n: Row, w
 <a href="${link}" style="${s.button}">Open walkthrough</a>
 <p style="${s.small}">You can change these under Notifications on your OnTrack profile.</p>`),
     text: [headline, restaurant, `${when} · ${progress}`, link].join('\n\n'),
+  })
+}
+
+/**
+ * A task from Ops (OT-128): added to the restaurant's In-house list, handed back from a
+ * ticket, or an in-house fix that Ops made a ticket. Each names who sent it.
+ */
+async function deliverTask(db: Db, server: Server, appUrl: string, n: Row, fixId: string) {
+  const { data: fix, error } = await db
+    .from('inhouse_fixes')
+    .select('title, note, converted_ticket_id, restaurant:restaurants (name), unit:equipment (name)')
+    .eq('id', fixId)
+    .single()
+  if (error) throw error
+  const people = await recipients(db, n)
+  if (!people.length) return
+
+  const { data: actor } = n.actor_id
+    ? await db.from('profiles').select('full_name').eq('id', n.actor_id).maybeSingle()
+    : { data: null }
+  const { data: ticket } = n.ticket_id
+    ? await db.from('tickets').select('id, display_id').eq('id', n.ticket_id).maybeSingle()
+    : { data: null }
+  const restaurant = (fix.restaurant as unknown as { name: string } | null)?.name ?? ''
+  const unit = (fix.unit as unknown as { name: string } | null)?.name ?? null
+  const sender = actor?.full_name ?? 'Ops'
+  const converted = ticket !== null && fix.converted_ticket_id === ticket.id
+
+  const headline = converted ? `In-house fix is now a ticket · ${restaurant}` : `In-house task from ${sender} · ${restaurant}`
+  const line = converted ? `${ticket?.display_id} · ${fix.title}` : fix.title
+  const words = converted
+    ? `${sender} made it a ticket, for a contractor.`
+    : [unit, fix.note, ticket ? `Handed back from ${ticket.display_id}` : null].filter(Boolean).join('\n')
+  const path = converted ? `/t/${ticket?.display_id ?? ticket?.id}` : '/tickets/in-house'
+  const link = `${appUrl.replace(/\/$/, '')}${path}`
+
+  await sendTo(db, server, n, people, {
+    title: headline,
+    body: words ? `${line}\n${words}` : line,
+    path,
+    subject: headline,
+    html: emailFrame(`
+<h1 style="${s.h1}">${escapeHtml(headline)}</h1>
+<p style="${s.p}"><b>${escapeHtml(line)}</b></p>
+${words ? `<p style="${s.p};white-space:pre-wrap">${escapeHtml(words)}</p>` : ''}
+<a href="${link}" style="${s.button}">${converted ? 'Open ticket' : 'Open In-house'}</a>
+<p style="${s.small}">You can change these under Notifications on your OnTrack profile.</p>`),
+    text: [headline, line, words, link].filter(Boolean).join('\n\n'),
   })
 }

@@ -305,17 +305,29 @@ isOneToOne: false
                   ]
                 },"inhouse_fixes": {
                   Row: {
-                    "area": Database["public"]['Enums']["area"] | null,"check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"done_at": string | null,"done_by": string | null,"first_done_at": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null
+                    "area": Database["public"]['Enums']["area"] | null,"category_id": string | null,"check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"done_at": string | null,"done_by": string | null,"equipment_id": string | null,"first_done_at": string | null,"from_ops": boolean,"from_ticket_id": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "area"?: Database["public"]['Enums']["area"] | null,"check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"first_done_at"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id": string,"title": string,"walkthrough_id"?: string | null
+                    "area"?: Database["public"]['Enums']["area"] | null,"category_id"?: string | null,"check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"equipment_id"?: string | null,"first_done_at"?: string | null,"from_ops"?: boolean,"from_ticket_id"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id": string,"title": string,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "area"?: Database["public"]['Enums']["area"] | null,"check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"first_done_at"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id"?: string,"title"?: string,"walkthrough_id"?: string | null
+                    "area"?: Database["public"]['Enums']["area"] | null,"category_id"?: string | null,"check_id"?: string | null,"converted_ticket_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"done_at"?: string | null,"done_by"?: string | null,"equipment_id"?: string | null,"first_done_at"?: string | null,"from_ops"?: boolean,"from_ticket_id"?: string | null,"id"?: string,"note"?: string | null,"origin_label"?: string | null,"restaurant_id"?: string,"title"?: string,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "inhouse_fixes_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "v_category_history"
+      referencedColumns: ["category_id"]
+    },{
       foreignKeyName: "inhouse_fixes_check_id_fkey"
       columns: ["check_id"]
 isOneToOne: false
@@ -351,6 +363,24 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "inhouse_fixes_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "inhouse_fixes_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "v_equipment_history"
+      referencedColumns: ["equipment_id"]
+    },{
+      foreignKeyName: "inhouse_fixes_from_ticket_id_fkey"
+      columns: ["from_ticket_id"]
+isOneToOne: false
+      referencedRelation: "tickets"
+      referencedColumns: ["id"]
     },{
       foreignKeyName: "inhouse_fixes_restaurant_id_fkey"
       columns: ["restaurant_id"]
@@ -563,17 +593,23 @@ isOneToOne: false
                   ]
                 },"notification_deliveries": {
                   Row: {
-                    "channel": string,"created_at": string,"id": string,"kind": string,"notification_id": string,"status": string,"ticket_id": string | null,"user_id": string,"walkthrough_id": string | null
+                    "channel": string,"created_at": string,"id": string,"inhouse_fix_id": string | null,"kind": string,"notification_id": string,"status": string,"ticket_id": string | null,"user_id": string,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "channel": string,"created_at"?: string,"id"?: string,"kind": string,"notification_id": string,"status": string,"ticket_id"?: string | null,"user_id": string,"walkthrough_id"?: string | null
+                    "channel": string,"created_at"?: string,"id"?: string,"inhouse_fix_id"?: string | null,"kind": string,"notification_id": string,"status": string,"ticket_id"?: string | null,"user_id": string,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "channel"?: string,"created_at"?: string,"id"?: string,"kind"?: string,"notification_id"?: string,"status"?: string,"ticket_id"?: string | null,"user_id"?: string,"walkthrough_id"?: string | null
+                    "channel"?: string,"created_at"?: string,"id"?: string,"inhouse_fix_id"?: string | null,"kind"?: string,"notification_id"?: string,"status"?: string,"ticket_id"?: string | null,"user_id"?: string,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "notification_deliveries_inhouse_fix_id_fkey"
+      columns: ["inhouse_fix_id"]
+isOneToOne: false
+      referencedRelation: "inhouse_fixes"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "notification_deliveries_notification_id_fkey"
       columns: ["notification_id"]
 isOneToOne: false
@@ -639,14 +675,14 @@ isOneToOne: false
                   ]
                 },"notifications": {
                   Row: {
-                    "actor_id": string | null,"body": string | null,"created_at": string,"days_before": number | null,"id": string,"internal": boolean,"kind": string,"picked_up": boolean,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string | null,"walkthrough_id": string | null
+                    "actor_id": string | null,"body": string | null,"created_at": string,"days_before": number | null,"id": string,"inhouse_fix_id": string | null,"internal": boolean,"kind": string,"picked_up": boolean,"processed_at": string | null,"seq": number,"status_to": string | null,"ticket_id": string | null,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"days_before"?: number | null,"id"?: string,"internal"?: boolean,"kind": string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string | null,"walkthrough_id"?: string | null
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"days_before"?: number | null,"id"?: string,"inhouse_fix_id"?: string | null,"internal"?: boolean,"kind": string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"days_before"?: number | null,"id"?: string,"internal"?: boolean,"kind"?: string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string | null,"walkthrough_id"?: string | null
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"days_before"?: number | null,"id"?: string,"inhouse_fix_id"?: string | null,"internal"?: boolean,"kind"?: string,"picked_up"?: boolean,"processed_at"?: string | null,"seq"?: never,"status_to"?: string | null,"ticket_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -661,6 +697,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_person_history"
       referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "notifications_inhouse_fix_id_fkey"
+      columns: ["inhouse_fix_id"]
+isOneToOne: false
+      referencedRelation: "inhouse_fixes"
+      referencedColumns: ["id"]
     },{
       foreignKeyName: "notifications_ticket_id_fkey"
       columns: ["ticket_id"]
@@ -2076,6 +2118,9 @@ isOneToOne: false
             "add_category":
 { Args: { "p_area": Database["public"]['Enums']["area"],"p_name": string }; Returns: string
                            },
+"add_inhouse_task":
+{ Args: { "p_area"?: Database["public"]['Enums']["area"],"p_equipment_id"?: string,"p_note"?: string,"p_restaurant": string,"p_title": string }; Returns: string
+                           },
 "add_job_title":
 { Args: { "p_name": string,"p_view": Json }; Returns: string
                            },
@@ -2125,6 +2170,7 @@ isOneToOne: false
 "created_at": string,
 "days_before": number | null,
 "id": string,
+"inhouse_fix_id": string | null,
 "internal": boolean,
 "kind": string,
 "picked_up": boolean,
@@ -2150,6 +2196,9 @@ isOneToOne: false
                            },
 "contractor_trade_names":
 { Args: { "p_contractor_id": string }; Returns: (string)[]
+                           },
+"convert_inhouse_fix":
+{ Args: { "p_category_id"?: string,"p_id": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"] }; Returns: string
                            },
 "create_walkthrough_ticket":
 { Args: { "p_category_id"?: string,"p_description"?: string,"p_equipment_id"?: string,"p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"],"p_walkthrough_id": string }; Returns: string
@@ -2190,6 +2239,9 @@ isOneToOne: false
 "group_today":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"hand_back_ticket":
+{ Args: { "p_note"?: string,"p_ticket": string,"p_title": string }; Returns: string
+                           },
 "has_scope":
 { Args: { "rid": string }; Returns: boolean
                            },
@@ -2227,6 +2279,9 @@ isOneToOne: false
 { Args: { "p_notification": string }; Returns: {
               "email": string,"full_name": string,"push": boolean,"send_email": boolean,"user_id": string
             }[]
+                           },
+"notify_inhouse_task":
+{ Args: { "p_fix": string,"p_ticket": string }; Returns: undefined
                            },
 "notify_problem":
 { Args: { "p_message": string }; Returns: undefined
