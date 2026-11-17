@@ -7,8 +7,10 @@ import { can, coversScope, getCaller, isAdmin, isUuid, json, refuse, serve, serv
  * `reactivate` undoes both. The caller needs invite_users, and nobody can
  * deactivate themselves, so a group always keeps the admin who pressed the
  * button. Anyone but an admin may act only on managers, or invites for managers,
- * whose restaurants are all in their own scope. These writes bypass row-level
- * security, so this is the only place that rule is enforced.
+ * whose restaurants are all in their own scope, and never on someone who holds
+ * Admin (OT-122), whatever their role. These writes bypass row-level security, so
+ * this is the only place that rule is enforced. The database keeps one active admin
+ * whoever asks (profiles_keep_an_admin).
  */
 
 // About 100 years; Supabase Auth has no "forever".
@@ -21,9 +23,9 @@ serve(async (req, body) => {
   const db = service()
 
   /** A refusal when a non-admin caller may not act on this role and these restaurants. */
-  const outOfBounds = async (role: string, restaurantIds: string[]) => {
+  const outOfBounds = async (role: string, admin: boolean, restaurantIds: string[]) => {
     if (await isAdmin(caller)) return null
-    if (role !== 'manager') return refuse('admin_only', 403)
+    if (role !== 'manager' || admin) return refuse('admin_only', 403)
     return (await coversScope(caller, restaurantIds)) ? null : refuse('outside_your_scope', 403)
   }
 
@@ -31,12 +33,12 @@ serve(async (req, body) => {
     if (!isUuid(body.invite_id)) return refuse('bad_request', 422)
     const { data: invite, error } = await db
       .from('invites')
-      .select('id, email, role, status, restaurant_ids')
+      .select('id, email, role, status, restaurant_ids, is_admin')
       .eq('id', body.invite_id)
       .maybeSingle()
     if (error) throw error
     if (!invite) return refuse('not_found', 404)
-    const refused = await outOfBounds(invite.role, invite.restaurant_ids)
+    const refused = await outOfBounds(invite.role, invite.is_admin, invite.restaurant_ids)
     if (refused) return refused
     if (invite.status !== 'pending') return refuse('not_pending', 409)
 
@@ -56,7 +58,7 @@ serve(async (req, body) => {
     if (body.user_id === caller.id) return refuse('not_yourself', 409)
     const { data: target, error } = await db
       .from('profiles')
-      .select('id, role')
+      .select('id, role, is_admin')
       .eq('id', body.user_id)
       .maybeSingle()
     if (error) throw error
@@ -69,7 +71,7 @@ serve(async (req, body) => {
     // A null restaurant is the all-restaurants row, which only that same scope covers.
     const rows = memberships ?? []
     const ids = rows.some((m) => m.restaurant_id === null) ? [] : rows.map((m) => m.restaurant_id as string)
-    const refused = await outOfBounds(target.role, ids)
+    const refused = await outOfBounds(target.role, target.is_admin, ids)
     if (refused) return refused
 
     const off = body.action === 'deactivate'
@@ -84,7 +86,15 @@ serve(async (req, body) => {
       .from('profiles')
       .update({ deactivated_at: off ? new Date().toISOString() : null })
       .eq('id', target.id)
-    if (updateError) throw updateError
+    if (updateError) {
+      // The last active admin stays (profiles_keep_an_admin): lift the ban just put on.
+      if (off && updateError.code === '23514') {
+        const { error: liftError } = await db.auth.admin.updateUserById(target.id, { ban_duration: 'none' })
+        if (liftError) throw liftError
+        return refuse('last_admin', 409)
+      }
+      throw updateError
+    }
     if (off) {
       // A ban only pauses refresh tokens: reactivating would bring these sessions back.
       const { error: sessionsError } = await db.rpc('end_sessions', { p_user: target.id })

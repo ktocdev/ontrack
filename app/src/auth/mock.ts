@@ -74,6 +74,7 @@ function profile(id: string, full_name: string, email: string, role: AppRole, ho
     avatar_path: null,
     job_title_id: null,
     role,
+    is_admin: role === 'admin',
     home_restaurant_id: home,
     deactivated_at: null,
     created_at: now,

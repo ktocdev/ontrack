@@ -41,7 +41,9 @@ insert into seed_people values
   -- Not on the boards: Phase 2's done test needs a manager at Porter.
   ('22222222-2222-4222-8222-000000000007', 'Dana Ortiz',          'dana.ortiz@example.com',   '(312) 555-0107', 'manager',    '["11111111-1111-4111-8111-000000000003"]'),
   -- Not on the boards: the group's IT person, on the Ops role (Support Team) everywhere (OT-116).
-  ('22222222-2222-4222-8222-000000000008', 'Theo Grant',          'theo.grant@example.com',   '(312) 555-0108', 'ops',        '[]');
+  ('22222222-2222-4222-8222-000000000008', 'Theo Grant',          'theo.grant@example.com',   '(312) 555-0108', 'ops',        '[]'),
+  -- Not on the boards: the head ops manager, on the Support Team and holding Admin (OT-122).
+  ('22222222-2222-4222-8222-000000000009', 'Rosa Delgado',        'rosa.delgado@example.com', '(312) 555-0109', 'ops',        '[]');
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -66,8 +68,15 @@ update public.profiles p set phone = s.phone from seed_people s where s.id = p.i
 
 -- Admins must have 2-step on. e2e/stack/helpers.ts works out the code from this secret.
 insert into auth.mfa_factors (id, user_id, friendly_name, factor_type, status, secret, created_at, updated_at)
-values ('33333333-3333-4333-8333-000000000006', '22222222-2222-4222-8222-000000000006', 'OnTrack', 'totp', 'verified',
-  'JBSWY3DPEHPK3PXP', now() - interval '30 days', now() - interval '30 days');
+values
+  ('33333333-3333-4333-8333-000000000006', '22222222-2222-4222-8222-000000000006', 'OnTrack', 'totp', 'verified',
+  'JBSWY3DPEHPK3PXP', now() - interval '30 days', now() - interval '30 days'),
+  ('33333333-3333-4333-8333-000000000009', '22222222-2222-4222-8222-000000000009', 'OnTrack', 'totp', 'verified',
+  'KRUGKZLBMRWWS3TT', now() - interval '30 days', now() - interval '30 days');
+
+-- Rosa holds Admin on top of the Support Team role (OT-122). The seed runs as the database
+-- owner, so it sets the flag directly; the app gives it through set_admin.
+update public.profiles set is_admin = true where id = '22222222-2222-4222-8222-000000000009';
 
 update public.restaurants set manager_id = '22222222-2222-4222-8222-000000000001' where id = '11111111-1111-4111-8111-000000000001';
 update public.restaurants set manager_id = '22222222-2222-4222-8222-000000000002' where id = '11111111-1111-4111-8111-000000000004';
@@ -99,12 +108,19 @@ insert into public.rights (user_id, key, allowed, updated_by) values
 -- starts with everything on; Theo is IT.
 update public.profiles set job_title_id = 'eeeeeeee-eeee-4eee-8eee-000000000001' where id = '22222222-2222-4222-8222-000000000001';
 update public.profiles set job_title_id = 'eeeeeeee-eeee-4eee-8eee-000000000004' where id = '22222222-2222-4222-8222-000000000008';
+-- Rosa is the Ops manager.
+update public.profiles set job_title_id = 'eeeeeeee-eeee-4eee-8eee-000000000003' where id = '22222222-2222-4222-8222-000000000009';
 
 -- My categories (OT-116): Theo sees and hears only IT, the IT job title's starting view,
 -- so a Front or Back of House ticket notifies the same two Ops people as before.
 insert into public.area_prefs (user_id, area, notify, shown) values
   ('22222222-2222-4222-8222-000000000008', 'foh', 'off', false),
-  ('22222222-2222-4222-8222-000000000008', 'boh', 'off', false);
+  ('22222222-2222-4222-8222-000000000008', 'boh', 'off', false),
+  -- Rosa sees everything and is notified of nothing in the pool, so a fourth person on the
+  -- Support Team changes nobody's count of who a new ticket notifies.
+  ('22222222-2222-4222-8222-000000000009', 'foh', 'off', true),
+  ('22222222-2222-4222-8222-000000000009', 'boh', 'off', true),
+  ('22222222-2222-4222-8222-000000000009', 'it', 'off', true);
 
 -- ---------------------------------------------------------------------------
 -- Categories come from a migration (20261031140000), with the ids used below.

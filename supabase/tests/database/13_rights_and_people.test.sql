@@ -107,13 +107,11 @@ select is(
   (select count(*)::int from public.memberships where user_id = '22222222-2222-4222-8222-000000000004' and restaurant_id is null),
   1, 'and scope is all restaurants again');
 
--- Ari holds an override from above, which could not be removed once an admin.
+-- The Admin role is no longer given here; Admin is held on top of a role (OT-122, set_admin).
 select pg_temp.login('admin@example.com');
-select public.set_person_access('22222222-2222-4222-8222-000000000002', 'admin', '{}', null);
+select throws_ok($$ select public.set_person_access('22222222-2222-4222-8222-000000000002', 'admin', '{}', null) $$,
+  '22023', null, 'nobody is given the Admin role through set_person_access');
 select pg_temp.logout();
-select is((select count(*)::int from public.rights where user_id = '22222222-2222-4222-8222-000000000002'), 0,
-  'becoming an admin clears personal overrides');
-update public.profiles set role = 'manager' where id = '22222222-2222-4222-8222-000000000002';
 
 -- ---------------------------------------------------------------------------
 -- A deactivated manager lets go of their restaurant
