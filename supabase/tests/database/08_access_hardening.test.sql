@@ -91,9 +91,11 @@ $$, '42501', null, 'a rights change cannot be recorded under another name');
 -- ---------------------------------------------------------------------------
 -- Deactivated: no writes either
 -- ---------------------------------------------------------------------------
+-- As revoke-user does, with the service role (OT-124: nobody writes it through the API).
+select pg_temp.service();
 select lives_ok($$
   update public.profiles set deactivated_at = now() where email = 'maya.reyes@example.com'
-$$, 'admin deactivates Maya');
+$$, 'revoke-user deactivates Maya');
 
 select pg_temp.login('maya.reyes@example.com');
 update public.profiles set full_name = 'Still here' where id = auth.uid();

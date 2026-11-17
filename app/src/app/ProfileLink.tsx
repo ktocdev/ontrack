@@ -3,7 +3,7 @@ import { AdminShield } from '../components/AdminShield'
 import { Avatar } from '../components/Avatar'
 import { useUser } from '../auth/context'
 import { useAvatarUrl } from '../screens/profile/useProfile'
-import { inAdminView, ROLE_HOME } from './roles'
+import { adminOnTop, inAdminView, ROLE_HOME } from './roles'
 
 /**
  * The 40px avatar in a screen header that opens Profile; shows the photo once loaded. On a
@@ -20,9 +20,7 @@ export function ProfileLink({ shield = true }: { shield?: boolean }) {
   const admin = inAdminView(pathname)
   return (
     <span className="flex items-center gap-1.5">
-      {shield && user.is_admin && user.role !== 'admin' && (
-        <AdminShield to={admin ? ROLE_HOME[user.role] : '/admin/users'} active={admin} />
-      )}
+      {shield && adminOnTop(user) && <AdminShield to={admin ? ROLE_HOME[user.role] : '/admin/users'} active={admin} />}
       <Link to="/profile" aria-label="Your profile" className="rounded-full">
         <Avatar name={user.full_name} role={user.role} src={photo.data} />
       </Link>

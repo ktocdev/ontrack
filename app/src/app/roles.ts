@@ -130,10 +130,15 @@ export const ADMIN_VIEW_TABS: { label: string; items: TabItem[] } = {
 /** Whether an address is in the admin view, whose tab bar is the admin's. */
 export const inAdminView = (pathname: string) => pathname === '/admin' || pathname.startsWith('/admin/')
 
+/**
+ * Holds Admin on top of a working role (OT-122), so has the shield, the admin view's tabs and
+ * the Admin tag. The plain Admin role holds it too, but lives in the admin screens already.
+ */
+export const adminOnTop = (p: { role: AppRole; is_admin: boolean }) => p.is_admin && p.role !== 'admin'
+
 /** The tab bar for a screen: the admin view's under /admin, the person's role's anywhere else. */
 export function tabsFor(user: { role: AppRole; is_admin: boolean }, pathname: string) {
-  if (user.role === 'admin') return ROLE_TABS.admin
-  return user.is_admin && inAdminView(pathname) ? ADMIN_VIEW_TABS : ROLE_TABS[user.role]
+  return adminOnTop(user) && inAdminView(pathname) ? ADMIN_VIEW_TABS : ROLE_TABS[user.role]
 }
 
 /** Where a ticket's lasting link leads for each role; admin and leadership have no ticket screen until Phase 7. */

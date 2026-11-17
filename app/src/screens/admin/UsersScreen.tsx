@@ -184,7 +184,7 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
         <RowBody
           name={p.name}
           tag={titleName(p.jobTitleId) ?? roleNames.name(p.role)}
-          admin={p.admin && p.role !== 'admin'}
+          admin={p.admin}
           scope={p.scope}
           dim={p.deactivated}
         />
@@ -209,7 +209,7 @@ function InviteRowView({ invite: i, onOpen }: { invite: InviteRow; onOpen: () =>
         <RowBody
           name={i.name}
           tag={titleName(i.jobTitleId) ?? roleNames.name(i.role)}
-          admin={i.admin && i.role !== 'admin'}
+          admin={i.admin}
           scope={i.scope}
         />
         <span className="flex items-center justify-between gap-2">

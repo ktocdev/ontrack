@@ -92,18 +92,17 @@ select throws_ok($$
 $$, '42501', null, 'an expired invite does not admit anyone');
 
 -- ---------------------------------------------------------------------------
--- Deactivation: an admin sets deactivated_at and every path closes, even
+-- Deactivation: revoke-user sets deactivated_at and every path closes, even
 -- though the person still holds a valid session.
 -- ---------------------------------------------------------------------------
 select pg_temp.login('ari.kim@example.com');
 select ok((select count(*) from public.tickets) > 0, 'before: Ari sees her tickets');
 select pg_temp.logout();
 
-select pg_temp.login('admin@example.com');
+-- As revoke-user does, with the service role (OT-124: nobody writes it through the API).
 select lives_ok($$
   update public.profiles set deactivated_at = now() where email = 'ari.kim@example.com'
-$$, 'admin deactivates Ari');
-select pg_temp.logout();
+$$, 'revoke-user deactivates Ari');
 
 select pg_temp.login('ari.kim@example.com');
 select is((select count(*)::int from public.tickets), 0, 'after: no tickets');

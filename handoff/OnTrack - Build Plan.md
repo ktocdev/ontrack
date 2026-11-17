@@ -642,6 +642,13 @@ When Katie said the group would need an admin to add people and set their roles,
 
 6b is numbered after OT-124.
 
+**Security and code quality pass (OT-124, Nov 17, 2026)**
+
+- Found: an admin could write any profile's role, home restaurant or status, and anyone's restaurants, straight through the API, so they could change their own role (which `set_person_access` refuses) and anyone's with nothing in the audit log. That was true of the plain Admin account before; it matters more now that an admin works tickets all day. Fixed: role and home restaurant change only inside `set_person_access`, status only through `revoke-user`, and `memberships` takes no direct writes (`20261120120000_admin_audit.sql`).
+- Found: someone holding Manage rights without Admin could change the rights of someone holding Admin, which they never could for the Admin role. Fixed in `rights_guard`.
+- Checked and fine: `is_admin()` opens only admin settings (users, rights, restaurants, the audit log), never tickets, costs or equipment, so a Reporter holding Admin still works and reads only their own restaurants; `invite-user` and `revoke-user` decide by the flag; the last admin can't be removed by any path; nothing in the database still tests the Admin role where the flag is meant.
+- Code: one `adminOnTop()` in `roles.ts` for the shield, the admin view's tabs and the Users tag, with unit tests.
+
 **Open questions**
 
 - Who is the head ops manager in the seed? A new person, Rosa Delgado (OT-122), rather than Bert or Chris, since every flow that signs in as them would then need an authenticator code.
