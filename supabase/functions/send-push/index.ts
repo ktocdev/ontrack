@@ -208,7 +208,9 @@ const dayNumber = (date: string) => Math.round(Date.parse(`${date}T00:00:00Z`) /
 function dueIn(dueOn: string, timeZone: string) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date())
   const days = dayNumber(dueOn) - dayNumber(today)
-  if (days <= 0) return 'due today'
+  // Only a reminder sent by hand (OT-127) can come after the due day.
+  if (days < 0) return 'overdue'
+  if (days === 0) return 'due today'
   if (days === 1) return 'due tomorrow'
   return `due in ${days} days`
 }
@@ -240,7 +242,11 @@ async function deliverReminder(db: Db, server: Server, appUrl: string, n: Row, w
   const due = dueIn(walkthrough.due_on, settings?.time_zone ?? 'UTC')
   const headline = `${month} walkthrough ${due}`
   const when = `Due ${dateLabel(walkthrough.due_on, { weekday: 'short', month: 'short', day: 'numeric' })}`
-  const progress = done === 0 ? 'Not started yet' : `${done} of ${total} checked`
+  // Sent by hand from Ops (OT-127) rather than by the daily job: say who asked.
+  const { data: sender } = n.actor_id
+    ? await db.from('profiles').select('full_name').eq('id', n.actor_id).maybeSingle()
+    : { data: null }
+  const progress = `${done === 0 ? 'Not started yet' : `${done} of ${total} checked`}${sender ? ` · from ${sender.full_name}` : ''}`
   const path = '/walkthrough'
   const link = `${appUrl.replace(/\/$/, '')}${path}`
 
