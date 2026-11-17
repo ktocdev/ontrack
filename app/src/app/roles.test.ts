@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { equipmentPath, roleNames, ticketPath } from './roles'
+import { ADMIN_VIEW_TABS, adminOnTop, equipmentPath, ROLE_TABS, roleNames, tabsFor, ticketPath } from './roles'
 
 describe('a ticket link', () => {
   it('opens the screen for each role, and none for those without one', () => {
@@ -50,5 +50,26 @@ describe('role names', () => {
     expect(names.named).toEqual({})
     expect(roleNames(null).named).toEqual({})
     expect(roleNames(['manager']).named).toEqual({})
+  })
+})
+
+describe('the admin view', () => {
+  const rosa = { role: 'ops' as const, is_admin: true }
+  const bert = { role: 'ops' as const, is_admin: false }
+  const plain = { role: 'admin' as const, is_admin: true }
+
+  it('is for someone holding Admin on top of a role, not the plain Admin account', () => {
+    expect(adminOnTop(rosa)).toBe(true)
+    expect(adminOnTop(bert)).toBe(false)
+    expect(adminOnTop(plain)).toBe(false)
+  })
+
+  it('has its own tabs under /admin and the role’s anywhere else', () => {
+    expect(tabsFor(rosa, '/admin/users')).toBe(ADMIN_VIEW_TABS)
+    expect(tabsFor(rosa, '/admin')).toBe(ADMIN_VIEW_TABS)
+    expect(tabsFor(rosa, '/ops')).toBe(ROLE_TABS.ops)
+    expect(tabsFor(rosa, '/administer')).toBe(ROLE_TABS.ops)
+    expect(tabsFor(bert, '/admin/users')).toBe(ROLE_TABS.ops)
+    expect(tabsFor(plain, '/admin/users')).toBe(ROLE_TABS.admin)
   })
 })

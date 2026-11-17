@@ -48,7 +48,6 @@ test.afterEach(({ request }) => setChrisAdmin(request, false))
 test('the head ops manager reaches the admin view by the shield, gives Admin, and works a ticket as herself', async ({
   browser,
   page,
-  request,
 }, testInfo) => {
   const title = await newTicket(browser, testInfo)
 

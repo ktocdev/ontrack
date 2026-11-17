@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { callFunction } from '../../lib/functions'
 import { requireSupabase, type AppRole } from '../../lib/supabase'
+import { adminOnTop } from '../../app/roles'
 import { inviteLine, scopeLine } from './people'
 import { RESTAURANTS_KEY } from './useRestaurants'
 
@@ -16,7 +17,7 @@ export type PersonRow = {
   name: string
   role: AppRole
   jobTitleId: string | null
-  /** Holds Admin on top of their role (OT-122). */
+  /** Holds Admin on top of their role (OT-122); the plain Admin role's own tag already says it. */
   admin: boolean
   scope: string
   avatarPath: string | null
@@ -30,6 +31,7 @@ export type InviteRow = {
   email: string
   role: AppRole
   jobTitleId: string | null
+  /** Admin on top of the role, as on PersonRow. */
   admin: boolean
   scope: string
   expired: boolean
@@ -73,7 +75,7 @@ export function useUsers() {
           name: p.full_name,
           role: p.role,
           jobTitleId: p.job_title_id,
-          admin: p.is_admin,
+          admin: adminOnTop(p),
           scope: scopeLine(p.role, all ? null : names(mine.map((m) => m.restaurant_id as string))),
           avatarPath: p.avatar_path,
           deactivated: p.deactivated_at !== null,
@@ -86,7 +88,7 @@ export function useUsers() {
         email: i.email,
         role: i.role,
         jobTitleId: i.job_title_id,
-        admin: i.is_admin,
+        admin: adminOnTop(i),
         scope: scopeLine(i.role, i.restaurant_ids.length ? names(i.restaurant_ids) : null),
         expired: new Date(i.expires_at).getTime() <= now.getTime(),
         line: inviteLine(i, now),
