@@ -199,7 +199,7 @@ The plan's Phase 6 section says what ships and what it works around. It ships in
 | OT-129 | Ops overview: month stepper, N of 4 submitted, a row per restaurant, Last 6 months; restaurant picker; replaces the placeholder; View as |
 | OT-130 | One restaurant: progress by section, who is on it, flagged, past walkthroughs, Send reminder |
 | OT-131 | Ops in-house fixes with Convert to ticket; Add task from a new Ops In-house list (from the dashboard's menu and one restaurant's page; no board, decided Nov 18, 2026); sender, unit and note on the manager's In-house, where a converted fix no longer shows; Notify on My categories for Reporters; a submitted walkthrough's fixes keep Delete (decided Nov 18, 2026) |
-| OT-132 | Hand back as in-house task on an Ops ticket |
+| OT-132 | Hand back as in-house task on an Ops ticket, from its status menu; the closed ticket names its task and the task links to its ticket |
 | OT-133 | Schedule: the rotation's months, the year's preview, restaurants with their rotation, a restaurant's own and Switch back, due date and reminders |
 | OT-134 | Quarterly tasks backend: the group's tasks and a restaurant's removals, changes, additions and restores; logged; pgTAP |
 | OT-135 | Quarterly tasks screen and the task editor |
