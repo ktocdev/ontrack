@@ -36,11 +36,15 @@ function securityHeaders(supabaseUrl: string | undefined): Plugin {
         `script-src 'self' ${hashes.join(' ')}`.trimEnd(),
         `style-src 'self' 'unsafe-inline'`,
         `img-src 'self' data: blob: ${supabase}`,
-        `connect-src 'self' ${supabase} ${supabase.replace(/^https:/, 'wss:')}`,
+        // Realtime's socket: wss for the hosted project, ws for the local stack.
+        `connect-src 'self' ${supabase} ${supabase.replace(/^http/, 'ws')}`,
         // Vite inlines font files under 4 KB (small fontsource subsets) as data: URIs.
         `font-src 'self' data:`,
         `manifest-src 'self'`,
-        `worker-src 'self'`,
+        // blob: for the spreadsheet import (OT-138): read-excel-file unzips a large workbook in a
+        // worker it makes from a blob, and without it that read never ends. Such a worker is made
+        // only by this app's own script and runs under this same policy.
+        `worker-src 'self' blob:`,
         `frame-ancestors 'none'`,
         `base-uri 'self'`,
         `form-action 'self'`,
