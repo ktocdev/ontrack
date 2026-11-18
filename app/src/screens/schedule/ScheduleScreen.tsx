@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRoleNames } from '../../auth/group'
 import { useRight } from '../../auth/rights'
@@ -36,8 +36,8 @@ type Editing = { kind: 'month'; position: number | null } | { kind: 'due' } | { 
  * date and reminders. A rotation stands on its own and restaurants may share one (Nov 12,
  * 2026), so the board's Own reads as the rotation's name, and Give it its own schedule offers
  * a new rotation copied from the group's or one that exists; Switch back puts the restaurant
- * on the group's. The board's Checklist items row shows this month's checklist; its
- * Quarterly location tasks row waits for OT-135. Changes need set_walkthrough_schedule and
+ * on the group's. The board's Checklist items row shows this month's checklist, and its
+ * Quarterly location tasks row opens the quarterly tasks (OT-135). Changes need set_walkthrough_schedule and
  * are never offered under View as.
  */
 export function ScheduleScreen() {
@@ -293,6 +293,12 @@ export function ScheduleScreen() {
           {thisMonth && (
             <SettingRow label="Checklist items" value={checklistSize(thisMonth.sections, thisMonth.items)} />
           )}
+          <SettingRow
+            label="Quarterly location tasks"
+            hint="Directions and how-to videos"
+            value="All + per restaurant"
+            to="/ops/walkthroughs/tasks"
+          />
         </ListCard>
       </ScreenBody>
 
@@ -349,16 +355,38 @@ export function ScheduleScreen() {
 }
 
 /** A setting on the schedule: its name and value, opening its sheet when it can be changed. */
-function SettingRow({ label, value, onOpen }: { label: string; value: string; onOpen?: () => void }) {
+function SettingRow({
+  label,
+  hint,
+  value,
+  onOpen,
+  to,
+}: {
+  label: string
+  hint?: string
+  value: string
+  onOpen?: () => void
+  to?: string
+}) {
   const inner = (
     <>
-      <span className="flex-1 text-15 font-semibold">{label}</span>
+      <span className="flex flex-1 flex-col">
+        <span className="text-15 font-semibold">{label}</span>
+        {hint && <span className="text-12 text-text-secondary">{hint}</span>}
+      </span>
       <span className="text-14 text-text-secondary">{value}</span>
-      {onOpen && <IconChevronRight size={16} className="flex-none text-text-secondary" />}
+      {(onOpen || to) && <IconChevronRight size={16} className="flex-none text-text-secondary" />}
     </>
   )
   const row =
-    'flex min-h-14 w-full items-center gap-2.5 border-t border-surface-muted px-3.5 text-left first:border-t-0'
+    'flex min-h-14 w-full items-center gap-2.5 border-t border-surface-muted px-3.5 py-2 text-left text-text no-underline first:border-t-0'
+  if (to) {
+    return (
+      <Link to={to} className={`${row} hover:bg-surface-hover active:bg-surface-muted`}>
+        {inner}
+      </Link>
+    )
+  }
   return onOpen ? (
     <button type="button" onClick={onOpen} className={`${row} hover:bg-surface-hover active:bg-surface-muted`}>
       {inner}

@@ -341,6 +341,12 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
+                    path: '/ops/walkthroughs/tasks',
+                    lazy: async () => ({
+                      Component: (await import('../screens/quarterly/QuarterlyTasksScreen')).QuarterlyTasksScreen,
+                    }),
+                  },
+                  {
                     path: '/ops/walkthroughs/:id',
                     lazy: async () => ({
                       Component: (await import('../screens/ops/OpsWalkthroughScreen')).OpsWalkthroughScreen,
