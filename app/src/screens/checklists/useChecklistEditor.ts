@@ -109,3 +109,4 @@ export type ChecklistFn =
   | 'set_checklist_part_active'
   | 'delete_checklist_part'
   | 'order_checklist'
+  | 'import_checklist'

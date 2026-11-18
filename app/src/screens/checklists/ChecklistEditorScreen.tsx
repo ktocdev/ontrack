@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { safeReturnPath } from '../../auth/returnPath'
-import { Button } from '../../components/Button'
+import { Button, ButtonLink } from '../../components/Button'
 import { ListCard, ListRowButton } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
 import { RoleTag } from '../../components/Pill'
@@ -40,7 +40,8 @@ type Editing =
  * add, rename, reorder, turn off and on, and delete what has no history. A walkthrough keeps
  * the checklist it opened with, so the first change to one a walkthrough has had makes a new
  * version, which the rotation's months move to; the screen follows it there and says so.
- * Changes need set_walkthrough_schedule and are never offered under View as.
+ * Import from a spreadsheet replaces it all in one step (OT-137). Changes need
+ * set_walkthrough_schedule and are never offered under View as.
  */
 export function ChecklistEditorScreen() {
   const { id = '' } = useParams()
@@ -431,6 +432,9 @@ export function ChecklistEditorScreen() {
                 Order sections
               </Button>
             )}
+            <ButtonLink variant="ghost" to={`/ops/walkthroughs/checklists/${checklist.id}/import`} state={from}>
+              Import from a spreadsheet
+            </ButtonLink>
           </div>
         )}
       </ScreenBody>
