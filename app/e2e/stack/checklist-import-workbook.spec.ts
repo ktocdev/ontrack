@@ -14,8 +14,19 @@ import { signIn } from './helpers'
  */
 
 // A page Playwright answers itself counts as outside the local network, and Chromium then
-// refuses its calls to the local stack; that check is not what this test is about.
-test.use({ launchOptions: { args: ['--disable-features=LocalNetworkAccessChecks'] } })
+// refuses its calls to the local stack; that check is not what this test is about. The flag
+// is Chromium's own, and WebKit will not start with an option it doesn't know.
+test.use({
+  launchOptions: [
+    async ({ browserName, launchOptions }, use) =>
+      use(
+        browserName === 'chromium'
+          ? { ...launchOptions, args: [...(launchOptions.args ?? []), '--disable-features=LocalNetworkAccessChecks'] }
+          : launchOptions,
+      ),
+    { scope: 'worker' },
+  ],
+})
 
 const BERT = 'bert.velilla@example.com'
 const BOH_FOH = '88888888-8888-4888-8888-000000000001'
