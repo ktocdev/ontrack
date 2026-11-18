@@ -809,14 +809,14 @@ isOneToOne: false
                   ]
                 },"quarterly_tasks": {
                   Row: {
-                    "active": boolean,"created_at": string,"directions": string | null,"id": string,"months": (number)[],"overrides_task_id": string | null,"removed": boolean,"restaurant_id": string | null,"sort_order": number,"title": string,"updated_at": string,"video_url": string | null
+                    "active": boolean,"changed": boolean,"created_at": string,"directions": string | null,"id": string,"months": (number)[],"overrides_task_id": string | null,"removed": boolean,"restaurant_id": string | null,"sort_order": number,"title": string,"updated_at": string,"video_url": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"created_at"?: string,"directions"?: string | null,"id"?: string,"months"?: (number)[],"overrides_task_id"?: string | null,"removed"?: boolean,"restaurant_id"?: string | null,"sort_order"?: number,"title": string,"updated_at"?: string,"video_url"?: string | null
+                    "active"?: boolean,"changed"?: boolean,"created_at"?: string,"directions"?: string | null,"id"?: string,"months"?: (number)[],"overrides_task_id"?: string | null,"removed"?: boolean,"restaurant_id"?: string | null,"sort_order"?: number,"title": string,"updated_at"?: string,"video_url"?: string | null
                   }
                   Update: {
-                    "active"?: boolean,"created_at"?: string,"directions"?: string | null,"id"?: string,"months"?: (number)[],"overrides_task_id"?: string | null,"removed"?: boolean,"restaurant_id"?: string | null,"sort_order"?: number,"title"?: string,"updated_at"?: string,"video_url"?: string | null
+                    "active"?: boolean,"changed"?: boolean,"created_at"?: string,"directions"?: string | null,"id"?: string,"months"?: (number)[],"overrides_task_id"?: string | null,"removed"?: boolean,"restaurant_id"?: string | null,"sort_order"?: number,"title"?: string,"updated_at"?: string,"video_url"?: string | null
                   }
                   Relationships: [
                     {
