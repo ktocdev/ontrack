@@ -6,7 +6,7 @@ import { Screen } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { IconLockSmall } from '../../components/icons'
 import { useAuth } from '../../auth/context'
-import { firstName } from '../../auth/session'
+import { firstName } from '../../lib/words'
 import { MIN_PASSWORD, signInErrorMessage } from '../../auth/validation'
 import { supabase } from '../../lib/supabase'
 

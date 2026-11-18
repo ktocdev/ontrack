@@ -1,3 +1,5 @@
+import { firstName, shortDayOrToday } from '../../lib/words'
+
 /**
  * How a walkthrough's in-house fix reads in its list (design/screens/WT-Fix, WT-Fix-All).
  */
@@ -10,11 +12,7 @@ export function whereFrom(originLabel: string | null) {
 
 /** "Added today by Maya", or "Added Nov 6 by Maya" on another day. */
 export function addedLine(createdAt: string, name: string | null | undefined, now = new Date()) {
-  const then = new Date(createdAt)
-  const day =
-    then.toDateString() === now.toDateString()
-      ? 'today'
-      : then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  const who = name?.trim().split(/\s+/)[0]
+  const day = shortDayOrToday(createdAt, now)
+  const who = firstName(name)
   return who ? `Added ${day} by ${who}` : `Added ${day}`
 }

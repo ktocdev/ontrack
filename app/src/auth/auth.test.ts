@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { clearStamp, firstName, isExpired, readStamp, rememberName, SESSION_MAX_MS, stampSignIn } from './session'
+import { firstName } from '../lib/words'
+import { clearStamp, isExpired, readStamp, rememberName, SESSION_MAX_MS, stampSignIn } from './session'
 import { canSubmitSignIn, looksLikeEmail, signInErrorMessage } from './validation'
 
 describe('sign-in rules', () => {

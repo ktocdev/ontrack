@@ -3,7 +3,7 @@ import { Button } from '../../components/Button'
 import { Input, Textarea } from '../../components/Field'
 import { ErrorBanner } from '../../components/Notice'
 import { Sheet } from '../../components/Sheet'
-import { isVideoUrl } from './quarterly'
+import { isVideoUrl } from '../../lib/words'
 
 export type TaskDraft = { title: string; directions: string; videoUrl: string }
 

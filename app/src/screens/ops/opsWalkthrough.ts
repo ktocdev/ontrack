@@ -1,4 +1,4 @@
-import { firstName } from '../../auth/session'
+import { firstName, shortDay } from '../../lib/words'
 import { submittedDay, type SummaryRow } from './walkthroughOverview'
 
 /**
@@ -13,7 +13,7 @@ export function lastReminderLabel(at: string | null, now = new Date()) {
   if (then.toDateString() === now.toDateString()) {
     return `today at ${then.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
   }
-  return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return shortDay(then)
 }
 
 /** A past month on the right of its row: "Sep 28 · 5 tickets", "Aug 30 · all good", "Not done". */
