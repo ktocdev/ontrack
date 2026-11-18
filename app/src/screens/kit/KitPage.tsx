@@ -559,6 +559,15 @@ export function KitPage() {
                 items={kitOrderIds.map((id) => KIT_RESTAURANTS.find((r) => r.id === id)!)}
                 onChange={setKitOrderIds}
               />
+              <ReorderList
+                label="Items in order"
+                items={[
+                  { id: 'k1', name: 'Outlets', detail: 'Electrical' },
+                  { id: 'k2', name: 'Light bulbs', detail: 'Electrical' },
+                  { id: 'k3', name: 'Floor drains', detail: 'Plumbing' },
+                ]}
+                onChange={() => toast.show('Order changed.')}
+              />
               <MonthHeading label="October · 9 closed" total="$2,418.60" />
               <Card className="overflow-hidden rounded-input">
                 <ClosedTicketRow

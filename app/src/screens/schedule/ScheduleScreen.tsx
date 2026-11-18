@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRoleNames } from '../../auth/group'
 import { useRight } from '../../auth/rights'
@@ -13,6 +13,7 @@ import { BackBar, Screen, ScreenBody, ScreenEmpty } from '../../components/Scree
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import { IconChevronRight, IconWarning } from '../../components/icons'
+import { useChecklistChange } from '../checklists/useChecklistEditor'
 import { DueSheet, MonthSheet, OwnScheduleSheet, RemindersSheet } from './ScheduleSheets'
 import {
   checklistSize,
@@ -47,6 +48,9 @@ export function ScheduleScreen() {
   const { data, isPending, isError, refetch } = useSchedule()
   const save = useSaveRotation()
   const setRotation = useSetRestaurantRotation()
+  const newList = useChecklistChange()
+  const navigate = useNavigate()
+  const location = useLocation()
   const toast = useToast()
   const [params, setParams] = useSearchParams()
   const [editing, setEditing] = useState<Editing | null>(null)
@@ -126,6 +130,25 @@ export function ScheduleScreen() {
         },
       },
     )
+
+  const editChecklist = (id: string) =>
+    navigate(`/ops/walkthroughs/checklists/${id}`, { state: { backTo: `${location.pathname}${location.search}` } })
+  // A copy to change, then pick for a month; the name says where it came from.
+  const newChecklist = (fromId: string) => {
+    const from = checklists.get(fromId)
+    newList.mutate(
+      {
+        fn: 'add_checklist',
+        args: {
+          p_name: `${from?.name ?? 'Checklist'} (new)`.slice(0, 60),
+          p_description: from?.description ?? '',
+          p_short_name: from?.short_name ?? '',
+          p_copy_from: fromId,
+        },
+      },
+      { onSuccess: (id) => id && editChecklist(id) },
+    )
+  }
 
   const giveOwn = (choice: { rotationId: string } | { name: string }) => {
     if (!restaurant) return
@@ -291,7 +314,12 @@ export function ScheduleScreen() {
             onOpen={editable ? () => open({ kind: 'reminders' }) : undefined}
           />
           {thisMonth && (
-            <SettingRow label="Checklist items" value={checklistSize(thisMonth.sections, thisMonth.items)} />
+            <SettingRow
+              label="Checklist items"
+              hint={thisMonth.name}
+              value={checklistSize(thisMonth.sections, thisMonth.items)}
+              onOpen={editable ? () => editChecklist(thisMonth.id) : undefined}
+            />
           )}
           <SettingRow
             label="Quarterly location tasks"
@@ -313,6 +341,8 @@ export function ScheduleScreen() {
           saving={save.isPending}
           error={save.error}
           onSave={(months) => saveRotation({ months }, 'Rotation saved.')}
+          onEditChecklist={(id) => editChecklist(id)}
+          onNewChecklist={(fromId) => newChecklist(fromId)}
         />
       )}
       {editing?.kind === 'due' && (

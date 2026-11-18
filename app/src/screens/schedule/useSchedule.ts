@@ -18,6 +18,8 @@ export type Checklist = {
   short_name: string | null
   description: string | null
   active: boolean
+  /** An edit made a newer version of it (OT-136); months go on the newest only. */
+  replaced_by: string | null
   sections: number
   items: number
 }
@@ -38,7 +40,7 @@ export function useSchedule() {
         sb.from('walkthrough_rotations').select('id, name, is_group, starts_on, due_day, reminder_days').order('name'),
         sb.from('walkthrough_rotation_months').select('rotation_id, position, template_id').order('position'),
         sb.from('restaurant_rotations').select('restaurant_id, rotation_id'),
-        sb.from('walkthrough_templates').select('id, name, short_name, description, active').order('name'),
+        sb.from('walkthrough_templates').select('id, name, short_name, description, active, replaced_by').order('name'),
         sb.from('walkthrough_sections').select('template_id, walkthrough_items (id, active)'),
       ])
       for (const r of [rotations, months, assigned, templates, sections]) if (r.error) throw r.error

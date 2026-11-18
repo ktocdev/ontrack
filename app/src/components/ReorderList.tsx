@@ -14,11 +14,12 @@ import { IconGrip } from './icons'
 
 /**
  * A short list put in order by dragging (no board draws it): each row has a color
- * square, a name and a 44px handle. Only the handle drags, so a finger on the rest of
+ * square when it is a restaurant, a name (and a line under it, as an item's group), and a
+ * 44px handle. Only the handle drags, so a finger on the rest of
  * the row still scrolls. On a keyboard, Space picks a handle up, the arrows move it and
  * Space drops it.
  */
-type Item = { id: string; name: string; color: string }
+type Item = { id: string; name: string; color?: string; detail?: string }
 
 function Row({ item }: { item: Item }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
@@ -32,8 +33,11 @@ function Row({ item }: { item: Item }) {
         isDragging ? 'z-10 rounded-input shadow-raised' : ''
       }`}
     >
-      <RestaurantSquare color={item.color} size={12} />
-      <span className="min-w-0 flex-1 truncate">{item.name}</span>
+      {item.color && <RestaurantSquare color={item.color} size={12} />}
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate">{item.name}</span>
+        {item.detail && <span className="truncate text-12 font-normal text-text-secondary">{item.detail}</span>}
+      </span>
       <button
         type="button"
         ref={setActivatorNodeRef}

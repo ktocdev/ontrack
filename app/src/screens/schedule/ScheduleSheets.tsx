@@ -40,6 +40,8 @@ export function MonthSheet({
   saving,
   error,
   onSave,
+  onEditChecklist,
+  onNewChecklist,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -50,12 +52,16 @@ export function MonthSheet({
   saving: boolean
   error: unknown
   onSave: (months: string[]) => void
+  /** Opens the checklist editor (OT-136) on this month's checklist. */
+  onEditChecklist?: (id: string) => void
+  /** Makes a new checklist from the one picked, to edit and then pick. */
+  onNewChecklist?: (fromId: string) => void
 }) {
   const adding = position === null
   const current = adding ? '' : (rotation.months[position] ?? '')
   const [picked, setPicked] = useState(current)
   // A checklist turned off goes on no new month; one already in this rotation may stay.
-  const choices = [...checklists.values()].filter((c) => c.active || rotation.months.includes(c.id))
+  const choices = [...checklists.values()].filter((c) => !c.replaced_by && (c.active || rotation.months.includes(c.id)))
   const letter = letterOf(adding ? rotation.months.length : position)
 
   const save = () => {
@@ -85,6 +91,28 @@ export function MonthSheet({
           </option>
         ))}
       </Select>
+      {(onEditChecklist || onNewChecklist) && picked && (
+        <div className="-mt-1 flex flex-wrap gap-x-4">
+          {onEditChecklist && picked === current && (
+            <button
+              type="button"
+              onClick={() => onEditChecklist(picked)}
+              className="min-h-tap text-14 font-semibold text-brand"
+            >
+              Edit this checklist
+            </button>
+          )}
+          {onNewChecklist && (
+            <button
+              type="button"
+              onClick={() => onNewChecklist(picked)}
+              className="min-h-tap text-14 font-semibold text-brand"
+            >
+              Make a new checklist from this one
+            </button>
+          )}
+        </div>
+      )}
       {!!error && <SaveFailed error={error} />}
       <Button loading={saving} disabled={!picked} onClick={save}>
         {adding ? 'Add month' : 'Save'}

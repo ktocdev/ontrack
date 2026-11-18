@@ -28,8 +28,8 @@ test('Ops reads the group’s schedule and every restaurant’s rotation', async
 
   await expect(page.getByText(/^Group schedule\. Every restaurant uses this unless it has its own\./)).toBeVisible()
   await expect(page.getByText('Rotation · 2-month cycle')).toBeVisible()
-  await expect(page.getByText('Kitchen + Exterior', { exact: true })).toBeVisible()
-  await expect(page.getByText('Back of House + Front of House', { exact: true })).toBeVisible()
+  await expect(page.getByText('Kitchen + Exterior', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Back of House + Front of House', { exact: true }).first()).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^Jan: Kitchen \+ Exterior/ })).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^Feb: Back of House \+ Front of House/ })).toBeVisible()
   await expect(page.getByRole('listitem', { name: /, this month$/ })).toHaveCount(1)
