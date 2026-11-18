@@ -11,7 +11,7 @@ import { useConvertFix } from '../tickets/useInHouse'
 export type ConvertTarget = {
   id: string
   title: string
-  /** The fix's category or its item's; without one the sheet asks, as every ticket has one. */
+  /** The fix's category or its item's; without one, or with one turned off since, the sheet asks. */
   knownCategory: string | null
   fromWalkthrough: boolean
 }
@@ -36,7 +36,9 @@ export function ConvertFixSheet({
   const categories = useAllCategories()
   const [categoryId, setCategoryId] = useState('')
   const [missing, setMissing] = useState(false)
-  const needsCategory = !!fix && !fix.knownCategory
+  // A turned-off category takes no new ticket, so a fix that still names one is asked for another.
+  const turnedOff = categories.data?.find((c) => c.id === fix?.knownCategory)?.active === false
+  const needsCategory = !!fix && (!fix.knownCategory || turnedOff)
 
   const close = (open: boolean) => {
     if (open) return

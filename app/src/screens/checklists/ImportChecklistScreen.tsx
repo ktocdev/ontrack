@@ -13,7 +13,7 @@ import { toCsv } from '../../lib/import/csv'
 import { downloadText, readSheetFile, SheetError } from '../../lib/import/sheet'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useAllCategories } from '../mycategories/useMyCategories'
-import { previewImport, readChecklist, templateRows, toImportJson, type ImportRow } from './importChecklist'
+import { itemKey, previewImport, readChecklist, templateRows, toImportJson, type ImportRow } from './importChecklist'
 import { useChecklistChange, useChecklistEditor } from './useChecklistEditor'
 
 const SHOWN = 12
@@ -72,7 +72,11 @@ export function ImportChecklistScreen() {
     setReadError(null)
     setReading(true)
     try {
-      setResult(readChecklist(await readSheetFile(f), categories))
+      const sectionName = new Map(sections.map((s) => [s.id, s.name]))
+      const has = new Map(
+        items.map((i) => [itemKey(sectionName.get(i.section_id) ?? '', i.group_name, i.title), i.category_id]),
+      )
+      setResult(readChecklist(await readSheetFile(f), categories, has))
     } catch (e) {
       setReadError(e instanceof SheetError ? e.message : 'That file couldn’t be read. Try it as .xlsx or .csv.')
     } finally {
@@ -185,7 +189,9 @@ export function ImportChecklistScreen() {
                   <ErrorBanner title="Couldn't import this.">
                     {(change.error as { code?: string }).code === '40001'
                       ? 'Someone changed this checklist meanwhile. Go back to it and start again.'
-                      : 'Check your connection and try again.'}
+                      : (change.error as { code?: string }).code === '23514'
+                        ? 'A category in the sheet was turned off meanwhile. Choose the file again to see which.'
+                        : 'Check your connection and try again.'}
                   </ErrorBanner>
                 )}
               </>

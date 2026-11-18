@@ -1,6 +1,6 @@
 import { AREA_LABEL, type Area } from '../../app/areas'
 import { diffByKey, readTable, type Column } from '../../lib/import/table'
-import { isVideoUrl } from '../quarterly/quarterly'
+import { isVideoUrl } from '../../lib/words'
 import type { EditorItem, EditorSection } from './useChecklistEditor'
 
 /**
@@ -80,20 +80,23 @@ export function templateRows(sections: EditorSection[], items: EditorItem[], cat
   return rows
 }
 
-/** The file's rows as a checklist, and what is wrong with it, row by row. */
-export function readChecklist(rows: string[][], categories: Category[]) {
+/**
+ * The file's rows as a checklist, and what is wrong with it, row by row. A turned-off
+ * category goes on no item new to it, as the database holds (OT-138); `has` is each item's
+ * category now, by itemKey, so an item that already has one keeps it.
+ */
+export function readChecklist(rows: string[][], categories: Category[], has?: Map<string, string | null>) {
   const table = readTable(rows, CHECKLIST_COLUMNS)
   const problems: string[] = []
   if (table.missing.length) {
     problems.push(`The sheet has no ${table.missing.join(', ')} column. Start from the template.`)
     return { rows: [] as ImportRow[], problems }
   }
-  const active = categories.filter((c) => c.active)
   // "Electrical (Back of House)", or "Electrical", taking the row's area where two share the name.
-  const findCategory = (label: string, rowArea: Area | null): Category | 'ambiguous' | undefined => {
+  const findCategory = (label: string, rowArea: Area | null, on: boolean): Category | 'ambiguous' | undefined => {
     const m = /^(.*?)\s*\(([^)]*)\)\s*$/.exec(label)
     const area = m ? (AREA_NAMES[norm(m[2]!)] ?? null) : rowArea
-    const named = active.filter((c) => norm(c.name) === norm(m ? m[1]! : label))
+    const named = categories.filter((c) => c.active === on && norm(c.name) === norm(m ? m[1]! : label))
     if (named.length <= 1) return named[0]
     return named.find((c) => c.area === area) ?? 'ambiguous'
   }
@@ -114,8 +117,13 @@ export function readChecklist(rows: string[][], categories: Category[]) {
     const area = v.area ? (AREA_NAMES[norm(v.area)] ?? null) : null
     if (v.area && !area) say(`Area “${v.area}” isn’t Front of House, Back of House or IT.`)
     const sectionArea = area ?? sectionFirst.get(v.section.toLowerCase())?.area ?? null
-    const found = v.category ? findCategory(v.category, sectionArea) : undefined
-    if (v.category && !found) say(`No category is called “${v.category}”.`)
+    const key = itemKey(v.section, v.group, v.item)
+    let found = v.category ? findCategory(v.category, sectionArea, true) : undefined
+    if (v.category && !found) {
+      const off = findCategory(v.category, sectionArea, false)
+      if (off && off !== 'ambiguous' && has?.get(key) === off.id) found = off
+      else say(off ? `Category “${v.category}” is turned off.` : `No category is called “${v.category}”.`)
+    }
     if (found === 'ambiguous')
       say(`“${v.category}” is in more than one area; write it as “${v.category} (Back of House)” or the like.`)
     const category = found === 'ambiguous' ? undefined : found
@@ -124,7 +132,6 @@ export function readChecklist(rows: string[][], categories: Category[]) {
       if (!first) sectionFirst.set(v.section.toLowerCase(), { area, row })
       else if (v.area && first.area !== area) say(`${v.section} has a different area on row ${first.row}.`)
     }
-    const key = itemKey(v.section, v.group, v.item)
     if (v.section && v.group && v.item) {
       if (seen.has(key)) say(`${v.item} is in ${v.section} › ${v.group} twice.`)
       seen.add(key)
