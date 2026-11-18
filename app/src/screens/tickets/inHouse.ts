@@ -1,5 +1,6 @@
 import { ticketPath } from '../../app/roles'
 import type { AppRole } from '../../lib/supabase'
+import { firstName, shortDay } from '../../lib/words'
 /** How the In-house lists sort their checked-off tasks and say where a task came from. */
 
 /** Checked off longer ago than this sits behind Show older (from feedback, OT-85). */
@@ -18,9 +19,6 @@ export function splitClosed<T extends { done_at: string | null }>(tasks: T[], no
   }
 }
 
-const dayOf = (at: string) => new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-const firstOf = (name: string | null | undefined) => name?.trim().split(/\s+/)[0] || null
-
 /**
  * The line under a task that didn't come from a walkthrough (whose line is its origin):
  * "From Bert · Nov 18 · Walk-in cooler" for one the Support Team sent (OT-131), naming its
@@ -32,8 +30,8 @@ export function addedBy(t: {
   adder: { full_name: string } | null
   unit: { name: string } | null
 }) {
-  const who = firstOf(t.adder?.full_name)
-  const day = dayOf(t.created_at)
+  const who = firstName(t.adder?.full_name)
+  const day = shortDay(t.created_at)
   if (t.from_ops) return [who ? `From ${who}` : 'From the Support Team', day, t.unit?.name].filter(Boolean).join(' · ')
   return who ? `Added by ${who} · ${day}` : `Added ${day}`
 }

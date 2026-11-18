@@ -8,6 +8,7 @@ import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { IconClose } from '../../components/icons'
+import { useAllCategories } from '../mycategories/useMyCategories'
 import { PhotoPromptSheet } from '../tickets/PhotoPromptSheet'
 import { usePickedPhotos } from '../tickets/usePhotos'
 import { AREA_LABEL } from '../tickets/tickets'
@@ -21,7 +22,7 @@ export type QuickTicketTarget = {
   chips: string[]
   /** The section's area; a quarterly task has none, so categories from both are offered. */
   area: Area | null
-  /** The item's own category; with none, the sheet asks. */
+  /** The item's own category; with none, or one turned off since, the sheet asks. */
   categoryId: string | null
   /** Its tickets still open, by number. */
   openTickets: string[]
@@ -30,8 +31,8 @@ export type QuickTicketTarget = {
 /**
  * Walkthrough · Quick ticket (design/screens/WT-Ticket), over the checklist. The item it
  * is for as chips, what's wrong, Normal or Urgent, and a photo. Every ticket needs a
- * category: an item that names one gives it, and for one that doesn't (Walls, Paint) the
- * sheet asks. Equipment is a picker of the restaurant's units in that category, since the
+ * category: an item that names one gives it, and for one that doesn't (Walls, Paint), or
+ * whose category has been turned off since (OT-138), the sheet asks. Equipment is a picker of the restaurant's units in that category, since the
  * board's Scan QR waits for QR labels (OT-74). With tickets already open on the item it
  * names them and the title becomes Add another ticket. With no photo, Create ticket asks
  * first, as on Create ticket (OT-77). A failed save keeps what was typed.
@@ -55,9 +56,13 @@ export function QuickTicketSheet({
   const picked = usePickedPhotos()
   const [title, setTitle] = useState('')
   const [urgency, setUrgency] = useState<'normal' | 'urgent'>('normal')
-  const [categoryId, setCategoryId] = useState(target.categoryId ?? '')
+  const [pickedCategory, setPickedCategory] = useState('')
   const [equipmentId, setEquipmentId] = useState('')
   const [asking, setAsking] = useState(false)
+  // A turned-off category takes no new ticket, so an item that still names one is asked for another.
+  const turnedOff = useAllCategories().data?.find((c) => c.id === target.categoryId)?.active === false
+  const itemCategory = turnedOff ? null : target.categoryId
+  const categoryId = itemCategory ?? pickedCategory
   const { categories, equipment } = useQuickTicketOptions(restaurantId, target.area, categoryId)
 
   const another = target.openTickets.length > 0
@@ -69,7 +74,7 @@ export function QuickTicketSheet({
         target: target.check,
         title: title.trim(),
         urgency,
-        categoryId: target.categoryId ? null : categoryId,
+        categoryId: itemCategory ? null : categoryId,
         equipmentId: equipmentId || null,
         photos: picked.photos,
         createdBy: user.id,
@@ -131,13 +136,17 @@ export function QuickTicketSheet({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          {!target.categoryId && (
+          {!itemCategory && (
             <Select
               label="Category"
-              hint="This item has no category, so pick the one that fits."
+              hint={
+                turnedOff
+                  ? 'This item’s category has been turned off, so pick the one that fits.'
+                  : 'This item has no category, so pick the one that fits.'
+              }
               value={categoryId}
               onChange={(e) => {
-                setCategoryId(e.target.value)
+                setPickedCategory(e.target.value)
                 setEquipmentId('')
               }}
             >

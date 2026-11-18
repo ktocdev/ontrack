@@ -1,5 +1,6 @@
 import { useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { isVideoUrl } from '../lib/words'
 import { UrgentTag } from './Pill'
 import { IconCheck, IconChevronDown, IconChevronRight, IconClose, IconHelpCircle } from './icons'
 
@@ -311,7 +312,7 @@ export function TaskLabel({ children }: { children: ReactNode }) {
  * tab. Only a web address makes a card; anything else shows nothing.
  */
 export function HowToVideo({ url, task }: { url: string; task: string }) {
-  if (!/^https?:\/\//i.test(url)) return null
+  if (!isVideoUrl(url)) return null
   return (
     <a
       href={url}

@@ -95,8 +95,3 @@ export function summaryFor(rows: TaskRow[], restaurant: string) {
 export function taskMeta(t: Pick<TaskRow, 'video_url'>) {
   return t.video_url ? 'Directions · video' : 'Directions'
 }
-
-/** What the app shows as a how-to link: a web address and nothing more, as the database holds. */
-export function isVideoUrl(url: string) {
-  return /^https?:\/\/\S+$/i.test(url) && url.length <= 500
-}

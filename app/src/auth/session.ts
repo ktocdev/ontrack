@@ -61,7 +61,3 @@ export function clearStamp() {
 export function isExpired(stamp: SignInStamp | null, userId: string, now = Date.now()) {
   return Boolean(stamp && stamp.userId === userId && now - stamp.at >= SESSION_MAX_MS)
 }
-
-export function firstName(name: string | undefined) {
-  return name?.trim().split(/\s+/)[0] || undefined
-}

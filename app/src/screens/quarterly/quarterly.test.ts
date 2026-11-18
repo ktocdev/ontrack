@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { inQuarter, isVideoUrl, listFor, quarterOfDate, summaryFor, type TaskRow } from './quarterly'
+import { isVideoUrl } from '../../lib/words'
+import { inQuarter, listFor, quarterOfDate, summaryFor, type TaskRow } from './quarterly'
 
 const task = (t: Partial<TaskRow> & { id: string }): TaskRow => ({
   restaurant_id: null,

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { Enums } from '../../lib/supabase'
+import type { Db, Enums } from '../../lib/supabase'
 import { requireSupabase } from '../../lib/supabase'
 
 export type Area = Enums<'area'>
@@ -80,12 +80,14 @@ export function useChecklistEditor(id: string) {
 
 /**
  * A change through one of the checklist functions. Each returns the checklist's id after
- * it, a new version's the first time one a walkthrough has had is changed.
+ * it, a new version's the first time one a walkthrough has had is changed. A call is checked
+ * against that function's own arguments (OT-138), so a misnamed or missing one doesn't build.
  */
 export function useChecklistChange() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ fn, args }: { fn: ChecklistFn; args: Record<string, unknown> }) => {
+    mutationFn: async ({ fn, args }: ChecklistCall) => {
+      // One rpc() for the ten of them: the call was checked where it was made.
       const { data, error } = await requireSupabase().rpc(fn as 'save_checklist', args as never)
       if (error) throw error
       return (data as unknown as string | null) ?? null
@@ -110,3 +112,9 @@ export type ChecklistFn =
   | 'delete_checklist_part'
   | 'order_checklist'
   | 'import_checklist'
+
+/** A function's arguments as the database takes them; the generated types leave out that most may be null. */
+export type ChecklistArgs<F extends ChecklistFn> = {
+  [K in keyof Db['Functions'][F]['Args']]: Db['Functions'][F]['Args'][K] | null
+}
+export type ChecklistCall = { [F in ChecklistFn]: { fn: F; args: ChecklistArgs<F> } }[ChecklistFn]

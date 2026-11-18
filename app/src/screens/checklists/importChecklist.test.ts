@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseCsv, toCsv } from '../../lib/import/csv'
-import { previewImport, readChecklist, templateRows } from './importChecklist'
+import { itemKey, previewImport, readChecklist, templateRows } from './importChecklist'
 import type { EditorItem, EditorSection } from './useChecklistEditor'
 
 const categories = [
@@ -70,11 +70,21 @@ describe('reading a sheet', () => {
       'Row 2: The video link isn’t a web address (https://…).',
       'Row 2: No category is called “Plumbing”.',
       'Row 3: Item is empty.',
-      'Row 3: No category is called “Old”.',
+      'Row 3: Category “Old” is turned off.',
       'Row 3: Kitchen has a different area on row 2.',
       'Row 4: OUTLETS is in Kitchen › electrical twice.',
       'Row 5: Area “Patio” isn’t Front of House, Back of House or IT.',
     ])
+  })
+  it('lets an item keep a category turned off since, and puts it on no other', () => {
+    const sheet = [
+      ['Section', 'Group', 'Item', 'Category'],
+      ['Kitchen', 'Electrical', 'Outlets', 'Old'],
+      ['Kitchen', 'Electrical', 'Panel', 'Old'],
+    ]
+    const r = readChecklist(sheet, categories, new Map([[itemKey('Kitchen', 'Electrical', 'Outlets'), 'old']]))
+    expect(r.problems).toEqual(['Row 3: Category “Old” is turned off.'])
+    expect(r.rows[0]!.category_id).toBe('old')
   })
   it('says a column is missing', () => {
     expect(readChecklist([['Section', 'Item']], categories).problems).toEqual([

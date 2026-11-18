@@ -20,6 +20,8 @@ import { groupsOf, idsByGroups, itemLine } from './checklist'
 import {
   useChecklistChange,
   useChecklistEditor,
+  type ChecklistArgs,
+  type ChecklistCall,
   type ChecklistFn,
   type EditorItem,
   type EditorSection,
@@ -109,19 +111,16 @@ export function ChecklistEditorScreen() {
     setEditing(e)
   }
   const close = () => setEditing(null)
-  const run = (fn: ChecklistFn, args: Record<string, unknown>, done = 'Saved.') =>
-    change.mutate(
-      { fn, args },
-      {
-        onSuccess: (newId) => {
-          close()
-          if (newId && newId !== checklist.id) {
-            toast.show('Saved as a new version. Walkthroughs that had the earlier one keep it.')
-            navigate(`/ops/walkthroughs/checklists/${newId}`, { replace: true, state: from })
-          } else toast.show(done)
-        },
+  const run = <F extends ChecklistFn>(fn: F, args: ChecklistArgs<F>, done = 'Saved.') =>
+    change.mutate({ fn, args } as ChecklistCall, {
+      onSuccess: (newId) => {
+        close()
+        if (newId && newId !== checklist.id) {
+          toast.show('Saved as a new version. Walkthroughs that had the earlier one keep it.')
+          navigate(`/ops/walkthroughs/checklists/${newId}`, { replace: true, state: from })
+        } else toast.show(done)
       },
-    )
+    })
   const t = { p_template: checklist.id }
   const common = {
     open: true,

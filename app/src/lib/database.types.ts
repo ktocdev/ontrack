@@ -2213,6 +2213,9 @@ isOneToOne: false
 "can_edit_contractors":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"can_edit_walkthrough_setup":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "can_post_on_ticket":
 { Args: { "tid": string }; Returns: boolean
                            },

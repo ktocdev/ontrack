@@ -6,7 +6,7 @@ import { ErrorBanner } from '../../components/Notice'
 import { ReorderList } from '../../components/ReorderList'
 import { Sheet } from '../../components/Sheet'
 import type { MyCategory } from '../mycategories/useMyCategories'
-import { isVideoUrl } from '../quarterly/quarterly'
+import { isVideoUrl } from '../../lib/words'
 import type { Area, EditorItem, EditorSection } from './useChecklistEditor'
 
 /**
