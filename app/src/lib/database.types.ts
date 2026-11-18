@@ -1567,6 +1567,44 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"walkthrough_tasks": {
+                  Row: {
+                    "directions": string | null,"root_id": string,"sort_order": number,"task_id": string,"title": string,"video_url": string | null,"walkthrough_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "directions"?: string | null,"root_id": string,"sort_order"?: number,"task_id": string,"title": string,"video_url"?: string | null,"walkthrough_id": string
+                  }
+                  Update: {
+                    "directions"?: string | null,"root_id"?: string,"sort_order"?: number,"task_id"?: string,"title"?: string,"video_url"?: string | null,"walkthrough_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "walkthrough_tasks_root_id_fkey"
+      columns: ["root_id"]
+isOneToOne: false
+      referencedRelation: "quarterly_tasks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_tasks_task_id_fkey"
+      columns: ["task_id"]
+isOneToOne: false
+      referencedRelation: "quarterly_tasks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_tasks_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "v_walkthrough_summary"
+      referencedColumns: ["walkthrough_id"]
+    },{
+      foreignKeyName: "walkthrough_tasks_walkthrough_id_fkey"
+      columns: ["walkthrough_id"]
+isOneToOne: false
+      referencedRelation: "walkthroughs"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"walkthrough_templates": {
                   Row: {
                     "active": boolean,"created_at": string,"description": string | null,"id": string,"name": string,"short_name": string | null,"updated_at": string
@@ -2218,6 +2256,9 @@ isOneToOne: false
 "delete_job_title":
 { Args: { "p_id": string }; Returns: undefined
                            },
+"delete_quarterly_task":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "delete_restaurant":
 { Args: { "p_id": string }; Returns: undefined
                            },
@@ -2304,6 +2345,14 @@ isOneToOne: false
 "profile_photos_on":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"quarter_tasks_for":
+{ Args: { "p_period": string,"p_restaurant": string }; Returns: {
+              "directions": string,"root_id": string,"sort_order": number,"task_id": string,"title": string,"video_url": string
+            }[]
+                           },
+"quarterly_task_check":
+{ Args: { "p_restaurant": string }; Returns: undefined
+                           },
 "queue_walkthrough_reminders":
 { Args: { "p_today"?: string }; Returns: number
                            },
@@ -2318,6 +2367,9 @@ isOneToOne: false
                            },
 "reopen_ticket":
 { Args: { "p_id": string,"p_note": string,"p_paths"?: (string)[] }; Returns: undefined
+                           },
+"reset_quarterly_task":
+{ Args: { "p_restaurant": string,"p_task": string }; Returns: undefined
                            },
 "restaurant_rotation":
 { Args: { "p_restaurant": string }; Returns: string
@@ -2339,6 +2391,9 @@ isOneToOne: false
                            },
 "save_push_subscription":
 { Args: { "p_auth": string,"p_endpoint": string,"p_p256dh": string }; Returns: undefined
+                           },
+"save_quarterly_task":
+{ Args: { "p_directions": string,"p_id": string,"p_quarters"?: (number)[],"p_restaurant": string,"p_title": string,"p_video_url": string }; Returns: string
                            },
 "save_role_defaults":
 { Args: { "p_changes": Json }; Returns: undefined
@@ -2387,6 +2442,12 @@ isOneToOne: false
                            },
 "set_profile_photos":
 { Args: { "p_on": boolean }; Returns: undefined
+                           },
+"set_quarterly_task_active":
+{ Args: { "p_active": boolean,"p_id": string }; Returns: undefined
+                           },
+"set_quarterly_task_removed":
+{ Args: { "p_removed": boolean,"p_restaurant": string,"p_task": string }; Returns: undefined
                            },
 "set_restaurant_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
