@@ -352,6 +352,7 @@ export function EquipmentPage() {
               title="Replace the bulb over table 4"
               note="It’s the 2-pin kind, spares are in the office."
               meta="From Bert · Nov 18 · Pendant light, bar"
+              from={{ label: 'Handed back from OT-1042', to: '#' }}
               done={false}
               onToggle={() => toast.show('Checked off.')}
               onDelete={() => toast.show('Deleted.')}
@@ -371,7 +372,7 @@ export function EquipmentPage() {
       </Section>
       <Section
         title="In-house fixes for the Support Team"
-        intro="Read-only, since the restaurant checks them off: Open with Convert to ticket (left out under View as or without update_status), the ticket it became as a link, or Fixed. A task from the Support Team carries its note on the manager's row too."
+        intro="Read-only, since the restaurant checks them off: Open with Convert to ticket (left out under View as or without update_status), the ticket it became as a link, or Fixed. A task from the Support Team carries its note on the manager's row too, and one handed back from a ticket links to it."
       >
         <Example>
           <TaskList>

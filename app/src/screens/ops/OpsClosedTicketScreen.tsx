@@ -9,7 +9,7 @@ import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { TicketMenu } from '../../components/TicketMenu'
 import { LogServiceLink, TicketService } from '../service/TicketService'
 import { money, timeline } from '../tickets/closed'
-import { ClosingComment, Fact, Timeline } from '../tickets/ClosedParts'
+import { ClosingComment, Fact, HandedBackFact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
 import { useRoleNames } from '../../auth/group'
 import { AREA_LABEL } from '../tickets/tickets'
@@ -100,6 +100,13 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
                 >
                   {facts.resolution}
                 </ClosingComment>
+              )}
+              {facts?.handedBack && (
+                <HandedBackFact
+                  task={facts.handedBack}
+                  to={`/ops/in-house?restaurant=${facts.handedBack.restaurant_id}`}
+                  state={{ backTo: `/ops/tickets/${ticket.id}` }}
+                />
               )}
               {facts?.contractor && <Fact label="Contractor">{facts.contractor}</Fact>}
               {hasCost && (

@@ -8,7 +8,8 @@ import { signIn, tokenFor } from '../helpers'
  * due day, and no other flow counts West Loop), opens one from the restaurant's page, shows
  * them all, and converts both: one whose item has a category, one whose item has none, so
  * the sheet asks. Then he adds a task at Porter from his In-house list, and Dana, Porter's
- * Reporter, sees who sent it, its unit and its note. Titles carry the run, so a second run
+ * Reporter, sees who sent it, its unit and its note. Last, Bert hands one of Dana's tickets
+ * back as a task (OT-132), and each links to the other. Titles carry the run, so a second run
  * works without `db reset`.
  */
 
@@ -20,6 +21,8 @@ const BERT = 'bert.velilla@example.com'
 const DANA = 'dana.ortiz@example.com'
 const WEST_LOOP_OCT = 'aaaaaaaa-aaaa-4aaa-8aaa-000000000002'
 const PORTER = '11111111-1111-4111-8111-000000000003'
+const DANA_ID = '22222222-2222-4222-8222-000000000007'
+const BOH_ELECTRICAL = '33333333-3333-4333-8333-000000000014'
 
 const shot = async (page: Page, testInfo: TestInfo, name: string) =>
   testInfo.attach(name, { body: await page.screenshot(), contentType: 'image/png' })
@@ -186,4 +189,64 @@ test('Ops adds a task at Porter, and its Reporter sees who sent it, its unit and
       { timeout: 20_000, intervals: [500] },
     )
     .toContain('inhouse_task:email')
+})
+
+test('Ops hands a ticket back as a task, and the ticket and the task link to each other', async ({
+  browser,
+  page,
+  request,
+}, testInfo) => {
+  const run = `${testInfo.project.name} ${Date.now() % 100000}`
+  const ticketTitle = `Hand back test · flickering light ${run}`
+  const task = `Swap the bulb, it’s the 2-pin kind ${run}`
+
+  // Dana files a ticket at Porter.
+  const created = await request.post(`${SUPABASE}/rest/v1/tickets?select=id,display_id`, {
+    headers: { ...(await headers(request, DANA)), Prefer: 'return=representation' },
+    data: {
+      restaurant_id: PORTER,
+      category_id: BOH_ELECTRICAL,
+      title: ticketTitle,
+      urgency: 'normal',
+      created_by: DANA_ID,
+      number: 0,
+    },
+  })
+  expect(created.ok(), await created.text()).toBe(true)
+  const [{ id, display_id }] = (await created.json()) as { id: string; display_id: string }[]
+
+  // Bert hands it back from the status menu.
+  await signIn(page, BERT)
+  await page.goto(`/ops/tickets/${id}`)
+  await page.getByRole('button', { name: /^Status/ }).click()
+  await page.getByRole('menuitem', { name: 'Hand back as in-house task' }).click()
+  const sheet = page.getByRole('dialog', { name: `Hand back ${display_id}?` })
+  await sheet.getByRole('button', { name: 'Hand back' }).click()
+  await expect(sheet.getByText('Say what the restaurant should do.')).toBeVisible()
+  await sheet.getByLabel('What to do').fill(task)
+  await sheet.getByLabel(/^Note/).fill('Spares are in the office.')
+  await shot(page, testInfo, 'hand back · sheet')
+  await sheet.getByRole('button', { name: 'Hand back' }).click()
+  await expect(page).toHaveURL(/\/ops$/)
+
+  // The closed ticket names its task, which opens Porter's In-house list.
+  await page.goto(`/ops/tickets/${id}`)
+  await expect(page.getByText(`Handed back as an in-house task: ${task}`)).toBeVisible()
+  await shot(page, testInfo, 'hand back · closed ticket')
+  await page.getByRole('link', { name: task }).click()
+  await expect(page).toHaveURL(new RegExp(`/ops/in-house\\?restaurant=${PORTER}$`))
+  await page.getByRole('link', { name: `Handed back from ${display_id}` }).click()
+  await expect(page).toHaveURL(new RegExp(`/ops/tickets/${id}$`))
+
+  // Dana has the task, linked to her ticket, which now names the task.
+  const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+  const dana = await context.newPage()
+  await signIn(dana, DANA)
+  await dana.goto('/tickets/in-house')
+  await expect(dana.getByText(task)).toBeVisible()
+  await testInfo.attach('hand back · manager in-house', { body: await dana.screenshot(), contentType: 'image/png' })
+  await dana.getByRole('link', { name: `Handed back from ${display_id}` }).click()
+  await expect(dana).toHaveURL(new RegExp(`/tickets/${id}$`))
+  await expect(dana.getByRole('link', { name: task })).toBeVisible()
+  await context.close()
 })

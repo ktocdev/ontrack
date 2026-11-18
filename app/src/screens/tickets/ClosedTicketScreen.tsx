@@ -13,7 +13,7 @@ import { Sheet } from '../../components/Sheet'
 import { TicketMenu } from '../../components/TicketMenu'
 import { IconPlus, IconReopen } from '../../components/icons'
 import { longDate, money, reopenDaysLeft, timeline, timeToClose } from './closed'
-import { ClosingComment, Fact, Step, Timeline } from './ClosedParts'
+import { ClosingComment, Fact, HandedBackFact, Step, Timeline } from './ClosedParts'
 import { TicketBar, TicketPhotos, useScrolled } from './TicketParts'
 import { ROLE_WORD, type Update } from './thread'
 import { useRoleNames } from '../../auth/group'
@@ -143,6 +143,7 @@ export function ClosedTicketScreen({
               {facts.resolution}
             </ClosingComment>
           )}
+          {facts?.handedBack && <HandedBackFact task={facts.handedBack} to="/tickets/in-house" />}
           {closedAt && (
             <Fact label="Closed by">
               {closerName ? `${closerName} · ` : ''}
