@@ -15,7 +15,7 @@ import { CardFeedSkeleton } from '../../components/Skeleton'
 import { FixRow, TaskList, TaskListEmpty } from '../../components/TaskRow'
 import { IconChevronDown, IconEye, IconPlus, IconWarning } from '../../components/icons'
 import { useListView } from '../mycategories/useMyCategories'
-import { addedBy, RECENT_DAYS, splitClosed } from '../tickets/inHouse'
+import { addedBy, handedBackFrom, RECENT_DAYS, splitClosed } from '../tickets/inHouse'
 import { useInHouse, type Task } from '../tickets/useInHouse'
 import { addedLine } from '../walkthrough/fixes'
 import { ConvertFixSheet, type ConvertTarget } from './ConvertFixSheet'
@@ -83,6 +83,7 @@ export function OpsInHouseScreen() {
         key={t.id}
         title={t.title}
         note={t.note}
+        from={handedBackFrom(t, 'ops')}
         where={t.origin_label}
         restaurant={only ? undefined : placeOf.get(t.restaurant_id)}
         meta={

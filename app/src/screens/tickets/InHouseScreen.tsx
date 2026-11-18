@@ -16,7 +16,7 @@ import { IconChevronDown, IconPlus, IconWarning } from '../../components/icons'
 import { listed, useListView } from '../mycategories/useMyCategories'
 import { AddTaskSheet } from './AddTaskSheet'
 import { DeleteTaskSheet } from './DeleteTaskSheet'
-import { addedBy, RECENT_DAYS, splitClosed } from './inHouse'
+import { addedBy, handedBackFrom, RECENT_DAYS, splitClosed } from './inHouse'
 import { stillInHouse, useInHouse, useSetTaskDone } from './useInHouse'
 import { useOpenTickets } from './useOpenTickets'
 
@@ -72,6 +72,7 @@ export function InHouseScreen() {
       title={t.title}
       meta={[t.origin_label ?? addedBy(t), t.done_at && 'Completed'].filter(Boolean).join(' · ')}
       note={t.note}
+      from={handedBackFrom(t, 'manager')}
       tag={t.origin_label ? <WalkthroughTag /> : undefined}
       done={!!t.done_at}
       restaurant={only ? undefined : placeOf.get(t.restaurant_id)}

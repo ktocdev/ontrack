@@ -27,6 +27,7 @@ export function TaskRow({
   title,
   meta,
   note,
+  from,
   done,
   tag,
   restaurant,
@@ -37,6 +38,8 @@ export function TaskRow({
   meta: string
   /** What the sender added, on a task from the Support Team ("It's the 2-pin kind"). */
   note?: string | null
+  /** The ticket it was handed back from (OT-132), as a link. */
+  from?: { label: string; to: string }
   done: boolean
   /** A chip before the meta line (Walkthrough). */
   tag?: ReactNode
@@ -66,6 +69,7 @@ export function TaskRow({
             {tag}
             {meta}
           </span>
+          {from && <FromLink {...from} />}
         </span>
       </label>
       {onDelete && (
@@ -93,6 +97,7 @@ export function FixRow({
   where,
   meta,
   note,
+  from,
   restaurant,
   state,
   onConvert,
@@ -102,6 +107,8 @@ export function FixRow({
   where?: string | null
   meta: string
   note?: string | null
+  /** The ticket it was handed back from (OT-132), as a link. */
+  from?: { label: string; to: string }
   restaurant?: { name: string; color: string }
   state: { kind: 'open' } | { kind: 'fixed' } | { kind: 'ticket'; displayId: string; to: string }
   onConvert?: () => void
@@ -115,6 +122,7 @@ export function FixRow({
           {note && <span className="text-13 leading-[1.4] text-text-body [overflow-wrap:anywhere]">{note}</span>}
           {where && <span className="text-12 text-text-secondary">{where}</span>}
           <span className="text-12 text-text-secondary">{meta}</span>
+          {from && <FromLink {...from} />}
         </span>
         {state.kind === 'ticket' ? (
           <Link
@@ -140,5 +148,14 @@ export function FixRow({
         </button>
       )}
     </div>
+  )
+}
+
+/** "Handed back from OT-1042", opening the ticket the task came from. */
+function FromLink({ label, to }: { label: string; to: string }) {
+  return (
+    <Link to={to} className="self-start text-12 font-semibold text-brand hover:text-brand-strong">
+      {label}
+    </Link>
   )
 }

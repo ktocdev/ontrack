@@ -1,3 +1,5 @@
+import { ticketPath } from '../../app/roles'
+import type { AppRole } from '../../lib/supabase'
 /** How the In-house lists sort their checked-off tasks and say where a task came from. */
 
 /** Checked off longer ago than this sits behind Show older (from feedback, OT-85). */
@@ -34,4 +36,11 @@ export function addedBy(t: {
   const day = dayOf(t.created_at)
   if (t.from_ops) return [who ? `From ${who}` : 'From the Support Team', day, t.unit?.name].filter(Boolean).join(' · ')
   return who ? `Added by ${who} · ${day}` : `Added ${day}`
+}
+
+/** A task handed back from a ticket (OT-132) links to it: "Handed back from OT-1042". */
+export function handedBackFrom(t: { from_ticket: unknown }, role: AppRole) {
+  const ticket = t.from_ticket as { id: string; display_id: string | null } | null
+  const to = ticket && ticketPath(role, ticket.id)
+  return ticket && to ? { label: `Handed back from ${ticket.display_id ?? 'a ticket'}`, to } : undefined
 }

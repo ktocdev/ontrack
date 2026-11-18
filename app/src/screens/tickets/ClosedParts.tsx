@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 import { Card } from '../../components/Card'
 import { SectionLabel } from '../../components/Screen'
 import type { TimelineStep } from './closed'
@@ -49,5 +50,28 @@ export function Timeline({ steps, children }: { steps: TimelineStep[]; children?
         {children}
       </Card>
     </>
+  )
+}
+
+/**
+ * On a ticket handed back as an in-house task (OT-132): the task, linking to the In-house
+ * list it is on, and whether it is done yet.
+ */
+export function HandedBackFact({
+  task,
+  to,
+  state,
+}: {
+  task: { title: string; done_at: string | null }
+  to: string
+  state?: unknown
+}) {
+  return (
+    <Fact label="In-house task">
+      <Link to={to} state={state} className="text-brand hover:text-brand-strong">
+        {task.title}
+      </Link>
+      <span className="font-normal text-text-muted"> · {task.done_at ? 'Fixed' : 'To fix'}</span>
+    </Fact>
   )
 }

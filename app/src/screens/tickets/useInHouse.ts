@@ -16,7 +16,7 @@ async function loadTasks(restaurantIds: string[]) {
   const { data, error } = await requireSupabase()
     .from('inhouse_fixes')
     .select(
-      'id, title, note, origin_label, area, category_id, created_by, done_at, first_done_at, restaurant_id, created_at, walkthrough_id, from_ops, from_ticket_id, converted_ticket_id, adder:profiles!inhouse_fixes_created_by_fkey (full_name), doner:profiles!inhouse_fixes_done_by_fkey (full_name), unit:equipment!inhouse_fixes_equipment_id_fkey (name), converted:tickets!inhouse_fixes_converted_ticket_id_fkey (id, display_id, created_at, created_by, creator:profiles!tickets_created_by_fkey (full_name)), check:walkthrough_checks (item:walkthrough_items (category_id))',
+      'id, title, note, origin_label, area, category_id, created_by, done_at, first_done_at, restaurant_id, created_at, walkthrough_id, from_ops, from_ticket_id, converted_ticket_id, adder:profiles!inhouse_fixes_created_by_fkey (full_name), doner:profiles!inhouse_fixes_done_by_fkey (full_name), unit:equipment!inhouse_fixes_equipment_id_fkey (name), converted:tickets!inhouse_fixes_converted_ticket_id_fkey (id, display_id, created_at, created_by, creator:profiles!tickets_created_by_fkey (full_name)), from_ticket:tickets!inhouse_fixes_from_ticket_id_fkey (id, display_id), check:walkthrough_checks (item:walkthrough_items (category_id))',
     )
     .in('restaurant_id', restaurantIds)
     .order('created_at', { ascending: false })
@@ -167,5 +167,30 @@ export function useUnitsAt(restaurantId: string | null) {
       if (error) throw error
       return data
     },
+  })
+}
+
+/**
+ * Hand back as in-house task (OT-132): one step closes the ticket with "Handed back as an
+ * in-house task: …" and adds the task, with the ticket's unit and category and a link back,
+ * to the restaurant's In-house list. The task is the one notification its Reporters get.
+ */
+export function useHandBack(ticketId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ title, note }: { title: string; note: string }) => {
+      const { error } = await requireSupabase().rpc('hand_back_ticket', {
+        p_ticket: ticketId,
+        p_title: title.trim(),
+        p_note: note.trim(),
+      })
+      if (error) throw error
+    },
+    onSuccess: () =>
+      Promise.all([
+        refreshTasks(queryClient),
+        queryClient.invalidateQueries({ queryKey: ['ops-ticket'] }),
+        queryClient.invalidateQueries({ queryKey: ['ticket-closed', ticketId] }),
+      ]),
   })
 }

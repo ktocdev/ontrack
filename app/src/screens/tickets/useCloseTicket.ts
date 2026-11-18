@@ -104,7 +104,7 @@ export function useClosedFacts(ticketId: string) {
     queryKey: ['ticket-closed', ticketId],
     queryFn: async () => {
       const sb = requireSupabase()
-      const [ticket, costs, service] = await Promise.all([
+      const [ticket, costs, service, task] = await Promise.all([
         sb
           .from('tickets')
           .select(
@@ -119,14 +119,23 @@ export function useClosedFacts(ticketId: string) {
           .eq('ticket_id', ticketId)
           .order('service_date', { ascending: false })
           .limit(1),
+        // The in-house task it was handed back as (OT-132), if it was.
+        sb
+          .from('inhouse_fixes')
+          .select('id, title, done_at, restaurant_id')
+          .eq('from_ticket_id', ticketId)
+          .order('created_at', { ascending: false })
+          .limit(1),
       ])
       if (ticket.error) throw ticket.error
+      if (task.error) throw task.error
       if (costs.error) throw costs.error
       if (service.error) throw service.error
       return {
         ...ticket.data,
         totalCents: costs.data?.total_cents ?? null,
         contractor: service.data[0]?.contractor?.name ?? null,
+        handedBack: task.data[0] ?? null,
       }
     },
   })

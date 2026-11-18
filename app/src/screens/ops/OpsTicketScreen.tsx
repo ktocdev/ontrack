@@ -27,6 +27,7 @@ import { EquipmentCard, TicketBar, TicketPhotos, useScrolled } from '../tickets/
 import { useCloseTicket } from '../tickets/useCloseTicket'
 import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
 import { usePostUpdate } from '../tickets/useTicket'
+import { HandBackSheet } from './HandBackSheet'
 import { OpsClosedTicketScreen } from './OpsClosedTicketScreen'
 import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
 
@@ -40,7 +41,8 @@ import { useOpsTicket, useSetTicketStatus, useTakeTicket } from './useOpsTicket'
  * says Front or Back of House and which category, from feedback (Nov 11, 2026). Writing back and forth is rare for Ops, so the message
  * box stays hidden until Add update, keeps any draft if hidden again, and closes on posting.
  * Updates go to the restaurant unless the toggle says internal, and Close ticket takes an
- * optional comment, then goes back to the dashboard.
+ * optional comment, then goes back to the dashboard. Hand back as in-house task (OT-132)
+ * closes it the same way and puts a task on the restaurant's In-house list instead.
  * A closed ticket has its own screen. A reopened ticket is an ordinary one here.
  */
 const OPTIONS: PillStatus[] = ['open', 'in_progress', 'waiting_parts', 'scheduled']
@@ -81,6 +83,7 @@ export function OpsTicketScreen() {
   const [writing, setWriting] = useState(false)
   const [internal, setInternal] = useState(false)
   const [closing, setClosing] = useState(false)
+  const [handingBack, setHandingBack] = useState(false)
   const [comment, setComment] = useState('')
   const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
   const [scheduling, setScheduling] = useState(false)
@@ -197,6 +200,7 @@ export function OpsTicketScreen() {
               ? [{ label: 'Take this over', onSelect: () => take.mutate(undefined, { onError: failed }) }]
               : []),
             { label: 'Close ticket', onSelect: () => setClosing(true) },
+            { label: 'Hand back as in-house task', onSelect: () => setHandingBack(true) },
           ]}
         />
 
@@ -320,6 +324,20 @@ export function OpsTicketScreen() {
           Cancel
         </Button>
       </Sheet>
+
+      <HandBackSheet
+        open={handingBack}
+        onOpenChange={setHandingBack}
+        ticket={{
+          id: ticket.id,
+          displayId: ticket.display_id ?? '',
+          restaurant: ticket.restaurant?.name ?? 'the restaurant',
+        }}
+        onHandedBack={() => {
+          toast.show(`${ticket.display_id} handed back as an in-house task.`)
+          navigate('/ops')
+        }}
+      />
 
       <Sheet
         open={scheduling}

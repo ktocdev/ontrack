@@ -633,6 +633,7 @@ export function KitPage() {
                   title="Replace the bulb over table 4"
                   note="It’s the 2-pin kind, spares are in the office."
                   meta="From Bert · Nov 18 · Pendant light, bar"
+                  from={{ label: 'Handed back from OT-1042', to: '#' }}
                   done={false}
                   onToggle={() => toast.show('Row checked.')}
                   onDelete={() => toast.show('Row deleted.')}
