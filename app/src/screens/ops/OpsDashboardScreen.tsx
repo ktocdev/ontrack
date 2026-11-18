@@ -70,6 +70,7 @@ export function OpsDashboardScreen() {
               label="More ticket options"
               items={[
                 { to: '/ops/closed', label: 'View Closed Tickets' },
+                { to: '/ops/in-house', label: 'In-house tasks' },
                 ...(restaurants.length > 1
                   ? [{ onSelect: () => setReordering(true), label: 'Reorder restaurants' }]
                   : []),

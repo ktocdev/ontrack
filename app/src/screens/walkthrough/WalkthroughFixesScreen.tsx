@@ -53,7 +53,8 @@ export function WalkthroughFixesScreen() {
   const item = params.get('item')
   const task = params.get('task')
   const filtered = item || task
-  const all = data.fixes
+  // A fix made into a ticket is the ticket's now, and shows on the walkthrough as one.
+  const all = data.fixes.filter((f) => !f.converted_ticket_id)
   const shown = filtered ? all.filter((f) => (item ? f.itemId === item : f.taskId === task)) : all
   const open = shown.filter((f) => !f.done_at)
   const closed = shown.filter((f) => f.done_at).sort((a, b) => Date.parse(b.done_at!) - Date.parse(a.done_at!))

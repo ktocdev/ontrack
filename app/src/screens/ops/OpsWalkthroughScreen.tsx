@@ -9,7 +9,7 @@ import { RestaurantSquare } from '../../components/RestaurantName'
 import { BackBar, Screen, ScreenBody, ScreenEmpty, ScreenFooter } from '../../components/Screen'
 import { Sk } from '../../components/Skeleton'
 import { FlaggedRow, SectionProgressRow, StandingPill } from '../../components/Walkthrough'
-import { IconBell, IconChevronDown, IconClockSmall, IconWarning } from '../../components/icons'
+import { IconBell, IconChevronDown, IconChevronRight, IconClockSmall, IconWarning } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { whereFrom } from '../walkthrough/fixes'
 import { useWalkthroughTickets } from '../walkthrough/useReview'
@@ -21,8 +21,9 @@ import { submittedDay } from './walkthroughOverview'
 /**
  * Ops · one restaurant's walkthrough (design/screens/WT-Ops-Restaurant, OT-130), opened from
  * the overview. Read-only, as the boards draw: how it stands and who is on it, each part's
- * progress, what it has flagged so far (each ticket opens; an in-house fix opens with
- * OT-131), the restaurant's months before it, and Send reminder with when the last one went.
+ * progress, what it has flagged so far (each ticket opens, and an in-house fix opens the
+ * walkthrough's fixes at its item, OT-131), a way to the restaurant's whole In-house list,
+ * the restaurant's months before it, and Send reminder with when the last one went.
  * Send reminder shows only while it is open, to someone with Update status, and never
  * under View as.
  */
@@ -122,6 +123,9 @@ function OneWalkthrough({ id }: { id: string }) {
                 {data.fixes.map((f) => (
                   <FlaggedRow
                     key={f.id}
+                    to={`/ops/walkthroughs/${id}/fixes${
+                      f.itemId ? `?item=${f.itemId}` : f.taskId ? `?task=${f.taskId}` : ''
+                    }`}
                     kind="inhouse"
                     title={f.title}
                     meta={whereFrom(f.origin_label)}
@@ -130,6 +134,14 @@ function OneWalkthrough({ id }: { id: string }) {
                 ))}
               </ListCard>
             )}
+            <Link
+              to={`/ops/in-house?restaurant=${data.restaurant.id}`}
+              state={{ backTo: `/ops/walkthroughs/${id}` }}
+              className="flex min-h-tap flex-none items-center gap-1 self-start text-14 font-semibold text-brand"
+            >
+              All in-house tasks at {data.restaurant.name}
+              <IconChevronRight size={16} />
+            </Link>
 
             {data.past.length > 0 && (
               <details className="group flex-none pt-4">

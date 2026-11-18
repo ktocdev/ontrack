@@ -39,7 +39,7 @@ import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { ReorderList } from '../../components/ReorderList'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
-import { TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
+import { FixRow, TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import {
   CountTile,
@@ -630,6 +630,14 @@ export function KitPage() {
                   onDelete={() => toast.show('Row deleted.')}
                 />
                 <TaskRow
+                  title="Replace the bulb over table 4"
+                  note="It’s the 2-pin kind, spares are in the office."
+                  meta="From Bert · Nov 18 · Pendant light, bar"
+                  done={false}
+                  onToggle={() => toast.show('Row checked.')}
+                  onDelete={() => toast.show('Row deleted.')}
+                />
+                <TaskRow
                   title="Re-glue trim on pass shelf"
                   meta="Oct walkthrough · BOH › Electrical › Feature · Completed"
                   tag={<WalkthroughTag />}
@@ -638,6 +646,27 @@ export function KitPage() {
                 />
               </TaskList>
               <TaskListEmpty>Nothing left to fix. Checked-off tasks are under Closed.</TaskListEmpty>
+              <TaskList>
+                <FixRow
+                  title="Replace 2 bulbs over booths 4–6"
+                  where="FOH › Electrical › Light bulbs"
+                  meta="Added Oct 23 by Maya"
+                  state={{ kind: 'open' }}
+                  onConvert={() => toast.show('Convert to ticket.')}
+                />
+                <FixRow
+                  title="Tighten wobbly 2-top at table 14"
+                  where="FOH › Aesthetics › Surfaces and seating"
+                  meta="Converted by you · Added Oct 23 by Maya"
+                  restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                  state={{ kind: 'ticket', displayId: 'OT-1058', to: '#' }}
+                />
+                <FixRow
+                  title="Re-glue trim on pass shelf"
+                  meta="Fixed Oct 22 by Maya · added Oct 21"
+                  state={{ kind: 'fixed' }}
+                />
+              </TaskList>
               <ListCard>
                 <ListRow
                   leading={<Avatar name="Sam Patel" role="manager" />}

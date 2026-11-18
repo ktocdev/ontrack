@@ -45,7 +45,12 @@ export function useOpenTickets(restaurantIds: string[]) {
           )
           .in('restaurant_id', restaurantIds)
           .neq('status', 'closed'),
-        sb.from('inhouse_fixes').select('id, area, created_by').in('restaurant_id', restaurantIds).is('done_at', null),
+        sb
+          .from('inhouse_fixes')
+          .select('id, area, created_by')
+          .in('restaurant_id', restaurantIds)
+          .is('done_at', null)
+          .is('converted_ticket_id', null),
       ])
       if (tickets.error) throw tickets.error
       if (inHouse.error) throw inHouse.error

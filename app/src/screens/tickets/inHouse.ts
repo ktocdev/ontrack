@@ -1,4 +1,4 @@
-/** How the In-house tab sorts its checked-off tasks. */
+/** How the In-house lists sort their checked-off tasks and say where a task came from. */
 
 /** Checked off longer ago than this sits behind Show older (from feedback, OT-85). */
 export const RECENT_DAYS = 30
@@ -14,4 +14,24 @@ export function splitClosed<T extends { done_at: string | null }>(tasks: T[], no
     recent: closed.filter((t) => Date.parse(t.done_at!) >= cutoff),
     older: closed.filter((t) => Date.parse(t.done_at!) < cutoff),
   }
+}
+
+const dayOf = (at: string) => new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+const firstOf = (name: string | null | undefined) => name?.trim().split(/\s+/)[0] || null
+
+/**
+ * The line under a task that didn't come from a walkthrough (whose line is its origin):
+ * "From Bert · Nov 18 · Walk-in cooler" for one the Support Team sent (OT-131), naming its
+ * unit, or "Added by Maya · Nov 6" for one added by hand.
+ */
+export function addedBy(t: {
+  created_at: string
+  from_ops: boolean
+  adder: { full_name: string } | null
+  unit: { name: string } | null
+}) {
+  const who = firstOf(t.adder?.full_name)
+  const day = dayOf(t.created_at)
+  if (t.from_ops) return [who ? `From ${who}` : 'From the Support Team', day, t.unit?.name].filter(Boolean).join(' · ')
+  return who ? `Added by ${who} · ${day}` : `Added ${day}`
 }

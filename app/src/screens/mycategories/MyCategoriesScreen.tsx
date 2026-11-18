@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { AREAS, AREA_LABEL, type Area } from '../../app/areas'
 import { useUser } from '../../auth/context'
+import { useRoleNames } from '../../auth/group'
 import { Button } from '../../components/Button'
 import { ListCard, ListRow, ListRowButton } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
@@ -20,9 +21,9 @@ import { categoryView, hasOwn, isOn, switched, type Prefs } from './view'
  * pool notifies them. Each area is an All row with its categories folded under it (OT-120).
  * Each row's switch turns it on or off at once (OT-119, from feedback); a category's text
  * opens a sheet with the two settings and Save, for the in-between choices. A category with nothing of its own follows its area, and a setting
- * saved the same as its area's goes back to following it. Notify shows only where the pool
- * reaches the person (the Ops role, OT-116): Reporters get it with 6b's tasks from the
- * Support Team. Under View as, the rows only show.
+ * saved the same as its area's goes back to following it. Notify shows only where something
+ * reaches the person by it: the Ops role's pool (OT-116), and for Reporters the tasks the
+ * Support Team sends them (OT-131). Under View as, the rows only show.
  */
 type Editing = { area: Area; category?: MyCategory }
 
@@ -31,7 +32,9 @@ export function MyCategoriesScreen() {
   const prefs = useMyPrefs()
   const categories = useAllCategories()
   const [editing, setEditing] = useState<Editing | null>(null)
-  const withNotify = user.role === 'ops'
+  // The pool reaches the Support Team, and Reporters through tasks from the Support Team (OT-131).
+  const withNotify = user.role === 'ops' || user.role === 'manager'
+  const roles = useRoleNames()
   const saveArea = useSaveArea()
   const saveCategory = useSaveCategory()
   const toast = useToast()
@@ -65,9 +68,11 @@ export function MyCategoriesScreen() {
       ) : (
         <ScreenBody className="gap-3 pb-5 pt-4">
           <p className="text-14 leading-[1.5] text-text-secondary">
-            {withNotify
+            {user.role === 'ops'
               ? 'Choose which tickets notify you and which show on your lists. '
-              : 'Choose which tickets show on your lists. '}
+              : withNotify
+                ? `Choose which tasks from the ${roles.name('ops', 'Ops team')} notify you and which tickets show on your lists. `
+                : 'Choose which tickets show on your lists. '}
             {withNotify
               ? 'A ticket you filed or are working on always reaches you and always shows.'
               : 'A ticket you filed or are working on always shows.'}

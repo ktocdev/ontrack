@@ -28,7 +28,7 @@ import {
   PeopleListSkeleton,
   Spinner,
 } from '@app/components/Skeleton'
-import { TaskList, TaskListEmpty, TaskRow } from '@app/components/TaskRow'
+import { FixRow, TaskList, TaskListEmpty, TaskRow } from '@app/components/TaskRow'
 import { Composer, ThreadEvent, ThreadMessage, VisibilityToggle } from '@app/components/Thread'
 import { TicketCard } from '@app/components/TicketCard'
 import { useToast } from '@app/components/Toast'
@@ -349,6 +349,14 @@ export function EquipmentPage() {
               onDelete={() => toast.show('Deleted.')}
             />
             <TaskRow
+              title="Replace the bulb over table 4"
+              note="It’s the 2-pin kind, spares are in the office."
+              meta="From Bert · Nov 18 · Pendant light, bar"
+              done={false}
+              onToggle={() => toast.show('Checked off.')}
+              onDelete={() => toast.show('Deleted.')}
+            />
+            <TaskRow
               title="Re-glue trim on pass shelf"
               meta="Oct walkthrough · BOH › Feature · Completed"
               tag={<WalkthroughTag />}
@@ -359,6 +367,34 @@ export function EquipmentPage() {
         </Example>
         <Example title="With nothing to list">
           <TaskListEmpty>Nothing left to fix. Checked-off tasks are under Closed.</TaskListEmpty>
+        </Example>
+      </Section>
+      <Section
+        title="In-house fixes for the Support Team"
+        intro="Read-only, since the restaurant checks them off: Open with Convert to ticket (left out under View as or without update_status), the ticket it became as a link, or Fixed. A task from the Support Team carries its note on the manager's row too."
+      >
+        <Example>
+          <TaskList>
+            <FixRow
+              title="Replace 2 bulbs over booths 4–6"
+              where="FOH › Electrical › Light bulbs"
+              meta="Added Oct 23 by Maya"
+              state={{ kind: 'open' }}
+              onConvert={() => toast.show('Convert to ticket.')}
+            />
+            <FixRow
+              title="Tighten wobbly 2-top at table 14"
+              where="FOH › Aesthetics › Surfaces and seating"
+              meta="Converted by you · Added Oct 23 by Maya"
+              restaurant={PORTER}
+              state={{ kind: 'ticket', displayId: 'OT-1058', to: '#' }}
+            />
+            <FixRow
+              title="Re-glue trim on pass shelf"
+              meta="Fixed Oct 22 by Maya · added Oct 21"
+              state={{ kind: 'fixed' }}
+            />
+          </TaskList>
         </Example>
       </Section>
     </>

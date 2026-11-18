@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
-import { firstName } from '../../auth/session'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { HiddenCategories } from '../../components/HiddenCategories'
@@ -17,8 +16,8 @@ import { IconChevronDown, IconPlus, IconWarning } from '../../components/icons'
 import { listed, useListView } from '../mycategories/useMyCategories'
 import { AddTaskSheet } from './AddTaskSheet'
 import { DeleteTaskSheet } from './DeleteTaskSheet'
-import { RECENT_DAYS, splitClosed } from './inHouse'
-import { useInHouse, useSetTaskDone } from './useInHouse'
+import { addedBy, RECENT_DAYS, splitClosed } from './inHouse'
+import { stillInHouse, useInHouse, useSetTaskDone } from './useInHouse'
 import { useOpenTickets } from './useOpenTickets'
 
 /**
@@ -32,8 +31,10 @@ import { useOpenTickets } from './useOpenTickets'
  * hand-added one says who added it and when. Under View as the boxes only show their
  * state and Add is gone. Closed shows what was checked off in the last 30 days, latest
  * first; older ones wait behind Show older, still there to look at (from feedback, OT-85).
- * A task has an area and no category, so an area hidden in My categories leaves its tasks
- * off, apart from the person's own, with the line that says so and Show all (OT-118).
+ * A task has an area, and one from the Support Team may have a category too, so what My
+ * categories hides leaves its tasks off, apart from the person's own, with the line that
+ * says so and Show all (OT-118). A task from the Support Team says who sent it, its unit
+ * and their note (OT-131); a fix they made into a ticket has left the list.
  */
 export function InHouseScreen() {
   const { restaurants, viewingAs } = useUser()
@@ -50,7 +51,8 @@ export function InHouseScreen() {
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const placeOf = new Map(restaurants.map((r) => [r.id, r]))
   const view = useListView()
-  const all = (data ?? []).filter((t) => view.shows(t))
+  const tasks = (data ?? []).filter(stillInHouse)
+  const all = tasks.filter((t) => view.shows(t))
   const open = all.filter((t) => !t.done_at)
   const { recent, older } = splitClosed(all)
   const closed = [...recent, ...older]
@@ -68,7 +70,8 @@ export function InHouseScreen() {
     <TaskRow
       key={t.id}
       title={t.title}
-      meta={[t.origin_label ?? added(t), t.done_at && 'Completed'].filter(Boolean).join(' · ')}
+      meta={[t.origin_label ?? addedBy(t), t.done_at && 'Completed'].filter(Boolean).join(' · ')}
+      note={t.note}
       tag={t.origin_label ? <WalkthroughTag /> : undefined}
       done={!!t.done_at}
       restaurant={only ? undefined : placeOf.get(t.restaurant_id)}
@@ -161,7 +164,7 @@ export function InHouseScreen() {
           ) : (
             <>
               <HiddenCategories
-                count={view.areaHidden ? view.hidden : 0}
+                count={view.areaHidden || tasks.some((t) => t.category_id) ? view.hidden : 0}
                 showAll={view.showAll}
                 onShowAll={view.setShowAll}
                 className="-my-1"
@@ -223,11 +226,4 @@ export function InHouseScreen() {
       />
     </Screen>
   )
-}
-
-/** "Added by Maya · Nov 6": a task put in by hand, with no walkthrough behind it. */
-function added(t: { created_at: string; adder: { full_name: string } | null }) {
-  const day = new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  const who = firstName(t.adder?.full_name)
-  return who ? `Added by ${who} · ${day}` : `Added ${day}`
 }

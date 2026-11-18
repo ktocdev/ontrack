@@ -121,8 +121,9 @@ async function recipients(db: Db, n: Row) {
 
 /** Sends one message to each person by the ways they get it, and logs each. */
 async function sendTo(db: Db, server: Server, n: Row, people: Person[], message: Message) {
-  const log = (user_id: string, channel: 'push' | 'email', status: 'sent' | 'gone' | 'failed') =>
-    db.from('notification_deliveries').insert({
+  // A log row the table refuses is said in the function's log, not lost without a word (OT-131).
+  const log = async (user_id: string, channel: 'push' | 'email', status: 'sent' | 'gone' | 'failed') => {
+    const { error } = await db.from('notification_deliveries').insert({
       notification_id: n.id,
       user_id,
       ticket_id: n.ticket_id,
@@ -132,6 +133,8 @@ async function sendTo(db: Db, server: Server, n: Row, people: Person[], message:
       channel,
       status,
     })
+    if (error) console.error('delivery not logged', n.id, channel, status, error.message)
+  }
 
   for (const person of people) {
     if (person.push && server) {
