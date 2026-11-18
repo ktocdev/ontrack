@@ -36,6 +36,7 @@ import {
   CountTile,
   FlagChip,
   FlagChips,
+  FlaggedRow,
   HistoryLegend,
   HistorySquare,
   ProgressLine,
@@ -43,6 +44,7 @@ import {
   LeftRow,
   ProgressBar,
   ProgressRing,
+  SectionProgressRow,
   WalkthroughCardSkeleton,
   WalkthroughSectionRow,
   WalkthroughTicketRow,
@@ -485,6 +487,32 @@ export function WalkthroughPage() {
                 <HistorySquare standing="in_progress" label="In progress" />
               </div>
               <HistoryLegend />
+            </div>
+          </div>
+        </Example>
+      </Section>
+      <Section
+        title="One restaurant's walkthrough"
+        intro="Ops' view of one restaurant (WT-Ops-Restaurant): each part's progress, and what the walkthrough flagged, tagged Ticket or In-house."
+      >
+        <Example
+          code={`<SectionProgressRow name="Back of House" done={16} total={24} />
+<FlaggedRow kind="ticket" title="Outlets" meta="OT-1051 · BOH › Electrical" status="in_progress" />
+<FlaggedRow kind="inhouse" title="Re-glue trim" meta="BOH › Electrical › Feature" status="fixed" />`}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <SectionProgressRow name="Back of House" done={16} total={24} />
+              <SectionProgressRow name="Q4 tasks" done={0} total={2} />
+            </div>
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <FlaggedRow to="#" kind="ticket" title="Outlets" meta="OT-1051 · BOH › Electrical" status="in_progress" />
+              <FlaggedRow
+                kind="inhouse"
+                title="Re-glue trim on pass shelf"
+                meta="BOH › Electrical › Feature"
+                status="fixed"
+              />
             </div>
           </div>
         </Example>

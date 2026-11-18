@@ -348,7 +348,9 @@
 
   /* Scale from tokens.md: 11, 12, 13, 14, 15, 16, 20, 22, 24, 30. From the boards:
      17 and 18 (the OnTrack wordmark on error and loading screens), 28 (profile
-     avatar initials), 40 (the Sign in wordmark). */
+     avatar initials), 40 (the Sign in wordmark), 10 (the Ticket and In-house tags on
+     WT-Ops-Restaurant). */
+  --text-10: 10px;
   --text-11: 11px;
   --text-12: 12px;
   --text-13: 13px;
