@@ -49,7 +49,9 @@ import {
   WalkthroughSectionRow,
   WalkthroughTicketRow,
 } from '@app/components/Walkthrough'
+import { Button } from '@app/components/Button'
 import { Notice } from '@app/components/Notice'
+import { AddMonthRow, RotationMonthRow, RotationTag, ScheduleNote, YearPreview } from '@app/components/Schedule'
 import { Example, PageHeader, Rules, Section } from '../chrome/Doc'
 import { SAMPLE_RESTAURANTS } from './components-basics'
 
@@ -550,6 +552,70 @@ export function WalkthroughPage() {
                 meta="BOH › Electrical › Feature"
                 status="fixed"
               />
+            </div>
+          </div>
+        </Example>
+      </Section>
+      <Section
+        title="Walkthrough schedule"
+        intro="The schedule's pieces (WT-Ops-Schedule): whose schedule it is, a rotation's months with Edit (left out without set_walkthrough_schedule or under View as) and Add a month, the year's preview with this month outlined, and a restaurant's rotation on the list. The tones go A, B, C, then round, from the rotation-1 to rotation-3 tokens."
+      >
+        <Example>
+          <div className="flex flex-col gap-3">
+            <ScheduleNote kind="group">
+              <b>Group schedule.</b> Every restaurant uses this unless it has its own. Used by Federale’s Logan Square,
+              Porter and Federale’s West Loop.
+            </ScheduleNote>
+            <ScheduleNote
+              kind="own"
+              action={
+                <Button variant="small" className="self-start">
+                  Switch back to group schedule
+                </Button>
+              }
+            >
+              <b>Ranalli’s Logan Square has its own schedule,</b> Ranalli’s. Changes to the group schedule won’t affect
+              it.
+            </ScheduleNote>
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <RotationMonthRow
+                letter="A"
+                tone={1}
+                name="Kitchen + Exterior"
+                detail="A closer look · 48 checks"
+                onEdit={() => {}}
+              />
+              <RotationMonthRow
+                letter="B"
+                tone={2}
+                name="Back of House + Front of House"
+                detail="Full walkthrough · 48 checks"
+                onEdit={() => {}}
+              />
+              <RotationMonthRow letter="C" tone={3} name="Exterior + Storage" detail="A closer look · 28 checks" />
+              <AddMonthRow onAdd={() => {}} />
+            </div>
+            <div className="overflow-hidden rounded-card border border-border bg-surface">
+              <YearPreview
+                year={2026}
+                months={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(
+                  (name, i) => ({
+                    name,
+                    letter: i % 2 ? 'B' : 'A',
+                    tone: i % 2 ? 2 : 1,
+                    now: i === 10,
+                    label: `${name}: ${i % 2 ? 'BOH + FOH' : 'Kitchen + Exterior'}`,
+                  }),
+                )}
+                legend={[
+                  { letter: 'A', tone: 1, name: 'Kitchen + Exterior' },
+                  { letter: 'B', tone: 2, name: 'BOH + FOH' },
+                ]}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <RotationTag own={false}>Group</RotationTag>
+              <RotationTag own>Ranalli’s · 3-month</RotationTag>
             </div>
           </div>
         </Example>

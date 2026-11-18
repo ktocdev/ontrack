@@ -23,17 +23,19 @@ type Wrap = {
   hint?: ReactNode
   error?: ReactNode
   className?: string
+  /** The label's own style, where a board draws it as a section label ("Schedule for"). */
+  labelClassName?: string
   children: (id: string, describedBy: string | undefined) => ReactNode
 }
 
-export function FieldWrap({ label, optional, hint, error, className = '', children }: Wrap) {
+export function FieldWrap({ label, optional, hint, error, className = '', labelClassName, children }: Wrap) {
   const id = useId()
   const hintId = hint ? `${id}-hint` : undefined
   const errorId = error ? `${id}-error` : undefined
   const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <label htmlFor={id} className="text-13 font-semibold text-text-body">
+      <label htmlFor={id} className={labelClassName ?? 'text-13 font-semibold text-text-body'}>
         {label}
         {optional && <span className="font-normal text-text-muted"> (optional)</span>}
       </label>
@@ -160,12 +162,30 @@ type SelectProps = Omit<ComponentPropsWithRef<'select'>, 'id'> & {
   optional?: boolean
   hint?: ReactNode
   error?: ReactNode
+  labelClassName?: string
 }
 
 /** Native select with the design's caret; native pickers are what phones do best. */
-export function Select({ label, optional, hint, error, className, children, ref, ...rest }: SelectProps) {
+export function Select({
+  label,
+  optional,
+  hint,
+  error,
+  className,
+  labelClassName,
+  children,
+  ref,
+  ...rest
+}: SelectProps) {
   return (
-    <FieldWrap label={label} optional={optional} hint={hint} error={error} className={className}>
+    <FieldWrap
+      label={label}
+      optional={optional}
+      hint={hint}
+      error={error}
+      className={className}
+      labelClassName={labelClassName}
+    >
       {(id, describedBy) => (
         <div className="relative flex">
           <select

@@ -101,6 +101,15 @@
   /* The how-to video card on a quarterly task (WT-Quarterly), white text on it */
   --video-bg: #2e3833;
 
+  /* A rotation's months (WT-Ops-Schedule): A, B, C, then round again; the own-schedule note */
+  --rotation-1-bg: var(--status-scheduled-bg);
+  --rotation-1-text: var(--status-scheduled-text);
+  --rotation-2-bg: var(--status-fixed-bg);
+  --rotation-2-text: var(--status-fixed-text);
+  --rotation-3-bg: #ede6f6;
+  --rotation-3-text: #5b3a8c;
+  --rotation-own-text: #3e2566;
+
   /* Small alert badge on a tab ("1 reopened") and the toast's action text */
   --alert-badge: #b8941f;
   --toast-action: #8fd4b8;
@@ -238,6 +247,10 @@
   --choice-ticket-bg: color-mix(in srgb, var(--choice-ticket-text) 20%, var(--surface)); /* derived */
   --video-bg: #0e1412; /* derived: darker than the surface, so the card still reads as a picture */
 
+  --rotation-3-text: #c4a8ec; /* derived */
+  --rotation-3-bg: color-mix(in srgb, var(--rotation-3-text) 20%, var(--surface)); /* derived */
+  --rotation-own-text: var(--rotation-3-text); /* derived */
+
   --alert-badge: #b8941f; /* derived: same gold reads on both */
   --toast-action: var(--brand-fill); /* derived: the toast turns light in dark mode */
 
@@ -335,6 +348,13 @@
   --color-choice-ticket-border: var(--choice-ticket-border);
   --color-choice-ticket-text: var(--choice-ticket-text);
   --color-video-bg: var(--video-bg);
+  --color-rotation-1-bg: var(--rotation-1-bg);
+  --color-rotation-1-text: var(--rotation-1-text);
+  --color-rotation-2-bg: var(--rotation-2-bg);
+  --color-rotation-2-text: var(--rotation-2-text);
+  --color-rotation-3-bg: var(--rotation-3-bg);
+  --color-rotation-3-text: var(--rotation-3-text);
+  --color-rotation-own-text: var(--rotation-own-text);
   --color-square-outline: var(--square-outline);
   --color-scrim: var(--scrim);
   --color-alert-badge: var(--alert-badge);

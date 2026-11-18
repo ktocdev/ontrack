@@ -334,8 +334,12 @@ export const router = createBrowserRouter([
               {
                 element: <BareShell />,
                 children: [
-                  // OT-133 replaces this.
-                  { path: '/ops/walkthroughs/schedule', ...placeholder('Walkthrough schedule', 'Phase 6b') },
+                  {
+                    path: '/ops/walkthroughs/schedule',
+                    lazy: async () => ({
+                      Component: (await import('../screens/schedule/ScheduleScreen')).ScheduleScreen,
+                    }),
+                  },
                   {
                     path: '/ops/walkthroughs/:id',
                     lazy: async () => ({
