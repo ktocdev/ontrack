@@ -147,3 +147,92 @@ export function ScheduleNote({
     </div>
   )
 }
+
+const TASK_TAG = {
+  group: 'bg-surface-muted text-text-secondary',
+  changed: 'bg-rotation-1-bg text-rotation-1-text',
+  own: 'bg-rotation-3-bg text-rotation-3-text',
+} as const
+
+/**
+ * A quarterly task (WT-Ops-Tasks): its name, "Directions · video", where it comes from on a
+ * restaurant's list ("All restaurants", "Changed for …", "Only …"), and Edit and Remove when
+ * they apply.
+ */
+export function QuarterTaskRow({
+  name,
+  meta,
+  tag,
+  onEdit,
+  onRemove,
+  removeLabel,
+  action,
+}: {
+  name: string
+  meta: string
+  tag?: { kind: keyof typeof TASK_TAG; label: string }
+  onEdit?: () => void
+  onRemove?: () => void
+  /** "Remove Patio heater test for Porter", for a screen reader. */
+  removeLabel?: string
+  /** One other action in Edit's place: Restore on a removed task, Turn on on one turned off. */
+  action?: { label: string; onClick: () => void }
+}) {
+  return (
+    <div className="flex items-start gap-2.5 border-t border-surface-muted py-3 pl-3.5 pr-2 first:border-t-0">
+      <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+        <span className="text-15 font-semibold leading-[1.3] [overflow-wrap:anywhere]">{name}</span>
+        <span className="text-12 text-text-secondary">{meta}</span>
+        {tag && (
+          <span className={`whitespace-nowrap rounded-pill px-2 py-0.5 text-11 font-bold ${TASK_TAG[tag.kind]}`}>
+            {tag.label}
+          </span>
+        )}
+      </div>
+      {onEdit && (
+        <button
+          type="button"
+          aria-label={`Edit ${name}`}
+          onClick={onEdit}
+          className="-my-1 flex min-h-tap flex-none items-center px-2 text-14 font-semibold text-brand hover:text-brand-strong"
+        >
+          Edit
+        </button>
+      )}
+      {action && (
+        <button
+          type="button"
+          aria-label={`${action.label} ${name}`}
+          onClick={action.onClick}
+          className="-my-1 flex min-h-tap flex-none items-center px-2 text-14 font-semibold text-brand hover:text-brand-strong"
+        >
+          {action.label}
+        </button>
+      )}
+      {onRemove && (
+        <button
+          type="button"
+          aria-label={removeLabel ?? `Remove ${name}`}
+          onClick={onRemove}
+          className="-my-1 flex min-h-tap flex-none items-center px-2 text-14 font-semibold text-danger"
+        >
+          Remove
+        </button>
+      )}
+    </div>
+  )
+}
+
+/** The dashed "+ Add Q4 task for all restaurants" under a list. */
+export function DashedAddButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex min-h-12 w-full flex-none items-center justify-center gap-1.5 rounded-input border border-dashed border-border-muted text-14 font-semibold text-brand hover:bg-surface-hover"
+    >
+      <IconPlus size={16} strokeWidth={2.4} />
+      {children}
+    </button>
+  )
+}

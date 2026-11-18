@@ -39,7 +39,15 @@ import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { ReorderList } from '../../components/ReorderList'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
-import { AddMonthRow, RotationMonthRow, RotationTag, ScheduleNote, YearPreview } from '../../components/Schedule'
+import {
+  AddMonthRow,
+  DashedAddButton,
+  QuarterTaskRow,
+  RotationMonthRow,
+  RotationTag,
+  ScheduleNote,
+  YearPreview,
+} from '../../components/Schedule'
 import { FixRow, TaskList, TaskListEmpty, TaskRow } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import {
@@ -817,6 +825,34 @@ export function KitPage() {
                 <RotationTag own={false}>Group</RotationTag>
                 <RotationTag own>Ranalli’s · 3-month</RotationTag>
               </div>
+              <div className="overflow-hidden rounded-card border border-border bg-surface">
+                <QuarterTaskRow
+                  name="Organize utility areas"
+                  meta="Directions · video"
+                  tag={{ kind: 'changed', label: 'Changed for Ranalli’s Logan Square' }}
+                  onEdit={() => {}}
+                  onRemove={() => {}}
+                />
+                <QuarterTaskRow
+                  name="Degrease BOH floors"
+                  meta="Directions"
+                  tag={{ kind: 'group', label: 'All restaurants' }}
+                  onEdit={() => {}}
+                  onRemove={() => {}}
+                />
+                <QuarterTaskRow
+                  name="Clean the pizza oven flue"
+                  meta="Directions"
+                  tag={{ kind: 'own', label: 'Only Ranalli’s Logan Square' }}
+                  onEdit={() => {}}
+                />
+                <QuarterTaskRow
+                  name="Patio heater test"
+                  meta="Directions"
+                  action={{ label: 'Restore', onClick: () => {} }}
+                />
+              </div>
+              <DashedAddButton onClick={() => {}}>Add Q4 task for all restaurants</DashedAddButton>
               <div className="overflow-hidden rounded-card border border-border bg-surface">
                 <FlaggedRow
                   to="/kit"
