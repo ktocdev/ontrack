@@ -45,6 +45,7 @@ import {
   CountTile,
   FlagChip,
   FlagChips,
+  FlaggedRow,
   HistoryLegend,
   HistorySquare,
   ProgressLine,
@@ -52,6 +53,7 @@ import {
   LeftRow,
   ProgressBar,
   ProgressRing,
+  SectionProgressRow,
   WalkthroughCardSkeleton,
   WalkthroughSectionRow,
   WalkthroughTicketRow,
@@ -724,6 +726,29 @@ export function KitPage() {
                   <HistorySquare standing="in_progress" label="In progress" />
                 </div>
                 <HistoryLegend />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border bg-surface">
+                <SectionProgressRow name="Back of House" done={16} total={24} />
+                <SectionProgressRow name="Q4 tasks" done={0} total={2} />
+              </div>
+              <div className="overflow-hidden rounded-card border border-border bg-surface">
+                <FlaggedRow
+                  to="/kit"
+                  kind="ticket"
+                  title="Outlets"
+                  meta={
+                    <>
+                      <span className="font-mono">OT-1051</span> · BOH › Electrical
+                    </>
+                  }
+                  status="in_progress"
+                />
+                <FlaggedRow
+                  kind="inhouse"
+                  title="Re-glue trim on pass shelf"
+                  meta="BOH › Electrical › Feature"
+                  status="fixed"
+                />
               </div>
               <div className="overflow-hidden rounded-card border border-border bg-surface [&>*:last-child]:border-b-0">
                 <WalkthroughSectionRow to="/kit" name="Back of House" done={16} total={24} tickets={2} fixes={1} />

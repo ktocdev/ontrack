@@ -355,3 +355,71 @@ export function HistoryLegend() {
     </div>
   )
 }
+
+const FLAGGED_TAG = {
+  ticket: { label: 'Ticket', cls: 'bg-status-open-bg text-status-open-text' },
+  inhouse: { label: 'In-house', cls: 'bg-status-waiting-bg text-status-waiting-text' },
+}
+
+/**
+ * Something a walkthrough flagged, on Ops' view of one restaurant (WT-Ops-Restaurant): a
+ * Ticket or In-house tag before its title, where it came from under it, and its status.
+ */
+export function FlaggedRow({
+  to,
+  kind,
+  title,
+  meta,
+  status,
+}: {
+  to?: string
+  kind: keyof typeof FLAGGED_TAG
+  title: string
+  meta: ReactNode
+  status: PillStatus
+}) {
+  const tag = FLAGGED_TAG[kind]
+  const inner = (
+    <>
+      <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+        <span className="flex min-w-0 items-start gap-1.5 text-14 font-semibold leading-snug text-text">
+          <span
+            className={`mt-px flex-none rounded-chip px-1.5 py-0.5 text-10 font-bold uppercase tracking-[0.04em] ${tag.cls}`}
+          >
+            {tag.label}
+          </span>
+          {/* A long title wraps rather than hide what was flagged. */}
+          <span className="min-w-0 [overflow-wrap:anywhere]">{title}</span>
+        </span>
+        {meta && <span className="text-12 text-text-muted">{meta}</span>}
+      </span>
+      <StatusPill status={status} className="flex-none" />
+    </>
+  )
+  const row = 'flex min-h-14 items-center gap-2.5 border-t border-surface-muted px-3.5 py-2 text-text first:border-t-0'
+  return to ? (
+    <Link
+      to={to}
+      className={`${row} no-underline transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0`}
+    >
+      {inner}
+    </Link>
+  ) : (
+    <div className={row}>{inner}</div>
+  )
+}
+
+/** A part of the walkthrough on Ops' view of one restaurant: its name, a bar and "16/24". */
+export function SectionProgressRow({ name, done, total }: { name: string; done: number; total: number }) {
+  return (
+    <div className="flex items-center gap-3 border-t border-surface-muted px-3.5 py-[11px] text-14 first:border-t-0">
+      <span className="w-[120px] flex-none truncate font-semibold">{name}</span>
+      <span className="min-w-0 flex-1">
+        <ProgressLine done={done} total={total} label={`${name}: ${done} of ${total}`} />
+      </span>
+      <span className="w-10 flex-none text-right text-text-secondary">
+        {done}/{total}
+      </span>
+    </div>
+  )
+}
