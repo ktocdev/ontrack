@@ -36,7 +36,7 @@ export function useOpsWalkthrough(id: string) {
           .order('sort_order'),
         sb
           .from('inhouse_fixes')
-          .select('id, title, origin_label, done_at')
+          .select('id, title, origin_label, done_at, check:walkthrough_checks (item_id, quarterly_task_id)')
           .eq('walkthrough_id', id)
           .is('converted_ticket_id', null)
           .order('created_at'),
@@ -67,7 +67,10 @@ export function useOpsWalkthrough(id: string) {
         restaurant,
         starter: (walkthrough.data.starter as unknown as { full_name: string } | null)?.full_name ?? null,
         sections: progress.data!,
-        fixes: fixes.data!,
+        fixes: fixes.data!.map((f) => {
+          const check = f.check as unknown as { item_id: string | null; quarterly_task_id: string | null } | null
+          return { ...f, itemId: check?.item_id ?? null, taskId: check?.quarterly_task_id ?? null }
+        }),
         past: past.data as Summary[],
       }
     },

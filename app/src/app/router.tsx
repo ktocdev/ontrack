@@ -343,6 +343,18 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
+                    path: '/ops/walkthroughs/:id/fixes',
+                    lazy: async () => ({
+                      Component: (await import('../screens/ops/OpsWalkthroughFixesScreen')).OpsWalkthroughFixesScreen,
+                    }),
+                  },
+                  {
+                    path: '/ops/in-house',
+                    lazy: async () => ({
+                      Component: (await import('../screens/ops/OpsInHouseScreen')).OpsInHouseScreen,
+                    }),
+                  },
+                  {
                     path: '/ops/equipment/new',
                     lazy: async () => ({
                       Component: (await import('../screens/equipment/EquipmentFormScreen')).OpsAddEquipmentScreen,
