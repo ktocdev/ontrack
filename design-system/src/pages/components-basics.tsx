@@ -327,12 +327,26 @@ export function RestaurantsPage() {
           />
         </Example>
       </Section>
-      <Section title="Reorder" intro="Drag, or use the keyboard, to set the order restaurants show on the dashboard.">
+      <Section
+        title="Reorder"
+        intro="Drag, or use the keyboard, to set an order: the restaurants on the dashboard (with their color), or a checklist's sections, groups and items (with a line under each, OT-136)."
+      >
         <Example>
           <ReorderList
             label="Restaurants in order"
             items={order.map((id) => SAMPLE_RESTAURANTS.find((r) => r.id === id)!)}
             onChange={setOrder}
+          />
+        </Example>
+        <Example title="Without a color, with a line">
+          <ReorderList
+            label="Items in order"
+            items={[
+              { id: 'k1', name: 'Outlets', detail: 'Electrical' },
+              { id: 'k2', name: 'Light bulbs', detail: 'Electrical' },
+              { id: 'k3', name: 'Floor drains', detail: 'Plumbing' },
+            ]}
+            onChange={() => {}}
           />
         </Example>
       </Section>

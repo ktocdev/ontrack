@@ -1465,14 +1465,14 @@ isOneToOne: false
                   ]
                 },"walkthrough_items": {
                   Row: {
-                    "active": boolean,"category_id": string | null,"directions": string | null,"group_name": string,"id": string,"section_id": string,"sort_order": number,"title": string,"video_url": string | null
+                    "active": boolean,"category_id": string | null,"copied_from": string | null,"directions": string | null,"group_name": string,"id": string,"section_id": string,"sort_order": number,"title": string,"video_url": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"category_id"?: string | null,"directions"?: string | null,"group_name": string,"id"?: string,"section_id": string,"sort_order"?: number,"title": string,"video_url"?: string | null
+                    "active"?: boolean,"category_id"?: string | null,"copied_from"?: string | null,"directions"?: string | null,"group_name": string,"id"?: string,"section_id": string,"sort_order"?: number,"title": string,"video_url"?: string | null
                   }
                   Update: {
-                    "active"?: boolean,"category_id"?: string | null,"directions"?: string | null,"group_name"?: string,"id"?: string,"section_id"?: string,"sort_order"?: number,"title"?: string,"video_url"?: string | null
+                    "active"?: boolean,"category_id"?: string | null,"copied_from"?: string | null,"directions"?: string | null,"group_name"?: string,"id"?: string,"section_id"?: string,"sort_order"?: number,"title"?: string,"video_url"?: string | null
                   }
                   Relationships: [
                     {
@@ -1487,6 +1487,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_category_history"
       referencedColumns: ["category_id"]
+    },{
+      foreignKeyName: "walkthrough_items_copied_from_fkey"
+      columns: ["copied_from"]
+isOneToOne: false
+      referencedRelation: "walkthrough_items"
+      referencedColumns: ["id"]
     },{
       foreignKeyName: "walkthrough_items_section_id_fkey"
       columns: ["section_id"]
@@ -1549,17 +1555,23 @@ isOneToOne: false
                   ]
                 },"walkthrough_sections": {
                   Row: {
-                    "active": boolean,"area": Database["public"]['Enums']["area"] | null,"id": string,"name": string,"short_name": string | null,"sort_order": number,"template_id": string
+                    "active": boolean,"area": Database["public"]['Enums']["area"] | null,"copied_from": string | null,"id": string,"name": string,"short_name": string | null,"sort_order": number,"template_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"] | null,"id"?: string,"name": string,"short_name"?: string | null,"sort_order"?: number,"template_id": string
+                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"] | null,"copied_from"?: string | null,"id"?: string,"name": string,"short_name"?: string | null,"sort_order"?: number,"template_id": string
                   }
                   Update: {
-                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"] | null,"id"?: string,"name"?: string,"short_name"?: string | null,"sort_order"?: number,"template_id"?: string
+                    "active"?: boolean,"area"?: Database["public"]['Enums']["area"] | null,"copied_from"?: string | null,"id"?: string,"name"?: string,"short_name"?: string | null,"sort_order"?: number,"template_id"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "walkthrough_sections_copied_from_fkey"
+      columns: ["copied_from"]
+isOneToOne: false
+      referencedRelation: "walkthrough_sections"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "walkthrough_sections_template_id_fkey"
       columns: ["template_id"]
 isOneToOne: false
@@ -1607,17 +1619,29 @@ isOneToOne: false
                   ]
                 },"walkthrough_templates": {
                   Row: {
-                    "active": boolean,"created_at": string,"description": string | null,"id": string,"name": string,"short_name": string | null,"updated_at": string
+                    "active": boolean,"copied_from": string | null,"created_at": string,"description": string | null,"id": string,"name": string,"replaced_by": string | null,"short_name": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"created_at"?: string,"description"?: string | null,"id"?: string,"name": string,"short_name"?: string | null,"updated_at"?: string
+                    "active"?: boolean,"copied_from"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name": string,"replaced_by"?: string | null,"short_name"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "active"?: boolean,"created_at"?: string,"description"?: string | null,"id"?: string,"name"?: string,"short_name"?: string | null,"updated_at"?: string
+                    "active"?: boolean,"copied_from"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name"?: string,"replaced_by"?: string | null,"short_name"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
-                    
+                    {
+      foreignKeyName: "walkthrough_templates_copied_from_fkey"
+      columns: ["copied_from"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "walkthrough_templates_replaced_by_fkey"
+      columns: ["replaced_by"]
+isOneToOne: false
+      referencedRelation: "walkthrough_templates"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"walkthroughs": {
                   Row: {
@@ -2156,6 +2180,9 @@ isOneToOne: false
             "add_category":
 { Args: { "p_area": Database["public"]['Enums']["area"],"p_name": string }; Returns: string
                            },
+"add_checklist":
+{ Args: { "p_copy_from"?: string,"p_description": string,"p_name": string,"p_short_name": string }; Returns: string
+                           },
 "add_inhouse_task":
 { Args: { "p_area"?: Database["public"]['Enums']["area"],"p_equipment_id"?: string,"p_note"?: string,"p_restaurant": string,"p_title": string }; Returns: string
                            },
@@ -2201,6 +2228,18 @@ isOneToOne: false
 "category_name_taken":
 { Args: { "p_area": Database["public"]['Enums']["area"],"p_except": string,"p_name": string }; Returns: boolean
                            },
+"checklist_for_change":
+{ Args: { "p_template": string }; Returns: string
+                           },
+"checklist_item":
+{ Args: { "p_id": string,"p_template": string }; Returns: string
+                           },
+"checklist_log":
+{ Args: { "p_action": string,"p_meta": Json,"p_template": string }; Returns: undefined
+                           },
+"checklist_section":
+{ Args: { "p_id": string,"p_template": string }; Returns: string
+                           },
 "claim_notifications":
 { Args: { "p_limit"?: number }; Returns: {
               "actor_id": string | null,
@@ -2238,11 +2277,20 @@ isOneToOne: false
 "convert_inhouse_fix":
 { Args: { "p_category_id"?: string,"p_id": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"] }; Returns: string
                            },
+"copy_checklist":
+{ Args: { "p_name": string,"p_template": string }; Returns: string
+                           },
 "create_walkthrough_ticket":
 { Args: { "p_category_id"?: string,"p_description"?: string,"p_equipment_id"?: string,"p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"],"p_walkthrough_id": string }; Returns: string
                            },
 "delete_category":
 { Args: { "p_id": string }; Returns: undefined
+                           },
+"delete_checklist":
+{ Args: { "p_template": string }; Returns: undefined
+                           },
+"delete_checklist_part":
+{ Args: { "p_id": string,"p_kind": string,"p_template": string }; Returns: string
                            },
 "delete_contractor":
 { Args: { "p_id": string }; Returns: undefined
@@ -2333,6 +2381,9 @@ isOneToOne: false
 "open_walkthroughs":
 { Args: { "p_period"?: string }; Returns: number
                            },
+"order_checklist":
+{ Args: { "p_ids": (string)[],"p_section": string,"p_template": string }; Returns: string
+                           },
 "path_uuid":
 { Args: { "object_name": string }; Returns: string
                            },
@@ -2362,6 +2413,9 @@ isOneToOne: false
 "rename_category":
 { Args: { "p_id": string,"p_name": string }; Returns: undefined
                            },
+"rename_checklist_group":
+{ Args: { "p_from": string,"p_section": string,"p_template": string,"p_to": string }; Returns: string
+                           },
 "rename_trade":
 { Args: { "p_id": string,"p_name": string }; Returns: undefined
                            },
@@ -2379,6 +2433,15 @@ isOneToOne: false
                            },
 "rotation_template":
 { Args: { "p_period": string,"p_rotation": string }; Returns: string
+                           },
+"save_checklist":
+{ Args: { "p_description": string,"p_name": string,"p_short_name": string,"p_template": string }; Returns: string
+                           },
+"save_checklist_item":
+{ Args: { "p_category": string,"p_directions": string,"p_group": string,"p_id": string,"p_section": string,"p_template": string,"p_title": string,"p_video_url": string }; Returns: string
+                           },
+"save_checklist_section":
+{ Args: { "p_area": Database["public"]['Enums']["area"],"p_id": string,"p_name": string,"p_short_name": string,"p_template": string }; Returns: string
                            },
 "save_contractor":
 { Args: { "p_contact_name"?: string,"p_email"?: string,"p_id": string,"p_insurance_until"?: string,"p_name": string,"p_notes"?: string,"p_phone"?: string,"p_preferred"?: boolean,"p_trade_ids": (string)[] }; Returns: string
@@ -2421,6 +2484,12 @@ isOneToOne: false
                            },
 "set_category_active":
 { Args: { "p_active": boolean,"p_id": string }; Returns: undefined
+                           },
+"set_checklist_active":
+{ Args: { "p_active": boolean,"p_template": string }; Returns: undefined
+                           },
+"set_checklist_part_active":
+{ Args: { "p_active": boolean,"p_id": string,"p_kind": string,"p_template": string }; Returns: string
                            },
 "set_contractor_archived":
 { Args: { "p_archived": boolean,"p_id": string }; Returns: undefined
