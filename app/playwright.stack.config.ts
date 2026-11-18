@@ -34,7 +34,7 @@ export default defineConfig({
       ],
     },
   },
-  // `last/` holds flows that change what the others expect (6a's done test opens a new month,
+  // `last/` holds flows that change what the others expect (Phase 6's done test opens a new month,
   // which becomes every restaurant's current walkthrough), so they run after the rest. CI runs
   // each browser on its own stack (`--project=chromium --project=chromium-last`); here both
   // browsers share one, so each waits for both.

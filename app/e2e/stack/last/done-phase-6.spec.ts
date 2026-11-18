@@ -2,9 +2,10 @@ import { expect, test, type APIRequestContext, type Page, type TestInfo } from '
 import { signIn } from '../helpers'
 
 /**
- * Phase 6a's done test as one flow: next month's walkthrough is opened by the database for
- * all four restaurants, a manager submits one from a phone with two tickets and one fix, and
- * those tickets show the Walkthrough tag on the Ops dashboard.
+ * Phase 6's done test as one flow: next month's walkthrough is opened by the database for
+ * all four restaurants, a manager submits one from a phone with two tickets and one fix,
+ * those tickets show the Walkthrough tag on the Ops dashboard (6a), and the Ops overview
+ * shows one of four submitted (6b, OT-139).
  *
  * The seed's newest walkthroughs are October's, so "next month" is November 2026, opened by
  * `open_walkthroughs`, which runs only for the scheduled job; the test calls it with the
@@ -13,7 +14,8 @@ import { signIn } from '../helpers'
  * file runs in the `*-last` projects, after the rest of its browser's suite (see
  * playwright.stack.config.ts). Submitting can't be undone, so each browser takes its own
  * restaurant: Maya at Logan Square on Chromium, Dana at Porter on WebKit. A second run needs
- * `supabase db reset` first.
+ * `supabase db reset` first. CI runs each browser on its own stack, so each sees one of four
+ * submitted; here both share one, and the second to run sees two.
  */
 
 test.use({ timezoneId: 'America/Chicago' })
@@ -65,7 +67,7 @@ async function ticketFrom(page: Page, item: string, title: string, urgent = fals
   await expect(page.getByText(/^OT-\d+ created\. Ops has been notified\.$/).last()).toBeVisible()
 }
 
-test('next month opens for every restaurant, a manager submits it with two tickets and a fix, and Ops sees them tagged', async ({
+test('next month opens for every restaurant, a manager submits it with two tickets and a fix, Ops sees them tagged and one of four submitted', async ({
   page,
   browser,
   request,
@@ -170,6 +172,33 @@ test('next month opens for every restaurant, a manager submits it with two ticke
     await expect(group.getByRole('link', { name: new RegExp(bulbs) })).toContainText('URGENT')
     await group.getByRole('link', { name: new RegExp(bulbs) }).scrollIntoViewIfNeeded()
     await shot(ops, testInfo, 'ops dashboard')
+
+    // 6. Bert's Walkthroughs overview opens on November: one of four submitted, this
+    //    restaurant's row submitted with its two tickets and the fix, the others still open.
+    const submitted = (await service(
+      request,
+      `walkthroughs?select=restaurant_id&period=eq.${NOVEMBER}&status=eq.submitted`,
+    )) as { restaurant_id: string }[]
+    expect(submitted.map((w) => w.restaurant_id)).toContain(manager.restaurant)
+    if (process.env.CI) expect(submitted).toHaveLength(1)
+    await ops.getByRole('link', { name: 'Walkthroughs' }).click()
+    await expect(ops).toHaveURL(/\/ops\/walkthroughs$/)
+    await expect(ops.getByText('November 2026')).toBeVisible()
+    // The group's Kitchen + Exterior, and Ranalli's own rotation is on Dining + Patio.
+    await expect(ops.getByText('2 checklists · due Nov 30')).toBeVisible()
+    await expect(ops.getByText(new RegExp(`^${submitted.length} of 4 submitted`))).toBeVisible()
+    const rows = ops.getByRole('link', { name: /, \d+ of \d+$/ })
+    await expect(rows).toHaveCount(4)
+    const row = ops.getByRole('link', { name: new RegExp(`^${manager.name}, `) })
+    await expect(row).toContainText(/Submitted \w{3} \d+/)
+    await expect(row).toContainText(/2 tickets\s*1 in-house/)
+    for (const [name, id] of Object.entries(RESTAURANTS)) {
+      if (submitted.some((w) => w.restaurant_id === id)) continue
+      const other = (await service(request, `restaurants?select=name&id=eq.${id}`)) as { name: string }[]
+      expect(other, name).toHaveLength(1)
+      await expect(ops.getByRole('link', { name: new RegExp(`^${other[0].name}, `) })).not.toContainText('Submitted')
+    }
+    await shot(ops, testInfo, 'ops walkthroughs · November')
   } finally {
     await context.close()
   }
