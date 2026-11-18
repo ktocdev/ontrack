@@ -2334,6 +2334,9 @@ isOneToOne: false
 "has_scope":
 { Args: { "rid": string }; Returns: boolean
                            },
+"import_checklist":
+{ Args: { "p_rows": Json,"p_template": string }; Returns: string
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },

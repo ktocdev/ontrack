@@ -353,6 +353,12 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
+                    path: '/ops/walkthroughs/checklists/:id/import',
+                    lazy: async () => ({
+                      Component: (await import('../screens/checklists/ImportChecklistScreen')).ImportChecklistScreen,
+                    }),
+                  },
+                  {
                     path: '/ops/walkthroughs/:id',
                     lazy: async () => ({
                       Component: (await import('../screens/ops/OpsWalkthroughScreen')).OpsWalkthroughScreen,
