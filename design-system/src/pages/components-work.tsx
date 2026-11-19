@@ -61,6 +61,9 @@ import {
   YearPreview,
 } from '@app/components/Schedule'
 import { Example, PageHeader, Rules, Section } from '../chrome/Doc'
+import { Kpi } from '@app/components/Kpi'
+import { MonthStepper } from '@app/components/MonthStepper'
+import { ReadOnlyBanner } from '@app/components/ReadOnlyBanner'
 import { SAMPLE_RESTAURANTS } from './components-basics'
 
 const LOGAN = SAMPLE_RESTAURANTS[0]!
@@ -449,6 +452,72 @@ export function ContractorsPage() {
             spend="$2,140"
             phone="(773) 555-0133"
           />
+        </Example>
+      </Section>
+    </>
+  )
+}
+
+export function FiguresPage() {
+  const months = ['2026-09-01', '2026-10-01', '2026-11-01']
+  const [month, setMonth] = useState('2026-10-01')
+  return (
+    <>
+      <PageHeader
+        eyebrow="Components"
+        title="Figures and months"
+        source={['components/Kpi.tsx', 'components/MonthStepper.tsx', 'components/ReadOnlyBanner.tsx']}
+      >
+        <p>
+          The tiles that put a number in front of a label, the stepper that moves a screen a month at a time, and the
+          band that says a screen is read-only. Leadership's Overview uses all three; the contractor page and the Ops
+          walkthroughs overview use one each.
+        </p>
+      </PageHeader>
+      <Section
+        title="Figure tiles"
+        intro="Two to a row. Urgent colors a count that needs attention; muted is for nothing yet."
+      >
+        <Example
+          code={`<Kpi size="large" value="3" label="Urgent" tone="urgent" />
+<Kpi wide value="$4,812.00" label="Spend · 2026" />`}
+        >
+          <div className="grid grid-cols-2 gap-2">
+            <Kpi size="large" value="14" label="Open tickets" />
+            <Kpi size="large" value="3" label="Urgent" tone="urgent" />
+            <Kpi size="large" value="$2,418.60" label="Spend · October" />
+            <Kpi size="large" value="No data" label="Avg. time to close" tone="muted" />
+            <Kpi wide value="$4,812.00" label="Spend · 2026" />
+            <Kpi value="11" label="Visits · 2026" />
+            <Kpi size="small" value="Oct 19, 2026" label="Last visit" />
+          </div>
+        </Example>
+      </Section>
+      <Section
+        title="Month stepper"
+        intro="Previous and Next around the month; a month with no neighbour disables its button."
+      >
+        <Example
+          code={`<MonthStepper month="2026-10-01" line="1 of 4 submitted" older={…} newer={…} onGo={setMonth} />`}
+        >
+          <MonthStepper
+            month={month}
+            line="1 of 4 submitted"
+            older={months[months.indexOf(month) - 1]}
+            newer={months[months.indexOf(month) + 1]}
+            onGo={setMonth}
+          />
+        </Example>
+      </Section>
+      <Section
+        title="Read-only banner"
+        intro="Across the top of leadership's screens. It takes the phone's top inset, so the header under it is drawn with underBanner."
+      >
+        <Example
+          code={`<ReadOnlyBanner />
+<ScreenHeader underBanner title="Overview" … />`}
+        >
+          <ReadOnlyBanner />
         </Example>
       </Section>
     </>

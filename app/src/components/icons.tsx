@@ -40,6 +40,12 @@ export const IconClipboardCheck = (p: IconProps) => (
     <path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6" />
   </svg>
 )
+/** Leadership's empty Overview (Empty-Exec-Overview). */
+export const IconChart = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+  </svg>
+)
 export const IconWrench = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z" />

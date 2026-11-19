@@ -182,8 +182,8 @@ export function PeopleListSkeleton({ count = 7 }: { count?: number }) {
   )
 }
 
-/** Leadership overview: four KPI tiles, then per-restaurant rows with a bar. */
-export function MetricsSkeleton() {
+/** Leadership overview: four KPI tiles, then per-restaurant rows with a bar; the label names the month. */
+export function MetricsSkeleton({ label = 'By restaurant' }: { label?: string }) {
   const kpis = [
     [36, 84],
     [24, 52],
@@ -202,7 +202,7 @@ export function MetricsSkeleton() {
           </div>
         ))}
       </div>
-      <span className="eyebrow">By restaurant</span>
+      <span className="eyebrow">{label}</span>
       <div aria-hidden="true" className="overflow-hidden rounded-input border border-border bg-surface">
         {names.map((n, i) => (
           <div key={i} className="flex flex-col gap-[9px] border-t border-surface-muted p-3.5 first:border-t-0">

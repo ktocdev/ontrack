@@ -4,6 +4,7 @@ import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button, ButtonLink, buttonClasses } from '../../components/Button'
 import { Card, KeyValueRow, ListCard } from '../../components/Card'
+import { Kpi } from '../../components/Kpi'
 import { EmptyState } from '../../components/EmptyState'
 import { RestaurantName } from '../../components/RestaurantName'
 import { BackBar, Screen, ScreenBody, ScreenEmpty, SectionLabel, UnderlineTabs } from '../../components/Screen'
@@ -184,7 +185,7 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
             <div className="grid grid-cols-2 gap-2">
               <Kpi wide value={money(s.yearCents)} label={`Spend · ${year}`} />
               <Kpi value={String(s.yearVisits)} label={`Visits · ${year}`} />
-              <Kpi small value={s.lastVisit ? serviceDay(s.lastVisit) : 'None yet'} label="Last visit" />
+              <Kpi size="small" value={s.lastVisit ? serviceDay(s.lastVisit) : 'None yet'} label="Last visit" />
             </div>
           </section>
         )}
@@ -244,19 +245,6 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
 }
 
 /** The board's 12px-radius figure: 22px Archivo (17px for a date) over a 12px label. */
-function Kpi({ value, label, wide, small }: { value: string; label: string; wide?: boolean; small?: boolean }) {
-  return (
-    <div
-      className={`flex min-w-0 flex-col gap-0.5 rounded-input border border-border bg-surface px-3.5 py-3 ${wide ? 'col-span-2' : ''}`}
-    >
-      <b className={`font-display font-bold [overflow-wrap:anywhere] ${small ? 'text-17 leading-[26px]' : 'text-22'}`}>
-        {value}
-      </b>
-      <span className="text-12 font-semibold text-text-secondary">{label}</span>
-    </div>
-  )
-}
-
 /** A row opening the service record, which comes back here. */
 function VisitLink({ visit, children }: { visit: Visit; children: ReactNode }) {
   const location = useLocation()
