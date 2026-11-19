@@ -6,7 +6,7 @@ describe('a ticket link', () => {
     expect(ticketPath('manager', 'abc')).toBe('/tickets/abc')
     expect(ticketPath('ops', 'abc')).toBe('/ops/tickets/abc')
     expect(ticketPath('admin', 'abc')).toBeNull()
-    expect(ticketPath('leadership', 'abc')).toBeNull()
+    expect(ticketPath('leadership', 'abc')).toBe('/lead/tickets/abc')
   })
 
   it('keeps a strange id inside its path', () => {

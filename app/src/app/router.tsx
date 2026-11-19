@@ -573,6 +573,20 @@ export const router = createBrowserRouter([
                     },
                   },
                   {
+                    path: '/lead/tickets/:id',
+                    lazy: async () => {
+                      const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')
+                      return { Component: () => <ReadOnlyTicketScreen base="/lead" /> }
+                    },
+                  },
+                  {
+                    path: '/lead/service/:id',
+                    lazy: async () => {
+                      const { ServiceRecordScreen } = await import('../screens/service/ServiceRecordScreen')
+                      return { Component: () => <ServiceRecordScreen base="/lead" /> }
+                    },
+                  },
+                  {
                     path: '/lead/restaurants/:id/equipment',
                     lazy: async () => {
                       const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')

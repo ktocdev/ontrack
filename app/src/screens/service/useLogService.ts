@@ -263,7 +263,7 @@ export function useTicketService(ticketId: string, enabled: boolean) {
       const sb = requireSupabase()
       const { data, error } = await sb
         .from('service_records')
-        .select('id, title, kind, service_date, contractor:contractors (name)')
+        .select('id, title, kind, service_date, contractor:contractors (name), invoice:invoices (status)')
         .eq('ticket_id', ticketId)
         .order('service_date', { ascending: false })
         .order('created_at', { ascending: false })
@@ -279,7 +279,12 @@ export function useTicketService(ticketId: string, enabled: boolean) {
         : { data: [], error: null }
       if (totals.error) throw totals.error
       const totalOf = new Map((totals.data ?? []).map((t) => [t.service_record_id, t.total_cents]))
-      const records = data.map((r) => ({ ...r, totalCents: totalOf.get(r.id) ?? 0 }))
+      const records = data.map((r) => ({
+        ...r,
+        totalCents: totalOf.get(r.id) ?? 0,
+        // One invoice row per record, or none yet.
+        invoiceAttached: (Array.isArray(r.invoice) ? r.invoice[0] : r.invoice)?.status === 'attached',
+      }))
       return { records, totalCents: records.reduce((sum, r) => sum + r.totalCents, 0) }
     },
   })
