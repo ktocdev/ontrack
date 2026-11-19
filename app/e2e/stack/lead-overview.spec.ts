@@ -68,7 +68,7 @@ test('leadership’s Overview shows what Ops sees: open now, and a month’s spe
   await expect(page.getByText('October 2026')).toBeVisible()
   await expect(tile(page, /^Spend · October/)).toContainText(money(spend))
   await expect(tile(page, 'Open tickets')).toContainText(String(openNow))
-  const rows = page.locator('a[href^="/lead/restaurants?restaurant="]')
+  const rows = page.locator('a[href^="/lead/restaurants/"]')
   await expect(rows).toHaveCount(4)
   await expect(rows.first()).toContainText(money(most))
   await expect(rows.first()).toContainText(/\d+ open/)
@@ -86,7 +86,7 @@ test('leadership’s Overview shows what Ops sees: open now, and a month’s spe
 
   // A row opens the restaurant.
   await rows.first().click()
-  await expect(page).toHaveURL(/\/lead\/restaurants\?restaurant=[0-9a-f-]{36}$/)
+  await expect(page).toHaveURL(/\/lead\/restaurants\/[0-9a-f-]{36}$/)
 })
 
 test('View as shows leadership’s Overview, and its rows open nothing', async ({ page }) => {
