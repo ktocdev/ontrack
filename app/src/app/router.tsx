@@ -553,7 +553,12 @@ export const router = createBrowserRouter([
               {
                 element: <Shell />,
                 children: [
-                  { path: '/lead', ...placeholder('Overview', 'Phase 7') },
+                  {
+                    path: '/lead',
+                    lazy: async () => ({
+                      Component: (await import('../screens/leadership/LeadOverviewScreen')).LeadOverviewScreen,
+                    }),
+                  },
                   { path: '/lead/restaurants', ...placeholder('Restaurants', 'Phase 7') },
                   { path: '/lead/walkthroughs', ...placeholder('Walkthroughs', 'Phase 7') },
                   { path: '/lead/contractors', ...placeholder('Contractors', 'Phase 7') },
