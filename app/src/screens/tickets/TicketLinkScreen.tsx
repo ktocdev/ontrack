@@ -10,8 +10,8 @@ import { useTicketLink } from './useTicketLink'
  * sent before OT-62 carries the ticket's id instead, and still opens. It opens the right
  * screen for whoever taps it and grants nothing: that screen still asks the database, so
  * a ticket someone can't see is the same refusal as any other. RequireAuth above it takes
- * a signed-out person through sign-in and back. Admin and leadership have no ticket screen
- * until Phase 7.
+ * a signed-out person through sign-in and back. Leadership's ticket is read-only (OT-145);
+ * the admin has no ticket screen until OT-148.
  */
 export function TicketLinkScreen() {
   const { id = '' } = useParams()
