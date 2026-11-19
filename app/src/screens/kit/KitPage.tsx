@@ -37,7 +37,7 @@ import { AddPhotoButton, PhotoThumb, PhotoTray } from '../../components/Photo'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { ReorderList } from '../../components/ReorderList'
-import { RestaurantPicker } from '../../components/RestaurantPicker'
+import { RestaurantPicker, RestaurantTitlePicker } from '../../components/RestaurantPicker'
 import { StatusMenu } from '../../components/StatusMenu'
 import {
   AddMonthRow,
@@ -533,12 +533,26 @@ export function KitPage() {
                 who="Not picked up yet"
                 when="Created 3h ago"
               />
+              <TicketCard
+                displayId="OT-1037"
+                title="Patio string lights out, east side"
+                status="waiting_parts"
+                place="FOH · Lighting · $86.00 logged"
+              />
               <RestaurantPicker
                 restaurants={[
                   { id: 'a', name: 'Porter', color: 'var(--preset-ocean)' },
                   { id: 'b', name: 'Corner Bistro', color: 'var(--preset-plum)' },
                 ]}
                 selectedId={null}
+                onSelect={() => toast.show('Restaurant picked.')}
+              />
+              <RestaurantTitlePicker
+                restaurants={[
+                  { id: 'a', name: 'Federale’s Logan Square', color: 'var(--preset-plum)' },
+                  { id: 'b', name: 'Porter', color: 'var(--preset-ocean)' },
+                ]}
+                selected={{ id: 'a', name: 'Federale’s Logan Square', color: 'var(--preset-plum)' }}
                 onSelect={() => toast.show('Restaurant picked.')}
               />
               <VisibilityToggle internal={kitInternal} onChange={setKitInternal} />
