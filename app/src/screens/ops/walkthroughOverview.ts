@@ -63,7 +63,7 @@ export function monthRows<R extends Restaurant>(rows: SummaryRow[], month: strin
 }
 
 /** "Oct 31" */
-const shortDay = (date: string) =>
+export const shortDay = (date: string) =>
   new Date(`${date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',

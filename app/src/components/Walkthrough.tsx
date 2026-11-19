@@ -299,13 +299,24 @@ export function ProgressLine({ done, total, label }: { done: number; total: numb
   )
 }
 
-/** The pill on a restaurant's month: Not started, In progress, Missed, or Submitted with its day. */
-export function StandingPill({ standing, submitted }: { standing: Standing; submitted?: string | null }) {
+/**
+ * The pill on a restaurant's month: Not started, In progress, Missed, or Submitted with its
+ * day. Leadership's board (WT-Exec) puts how far along it is in place of In progress ("40%").
+ */
+export function StandingPill({
+  standing,
+  submitted,
+  progress,
+}: {
+  standing: Standing
+  submitted?: string | null
+  progress?: string
+}) {
   if (standing === 'on_time' || standing === 'late') {
     return <FlagChip tone="good">{submitted ? `Submitted ${submitted}` : 'Submitted'}</FlagChip>
   }
   if (standing === 'missed') return <FlagChip tone="missed">Missed</FlagChip>
-  if (standing === 'in_progress') return <FlagChip tone="progress">In progress</FlagChip>
+  if (standing === 'in_progress') return <FlagChip tone="progress">{progress ?? 'In progress'}</FlagChip>
   return <FlagChip tone="ticket">Not started</FlagChip>
 }
 

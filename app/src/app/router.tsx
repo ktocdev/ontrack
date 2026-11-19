@@ -593,7 +593,12 @@ export const router = createBrowserRouter([
                       return { Component: () => <LeadRestaurantScreen tab="equipment" /> }
                     },
                   },
-                  { path: '/lead/walkthroughs', ...placeholder('Walkthroughs', 'Phase 7') },
+                  {
+                    path: '/lead/walkthroughs',
+                    lazy: async () => ({
+                      Component: (await import('../screens/leadership/LeadWalkthroughsScreen')).LeadWalkthroughsScreen,
+                    }),
+                  },
                   {
                     path: '/lead/contractors',
                     lazy: async () => {
