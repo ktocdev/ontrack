@@ -1,4 +1,5 @@
 import { Card, CardLink } from './Card'
+import { RestaurantName } from './RestaurantName'
 import { NEW_RING, useNewTicket } from './newTicket'
 import { StatusPill, UrgentTag, WalkthroughTag, type PillStatus } from './Pill'
 
@@ -7,7 +8,9 @@ import { StatusPill, UrgentTag, WalkthroughTag, type PillStatus } from './Pill'
  * 6px gaps. Any URGENT and the number across from the status pill, a 16px title, a meta
  * line, then any Walkthrough tag and a badge with the name of anyone else working on it.
  * Without `to` it is not a link (View as). Given `createdAt`, a new ticket has a ring
- * for its first minutes (newTicket.ts).
+ * for its first minutes (newTicket.ts). Given a restaurant (Admin-Tickets, a list across
+ * restaurants with no labels), the restaurant takes the number's place on top and the
+ * number starts the meta line.
  */
 type Props = {
   to?: string
@@ -23,6 +26,7 @@ type Props = {
   /** Who else is working on it. */
   worker?: string | null
   createdAt?: string
+  restaurant?: { name: string; color: string }
 }
 
 export function OpsTicketCard({
@@ -36,6 +40,7 @@ export function OpsTicketCard({
   meta,
   worker,
   createdAt,
+  restaurant,
 }: Props) {
   const ring = useNewTicket(createdAt, status) ? NEW_RING : ''
   const body = (
@@ -43,12 +48,26 @@ export function OpsTicketCard({
       {ring && <span className="sr-only">New ticket.</span>}
       <span className="flex items-center gap-2">
         {urgent && <UrgentTag className="flex-none" />}
-        <span className="font-mono text-12 text-text-muted">{displayId}</span>
-        <span className="flex-1" />
+        {restaurant ? (
+          <RestaurantName name={restaurant.name} color={restaurant.color} className="min-w-0 flex-1" />
+        ) : (
+          <>
+            <span className="font-mono text-12 text-text-muted">{displayId}</span>
+            <span className="flex-1" />
+          </>
+        )}
         <StatusPill status={status} label={statusLabel} />
       </span>
       <span className="text-16 font-semibold [overflow-wrap:anywhere]">{title}</span>
-      <span className="text-12 text-text-muted">{meta}</span>
+      <span className="text-12 text-text-muted">
+        {restaurant && (
+          <>
+            <span className="font-mono">{displayId}</span>
+            {meta && ' · '}
+          </>
+        )}
+        {meta}
+      </span>
       {(walkthrough || worker) && (
         <span className="flex items-center justify-between gap-2">
           {walkthrough ? <WalkthroughTag /> : <span />}

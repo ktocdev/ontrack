@@ -71,16 +71,13 @@ test('a link that is not a ticket says so', async ({ page }) => {
   await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
 })
 
-test('admin and leadership have no ticket screen yet, and see nothing of the ticket', async ({ page }, testInfo) => {
+test('an admin’s link opens the read-only ticket, after sign-in and 2-step', async ({ page }) => {
   await page.goto(`/t/${T1042}`)
   await signInForm(page, 'admin@example.com')
   await passTwoStep(page)
-  await expect(page.getByRole('heading', { name: "Tickets don't open here yet" })).toBeVisible()
-  await expect(page.getByText(HEADING)).toHaveCount(0)
-  await page.waitForTimeout(300)
-  await testInfo.attach('no-screen', { body: await page.screenshot(), contentType: 'image/png' })
-  await page.getByRole('link', { name: 'Go to my home screen' }).click()
-  await expect(page).toHaveURL(/\/admin\/users$/)
+  await expect(page).toHaveURL(new RegExp(`/admin/tickets/${T1042}$`))
+  await expect(page.getByText(HEADING)).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
 })
 
 test.describe('Share link', () => {

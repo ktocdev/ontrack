@@ -312,6 +312,17 @@ export function RestaurantsPage() {
             onSelect={() => toast.show('Restaurant picked.')}
           />
         </Example>
+        <Example
+          title="As a chip"
+          code={`<RestaurantPicker chip restaurants={restaurants} selectedId={id} onSelect={setId} />`}
+        >
+          <RestaurantPicker
+            chip
+            restaurants={SAMPLE_RESTAURANTS}
+            selectedId={null}
+            onSelect={() => toast.show('Restaurant picked.')}
+          />
+        </Example>
       </Section>
       <Section title="Title picker" intro="Leadership's restaurant: the restaurant is the title, and picks another.">
         <Example code={`<RestaurantTitlePicker restaurants={restaurants} selected={restaurant} onSelect={open} />`}>

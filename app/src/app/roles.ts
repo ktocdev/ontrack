@@ -141,13 +141,13 @@ export function tabsFor(user: { role: AppRole; is_admin: boolean }, pathname: st
   return adminOnTop(user) && inAdminView(pathname) ? ADMIN_VIEW_TABS : ROLE_TABS[user.role]
 }
 
-/** Where a ticket's lasting link leads for each role; leadership's is read-only (OT-145), the admin's waits for OT-148. */
+/** Where a ticket's lasting link leads for each role; leadership's (OT-145) and the plain admin's (OT-148) are read-only. */
 export function ticketPath(role: AppRole, id: string) {
   const safe = encodeURIComponent(id)
   if (role === 'manager') return `/tickets/${safe}`
   if (role === 'ops') return `/ops/tickets/${safe}`
   if (role === 'leadership') return `/lead/tickets/${safe}`
-  return null
+  return `/admin/tickets/${safe}`
 }
 
 /** Where a unit's lasting link leads for each role; admin and leadership have no equipment screen. */
