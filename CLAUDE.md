@@ -162,9 +162,34 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 6 · Monthly walkthroughs
+## Current phase: 7 · Leadership, Admin tickets and imports
 
-The plan's Phase 6 section says what ships and what it works around. It ships in two halves: 6a is the manager's walkthrough, 6b is Ops and the schedule. Done when next month's walkthrough is opened by the database for all four restaurants, a manager submits one from a phone with two tickets and one fix, those tickets show the Walkthrough tag on the Ops dashboard, and the Ops overview shows one of four submitted (6b). One walkthrough per restaurant per month, shared by everyone with `create_tickets` there; Ops' screens are read-only. A walkthrough keeps the checklist it opened with. A checklist (and in 6b a rotation) stands on its own and several restaurants may use the same one; never copy one per restaurant. Due on the last day of the month. The checklist is in sections, not the Front / Back area, so 6b's rotation (a cycle of months, each with its own checklist) needs no rework. Checks change only through functions, Good is refused while an item has an open fix or ticket, and a walkthrough's in-house fix is added by the function that records the check, never by a direct insert.
+The plan's Phase 7 section says what ships and what it works around. Done when the assistant ops manager imports the group's real contractor spreadsheet from a phone with no help, and leadership can open the Overview on a laptop and see the same totals Ops sees. Playwright runs the seeded half (Bert imports a contractor sheet with a new row, a fix and a duplicate; Lee's Overview matches Bert's figures for the month); the real spreadsheet is tried by hand on the live app.
+
+Leadership's and the admin's ticket screens are read-only and read the same views as Ops' screens, scoped from `useUser()`; leadership and admins write nothing in a thread (`can_post_on_ticket()`), and the boards' "Assigned" names who is working on a ticket (OT-48). Imports read the file on the phone with `lib/import/` (no `import` Edge Function, decided Nov 19, 2026) and write through one checked, logged function per import that keeps an `imports` row; undo within 24 hours follows the archive and delete rule, deleting only what nothing points to yet and putting back what an update replaced. QR labels for imported units wait for OT-74. Until OT-141 ships, a walkthrough ticket still needs a category (see Permissions); after it, the category list is only what Reporters pick from on Create ticket, and a walkthrough item's category is optional.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-140 | Plan update and this split; Phase 6 to the record |
+| OT-141 | From feedback (Nov 19, 2026): a ticket from a walkthrough item with no active category takes none and asks for none; it carries the section's area and reads as the walkthrough's path (FOH › Health and Safety › Caulk), notified and shown by its area; every section names an area; Convert to ticket follows the same rule; pgTAP |
+| OT-142 | Leadership backend: the Overview's `security_invoker` view (open, urgent, spend, time to close, by restaurant) on what Ops' screens read; every read leadership needs, and no writes; pgTAP |
+| OT-143 | Leadership Overview: month stepper, empty state, loading skeleton; replaces the placeholder; View as; reads on a laptop's width |
+| OT-144 | Leadership Restaurants: segments, who runs it, Open tickets and Equipment tabs, empty state |
+| OT-145 | Leadership ticket detail and service record, read-only; `/t/` opens it for leadership |
+| OT-146 | Leadership contractors: Directory, Invoices, a contractor's page, read-only; `/c/` opens it for leadership |
+| OT-147 | Leadership walkthroughs from `v_walkthrough_summary` |
+| OT-148 | Admin Tickets (Open and Closed, restaurant picker, view only) and ticket detail; `/t/` opens it for a plain admin |
+| OT-149 | Imports backend: `import_contractors`, `import_equipment`, the `imports` record, `undo_import` within 24 hours by the archive and delete rule; pgTAP |
+| OT-150 | Matching in `lib/import/`: column guesses, value suggestions, duplicates; Vitest |
+| OT-151 | Import contractors 1 to 4, template, entry points (Add contractor banner, empty directory, Contractors' menu) |
+| OT-152 | Import equipment 1 to 4 on the same pieces, one restaurant or all, template, entry points; no QR lines |
+| OT-153 | Undo an import for 24 hours, from Contractors and Equipment |
+| OT-154 | Security and code quality pass over Phase 7 |
+| OT-155 | The done test as one flow; the phase note |
+
+## Phase 6, for the record
+
+The plan's Phase 6 section says what shipped and what it works around. It shipped in two halves: 6a is the manager's walkthrough, 6b is Ops and the schedule. Done when next month's walkthrough is opened by the database for all four restaurants, a manager submits one from a phone with two tickets and one fix, those tickets show the Walkthrough tag on the Ops dashboard, and the Ops overview shows one of four submitted (6b). Playwright runs it (`last/done-phase-6.spec.ts`); the iPhone checks and a try on the live app are still to do. One walkthrough per restaurant per month, shared by everyone with `create_tickets` there; Ops' screens are read-only. A walkthrough keeps the checklist it opened with. A checklist (and in 6b a rotation) stands on its own and several restaurants may use the same one; never copy one per restaurant. Due on the last day of the month. The checklist is in sections, not the Front / Back area, so 6b's rotation (a cycle of months, each with its own checklist) needs no rework. Checks change only through functions, Good is refused while an item has an open fix or ticket, and a walkthrough's in-house fix is added by the function that records the check, never by a direct insert.
 
 | PR    | Scope |
 | ----- | ----- |
