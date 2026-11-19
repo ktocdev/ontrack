@@ -2026,6 +2026,14 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"v_overview_by_month": {
+                  Row: {
+                    "close_seconds": number | null,"closed": number | null,"month": string | null,"opened": number | null,"restaurant_id": string | null,"sees_costs": boolean | null,"spend_cents": number | null,"visits": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"v_person_history": {
                   Row: {
                     "records": number | null,"user_id": string
