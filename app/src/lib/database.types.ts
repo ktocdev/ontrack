@@ -303,6 +303,62 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"imports": {
+                  Row: {
+                    "added": (string)[],"columns": (string)[],"created_at": string,"created_by": string | null,"file_name": string | null,"id": string,"kind": string,"new_trades": (string)[],"restaurant_id": string | null,"skipped": number,"undo_result": Json | null,"undone_at": string | null,"undone_by": string | null,"updated": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "added"?: (string)[],"columns"?: (string)[],"created_at"?: string,"created_by"?: string | null,"file_name"?: string | null,"id"?: string,"kind": string,"new_trades"?: (string)[],"restaurant_id"?: string | null,"skipped"?: number,"undo_result"?: Json | null,"undone_at"?: string | null,"undone_by"?: string | null,"updated"?: NonNullable<Json>
+                  }
+                  Update: {
+                    "added"?: (string)[],"columns"?: (string)[],"created_at"?: string,"created_by"?: string | null,"file_name"?: string | null,"id"?: string,"kind"?: string,"new_trades"?: (string)[],"restaurant_id"?: string | null,"skipped"?: number,"undo_result"?: Json | null,"undone_at"?: string | null,"undone_by"?: string | null,"updated"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "imports_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "imports_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "imports_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "imports_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_history"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "imports_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "v_restaurant_open_counts"
+      referencedColumns: ["restaurant_id"]
+    },{
+      foreignKeyName: "imports_undone_by_fkey"
+      columns: ["undone_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "imports_undone_by_fkey"
+      columns: ["undone_by"]
+isOneToOne: false
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
                 },"inhouse_fixes": {
                   Row: {
                     "area": Database["public"]['Enums']["area"] | null,"category_id": string | null,"check_id": string | null,"converted_ticket_id": string | null,"created_at": string,"created_by": string | null,"done_at": string | null,"done_by": string | null,"equipment_id": string | null,"first_done_at": string | null,"from_ops": boolean,"from_ticket_id": string | null,"id": string,"note": string | null,"origin_label": string | null,"restaurant_id": string,"title": string,"walkthrough_id": string | null
@@ -2345,8 +2401,20 @@ isOneToOne: false
 "has_scope":
 { Args: { "rid": string }; Returns: boolean
                            },
+"import_cell":
+{ Args: { "p_key": string,"p_row": Json }; Returns: string
+                           },
 "import_checklist":
 { Args: { "p_rows": Json,"p_template": string }; Returns: string
+                           },
+"import_contractors":
+{ Args: { "p_columns": (string)[],"p_file_name"?: string,"p_new_trades"?: (string)[],"p_rows": Json }; Returns: Json
+                           },
+"import_equipment":
+{ Args: { "p_columns": (string)[],"p_file_name"?: string,"p_restaurant_id": string,"p_rows": Json }; Returns: Json
+                           },
+"import_key":
+{ Args: { "p": string }; Returns: string
                            },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
@@ -2579,6 +2647,9 @@ isOneToOne: false
                            },
 "two_step_status":
 { Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"undo_import":
+{ Args: { "p_id": string }; Returns: Json
                            },
 "update_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_id": string,"p_name": string,"p_phone": string }; Returns: undefined
