@@ -122,6 +122,22 @@ export function TicketsPage() {
           />
         </Example>
       </Section>
+      <Section
+        title="Without who and when"
+        intro="Leadership's restaurant: no line under the hairline, and a little tighter."
+      >
+        <Example
+          code={`<TicketCard to={path} displayId="OT-1037" title="…" status="waiting_parts" place="FOH · Lighting · $86.00 logged" />`}
+        >
+          <TicketCard
+            to="#"
+            displayId="OT-1037"
+            title="Patio string lights out, east side"
+            status="waiting_parts"
+            place="FOH · Lighting · $86.00 logged"
+          />
+        </Example>
+      </Section>
       <Section title="Ops card">
         <Example>
           <OpsTicketCard

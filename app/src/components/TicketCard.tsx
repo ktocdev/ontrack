@@ -9,7 +9,9 @@ import { RestaurantName } from './RestaurantName'
  * number and any Walkthrough tag across from the status pill, a 16px title, where
  * it is, then who has it and when under a hairline. `restaurant` is for lists that
  * span more than one. Without `to` it is not a link (View as). Given `createdAt`, a
- * new ticket has a ring for its first minutes (newTicket.ts).
+ * new ticket has a ring for its first minutes (newTicket.ts). Without `who` there is no
+ * line under the hairline, and the card is a little tighter (leadership's restaurant,
+ * Exec-Restaurant: 12px 14px with 6px gaps).
  */
 type Props = {
   to?: string
@@ -21,8 +23,8 @@ type Props = {
   walkthrough?: boolean
   place: string
   restaurant?: { name: string; color: string }
-  who: ReactNode
-  when: string
+  who?: ReactNode
+  when?: string
   createdAt?: string
 }
 
@@ -41,7 +43,7 @@ export function TicketCard({
 }: Props) {
   const ring = useNewTicket(createdAt, status) ? NEW_RING : ''
   const body = (
-    <div className="flex flex-col gap-2 px-4 py-3.5">
+    <div className={`flex flex-col ${who === undefined ? 'gap-1.5 px-3.5 py-3' : 'gap-2 px-4 py-3.5'}`}>
       {ring && <span className="sr-only">New ticket.</span>}
       <div className="flex items-center justify-between gap-2">
         <span className="flex min-w-0 items-center gap-2">
@@ -53,10 +55,12 @@ export function TicketCard({
       {restaurant && <RestaurantName name={restaurant.name} color={restaurant.color} variant="meta" />}
       <span className="text-16 font-semibold leading-[1.3]">{title}</span>
       <span className="text-13 text-text-muted">{place}</span>
-      <div className="flex justify-between gap-3 border-t border-surface-muted pt-2 text-12 text-text-muted">
-        <span className="min-w-0">{who}</span>
-        <span className="flex-none">{when}</span>
-      </div>
+      {who !== undefined && (
+        <div className="flex justify-between gap-3 border-t border-surface-muted pt-2 text-12 text-text-muted">
+          <span className="min-w-0">{who}</span>
+          <span className="flex-none">{when}</span>
+        </div>
+      )}
     </div>
   )
   return to ? (

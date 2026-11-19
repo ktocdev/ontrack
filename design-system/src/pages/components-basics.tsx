@@ -25,7 +25,7 @@ import {
   type PillStatus,
 } from '@app/components/Pill'
 import { AllRestaurantsSquare, RestaurantName, RestaurantSquare } from '@app/components/RestaurantName'
-import { RestaurantPicker } from '@app/components/RestaurantPicker'
+import { RestaurantPicker, RestaurantTitlePicker } from '@app/components/RestaurantPicker'
 import { ReorderList } from '@app/components/ReorderList'
 import { useToast } from '@app/components/Toast'
 import {
@@ -309,6 +309,15 @@ export function RestaurantsPage() {
           <RestaurantPicker
             restaurants={SAMPLE_RESTAURANTS}
             selectedId={null}
+            onSelect={() => toast.show('Restaurant picked.')}
+          />
+        </Example>
+      </Section>
+      <Section title="Title picker" intro="Leadership's restaurant: the restaurant is the title, and picks another.">
+        <Example code={`<RestaurantTitlePicker restaurants={restaurants} selected={restaurant} onSelect={open} />`}>
+          <RestaurantTitlePicker
+            restaurants={SAMPLE_RESTAURANTS}
+            selected={SAMPLE_RESTAURANTS[0]!}
             onSelect={() => toast.show('Restaurant picked.')}
           />
         </Example>

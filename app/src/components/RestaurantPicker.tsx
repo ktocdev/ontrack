@@ -74,3 +74,60 @@ export function RestaurantPicker({
     </DropdownMenu.Root>
   )
 }
+
+/**
+ * A restaurant as a screen's title that picks another (Exec-Restaurant): its color square
+ * and a 28px name, wrapping, with a chevron across from it, dropping the same panel as the
+ * Ops picker without All restaurants. With one restaurant it is only the title.
+ */
+export function RestaurantTitlePicker({
+  restaurants,
+  selected,
+  onSelect,
+  heading = 'Show restaurant',
+}: {
+  restaurants: Restaurant[]
+  selected: Restaurant
+  onSelect: (id: string) => void
+  heading?: string
+}) {
+  const title = (
+    <>
+      <RestaurantSquare color={selected.color} size={14} className="mt-[11px]" />
+      <span className="min-w-0 flex-1">{selected.name}</span>
+    </>
+  )
+  const cls =
+    'flex min-h-tap w-full items-start gap-2.5 text-left font-display text-28 font-bold leading-[1.2] tracking-[-0.02em] text-text'
+  if (restaurants.length < 2) return <h1 className={cls}>{title}</h1>
+  return (
+    <DropdownMenu.Root modal={false}>
+      <h1>
+        <DropdownMenu.Trigger className={`${cls} outline-none`}>
+          {title}
+          <IconChevronDown size={22} className="mt-[7px] flex-none" />
+        </DropdownMenu.Trigger>
+      </h1>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="start"
+          sideOffset={4}
+          className="z-30 flex w-[290px] max-w-[calc(100vw-32px)] flex-col rounded-card border border-border bg-surface p-1.5 text-text shadow-raised"
+        >
+          <DropdownMenu.Label className="eyebrow px-2.5 pb-1.5 pt-2">{heading}</DropdownMenu.Label>
+          <DropdownMenu.RadioGroup value={selected.id} onValueChange={onSelect}>
+            {restaurants.map((r) => (
+              <DropdownMenu.RadioItem key={r.id} value={r.id} className={MENU_OPTION}>
+                <RestaurantSquare color={r.color} size={12} />
+                <span className="min-w-0 flex-1 truncate font-semibold">{r.name}</span>
+                <DropdownMenu.ItemIndicator>
+                  <IconCheck size={18} strokeWidth={2.6} className="text-brand" />
+                </DropdownMenu.ItemIndicator>
+              </DropdownMenu.RadioItem>
+            ))}
+          </DropdownMenu.RadioGroup>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  )
+}

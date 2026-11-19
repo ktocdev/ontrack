@@ -559,7 +559,26 @@ export const router = createBrowserRouter([
                       Component: (await import('../screens/leadership/LeadOverviewScreen')).LeadOverviewScreen,
                     }),
                   },
-                  { path: '/lead/restaurants', ...placeholder('Restaurants', 'Phase 7') },
+                  {
+                    path: '/lead/restaurants',
+                    lazy: async () => ({
+                      Component: (await import('../screens/leadership/LeadRestaurantScreen')).LeadRestaurantsIndex,
+                    }),
+                  },
+                  {
+                    path: '/lead/restaurants/:id',
+                    lazy: async () => {
+                      const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
+                      return { Component: () => <LeadRestaurantScreen tab="tickets" /> }
+                    },
+                  },
+                  {
+                    path: '/lead/restaurants/:id/equipment',
+                    lazy: async () => {
+                      const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
+                      return { Component: () => <LeadRestaurantScreen tab="equipment" /> }
+                    },
+                  },
                   { path: '/lead/walkthroughs', ...placeholder('Walkthroughs', 'Phase 7') },
                   { path: '/lead/contractors', ...placeholder('Contractors', 'Phase 7') },
                 ],

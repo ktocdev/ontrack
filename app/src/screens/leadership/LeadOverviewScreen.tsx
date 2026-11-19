@@ -160,7 +160,7 @@ function RestaurantRow({
   )
   return linked ? (
     <Link
-      to={`/lead/restaurants?restaurant=${row.id}`}
+      to={`/lead/restaurants/${row.id}`}
       className={`${cls} no-underline transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-hover active:duration-0`}
     >
       {body}

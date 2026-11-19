@@ -1,17 +1,16 @@
-import { AREA_LABEL, AREA_SEGMENTS } from '../../app/areas'
-import { useState } from 'react'
+import { AREA_SEGMENTS } from '../../app/areas'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
-import { EquipmentGroup, EquipmentRow } from '../../components/Equipment'
+import { EquipmentRow } from '../../components/Equipment'
 import { AllRestaurantsSquare, RestaurantName } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
-import { GroupedListSkeleton } from '../../components/Skeleton'
 import { IconPlus, IconWarning, IconWrench } from '../../components/icons'
-import { groupByType, RETIRED_CARD, type Area } from './equipment'
+import type { Area } from './equipment'
+import { EquipmentByArea, useEquipmentByArea } from './EquipmentByArea'
 import { useEquipmentList } from './useEquipmentList'
 
 /**
@@ -37,22 +36,11 @@ export function EquipmentScreen() {
   )
   const canAdd = editsEquipment && !viewingAs
 
-  const [area, setArea] = useState<Area>('foh')
-  // One card open at a time, none to begin with (from feedback, Nov 5, 2026).
-  const [openName, setOpenName] = useState<string | null>(null)
+  const view = useEquipmentByArea(data ?? [])
 
   const only = restaurants.length === 1 ? restaurants[0] : undefined
   const restaurantOf = new Map(restaurants.map((r) => [r.id, r]))
   const all = data ?? []
-  const inArea = all.filter((u) => u.category?.area === area)
-  const groups = groupByType(inArea.filter((u) => !u.retired))
-  const retired = inArea.filter((u) => u.retired).sort((a, b) => a.name.localeCompare(b.name))
-  const isOpen = (name: string) => openName === name
-  const toggle = (name: string) => setOpenName(isOpen(name) ? null : name)
-  const pick = (a: Area) => {
-    setArea(a)
-    setOpenName(null)
-  }
   const empty = !isPending && !isError && all.length === 0
   const row = (u: (typeof all)[number]) => {
     const r = only ? undefined : restaurantOf.get(u.restaurant_id)
@@ -98,7 +86,9 @@ export function EquipmentScreen() {
           ) : undefined
         }
       >
-        {!empty && !isError && <Segmented<Area> label="Area" value={area} onChange={pick} options={AREA_SEGMENTS} />}
+        {!empty && !isError && (
+          <Segmented<Area> label="Area" value={view.area} onChange={view.pick} options={AREA_SEGMENTS} />
+        )}
       </ScreenHeader>
 
       {isError ? (
@@ -137,40 +127,7 @@ export function EquipmentScreen() {
         </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-1">
-          {isPending ? (
-            <GroupedListSkeleton />
-          ) : (
-            <>
-              {groups.length === 0 && (
-                <p className="px-3 py-7 text-center text-14 leading-normal text-text-body">
-                  No {AREA_LABEL[area]} equipment yet.
-                </p>
-              )}
-              {groups.map((g) => (
-                <EquipmentGroup
-                  key={g.name}
-                  name={g.name}
-                  count={g.units.length}
-                  openCount={g.openCount}
-                  open={isOpen(g.name)}
-                  onToggle={() => toggle(g.name)}
-                >
-                  {g.units.map(row)}
-                </EquipmentGroup>
-              ))}
-              {retired.length > 0 && (
-                <EquipmentGroup
-                  name="Retired"
-                  count={retired.length}
-                  openCount={0}
-                  open={isOpen(RETIRED_CARD)}
-                  onToggle={() => toggle(RETIRED_CARD)}
-                >
-                  {retired.map(row)}
-                </EquipmentGroup>
-              )}
-            </>
-          )}
+          <EquipmentByArea view={view} isPending={isPending} row={row} />
         </ScreenBody>
       )}
     </Screen>
