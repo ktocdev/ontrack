@@ -594,7 +594,27 @@ export const router = createBrowserRouter([
                     },
                   },
                   { path: '/lead/walkthroughs', ...placeholder('Walkthroughs', 'Phase 7') },
-                  { path: '/lead/contractors', ...placeholder('Contractors', 'Phase 7') },
+                  {
+                    path: '/lead/contractors',
+                    lazy: async () => {
+                      const { ContractorsScreen } = await import('../screens/contractors/ContractorsScreen')
+                      return { Component: () => <ContractorsScreen base="/lead" /> }
+                    },
+                  },
+                  {
+                    path: '/lead/contractors/invoices',
+                    lazy: async () => {
+                      const { InvoicesScreen } = await import('../screens/contractors/InvoicesScreen')
+                      return { Component: () => <InvoicesScreen base="/lead" /> }
+                    },
+                  },
+                  {
+                    path: '/lead/contractors/:id/:tab?',
+                    lazy: async () => {
+                      const { ContractorScreen } = await import('../screens/contractors/ContractorScreen')
+                      return { Component: () => <ContractorScreen base="/lead" /> }
+                    },
+                  },
                 ],
               },
             ],

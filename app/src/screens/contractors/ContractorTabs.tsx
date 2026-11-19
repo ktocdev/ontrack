@@ -4,10 +4,10 @@ import { UnderlineTabs } from '../../components/Screen'
 
 /**
  * Directory and Invoices under the Contractors title (design/screens/Ops-Contractors,
- * Ops-Invoices). Invoices are amounts, so the tab needs see_costs; without it there are
- * no tabs. Under View as the tabs show and lead nowhere.
+ * Ops-Invoices, Exec-Contractors, Exec-Invoices). Invoices are amounts, so the tab needs
+ * see_costs; without it there are no tabs. Under View as the tabs show and lead nowhere.
  */
-export function ContractorTabs() {
+export function ContractorTabs({ base = '/ops' }: { base?: '/ops' | '/lead' }) {
   const { viewingAs } = useUser()
   const seeCosts = useRight('see_costs')
   if (!seeCosts) return null
@@ -17,8 +17,8 @@ export function ContractorTabs() {
       size="lg"
       inert={viewingAs}
       items={[
-        { to: '/ops/contractors', label: 'Directory', end: true },
-        { to: '/ops/contractors/invoices', label: 'Invoices' },
+        { to: `${base}/contractors`, label: 'Directory', end: true },
+        { to: `${base}/contractors/invoices`, label: 'Invoices' },
       ]}
     />
   )

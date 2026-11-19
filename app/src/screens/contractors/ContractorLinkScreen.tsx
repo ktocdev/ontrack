@@ -8,7 +8,7 @@ import { NoAccessScreen } from '../errors/NoAccessScreen'
  * A contractor's lasting link, /c/<id>, from Share link (OT-95). It opens the contractor's
  * page for whoever taps it and grants nothing: that page still asks the database, and
  * refuses anyone without See contractors. RequireAuth above it takes a signed-out person
- * through sign-in and back. Only Ops has a contractor page until leadership's (Phase 7).
+ * through sign-in and back. Ops and leadership have a contractor page (OT-146).
  */
 export function ContractorLinkScreen() {
   const { id = '' } = useParams()
@@ -23,7 +23,8 @@ export function ContractorLinkScreen() {
       title="Contractors don't open here"
       body={
         <>
-          This link opens for <b className="text-text">{names.name('ops')}</b> accounts. You are signed in as{' '}
+          This link opens for <b className="text-text">{names.name('ops')}</b> and{' '}
+          <b className="text-text">{names.name('leadership')}</b> accounts. You are signed in as{' '}
           {names.name(auth.user.role)}.
         </>
       }
