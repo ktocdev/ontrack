@@ -95,11 +95,10 @@ test('Ops opens a walkthrough’s fixes and converts two to tickets', async ({ p
   await expect(page.getByRole('button', { name: `Convert to ticket: ${first}` })).toHaveCount(0)
   await expect(page.getByRole('link', { name: `Open ticket ${firstId}` })).toBeVisible()
 
-  // The one without a category asks for one.
+  // The one without a category becomes a ticket with none, and its section's area (OT-141).
   await page.getByRole('button', { name: `Convert to ticket: ${second}` }).click()
-  await sheet.getByRole('button', { name: 'Convert to ticket' }).click()
-  await expect(sheet.getByText('Pick a category for the ticket.')).toBeVisible()
-  await sheet.getByLabel('Category').selectOption({ index: 1 })
+  await expect(sheet.getByLabel('Category')).toHaveCount(0)
+  await expect(sheet.getByLabel('Area')).toHaveCount(0)
   await sheet.getByRole('button', { name: 'Convert to ticket' }).click()
   await expect(sheet).toBeHidden()
   await expect(page.getByRole('status').filter({ hasText: /^Converted to OT-\d+\./ })).toBeVisible()

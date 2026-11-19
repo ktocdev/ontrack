@@ -1,4 +1,4 @@
-import { AREA_SHORT } from '../../app/areas'
+import { ticketPlace } from '../../app/areas'
 import { lazy, Suspense, useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
@@ -152,13 +152,7 @@ export function OpsDashboardScreen() {
                       urgent={t.urgency === 'urgent'}
                       walkthrough={t.source === 'walkthrough'}
                       createdAt={t.created_at}
-                      meta={[
-                        t.category && AREA_SHORT[t.category.area],
-                        t.category?.name,
-                        ago(new Date(t.created_at), new Date()),
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
+                      meta={[...ticketPlace(t), ago(new Date(t.created_at), new Date())].filter(Boolean).join(' · ')}
                       worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
                     />
                   ))}

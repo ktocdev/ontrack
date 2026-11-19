@@ -77,10 +77,13 @@ export function useListView() {
 export function listed(t: {
   category_id?: string | null
   category?: { area: Area } | null
+  area?: Area | null
   created_by?: string | null
   assignee_id?: string | null
 }): Listed {
-  return { category_id: t.category_id, area: t.category?.area, created_by: t.created_by, assignee_id: t.assignee_id }
+  // A walkthrough ticket with no category carries its own area (OT-141).
+  const area = t.category?.area ?? t.area
+  return { category_id: t.category_id, area, created_by: t.created_by, assignee_id: t.assignee_id }
 }
 
 /**

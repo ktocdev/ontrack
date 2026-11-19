@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AREAS, AREA_LABEL } from '../../app/areas'
+import { AREAS, AREA_LABEL, type Area } from '../../app/areas'
 import { useRoleNames } from '../../auth/group'
 import { Button } from '../../components/Button'
 import { Select } from '../../components/Field'
@@ -11,8 +11,13 @@ import { useConvertFix } from '../tickets/useInHouse'
 export type ConvertTarget = {
   id: string
   title: string
-  /** The fix's category or its item's; without one, or with one turned off since, the sheet asks. */
+  /**
+   * The fix's category or its item's. Without one, or with one turned off since, a task added
+   * by hand asks for a category, and a walkthrough's fix becomes a ticket with none (OT-141).
+   */
   knownCategory: string | null
+  /** The fix's area, which a walkthrough's ticket with no category takes; else the sheet asks. */
+  area: Area | null
   fromWalkthrough: boolean
 }
 
@@ -35,14 +40,18 @@ export function ConvertFixSheet({
   const convert = useConvertFix()
   const categories = useAllCategories()
   const [categoryId, setCategoryId] = useState('')
+  const [area, setArea] = useState<Area | ''>('')
   const [missing, setMissing] = useState(false)
-  // A turned-off category takes no new ticket, so a fix that still names one is asked for another.
+  // A turned-off category takes no new ticket, so a fix that still names one counts as none.
   const turnedOff = categories.data?.find((c) => c.id === fix?.knownCategory)?.active === false
-  const needsCategory = !!fix && (!fix.knownCategory || turnedOff)
+  const noCategory = !!fix && (!fix.knownCategory || turnedOff)
+  const needsCategory = noCategory && !fix.fromWalkthrough
+  const needsArea = noCategory && fix.fromWalkthrough && !fix.area
 
   const close = (open: boolean) => {
     if (open) return
     setCategoryId('')
+    setArea('')
     setMissing(false)
     convert.reset()
     onClose()
@@ -50,12 +59,12 @@ export function ConvertFixSheet({
 
   const confirm = () => {
     if (!fix) return
-    if (needsCategory && !categoryId) {
+    if ((needsCategory && !categoryId) || (needsArea && !area)) {
       setMissing(true)
       return
     }
     convert.mutate(
-      { id: fix.id, categoryId: needsCategory ? categoryId : null },
+      { id: fix.id, categoryId: needsCategory ? categoryId : null, area: needsArea ? area || null : null },
       {
         onSuccess: ({ displayId, ticketId }) => {
           close(false)
@@ -97,6 +106,25 @@ export function ConvertFixSheet({
                   </option>
                 ))}
             </optgroup>
+          ))}
+        </Select>
+      )}
+      {needsArea && (
+        <Select
+          label="Area"
+          hint="This fix has no area to give the ticket, so pick where it belongs."
+          value={area}
+          onChange={(e) => {
+            setArea(e.target.value as Area)
+            setMissing(false)
+          }}
+          error={missing ? 'Pick an area for the ticket.' : undefined}
+        >
+          <option value="">Choose…</option>
+          {AREAS.map((a) => (
+            <option key={a} value={a}>
+              {AREA_LABEL[a]}
+            </option>
           ))}
         </Select>
       )}

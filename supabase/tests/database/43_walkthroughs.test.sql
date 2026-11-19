@@ -117,10 +117,10 @@ select results_eq(
 select is(
   (select walkthrough_check_id from public.tickets where id = :'ticket'),
   (select check_id from public.inhouse_fixes where id = :'fix'), 'the fix and the ticket share the item''s check');
-select throws_ok(format($$select public.create_walkthrough_ticket(%L, 'Scuffs', %L)$$, :oct, :paint), '22023', null,
-  'an item with no category asks for one');
-select lives_ok(format($$select public.create_walkthrough_ticket(%L, 'Scuffs by the host stand', %L, p_category_id => %L)$$,
-  :oct, :paint, :boh_electrical), 'and takes the one sent');
+select lives_ok(format($$select public.create_walkthrough_ticket(%L, 'Scuffs by the host stand', %L)$$, :oct, :paint),
+  'an item with no category gives its ticket none (OT-141)');
+select is((select area::text from public.tickets where title = 'Scuffs by the host stand'), 'boh',
+  'which carries the section''s area');
 
 -- Progress: Outlets and Paint are done (flagged) in Back of House.
 select results_eq(

@@ -16,13 +16,14 @@ import { useToast } from '../../components/Toast'
 import { IconChevronLeft } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { longDate } from './closed'
-import { ago, AREA_LABEL, scheduledLabel } from './tickets'
+import { ticketPlace } from '../../app/areas'
+import { ago, scheduledLabel } from './tickets'
 import { CloseTicketSheet } from './CloseTicketSheet'
 import { useSaveTicket, type TicketEdits } from './useCloseTicket'
-import { useTicketForm } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
 import type { Update } from './thread'
 import { useTicket } from './useTicket'
+import { useTicketUnits } from '../walkthrough/useQuickTicket'
 import { useTicketOrigin } from '../walkthrough/useTicketOrigin'
 import { monthName } from '../walkthrough/walkthrough'
 
@@ -89,7 +90,7 @@ function EditForm({
   const queryClient = useQueryClient()
   const save = useSaveTicket(ticket.id)
   const picked = usePickedPhotos()
-  const units = useTicketForm(ticket.category_id, ticket.restaurant_id)
+  const units = useTicketUnits(ticket.restaurant_id, ticket.category_id, ticket.category_id ? null : ticket.area)
   const origin = useTicketOrigin(ticket.walkthrough_id, ticket.walkthrough_check_id).data
   // Back on the checklist, the item's group is open again.
   const back = checklist && origin?.chips[1] ? { openGroup: origin.chips[1] } : undefined
@@ -102,7 +103,7 @@ function EditForm({
   const [closing, setClosing] = useState(false)
 
   const closed = closedNote !== null
-  const list = units.data?.equipment ?? []
+  const list = units.data ?? []
   const chosen = list.find((u) => u.id === equipmentId)
   const shown =
     equipmentId === ticket.equipment_id && ticket.equipment
@@ -174,10 +175,13 @@ function EditForm({
             ))}
           </div>
         ) : (
-          ticket.category && (
+          ticketPlace(ticket, 'long').length > 0 && (
             <div className="flex flex-none flex-wrap gap-1.5 text-12 font-semibold text-text-body">
-              <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{AREA_LABEL[ticket.category.area]}</span>
-              <span className="rounded-pill bg-surface-sunken px-[9px] py-1">{ticket.category.name}</span>
+              {ticketPlace(ticket, 'long').map((part) => (
+                <span key={part} className="rounded-pill bg-surface-sunken px-[9px] py-1">
+                  {part}
+                </span>
+              ))}
             </div>
           )
         )}

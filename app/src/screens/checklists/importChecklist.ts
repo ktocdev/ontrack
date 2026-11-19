@@ -129,8 +129,11 @@ export function readChecklist(rows: string[][], categories: Category[], has?: Ma
     const category = found === 'ambiguous' ? undefined : found
     if (v.section) {
       const first = sectionFirst.get(v.section.toLowerCase())
-      if (!first) sectionFirst.set(v.section.toLowerCase(), { area, row })
-      else if (v.area && first.area !== area) say(`${v.section} has a different area on row ${first.row}.`)
+      if (!first) {
+        sectionFirst.set(v.section.toLowerCase(), { area, row })
+        // A ticket from an item with no category takes its section's area (OT-141).
+        if (!v.area) say(`${v.section} needs an area: Front of House, Back of House or IT.`)
+      } else if (v.area && first.area !== area) say(`${v.section} has a different area on row ${first.row}.`)
     }
     if (v.section && v.group && v.item) {
       if (seen.has(key)) say(`${v.item} is in ${v.section} › ${v.group} twice.`)

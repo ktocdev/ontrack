@@ -110,7 +110,7 @@ select throws_ok(format('select public.save_checklist_item(%L, null, %L, %L, ''N
   :'v1', :'v1_section', :'k_group', '33333333-3333-4333-8333-000000000002'),
   '23514', null, 'a turned-off category goes on no new item');
 select throws_ok(format('select public.import_checklist(%L, %L)', :'v1',
-  '[{"section":"S","group":"G","title":"T","category_id":"33333333-3333-4333-8333-000000000002"}]'),
+  '[{"section":"S","area":"boh","group":"G","title":"T","category_id":"33333333-3333-4333-8333-000000000002"}]'),
   '23514', null, 'nor on one by import');
 -- A month opens with the version, so the next edit copies it, category and all.
 select pg_temp.su();
@@ -127,17 +127,18 @@ select throws_ok(format('update public.walkthrough_rotation_months set template_
 select is((select count(*)::int from public.walkthrough_rotation_months m join public.walkthrough_templates t on t.id = m.template_id
            where t.replaced_by is not null), 0, 'and no month is on one');
 
--- A ticket from an item whose category was turned off asks for one.
+-- A ticket from an item whose category was turned off counts it as none (since OT-141, it
+-- then takes none, with the section's area, where it used to ask for one).
 select pg_temp.login('maya.reyes@example.com');
-select throws_ok(format('select public.create_walkthrough_ticket(%L, ''Outlet sparks'', %L)', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'dddddddd-dddd-4ddd-8ddd-000000000104'),
-  '22023', 'pick a category for this ticket', 'a ticket from an item whose category was turned off asks for a category');
+select lives_ok(format('select public.create_walkthrough_ticket(%L, ''Outlet sparks'', %L)', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'dddddddd-dddd-4ddd-8ddd-000000000104'),
+  'a ticket from an item whose category was turned off takes none');
 select lives_ok(format('select public.create_walkthrough_ticket(%L, ''Outlet sparks'', %L, p_category_id => %L)',
   'aaaaaaaa-aaaa-4aaa-8aaa-000000000001', 'dddddddd-dddd-4ddd-8ddd-000000000104', '33333333-3333-4333-8333-000000000015'),
   'and takes the one given');
 select public.add_walkthrough_fix(:oct, 'Tighten the cover plate', :outlets) as fix \gset
 select pg_temp.login('bert.velilla@example.com');
-select throws_ok(format('select public.convert_inhouse_fix(%L)', :'fix'),
-  '22023', 'pick a category for this ticket', 'so does making a fix on that item a ticket');
+select is((select count(*)::int from public.tickets where title = 'Outlet sparks' and category_id is null and area = 'boh'), 1,
+  'so it has no category, and the section''s area');
 select lives_ok(format('select public.convert_inhouse_fix(%L, %L)', :'fix', '33333333-3333-4333-8333-000000000015'),
   'which takes the one given');
 select pg_temp.su();

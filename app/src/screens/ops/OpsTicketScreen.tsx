@@ -172,10 +172,12 @@ export function OpsTicketScreen() {
                 {ticket.restaurant.name}
               </Fact>
             )}
-            {ticket.category && (
+            {ticket.category ? (
               <Fact label="Category">
                 {AREA_LABEL[ticket.category.area]} › {ticket.category.name}
               </Fact>
+            ) : (
+              ticket.checklist_place && <Fact label="Checklist">{ticket.checklist_place}</Fact>
             )}
             {ticket.opener && <Fact label="Reporter">{ticket.opener.full_name}</Fact>}
             {ticket.walkthrough && (

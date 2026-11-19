@@ -85,7 +85,7 @@ select ok(not exists (select 1 from public.walkthrough_items i join public.walkt
 select pg_temp.login('bert.velilla@example.com');
 select throws_ok(format('select public.save_checklist_section(%L, null, %L, null, null)', :'v1', 'kitchen'),
   '23505', null, 'two sections don''t share a name');
-select lives_ok(format('select public.save_checklist_section(%L, null, %L, %L, null)', :'v1', 'Patio', 'Patio'),
+select lives_ok(format('select public.save_checklist_section(%L, null, %L, %L, ''foh'')', :'v1', 'Patio', 'Patio'),
   'a section is added');
 
 -- Order: all of them, once.

@@ -1,4 +1,4 @@
-import { AREA_SHORT } from '../../app/areas'
+import { ticketArea, ticketPlace } from '../../app/areas'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
@@ -118,7 +118,7 @@ export function ClosedTicketScreen({
               {ticket.restaurant.name}
             </span>
           )}
-          {ticket.category && ` › ${AREA_SHORT[ticket.category.area]} › ${ticket.category.name}`}
+          {ticketPlace(ticket).map((part) => ` › ${part}`)}
           {ticket.equipment && <span className="block">{ticket.equipment.name}</span>}
         </span>
         {ticket.description && (
@@ -188,7 +188,12 @@ export function ClosedTicketScreen({
             <ButtonLink
               variant="tall"
               icon={<IconPlus size={20} />}
-              to={`/tickets/new/${ticket.category_id}?area=${ticket.category?.area ?? 'boh'}&restaurant=${ticket.restaurant_id}`}
+              to={
+                // A walkthrough ticket with no category (OT-141) starts at its area's categories.
+                ticket.category_id
+                  ? `/tickets/new/${ticket.category_id}?area=${ticket.category?.area ?? 'boh'}&restaurant=${ticket.restaurant_id}`
+                  : `/tickets/new?area=${ticketArea(ticket) ?? 'boh'}&restaurant=${ticket.restaurant_id}`
+              }
               state={{
                 parentTicketId: ticket.id,
                 title: ticket.title,

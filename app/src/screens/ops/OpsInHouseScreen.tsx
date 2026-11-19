@@ -108,6 +108,7 @@ export function OpsInHouseScreen() {
                   id: t.id,
                   title: t.title,
                   knownCategory: t.category_id ?? itemCategory?.category_id ?? null,
+                  area: t.area,
                   fromWalkthrough: !!t.walkthrough_id,
                 })
               }

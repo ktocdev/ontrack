@@ -1,4 +1,4 @@
-import { AREA_SHORT } from '../../app/areas'
+import { ticketPlace } from '../../app/areas'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
@@ -142,7 +142,7 @@ export function TicketScreen() {
                 {ticket.restaurant.name}
               </span>
             )}
-            {ticket.category && ` › ${AREA_SHORT[ticket.category.area]} › ${ticket.category.name}`}
+            {ticketPlace(ticket).map((part) => ` › ${part}`)}
           </span>
           {origin && (
             <Link

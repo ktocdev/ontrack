@@ -10,7 +10,7 @@ import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconChevronLeft, IconWarning } from '../../components/icons'
 import { listed, useListView } from '../mycategories/useMyCategories'
 import { longDate } from './closed'
-import { AREA_LABEL } from './tickets'
+import { ticketPlace } from '../../app/areas'
 import { CLOSED_LIST_LIMIT, useClosedTickets } from './useClosedTickets'
 
 /**
@@ -87,9 +87,7 @@ export function ClosedTicketsScreen() {
                   title={t.title}
                   status="closed"
                   walkthrough={t.source === 'walkthrough'}
-                  place={[t.category && AREA_LABEL[t.category.area], t.category?.name, t.equipment?.name]
-                    .filter(Boolean)
-                    .join(' · ')}
+                  place={[...ticketPlace(t, 'long'), t.equipment?.name].filter(Boolean).join(' · ')}
                   restaurant={only ? undefined : placeOf.get(t.restaurant_id)}
                   who={t.closer ? `Closed by ${t.closer.full_name}` : 'Closed'}
                   when={t.closed_at ? longDate(new Date(t.closed_at)) : ''}
