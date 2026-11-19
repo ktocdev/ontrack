@@ -30,7 +30,7 @@ create temp table rows_in as select jsonb_build_array(
   jsonb_build_object('section', 'Kitchen', 'section_short', 'Kitchen', 'area', 'boh', 'group', 'Electrical',
                      'title', 'Breaker panel labels', 'video_url', 'https://example.com/panel',
                      'category_id', '33333333-3333-4333-8333-000000000014'),
-  jsonb_build_object('section', 'Patio', 'group', 'Furniture', 'title', 'Umbrellas')
+  jsonb_build_object('section', 'Patio', 'area', 'foh', 'group', 'Furniture', 'title', 'Umbrellas')
 ) as r;
 grant select on rows_in to authenticated;
 
@@ -62,7 +62,7 @@ select is((select count(*)::int from public.audit_log where action = 'checklist.
 
 -- Importing again over the new version, which no walkthrough has had, changes it in place.
 select pg_temp.login('bert.velilla@example.com');
-select is(public.import_checklist(:'v1', jsonb_build_array(jsonb_build_object('section', 'Patio', 'group', 'Furniture', 'title', 'Umbrellas'))),
+select is(public.import_checklist(:'v1', jsonb_build_array(jsonb_build_object('section', 'Patio', 'area', 'foh', 'group', 'Furniture', 'title', 'Umbrellas'))),
   :'v1'::uuid, 'a version no walkthrough has had is replaced in place');
 select pg_temp.su();
 select ok(not exists (select 1 from public.walkthrough_items where title = 'Breaker panel labels'),
