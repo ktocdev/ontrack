@@ -6,7 +6,6 @@ import { NotFoundScreen } from '../screens/errors/NotFoundScreen'
 import { RouteErrorScreen, ServerErrorScreen } from '../screens/errors/ServerErrorScreen'
 import { LinkExpiredScreen } from '../screens/invite/LinkExpiredScreen'
 import { CenteredLoading, CheckingInvite } from '../screens/loading/CenteredLoading'
-import { PlaceholderScreen } from '../screens/placeholder/PlaceholderScreen'
 import { ContractorLinkScreen } from '../screens/contractors/ContractorLinkScreen'
 import { EquipmentLinkScreen } from '../screens/equipment/EquipmentLinkScreen'
 import { TicketLinkScreen } from '../screens/tickets/TicketLinkScreen'
@@ -19,10 +18,6 @@ import { BareShell, Shell } from './Shell'
  * Screens most people rarely open (the kit, Profile, Help) load on demand;
  * later phases do the same per role area so a manager never downloads admin.
  */
-const placeholder = (title: string, phase: string, note?: string) => ({
-  element: <PlaceholderScreen title={title} phase={phase} note={note} />,
-})
-
 export const router = createBrowserRouter([
   {
     errorElement: <RouteErrorScreen />,
@@ -485,7 +480,19 @@ export const router = createBrowserRouter([
                     path: '/admin/roles',
                     lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).RolesScreen }),
                   },
-                  { path: '/admin/tickets', ...placeholder('Tickets', 'Phase 7') },
+                  {
+                    path: '/admin/tickets',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/AdminTicketsScreen')).AdminTicketsScreen,
+                    }),
+                  },
+                  {
+                    path: '/admin/tickets/:id',
+                    lazy: async () => {
+                      const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')
+                      return { Component: () => <ReadOnlyTicketScreen base="/admin" /> }
+                    },
+                  },
                   {
                     path: '/admin/restaurants',
                     lazy: async () => ({

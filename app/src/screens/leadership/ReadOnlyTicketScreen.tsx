@@ -6,6 +6,7 @@ import { useRoleNames } from '../../auth/group'
 import { useRight } from '../../auth/rights'
 import { Card } from '../../components/Card'
 import { PhotoViewer } from '../../components/Photo'
+import { RestaurantName } from '../../components/RestaurantName'
 import { StatusPill, UrgentTag } from '../../components/Pill'
 import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
@@ -34,8 +35,12 @@ import { scheduledLabel } from '../tickets/tickets'
  * Update status; and a line saying it can't be changed. A closed ticket shows the same,
  * with its resolution. Back returns where it came from inside this app, else to the
  * ticket's restaurant.
+ *
+ * The admin's (/admin/tickets/<id>, OT-148) differs as its board does: the restaurant with
+ * its color, no Description label, and Back to Tickets. Visits open nothing, since no board
+ * draws an admin's service record.
  */
-export function ReadOnlyTicketScreen({ base }: { base: '/lead' }) {
+export function ReadOnlyTicketScreen({ base }: { base: '/lead' | '/admin' }) {
   const { id = '' } = useParams()
   const location = useLocation()
   const { user } = useUser()
@@ -57,12 +62,19 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' }) {
   if (!ticket) return <NotFoundScreen />
 
   // From a lasting link there is nothing to go back to, so Back opens the ticket's restaurant.
-  const back = from && from.startsWith(`${base}/`) ? from : `${base}/restaurants/${ticket.restaurant_id}`
+  const admin = base === '/admin'
+  const opened = new Date(ticket.created_at)
+  const back =
+    from && from.startsWith(`${base}/`)
+      ? from
+      : admin
+        ? '/admin/tickets'
+        : `${base}/restaurants/${ticket.restaurant_id}`
+  const by = `by ${ticket.opener?.full_name ?? 'someone'}, ${shortDay(opened)} ${opened.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
   const items = threadItems(data.updates, user.id, data.names, {
     roleWord: (role) => roles.name(role, ROLE_WORD[role]),
   })
   const count = items.filter((i) => i.type === 'message').length
-  const opened = new Date(ticket.created_at)
   const status =
     ticket.status === 'scheduled' && ticket.scheduled_for ? scheduledLabel(ticket.scheduled_for) : undefined
 
@@ -78,14 +90,21 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' }) {
           <h1 className="font-display text-24 font-bold leading-[1.2] tracking-[-0.02em] [overflow-wrap:anywhere]">
             {ticket.title}
           </h1>
-          <span className="text-13 text-text-secondary">
-            {[
-              ticket.restaurant?.name,
-              `by ${ticket.opener?.full_name ?? 'someone'}, ${shortDay(opened)} ${opened.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          </span>
+          {admin && ticket.restaurant ? (
+            <span className="text-13 text-text-secondary">
+              <RestaurantName
+                name={ticket.restaurant.name}
+                color={ticket.restaurant.color}
+                variant="meta"
+                className="mr-1 align-middle text-13"
+              />
+              · {by}
+            </span>
+          ) : (
+            <span className="text-13 text-text-secondary">
+              {[ticket.restaurant?.name, by].filter(Boolean).join(' · ')}
+            </span>
+          )}
         </div>
         <Rows>
           <Row label="Status">
@@ -99,7 +118,7 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' }) {
         </Rows>
         {ticket.description && (
           <>
-            <SectionLabel className="-mb-0.5">Description</SectionLabel>
+            {!admin && <SectionLabel className="-mb-0.5">Description</SectionLabel>}
             <p className="whitespace-pre-wrap text-15 leading-normal text-text-body [overflow-wrap:anywhere]">
               {ticket.description}
             </p>
@@ -118,7 +137,7 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' }) {
             </p>
           </>
         )}
-        <ServiceAndCost ticketId={ticket.id} base={base} />
+        <ServiceAndCost ticketId={ticket.id} base={admin ? null : base} />
         <h2 className="eyebrow -mb-1 pt-1">Updates · {count}</h2>
         <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />
         <p className="pt-2 text-center text-13 leading-normal text-text-muted">
@@ -131,7 +150,7 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' }) {
 }
 
 /** Each visit on the ticket: who, when and whether its invoice is in, and what it cost. */
-function ServiceAndCost({ ticketId, base }: { ticketId: string; base: string }) {
+function ServiceAndCost({ ticketId, base }: { ticketId: string; base: string | null }) {
   const seeCosts = useRight('see_costs') === true
   const { viewingAs } = useUser()
   const { data } = useTicketService(ticketId, seeCosts)
@@ -153,11 +172,11 @@ function ServiceAndCost({ ticketId, base }: { ticketId: string; base: string }) 
                 </span>
               </span>
               <span className="flex-none font-mono text-15 font-medium">{money(r.totalCents)}</span>
-              {!viewingAs && <IconChevronRight size={16} className="flex-none text-text-muted" />}
+              {!viewingAs && base && <IconChevronRight size={16} className="flex-none text-text-muted" />}
             </>
           )
           const cls = 'flex items-center gap-3 border-t border-border px-3.5 py-3 text-text first:border-t-0'
-          return viewingAs ? (
+          return viewingAs || !base ? (
             <div key={r.id} className={cls}>
               {body}
             </div>

@@ -1,4 +1,5 @@
 import { DropdownMenu } from 'radix-ui'
+import { Chip } from './Chip'
 import { AllRestaurantsSquare, RestaurantName, RestaurantSquare } from './RestaurantName'
 import { IconCheck, IconChevronDown } from './icons'
 
@@ -6,6 +7,7 @@ import { IconCheck, IconChevronDown } from './icons'
  * The restaurant picker on Ops screens (Ops-Dashboard): the current choice with a
  * chevron, dropping a 290px panel of All restaurants and each one, the current one
  * checked. Someone with one restaurant has nothing to pick, so it is only the name.
+ * As a chip (Admin-Tickets), it sits in a row of filter chips, lit while one is picked.
  */
 type Restaurant = { id: string; name: string; color: string }
 
@@ -19,25 +21,42 @@ export function RestaurantPicker({
   selectedId,
   onSelect,
   heading = 'Show tickets for',
+  chip = false,
 }: {
   restaurants: Restaurant[]
   selectedId: string | null
   onSelect: (id: string | null) => void
   /** The panel's eyebrow: what the choice scopes. */
   heading?: string
+  /** A filter chip's trigger instead of the header's. */
+  chip?: boolean
 }) {
   const colors = restaurants.map((r) => r.color)
   const selected = restaurants.find((r) => r.id === selectedId)
   const only = restaurants.length === 1 ? restaurants[0] : undefined
-  if (only) return <RestaurantName name={only.name} color={only.color} />
+  if (only && !chip) return <RestaurantName name={only.name} color={only.color} />
+  if (only) return null
 
   return (
     <DropdownMenu.Root modal={false}>
-      <DropdownMenu.Trigger className="flex min-h-tap min-w-0 items-center gap-1.5 text-14 font-semibold text-text outline-none">
-        {selected ? <RestaurantSquare color={selected.color} /> : <AllRestaurantsSquare colors={colors} />}
-        <span className="truncate">{selected ? selected.name : `All restaurants (${restaurants.length})`}</span>
-        <IconChevronDown size={16} className="flex-none" />
-      </DropdownMenu.Trigger>
+      {chip ? (
+        <DropdownMenu.Trigger asChild>
+          <Chip
+            selected={!!selected}
+            aria-label={`Restaurant: ${selected ? selected.name : 'All restaurants'}`}
+            className="inline-flex max-w-[60vw] items-center gap-1.5"
+          >
+            {selected && <RestaurantSquare color={selected.color} />}
+            <span className="truncate">{selected ? selected.name : 'All restaurants'}</span>
+          </Chip>
+        </DropdownMenu.Trigger>
+      ) : (
+        <DropdownMenu.Trigger className="flex min-h-tap min-w-0 items-center gap-1.5 text-14 font-semibold text-text outline-none">
+          {selected ? <RestaurantSquare color={selected.color} /> : <AllRestaurantsSquare colors={colors} />}
+          <span className="truncate">{selected ? selected.name : `All restaurants (${restaurants.length})`}</span>
+          <IconChevronDown size={16} className="flex-none" />
+        </DropdownMenu.Trigger>
+      )}
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           align="start"

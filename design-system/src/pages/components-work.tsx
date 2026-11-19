@@ -167,6 +167,24 @@ export function TicketsPage() {
           />
         </Example>
       </Section>
+      <Section
+        title="Across restaurants"
+        intro="Admin · Tickets: one list with no restaurant labels, so the restaurant takes the number's place and the number starts the meta line."
+      >
+        <Example
+          code={`<OpsTicketCard to={path} displayId="OT-1042" title="…" status="in_progress" urgent restaurant={restaurant} meta="BOH · Refrigeration · Bert Velilla" />`}
+        >
+          <OpsTicketCard
+            to="#"
+            displayId="OT-1042"
+            title="Walk-in cooler not holding temp"
+            status="in_progress"
+            urgent
+            restaurant={{ name: 'Federale’s Logan Square', color: 'var(--restaurant-federales-logan)' }}
+            meta="BOH · Refrigeration · Bert Velilla"
+          />
+        </Example>
+      </Section>
       <Section title="Closed tickets" intro="Grouped by month with the month's total, which shows only with see_costs.">
         <Example>
           <MonthHeading label="October · 9 closed" total="$2,418.60" />

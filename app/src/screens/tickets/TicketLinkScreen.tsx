@@ -1,8 +1,6 @@
 import { Navigate, useParams } from 'react-router'
-import { useRoleNames } from '../../auth/group'
-import { ROLE_HOME, ticketPath } from '../../app/roles'
+import { ticketPath } from '../../app/roles'
 import { useAuth } from '../../auth/context'
-import { NoAccessScreen } from '../errors/NoAccessScreen'
 import { useTicketLink } from './useTicketLink'
 
 /**
@@ -10,33 +8,13 @@ import { useTicketLink } from './useTicketLink'
  * sent before OT-62 carries the ticket's id instead, and still opens. It opens the right
  * screen for whoever taps it and grants nothing: that screen still asks the database, so
  * a ticket someone can't see is the same refusal as any other. RequireAuth above it takes
- * a signed-out person through sign-in and back. Leadership's ticket is read-only (OT-145);
- * the admin has no ticket screen until OT-148.
+ * a signed-out person through sign-in and back. Leadership's (OT-145) and the plain
+ * admin's (OT-148) tickets are read-only.
  */
 export function TicketLinkScreen() {
   const { id = '' } = useParams()
   const auth = useAuth()
-  const names = useRoleNames()
-  const role = auth.status === 'signed-in' ? auth.user.role : null
-  const ticket = useTicketLink(id, role !== null && ticketPath(role, id) !== null)
+  const ticket = useTicketLink(id, auth.status === 'signed-in')
   if (auth.status !== 'signed-in' || ticket.loading) return null
-
-  const path = ticketPath(auth.user.role, ticket.id)
-  if (path) return <Navigate to={path} replace />
-  return (
-    <NoAccessScreen
-      title="Tickets don't open here yet"
-      body={
-        <>
-          This link opens for <b className="text-text">{names.name('manager')}</b> and{' '}
-          <b className="text-text">{names.name('ops')}</b> accounts. You are signed in as {names.name(auth.user.role)}.
-        </>
-      }
-      backTo={ROLE_HOME[auth.user.role]}
-      backLabel="Go to my home screen"
-      email={auth.user.email}
-      onSwitchAccount={auth.signOut}
-      hideAsk
-    />
-  )
+  return <Navigate to={ticketPath(auth.user.role, ticket.id)} replace />
 }

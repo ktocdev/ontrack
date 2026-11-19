@@ -547,6 +547,15 @@ export function KitPage() {
                 selectedId={null}
                 onSelect={() => toast.show('Restaurant picked.')}
               />
+              <RestaurantPicker
+                chip
+                restaurants={[
+                  { id: 'a', name: 'Porter', color: 'var(--preset-ocean)' },
+                  { id: 'b', name: 'Corner Bistro', color: 'var(--preset-plum)' },
+                ]}
+                selectedId="a"
+                onSelect={() => toast.show('Restaurant picked.')}
+              />
               <RestaurantTitlePicker
                 restaurants={[
                   { id: 'a', name: 'Federale’s Logan Square', color: 'var(--preset-plum)' },
@@ -632,6 +641,15 @@ export function KitPage() {
                 status="open"
                 meta="BOH · Refrigeration · just now"
                 createdAt={kitOpenedAt}
+              />
+              <OpsTicketCard
+                to="#"
+                displayId="OT-1044"
+                title="Dish machine not reaching rinse temp"
+                status="open"
+                urgent
+                restaurant={{ name: 'Porter', color: 'var(--preset-ocean)' }}
+                meta="BOH · Dishwashing · 25m ago"
               />
               <TicketCard
                 to="#"

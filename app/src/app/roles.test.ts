@@ -5,7 +5,7 @@ describe('a ticket link', () => {
   it('opens the screen for each role, and none for those without one', () => {
     expect(ticketPath('manager', 'abc')).toBe('/tickets/abc')
     expect(ticketPath('ops', 'abc')).toBe('/ops/tickets/abc')
-    expect(ticketPath('admin', 'abc')).toBeNull()
+    expect(ticketPath('admin', 'abc')).toBe('/admin/tickets/abc')
     expect(ticketPath('leadership', 'abc')).toBe('/lead/tickets/abc')
   })
 
