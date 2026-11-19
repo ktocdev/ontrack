@@ -6,6 +6,7 @@ import { ChoicesPage, FeedbackPage, FieldsPage, NavigationPage, SheetsPage } fro
 import {
   ContractorsPage,
   EquipmentPage,
+  FiguresPage,
   LoadingPage,
   ThreadPage,
   TicketsPage,
@@ -117,6 +118,12 @@ export const NAV: { title: string; pages: PageDef[] }[] = [
         title: 'Contractors',
         summary: 'Directory cards',
         Component: ContractorsPage,
+      },
+      {
+        path: '/components/figures',
+        title: 'Figures and months',
+        summary: 'Figure tiles, month stepper, read-only banner',
+        Component: FiguresPage,
       },
       {
         path: '/components/walkthrough',

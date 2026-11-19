@@ -9,7 +9,7 @@ import { firstName } from '../../lib/words'
 import type { SignedIn } from '../../auth/types'
 import type { AppRole } from '../../lib/supabase'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
-import { PlaceholderScreen } from '../placeholder/PlaceholderScreen'
+import { LeadOverviewScreen } from '../leadership/LeadOverviewScreen'
 import { ReportSheet } from '../profile/ReportSheet'
 import { OpsDashboardScreen } from '../ops/OpsDashboardScreen'
 import { OpenTicketsScreen } from '../tickets/OpenTicketsScreen'
@@ -22,7 +22,7 @@ import { useLogViewAs, usePerson } from './useRights'
  * still answers as the admin. What differs is what useUser() says, which is how
  * screens know whose restaurants to show. A screen that loads data must scope it
  * from useUser(), and one that writes must hide its controls when viewingAs is set.
- * Leadership's home is a placeholder until Phase 7 replaces it here.
+ * Leadership's home is the Overview (OT-143).
  */
 
 export function ViewAsScreen() {
@@ -72,13 +72,7 @@ export function ViewAsScreen() {
         </button>
       </div>
       <AuthContext.Provider value={viewed}>
-        {role === 'manager' ? (
-          <OpenTicketsScreen />
-        ) : role === 'ops' ? (
-          <OpsDashboardScreen />
-        ) : (
-          <PlaceholderScreen title="Overview" phase="Phase 7" />
-        )}
+        {role === 'manager' ? <OpenTicketsScreen /> : role === 'ops' ? <OpsDashboardScreen /> : <LeadOverviewScreen />}
         <TabBar label={tabs.label} items={tabs.items} inert />
       </AuthContext.Provider>
       <ReportSheet open={reporting} onOpenChange={setReporting} context={`Viewing as ${viewed.user.full_name}`} />

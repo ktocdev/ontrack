@@ -127,6 +127,9 @@ import {
   IconSignOut,
   IconUserPlus,
 } from '../../components/icons'
+import { Kpi } from '../../components/Kpi'
+import { MonthStepper } from '../../components/MonthStepper'
+import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { ViewAsBanner } from '../admin/ViewAsScreen'
 import { SignedOutSheet } from '../auth/SignedOutSheet'
 import { ROLE_TABS } from '../../app/roles'
@@ -154,6 +157,7 @@ const SECTIONS = {
   restaurants: 'Restaurant names',
   avatars: 'Avatars',
   cards: 'Cards and rows',
+  figures: 'Figures, months and read-only',
   walkthrough: 'Walkthrough progress',
   checklist: 'Walkthrough checklist',
   controls: 'Segmented and tabs',
@@ -188,6 +192,8 @@ const KIT_RESTAURANTS = [
   { id: 'c', name: 'Northside Grill', color: 'var(--preset-olive)' },
 ]
 
+const KIT_MONTHS = ['2026-09-01', '2026-10-01', '2026-11-01']
+
 export function KitPage() {
   const { theme } = useTheme()
   const toast = useToast()
@@ -197,6 +203,7 @@ export function KitPage() {
   // Opened as the kit loads, so the new-ticket ring shows for its 5 minutes.
   const [kitOpenedAt] = useState(() => new Date().toISOString())
   const [kitOrderIds, setKitOrderIds] = useState(['a', 'b', 'c'])
+  const [kitMonth, setKitMonth] = useState('2026-10-01')
   const [sheet, setSheet] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
   const [install, setInstall] = useState<'available' | 'ios-manual' | null>(null)
@@ -745,6 +752,28 @@ export function KitPage() {
               />
             </Section>
 
+            <Section id="figures">
+              <SectionLabel>Figures (Overview, contractor page)</SectionLabel>
+              <div className="grid grid-cols-2 gap-2">
+                <Kpi size="large" value="14" label="Open tickets" />
+                <Kpi size="large" value="3" label="Urgent" tone="urgent" />
+                <Kpi size="large" value="$2,418.60" label="Spend · October" />
+                <Kpi size="large" value="No data" label="Avg. time to close" tone="muted" />
+                <Kpi wide value="$4,812.00" label="Spend · 2026" />
+                <Kpi value="11" label="Visits · 2026" />
+                <Kpi size="small" value="Oct 19, 2026" label="Last visit" />
+              </div>
+              <SectionLabel>Month stepper</SectionLabel>
+              <MonthStepper
+                month={kitMonth}
+                line="1 of 4 submitted"
+                older={KIT_MONTHS[KIT_MONTHS.indexOf(kitMonth) - 1]}
+                newer={KIT_MONTHS[KIT_MONTHS.indexOf(kitMonth) + 1]}
+                onGo={setKitMonth}
+              />
+              <SectionLabel>Read-only banner (leadership)</SectionLabel>
+              <ReadOnlyBanner />
+            </Section>
             <Section id="walkthrough">
               <ProgressBar good={16} inhouse={2} tickets={2} total={50} label="20 of 50 checks done" />
               <ProgressBar good={44} inhouse={3} tickets={3} total={50} label="50 of 50 checks done" />

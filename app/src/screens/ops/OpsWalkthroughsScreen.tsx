@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
@@ -8,17 +7,11 @@ import { EmptyState } from '../../components/EmptyState'
 import { RestaurantName, RestaurantSquare } from '../../components/RestaurantName'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
+import { MonthStepper } from '../../components/MonthStepper'
 import { Sk } from '../../components/Skeleton'
 import { FlagChips, HistoryLegend, HistorySquare, ProgressLine, StandingPill } from '../../components/Walkthrough'
-import {
-  IconCalendar,
-  IconChevronDown,
-  IconChevronLeft,
-  IconChevronRight,
-  IconClipboardCheck,
-  IconWarning,
-} from '../../components/icons'
-import { localDay, monthName, monthShort } from '../walkthrough/walkthrough'
+import { IconCalendar, IconChevronDown, IconClipboardCheck, IconWarning } from '../../components/icons'
+import { localDay, monthShort } from '../walkthrough/walkthrough'
 import { useRestaurantOrder } from './useRestaurantOrder'
 import { useRestaurantScope } from './useRestaurantScope'
 import { useWalkthroughMonths, useWalkthroughOverview } from './useOpsWalkthroughs'
@@ -86,18 +79,7 @@ export function OpsWalkthroughsScreen() {
           )
         }
       >
-        {month && (
-          <div className="flex items-center gap-1 rounded-input border border-border bg-surface p-1">
-            <StepButton label="Previous month" to={older} onGo={go} icon={<IconChevronLeft size={18} />} />
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-px text-center">
-              <span className="text-15 font-bold">
-                {monthName(month)} {month.slice(0, 4)}
-              </span>
-              <span className="truncate text-12 text-text-secondary">{monthLine(shown)}</span>
-            </div>
-            <StepButton label="Next month" to={newer} onGo={go} icon={<IconChevronRight size={18} />} />
-          </div>
-        )}
+        {month && <MonthStepper month={month} line={monthLine(shown)} older={older} newer={newer} onGo={go} />}
       </ScreenHeader>
 
       {failed ? (
@@ -151,30 +133,6 @@ export function OpsWalkthroughsScreen() {
 }
 
 /** A month arrow: 44px to tap, off at the newest and oldest month there is. */
-function StepButton({
-  label,
-  to,
-  onGo,
-  icon,
-}: {
-  label: string
-  to: string | undefined
-  onGo: (month: string) => void
-  icon: ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      disabled={!to}
-      onClick={() => to && onGo(to)}
-      className="flex size-11 flex-none items-center justify-center rounded-control text-text disabled:text-border-muted not-disabled:active:bg-surface-muted"
-    >
-      {icon}
-    </button>
-  )
-}
-
 /** A restaurant's month: name and standing, the bar, and "20 of 50" with what it flagged. */
 function MonthRow({ name, color, row }: { name: string; color: string; row: SummaryRow }) {
   return (

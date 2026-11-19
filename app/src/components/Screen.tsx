@@ -48,12 +48,22 @@ type HeaderProps = {
   /** Tabs or search rendered under the title, inside the padded header. */
   children?: ReactNode
   className?: string
+  /** Under a band that already takes the phone's top inset (ReadOnlyBanner), so none here. */
+  underBanner?: boolean
 }
 
 /** Title block: 20px top padding, 14px gaps, 30px Archivo title. */
-export function ScreenHeader({ title, topLeft, topRight, action, children, className = '' }: HeaderProps) {
+export function ScreenHeader({
+  title,
+  topLeft,
+  topRight,
+  action,
+  children,
+  className = '',
+  underBanner = false,
+}: HeaderProps) {
   return (
-    <header className={`flex flex-none flex-col gap-3.5 px-screen pb-3 pt-safe ${className}`}>
+    <header className={`flex flex-none flex-col gap-3.5 px-screen pb-3 ${underBanner ? '' : 'pt-safe'} ${className}`}>
       {(topLeft || topRight) && (
         <div className="mt-5 flex min-h-tap items-center justify-between">
           <div className="flex min-w-0 items-center">{topLeft}</div>
