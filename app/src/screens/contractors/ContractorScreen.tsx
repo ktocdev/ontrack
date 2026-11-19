@@ -1,10 +1,12 @@
 import { useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
+import { useRoleNames } from '../../auth/group'
 import { useRight } from '../../auth/rights'
 import { Button, ButtonLink, buttonClasses } from '../../components/Button'
 import { Card, KeyValueRow, ListCard } from '../../components/Card'
 import { Kpi } from '../../components/Kpi'
+import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { EmptyState } from '../../components/EmptyState'
 import { RestaurantName } from '../../components/RestaurantName'
 import { BackBar, Screen, ScreenBody, ScreenEmpty, SectionLabel, UnderlineTabs } from '../../components/Screen'
@@ -41,16 +43,29 @@ import { useContractor, type ContractorData } from './useContractor'
  * log_cost, as changing a contractor does. An archived contractor still opens, from a
  * visit or a link, with an Archived tag and no Log service. Under View as, nothing
  * changes anything or leads anywhere.
+ *
+ * Leadership's contractor page (design/screens/Exec-Contractor, OT-146) is this screen at
+ * /lead/contractors/<id> under READ-ONLY VIEW: no Edit or menu, Call and Email kept, the
+ * amounts and lists for every restaurant, each visit opening leadership's read-only
+ * service record, and a missing invoice says Ops hasn't attached it yet.
  */
 const TABS = [undefined, 'invoices'] as const
 const SHOWN = 6
 
-export function ContractorScreen() {
+type Base = '/ops' | '/lead'
+
+export function ContractorScreen({ base = '/ops' }: { base?: Base }) {
   const { id = '', tab } = useParams()
   const seeContractors = useRight('see_contractors')
   const seeCosts = !!useRight('see_costs')
   const { data, isPending, isError, refetch } = useContractor(id, seeCosts)
-  const back = <BackBar to="/ops/contractors" label="Back to contractors" />
+  const lead = base === '/lead'
+  const back = (
+    <>
+      {lead && <ReadOnlyBanner />}
+      <BackBar to={`${base}/contractors`} label="Back to contractors" underBanner={lead} />
+    </>
+  )
 
   if (seeContractors === false) return <NotFoundScreen />
   if (isPending)
@@ -83,18 +98,20 @@ export function ContractorScreen() {
     )
   if (!data) return <NotFoundScreen />
   if (!TABS.includes(tab as (typeof TABS)[number]) || (tab && !seeCosts))
-    return <Navigate to={`/ops/contractors/${id}`} replace />
-  return <Detail data={data} tab={tab} seeCosts={seeCosts} />
+    return <Navigate to={`${base}/contractors/${id}`} replace />
+  return <Detail data={data} tab={tab} seeCosts={seeCosts} base={base} />
 }
 
-function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; seeCosts: boolean }) {
-  const { viewingAs } = useUser()
+function Detail({ data, tab, seeCosts, base }: { data: ContractorData; tab?: string; seeCosts: boolean; base: Base }) {
+  const lead = base === '/lead'
+  const { viewingAs, restaurants } = useUser()
   const scope = useRestaurantScope()
-  const canEdit = !!useRight('log_cost') && !viewingAs
+  const selected = lead ? null : scope.selected
+  const canEdit = !!useRight('log_cost') && !viewingAs && !lead
   const [year] = useState(() => new Date().getFullYear())
   const { contractor: c } = data
-  const here = `/ops/contractors/${c.id}`
-  const s = summarizeVisits(data.visits, scope.ids, year)
+  const here = `${base}/contractors/${c.id}`
+  const s = summarizeVisits(data.visits, lead ? restaurants.map((r) => r.id) : scope.ids, year)
   const warning = insuranceWarning(c.insurance_until)
   const insurance = c.insurance_until ? insuranceLine(c.insurance_until) : null
   const tel = c.phone?.replace(/[^\d+]/g, '')
@@ -102,11 +119,13 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
 
   return (
     <Screen>
+      {lead && <ReadOnlyBanner />}
       <BackBar
-        to="/ops/contractors"
+        to={`${base}/contractors`}
         label="Back to contractors"
+        underBanner={lead}
         action={
-          viewingAs ? undefined : (
+          viewingAs || lead ? undefined : (
             <span className="flex flex-none items-center gap-1">
               {canEdit && (
                 <Link
@@ -175,11 +194,11 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
         )}
 
         {seeCosts && (
-          <section aria-label={`This year at ${scope.selected?.name ?? 'all restaurants'}`} className="flex-none">
-            {scope.selected && (
+          <section aria-label={`This year at ${selected?.name ?? 'all restaurants'}`} className="flex-none">
+            {selected && (
               <p className="mb-2 flex items-center gap-1.5 text-13 text-text-secondary">
                 At
-                <RestaurantName variant="meta" name={scope.selected.name} color={scope.selected.color} />
+                <RestaurantName variant="meta" name={selected.name} color={selected.color} />
               </p>
             )}
             <div className="grid grid-cols-2 gap-2">
@@ -229,12 +248,13 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
               ]}
             />
             {tab === 'invoices' ? (
-              <Invoices visits={s.visits} missing={s.missing} />
+              <Invoices visits={s.visits} missing={s.missing} base={base} />
             ) : (
               <Visits
                 visits={s.visits}
                 logTo={canEdit && !c.archived_at ? `${here}/service/new` : null}
                 name={c.name}
+                base={base}
               />
             )}
           </>
@@ -246,7 +266,7 @@ function Detail({ data, tab, seeCosts }: { data: ContractorData; tab?: string; s
 
 /** The board's 12px-radius figure: 22px Archivo (17px for a date) over a 12px label. */
 /** A row opening the service record, which comes back here. */
-function VisitLink({ visit, children }: { visit: Visit; children: ReactNode }) {
+function VisitLink({ visit, base, children }: { visit: Visit; base: Base; children: ReactNode }) {
   const location = useLocation()
   const { viewingAs } = useUser()
   const cls =
@@ -255,7 +275,7 @@ function VisitLink({ visit, children }: { visit: Visit; children: ReactNode }) {
     <div className={cls}>{children}</div>
   ) : (
     <Link
-      to={`/ops/service/${visit.id}`}
+      to={`${base}/service/${visit.id}`}
       state={{ from: location.pathname }}
       className={`${cls} hover:bg-surface-hover active:bg-surface-muted active:duration-0`}
     >
@@ -264,7 +284,7 @@ function VisitLink({ visit, children }: { visit: Visit; children: ReactNode }) {
   )
 }
 
-function Visits({ visits, logTo, name }: { visits: Visit[]; logTo: string | null; name: string }) {
+function Visits({ visits, logTo, name, base }: { visits: Visit[]; logTo: string | null; name: string; base: Base }) {
   const [all, setAll] = useState(false)
   if (visits.length === 0)
     return (
@@ -272,7 +292,7 @@ function Visits({ visits, logTo, name }: { visits: Visit[]; logTo: string | null
         titleSize={20}
         icon={<IconReceipt size={30} />}
         title="No visits yet"
-        body={`Visits you log with ${name} show up here, with what each one cost.`}
+        body={`Visits ${base === '/lead' ? 'logged' : 'you log'} with ${name} show up here, with what each one cost.`}
       >
         {logTo && (
           <ButtonLink to={logTo} variant="medium" className="w-full" icon={<IconPlus size={18} strokeWidth={2.2} />}>
@@ -286,7 +306,7 @@ function Visits({ visits, logTo, name }: { visits: Visit[]; logTo: string | null
     <>
       <ListCard className="flex-none">
         {shown.map((v) => (
-          <VisitLink key={v.id} visit={v}>
+          <VisitLink key={v.id} visit={v} base={base}>
             <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span className="text-12 font-semibold text-text-secondary">{serviceDay(v.service_date)}</span>
               <span className="text-15 font-semibold [overflow-wrap:anywhere]">{v.title}</span>
@@ -307,14 +327,15 @@ function Visits({ visits, logTo, name }: { visits: Visit[]; logTo: string | null
   )
 }
 
-function Invoices({ visits, missing }: { visits: Visit[]; missing: number }) {
+function Invoices({ visits, missing, base }: { visits: Visit[]; missing: number; base: Base }) {
+  const names = useRoleNames()
   if (visits.length === 0)
     return (
       <EmptyState
         titleSize={20}
         icon={<IconFile size={30} />}
         title="No invoices yet"
-        body="Each visit you log shows here with its invoice, or as missing until one is attached."
+        body={`Each visit ${base === '/lead' ? 'logged' : 'you log'} shows here with its invoice, or as missing until one is attached.`}
       />
     )
   return (
@@ -326,13 +347,15 @@ function Invoices({ visits, missing }: { visits: Visit[]; missing: number }) {
             <b>
               {visitsLabel(missing)} {missing === 1 ? 'has' : 'have'} no invoice.
             </b>{' '}
-            Open the visit to attach it.
+            {base === '/lead'
+              ? `${names.name('ops', 'Ops')} hasn't attached ${missing === 1 ? 'it' : 'them'} yet.`
+              : 'Open the visit to attach it.'}
           </span>
         </div>
       )}
       <ListCard className="flex-none">
         {visits.map((v) => (
-          <VisitLink key={v.id} visit={v}>
+          <VisitLink key={v.id} visit={v} base={base}>
             <InvoiceMark isMissing={v.invoiceMissing} missing={<IconWarning size={16} />} />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="text-15 font-semibold [overflow-wrap:anywhere]">

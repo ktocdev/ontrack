@@ -14,6 +14,7 @@ import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconBriefcase, IconChevronRight, IconPlus, IconSearchOff, IconWarning } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
+import { LeadershipHeader } from '../leadership/LeadershipHeader'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
 import { serviceDay } from '../service/service'
@@ -49,24 +50,32 @@ import { useContractorDirectory } from './useContractorDirectory'
  * spreadsheet waits for Phase 7. The Directory and Invoices tabs (OT-96) sit under the
  * title for anyone with see_costs. Under View as, Add is
  * gone and nothing opens.
+ *
+ * Leadership's directory (design/screens/Exec-Contractors, OT-146) is this screen at
+ * /lead/contractors under READ-ONLY VIEW, the group's name in place of the picker: the
+ * amounts are every restaurant's, nothing adds or archives, Call stays, and a card opens
+ * leadership's contractor page. Archived contractors stay off it, since their place
+ * here is to be restored.
  */
-export function ContractorsScreen() {
+export function ContractorsScreen({ base = '/ops' }: { base?: '/ops' | '/lead' }) {
   const seeContractors = useRight('see_contractors')
   if (seeContractors === false) return <NotFoundScreen />
-  return <Directory />
+  return <Directory base={base} />
 }
 
 const SORT_LABEL: Record<Sort, string> = { used: 'Most used first', spend: 'Highest spend first' }
 
-function Directory() {
-  const { viewingAs } = useUser()
+function Directory({ base }: { base: '/ops' | '/lead' }) {
+  const lead = base === '/lead'
+  const { viewingAs, restaurants } = useUser()
   const scope = useRestaurantScope()
+  const ids = lead ? restaurants.map((r) => r.id) : scope.ids
   const { ordered } = useRestaurantOrder()
   const seeCosts = !!useRight('see_costs')
-  const canAdd = !!useRight('log_cost') && !viewingAs
+  const canAdd = !!useRight('log_cost') && !viewingAs && !lead
   const { data, isPending, isError, refetch } = useContractorDirectory(seeCosts)
   const trades = useTrades()
-  const canEditTrades = useCanEditTrades()
+  const canEditTrades = useCanEditTrades() && !lead
   const [year] = useState(() => new Date().getFullYear())
   const [query, setQuery] = useState('')
   const [trade, setTrade] = useState<string | null>(null)
@@ -75,8 +84,10 @@ function Directory() {
   const all = data?.contractors ?? []
   const contractors = all.filter((c) => !c.archived_at)
   // Archived ones sit apart at the bottom, so one can be found and restored.
-  const archived = all.filter((c) => c.archived_at && matchesSearch(c, query) && (!trade || c.trades.includes(trade)))
-  const rows = data ? summarize(contractors, data.spend, scope.ids, year) : []
+  const archived = all.filter(
+    (c) => !lead && c.archived_at && matchesSearch(c, query) && (!trade || c.trades.includes(trade)),
+  )
+  const rows = data ? summarize(contractors, data.spend, ids, year) : []
   const shown = sortRows(
     rows.filter((r) => (!trade || r.trades.includes(trade)) && matchesSearch(r, query)),
     seeCosts ? sort : 'used',
@@ -96,66 +107,76 @@ function Directory() {
           .join(' · ')
       : undefined
 
+  const underTitle = (
+    <>
+      <ContractorTabs base={base} />
+      {!empty && !isError && (
+        <>
+          <SearchField
+            label="Search contractors"
+            placeholder="Company, contact or trade"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onClear={() => setQuery('')}
+          />
+          <div className="-mx-screen flex gap-2 overflow-x-auto px-screen pb-1 [scrollbar-width:none]">
+            <Chip selected={!trade} onClick={() => setTrade(null)}>
+              All · {contractors.length}
+            </Chip>
+            {tradeChips(contractors).map((t) => (
+              <Chip key={t} selected={trade === t} onClick={() => setTrade(trade === t ? null : t)}>
+                {t}
+              </Chip>
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  )
+
   return (
     <Screen>
-      <ScreenHeader
-        title="Contractors"
-        topLeft={
-          <RestaurantPicker
-            restaurants={ordered}
-            selectedId={scope.selected?.id ?? null}
-            onSelect={scope.select}
-            heading="Show spend for"
-          />
-        }
-        topRight={<ProfileLink />}
-        action={
-          (canAdd && !empty) || canEditTrades ? (
-            <span className="flex flex-none items-center gap-2">
-              {canAdd && !empty && (
-                <ButtonLink
-                  to="/ops/contractors/new"
-                  variant="compact"
-                  aria-label="Add contractor"
-                  icon={<IconPlus size={18} strokeWidth={2.4} />}
-                  className="gap-1.5 px-3.5 text-14"
-                >
-                  Add
-                </ButtonLink>
-              )}
-              {canEditTrades && (
-                <OverflowMenu
-                  label="More options for contractors"
-                  items={[{ to: '/ops/contractors/trades', label: 'Trades' }]}
-                />
-              )}
-            </span>
-          ) : undefined
-        }
-      >
-        <ContractorTabs />
-        {!empty && !isError && (
-          <>
-            <SearchField
-              label="Search contractors"
-              placeholder="Company, contact or trade"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onClear={() => setQuery('')}
+      {lead ? (
+        <LeadershipHeader title="Contractors">{underTitle}</LeadershipHeader>
+      ) : (
+        <ScreenHeader
+          title="Contractors"
+          topLeft={
+            <RestaurantPicker
+              restaurants={ordered}
+              selectedId={scope.selected?.id ?? null}
+              onSelect={scope.select}
+              heading="Show spend for"
             />
-            <div className="-mx-screen flex gap-2 overflow-x-auto px-screen pb-1 [scrollbar-width:none]">
-              <Chip selected={!trade} onClick={() => setTrade(null)}>
-                All · {contractors.length}
-              </Chip>
-              {tradeChips(contractors).map((t) => (
-                <Chip key={t} selected={trade === t} onClick={() => setTrade(trade === t ? null : t)}>
-                  {t}
-                </Chip>
-              ))}
-            </div>
-          </>
-        )}
-      </ScreenHeader>
+          }
+          topRight={<ProfileLink />}
+          action={
+            (canAdd && !empty) || canEditTrades ? (
+              <span className="flex flex-none items-center gap-2">
+                {canAdd && !empty && (
+                  <ButtonLink
+                    to="/ops/contractors/new"
+                    variant="compact"
+                    aria-label="Add contractor"
+                    icon={<IconPlus size={18} strokeWidth={2.4} />}
+                    className="gap-1.5 px-3.5 text-14"
+                  >
+                    Add
+                  </ButtonLink>
+                )}
+                {canEditTrades && (
+                  <OverflowMenu
+                    label="More options for contractors"
+                    items={[{ to: '/ops/contractors/trades', label: 'Trades' }]}
+                  />
+                )}
+              </span>
+            ) : undefined
+          }
+        >
+          {underTitle}
+        </ScreenHeader>
+      )}
 
       {isError ? (
         <ScreenEmpty>
@@ -177,11 +198,15 @@ function Directory() {
             icon={<IconBriefcase size={30} />}
             title="No contractors yet"
             body={
-              <>
-                Add the companies you call for repairs. You can then pick them when you log service and see what you
-                spend with each.
-                <span className="mt-2.5 block text-13">You can also add one while logging service on a ticket.</span>
-              </>
+              lead ? (
+                'The companies called for repairs show up here once they are added, with what each one has cost.'
+              ) : (
+                <>
+                  Add the companies you call for repairs. You can then pick them when you log service and see what you
+                  spend with each.
+                  <span className="mt-2.5 block text-13">You can also add one while logging service on a ticket.</span>
+                </>
+              )
             }
           >
             {canAdd && (
@@ -265,7 +290,7 @@ function Directory() {
                   visits={visitsLine(r)}
                   spend={seeCosts ? (r.yearCents ? wholeDollars(r.yearCents) : '$0') : undefined}
                   phone={r.phone}
-                  to={viewingAs ? undefined : `/ops/contractors/${r.id}`}
+                  to={viewingAs ? undefined : `${base}/contractors/${r.id}`}
                 />
               ))}
               {archived.length > 0 && <Archived contractors={archived} inert={!!viewingAs} />}

@@ -14,6 +14,7 @@ import { MENU_OPTION, RestaurantPicker } from '../../components/RestaurantPicker
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconCheck, IconChevronDown, IconPlus, IconSort, IconWarning } from '../../components/icons'
+import { LeadershipHeader } from '../leadership/LeadershipHeader'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
 import { serviceDay } from '../service/service'
@@ -43,15 +44,22 @@ import { useInvoices } from './useInvoices'
  * It opens on this month, or the newest month with visits when this one has none. Each
  * row opens the service record, which comes back here. Needs see_costs, which the
  * database asks too. Under View as, rows open nothing.
+ *
+ * Leadership's Invoices (design/screens/Exec-Invoices, OT-146) is this screen at
+ * /lead/contractors/invoices under READ-ONLY VIEW, every restaurant's visits with no
+ * picker, each row opening leadership's read-only service record.
  */
-export function InvoicesScreen() {
+export function InvoicesScreen({ base = '/ops' }: { base?: '/ops' | '/lead' }) {
   const seeCosts = useRight('see_costs')
-  if (seeCosts === false) return <Navigate to="/ops/contractors" replace />
-  return <Invoices />
+  if (seeCosts === false) return <Navigate to={`${base}/contractors`} replace />
+  return <Invoices base={base} />
 }
 
-function Invoices() {
+function Invoices({ base }: { base: '/ops' | '/lead' }) {
+  const lead = base === '/lead'
+  const { restaurants } = useUser()
   const scope = useRestaurantScope()
+  const ids = lead ? restaurants.map((r) => r.id) : scope.ids
   const { ordered } = useRestaurantOrder()
   const { data, isPending, isError, refetch } = useInvoices(true)
   const [now] = useState(() => new Date())
@@ -62,52 +70,62 @@ function Invoices() {
   const [sort, setSort] = useState<InvoiceSort>('new')
 
   const rows = data ?? []
-  const month = picked === undefined ? startMonth(rows, scope.ids, now) : picked
-  const view = invoiceView(rows, { restaurantIds: scope.ids, month, missingOnly, query, sort })
+  const month = picked === undefined ? startMonth(rows, ids, now) : picked
+  const view = invoiceView(rows, { restaurantIds: ids, month, missingOnly, query, sort })
   const narrowed = !!query.trim() || missingOnly
+
+  const underTitle = (
+    <>
+      <ContractorTabs base={base} />
+      {!isError && (
+        <>
+          <SearchField
+            label="Search invoices"
+            placeholder="Contractor, equipment, OT- or invoice #"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onClear={() => setQuery('')}
+          />
+          <div className="-mx-screen flex gap-2 overflow-x-auto px-screen pb-1 [scrollbar-width:none]">
+            <MonthMenu months={monthsOf(rows, ids, now)} value={month} onChange={setPicked} />
+            <Chip selected={missingOnly} onClick={() => setMissingOnly((m) => !m)}>
+              Missing · {view.missing}
+            </Chip>
+            <Chip
+              selected={false}
+              onClick={() => setSort(NEXT_SORT[sort])}
+              aria-label={`Sort: ${SORT_LABEL[sort]}. Tap to change.`}
+              className="inline-flex items-center gap-1.5"
+            >
+              <IconSort />
+              {SORT_LABEL[sort]}
+            </Chip>
+          </div>
+        </>
+      )}
+    </>
+  )
 
   return (
     <Screen>
-      <ScreenHeader
-        title="Contractors"
-        topLeft={
-          <RestaurantPicker
-            restaurants={ordered}
-            selectedId={scope.selected?.id ?? null}
-            onSelect={scope.select}
-            heading="Show invoices for"
-          />
-        }
-        topRight={<ProfileLink />}
-      >
-        <ContractorTabs />
-        {!isError && (
-          <>
-            <SearchField
-              label="Search invoices"
-              placeholder="Contractor, equipment, OT- or invoice #"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onClear={() => setQuery('')}
+      {lead ? (
+        <LeadershipHeader title="Contractors">{underTitle}</LeadershipHeader>
+      ) : (
+        <ScreenHeader
+          title="Contractors"
+          topLeft={
+            <RestaurantPicker
+              restaurants={ordered}
+              selectedId={scope.selected?.id ?? null}
+              onSelect={scope.select}
+              heading="Show invoices for"
             />
-            <div className="-mx-screen flex gap-2 overflow-x-auto px-screen pb-1 [scrollbar-width:none]">
-              <MonthMenu months={monthsOf(rows, scope.ids, now)} value={month} onChange={setPicked} />
-              <Chip selected={missingOnly} onClick={() => setMissingOnly((m) => !m)}>
-                Missing · {view.missing}
-              </Chip>
-              <Chip
-                selected={false}
-                onClick={() => setSort(NEXT_SORT[sort])}
-                aria-label={`Sort: ${SORT_LABEL[sort]}. Tap to change.`}
-                className="inline-flex items-center gap-1.5"
-              >
-                <IconSort />
-                {SORT_LABEL[sort]}
-              </Chip>
-            </div>
-          </>
-        )}
-      </ScreenHeader>
+          }
+          topRight={<ProfileLink />}
+        >
+          {underTitle}
+        </ScreenHeader>
+      )}
 
       {isError ? (
         <ScreenEmpty>
@@ -136,15 +154,15 @@ function Invoices() {
               {view.rows.length > 0 ? (
                 <ListCard className="flex-none">
                   {view.rows.map((r) => (
-                    <Row key={r.id} row={r} />
+                    <Row key={r.id} row={r} base={base} />
                   ))}
                 </ListCard>
               ) : (
                 <div className="flex flex-none flex-col items-center px-3 py-8 text-center text-14 leading-normal text-text-body">
                   {rows.length === 0
-                    ? 'No invoices yet. Contractor visits you log show up here.'
+                    ? `No invoices yet. Contractor visits ${lead ? 'logged' : 'you log'} show up here.`
                     : 'No invoices match.'}
-                  {(narrowed || month !== startMonth(rows, scope.ids, now)) && rows.length > 0 && (
+                  {(narrowed || month !== startMonth(rows, ids, now)) && rows.length > 0 && (
                     <Button
                       variant="ghost"
                       className="mt-1.5"
@@ -219,7 +237,7 @@ function MonthOption({ value, children }: { value: string; children: ReactNode }
 }
 
 /** The board's row: the file or a dashed + for a missing one, who and where, the date and number, the amount. */
-function Row({ row: r }: { row: InvoiceRow }) {
+function Row({ row: r, base }: { row: InvoiceRow; base: '/ops' | '/lead' }) {
   const location = useLocation()
   const { viewingAs } = useUser()
   const amount = money(r.totalCents)
@@ -247,7 +265,7 @@ function Row({ row: r }: { row: InvoiceRow }) {
     <div className={cls}>{body}</div>
   ) : (
     <Link
-      to={`/ops/service/${r.id}`}
+      to={`${base}/service/${r.id}`}
       state={{ from: location.pathname }}
       aria-label={label}
       className={`${cls} hover:bg-surface-hover active:bg-surface-muted active:duration-0`}

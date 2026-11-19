@@ -28,7 +28,7 @@ import { useReplaceInvoice, useServiceRecord, type ServiceRecordData } from './u
  * The file's page count on the board isn't known without opening it, so the line gives
  * its number and size. Leadership's (Exec-Service-Record, OT-145) is the same record at
  * /lead/service/<id>, read-only under READ-ONLY VIEW: no Edit, Replace or Attach, the
- * contractor by its lasting link, the ticket to leadership's ticket, the unit as text.
+ * contractor to leadership's contractor page, the ticket to leadership's ticket, the unit as text.
  */
 export function ServiceRecordScreen({ base = '/ops' }: { base?: '/ops' | '/lead' }) {
   const { id = '' } = useParams()
@@ -164,13 +164,7 @@ function Record({ data, back, lead }: { data: ServiceRecordData; back: string; l
             <>
               <Row
                 label="Contractor"
-                to={
-                  r.contractor && linked
-                    ? lead
-                      ? `/c/${r.contractor.id}`
-                      : `/ops/contractors/${r.contractor.id}`
-                    : undefined
-                }
+                to={r.contractor && linked ? `${lead ? '/lead' : '/ops'}/contractors/${r.contractor.id}` : undefined}
               >
                 {r.contractor?.name ?? '—'}
               </Row>
