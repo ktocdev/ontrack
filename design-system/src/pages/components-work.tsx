@@ -595,11 +595,12 @@ export function WalkthroughPage() {
       </Section>
       <Section
         title="A month across restaurants"
-        intro="The Ops overview (WT-Ops-Overview): each restaurant's progress as one 6px bar, its standing as a pill, and the last six months as squares."
+        intro="The Ops overview (WT-Ops-Overview): each restaurant's progress as one 6px bar, its standing as a pill, and the last six months as squares. Leadership's (WT-Exec) gives the pill how far along it is in place of In progress."
       >
         <Example
           code={`<ProgressLine done={20} total={50} label="20 of 50 checks done" />
 <StandingPill standing="on_time" submitted="Oct 18" />
+<StandingPill standing="in_progress" progress="40%" />
 <HistorySquare standing="late" label="Porter, July: Late" />
 <HistoryLegend />`}
         >
@@ -608,6 +609,7 @@ export function WalkthroughPage() {
             <div className="flex flex-wrap items-center gap-1.5">
               <StandingPill standing="not_started" />
               <StandingPill standing="in_progress" />
+              <StandingPill standing="in_progress" progress="40%" />
               <StandingPill standing="on_time" submitted="Oct 18" />
               <StandingPill standing="missed" />
             </div>

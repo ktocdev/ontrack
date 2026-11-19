@@ -183,17 +183,25 @@ export function PeopleListSkeleton({ count = 7 }: { count?: number }) {
 }
 
 /** Leadership overview: four KPI tiles, then per-restaurant rows with a bar; the label names the month. */
-export function MetricsSkeleton({ label = 'By restaurant' }: { label?: string }) {
+export function MetricsSkeleton({
+  label = 'By restaurant',
+  figures = 4,
+  loading = 'Loading overview',
+}: {
+  label?: string
+  figures?: 2 | 4
+  loading?: string
+}) {
   const kpis = [
     [36, 84],
     [24, 52],
     [104, 96],
     [80, 110],
-  ]
+  ].slice(0, figures)
   const names = ['56%', '48%', '60%', '30%']
   const bars = ['72%', '44%', '88%', '36%']
   return (
-    <LoadingRegion label="Loading overview" className="flex flex-col gap-3">
+    <LoadingRegion label={loading} className="flex flex-col gap-3">
       <div aria-hidden="true" className="grid grid-cols-2 gap-2">
         {kpis.map(([a, b], i) => (
           <div key={i} className="flex min-w-0 flex-col gap-2.5 rounded-input border border-border bg-surface p-3.5">

@@ -806,6 +806,7 @@ export function KitPage() {
               <div className="flex flex-wrap items-center gap-1.5">
                 <StandingPill standing="not_started" />
                 <StandingPill standing="in_progress" />
+                <StandingPill standing="in_progress" progress="40%" />
                 <StandingPill standing="on_time" submitted="Oct 18" />
                 <StandingPill standing="missed" />
               </div>
