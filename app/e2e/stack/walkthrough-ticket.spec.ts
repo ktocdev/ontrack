@@ -28,7 +28,7 @@ async function closeOpenTickets(request: APIRequestContext) {
 test.beforeEach(async ({ request }) => closeOpenTickets(request))
 test.afterEach(async ({ request }) => closeOpenTickets(request))
 
-test('a ticket from an item asks for a category, carries the tag, and edits back to the checklist', async ({
+test('a ticket from an item with no category asks for none, carries the tag and its place, and edits back to the checklist', async ({
   page,
 }, testInfo) => {
   const title = `Peeling paint by the host stand ${testInfo.project.name} ${Date.now() % 100000}`
@@ -44,9 +44,10 @@ test('a ticket from an item asks for a category, carries the tag, and edits back
   await expect(sheet.getByText('Aesthetics', { exact: true })).toBeVisible()
   const create = sheet.getByRole('button', { name: 'Create ticket' })
   await sheet.getByLabel("What's wrong?").fill(title)
-  // Paint names no category, so the ticket waits for one.
-  await expect(create).toBeDisabled()
-  await sheet.getByLabel('Category').selectOption({ label: 'Decorations' })
+  // Paint names no category, so the ticket takes none, and its section gives the area (OT-141).
+  await expect(sheet.getByLabel('Category')).toHaveCount(0)
+  await expect(sheet.getByLabel('Area')).toHaveCount(0)
+  await expect(create).toBeEnabled()
   await sheet.getByRole('radio', { name: 'Urgent' }).click()
   await testInfo.attach('quick ticket', { body: await page.screenshot(), contentType: 'image/png' })
   await create.click()
@@ -83,6 +84,8 @@ test('a ticket from an item asks for a category, carries the tag, and edits back
     .getAttribute('href')
     .then((href) => href!.split('/').pop()!)
   await page.goto(`/tickets/${ticketId}`)
+  // With no category, it reads as its place on the checklist.
+  await expect(page.getByText(/› FOH › Aesthetics › Paint$/)).toBeVisible()
   await page.getByRole('link', { name: 'From the October walkthrough · Paint' }).click()
   await expect(page).toHaveURL(new RegExp(`/walkthrough/${RANALLIS_OCT}/${FOH}$`))
 })

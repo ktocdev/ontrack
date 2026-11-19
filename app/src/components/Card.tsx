@@ -141,10 +141,22 @@ export function RowIcon({ children }: { children: ReactNode }) {
 }
 
 /** A category on Create ticket: 76px tile, 15px name, 12px count, brand border on hover. */
-export function CategoryTile({ to, name, count }: { to: string; name: string; count: number }) {
+export function CategoryTile({
+  to,
+  name,
+  count,
+  state,
+}: {
+  to: string
+  name: string
+  count: number
+  /** Passed on to the form, as a ticket started from a closed one carries its link. */
+  state?: unknown
+}) {
   return (
     <Link
       to={to}
+      state={state}
       className={`${CARD} flex min-h-[76px] flex-col justify-between gap-1.5 p-3.5 transition-colors hover:border-brand hover:text-text active:bg-surface-hover active:duration-0`}
     >
       <span className="text-15 font-semibold">{name}</span>

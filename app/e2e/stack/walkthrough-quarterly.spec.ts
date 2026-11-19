@@ -83,12 +83,14 @@ test('the quarter’s tasks show directions and a video, and take Good, a fix an
   await expect(floors.getByText(/^\d+ issues?$/)).toBeVisible()
   await expect(floors.getByRole('button', { name: 'Good' })).toHaveCount(0)
 
-  // A ticket from a task: it has no area, so the categories of both are offered.
+  // A ticket from a task: it has no area and no category, so the sheet asks for the area (OT-141).
   await floors.getByRole('button', { name: /^(Create ticket|Add another ticket) for Degrease BOH floors/ }).click()
   const sheet = page.getByRole('dialog', { name: /ticket/ })
   await expect(sheet.getByText('Q4 tasks', { exact: true })).toBeVisible()
   await sheet.getByLabel("What's wrong?").fill(`Floor drain by the dish pit backs up ${testInfo.project.name}`)
-  await sheet.getByLabel('Category').selectOption({ label: 'Back of House · Plumbing' })
+  await expect(sheet.getByLabel('Category')).toHaveCount(0)
+  await expect(sheet.getByRole('button', { name: 'Create ticket' })).toBeDisabled()
+  await sheet.getByLabel('Area').selectOption({ label: 'Back of House' })
   await sheet.getByRole('button', { name: 'Create ticket' }).click()
   await page.getByRole('button', { name: 'Proceed without photo' }).click()
   await expect(page.getByText(/^OT-\d+ created\. Ops has been notified\.$/)).toBeVisible()

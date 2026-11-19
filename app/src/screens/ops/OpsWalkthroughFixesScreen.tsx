@@ -133,6 +133,7 @@ export function OpsWalkthroughFixesScreen() {
                             id: f.id,
                             title: f.title,
                             knownCategory: f.knownCategory,
+                            area: f.area,
                             fromWalkthrough: true,
                           })
                         }

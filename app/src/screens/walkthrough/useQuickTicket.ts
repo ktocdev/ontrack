@@ -6,51 +6,51 @@ import type { PickedPhoto } from '../tickets/usePhotos'
 import type { CheckTarget } from './useChecklist'
 
 /**
- * Quick ticket from a checklist item: the categories for the section's area, for an item
- * that names none, and the restaurant's units in the category, for the optional equipment.
+ * A ticket's units to pick from (the quick ticket sheet, Edit ticket): the restaurant's units
+ * in its category, or for a walkthrough ticket with none (OT-141) in its area.
  */
-export function useQuickTicketOptions(restaurantId: string, area: Area | null, categoryId: string) {
-  const categories = useQuery({
-    queryKey: ['quick-ticket', 'categories', area],
+export function useTicketUnits(restaurantId: string, categoryId: string | null, area: Area | null) {
+  return useQuery({
+    queryKey: ['quick-ticket', 'equipment', restaurantId, categoryId, area],
+    enabled: Boolean(categoryId || area),
     queryFn: async () => {
-      let q = requireSupabase().from('categories').select('id, name, area').eq('active', true).order('sort_order')
-      if (area) q = q.eq('area', area)
-      const { data, error } = await q
+      const sb = requireSupabase()
+      const { data, error } = categoryId
+        ? await sb
+            .from('equipment')
+            .select('id, name, serial')
+            .eq('restaurant_id', restaurantId)
+            .eq('category_id', categoryId)
+            .is('retired_at', null)
+            .order('name')
+        : await sb
+            .from('equipment')
+            .select('id, name, serial, category:categories!inner (area)')
+            .eq('restaurant_id', restaurantId)
+            .eq('category.area', area!)
+            .is('retired_at', null)
+            .order('name')
       if (error) throw error
-      return data
+      return data.map((u) => ({ id: u.id, name: u.name, serial: u.serial }))
     },
   })
-  const equipment = useQuery({
-    queryKey: ['quick-ticket', 'equipment', restaurantId, categoryId],
-    enabled: Boolean(categoryId),
-    queryFn: async () => {
-      const { data, error } = await requireSupabase()
-        .from('equipment')
-        .select('id, name')
-        .eq('restaurant_id', restaurantId)
-        .eq('category_id', categoryId)
-        .is('retired_at', null)
-        .order('name')
-      if (error) throw error
-      return data
-    },
-  })
-  return { categories, equipment }
 }
 
 export type QuickTicket = {
   target: CheckTarget
   title: string
   urgency: Enums<'ticket_urgency'>
-  categoryId: string | null
+  /** Only where nothing on the checklist gives one: a quarterly task, or a section without one. */
+  area: Area | null
   equipmentId: string | null
   photos: PickedPhoto[]
   createdBy: string
 }
 
 /**
- * Creates the ticket through create_walkthrough_ticket, which gives it the Walkthrough tag
- * and links it to the item; Ops is told as for any new ticket. Photos follow, as on
+ * Creates the ticket through create_walkthrough_ticket, which gives it the Walkthrough tag,
+ * the item's category if it has an active one (else none, and the area), and links it to
+ * the item; Ops is told as for any new ticket. Photos follow, as on
  * Create ticket, since their folder needs the ticket: if they fail the ticket stands.
  */
 export function useCreateWalkthroughTicket(walkthroughId: string) {
@@ -63,7 +63,7 @@ export function useCreateWalkthroughTicket(walkthroughId: string) {
         ...(t.target.itemId ? { p_item_id: t.target.itemId } : { p_task_id: t.target.taskId! }),
         p_title: t.title,
         p_urgency: t.urgency,
-        ...(t.categoryId ? { p_category_id: t.categoryId } : {}),
+        ...(t.area ? { p_area: t.area } : {}),
         ...(t.equipmentId ? { p_equipment_id: t.equipmentId } : {}),
       })
       if (error) throw error

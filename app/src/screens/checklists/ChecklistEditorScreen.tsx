@@ -320,6 +320,8 @@ export function ChecklistEditorScreen() {
                   {s.name}
                   {s.short_name && s.short_name !== s.name ? ` · ${s.short_name}` : ''}
                   {!s.active && ' · Off'}
+                  {/* Saved before areas were needed (OT-141); its tickets ask for one until it has one. */}
+                  {!s.area && <span className="text-urgent"> · No area</span>}
                 </span>
                 {canEdit && (
                   <button

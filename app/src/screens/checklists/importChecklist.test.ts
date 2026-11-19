@@ -78,9 +78,9 @@ describe('reading a sheet', () => {
   })
   it('lets an item keep a category turned off since, and puts it on no other', () => {
     const sheet = [
-      ['Section', 'Group', 'Item', 'Category'],
-      ['Kitchen', 'Electrical', 'Outlets', 'Old'],
-      ['Kitchen', 'Electrical', 'Panel', 'Old'],
+      ['Section', 'Area', 'Group', 'Item', 'Category'],
+      ['Kitchen', 'Back of House', 'Electrical', 'Outlets', 'Old'],
+      ['Kitchen', '', 'Electrical', 'Panel', 'Old'],
     ]
     const r = readChecklist(sheet, categories, new Map([[itemKey('Kitchen', 'Electrical', 'Outlets'), 'old']]))
     expect(r.problems).toEqual(['Row 3: Category “Old” is turned off.'])
@@ -125,6 +125,27 @@ describe('a category two areas share', () => {
     expect(r.rows.map((x) => x.category_id)).toEqual(['felec', 'felec', null, 'hvac'])
     expect(r.problems).toEqual([
       'Row 4: “Electrical” is in more than one area; write it as “Electrical (Back of House)” or the like.',
+      'Row 4: Exterior needs an area: Front of House, Back of House or IT.',
+    ])
+  })
+})
+
+describe('a section’s area', () => {
+  it('is needed on its first row, and later rows take it (OT-141)', () => {
+    const r = readChecklist(
+      [
+        ['Section', 'Area', 'Group', 'Item'],
+        ['Kitchen', 'Back of House', 'Electrical', 'Outlets'],
+        ['Kitchen', '', 'Electrical', 'Panel'],
+        ['Exterior', '', 'Lighting', 'Timers'],
+        ['Exterior', 'Back of House', 'Lighting', 'Sign lights'],
+      ],
+      categories,
+    )
+    expect(r.rows.map((x) => x.area)).toEqual(['boh', 'boh', null, 'boh'])
+    expect(r.problems).toEqual([
+      'Row 4: Exterior needs an area: Front of House, Back of House or IT.',
+      'Row 5: Exterior has a different area on row 4.',
     ])
   })
 })

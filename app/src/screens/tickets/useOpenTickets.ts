@@ -41,7 +41,7 @@ export function useOpenTickets(restaurantIds: string[]) {
         sb
           .from('tickets')
           .select(
-            'id, display_id, title, status, source, restaurant_id, category_id, created_by, assignee_id, created_at, updated_at, reopened_at, scheduled_for, category:categories (name, area), equipment (name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
+            'id, display_id, title, status, source, restaurant_id, category_id, created_by, assignee_id, created_at, updated_at, reopened_at, scheduled_for, area, checklist_place, category:categories (name, area), equipment (name), assignee:profiles!tickets_assignee_id_fkey (full_name)',
           )
           .in('restaurant_id', restaurantIds)
           .neq('status', 'closed'),

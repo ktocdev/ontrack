@@ -1,4 +1,4 @@
-import { AREA_SHORT } from '../../app/areas'
+import { AREA_SHORT, ticketPlace } from '../../app/areas'
 import { useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
@@ -234,13 +234,7 @@ function Detail({ ops }: { ops: boolean }) {
                         urgent={t.urgency === 'urgent'}
                         walkthrough={t.source === 'walkthrough'}
                         createdAt={t.created_at}
-                        meta={[
-                          t.category && AREA_SHORT[t.category.area],
-                          t.category?.name,
-                          ago(new Date(t.created_at), now),
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')}
+                        meta={[...ticketPlace(t), ago(new Date(t.created_at), now)].filter(Boolean).join(' · ')}
                         worker={t.assignee_id === user.id ? null : t.assignee?.full_name}
                       />
                     ) : (
@@ -254,9 +248,7 @@ function Detail({ ops }: { ops: boolean }) {
                           t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
                         }
                         walkthrough={t.source === 'walkthrough'}
-                        place={[t.category && AREA_LABEL[t.category.area], t.category?.name]
-                          .filter(Boolean)
-                          .join(' · ')}
+                        place={[...ticketPlace(t, 'long')].filter(Boolean).join(' · ')}
                         who={t.assignee ? `${t.assignee.full_name} is on it` : 'Not picked up yet'}
                         when={activityLine(t)}
                         createdAt={t.created_at}

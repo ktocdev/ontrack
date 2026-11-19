@@ -2,13 +2,14 @@ import { AREAS } from '../../app/areas'
 /** How the Ops dashboard orders and groups its tickets. */
 
 const AREA_ORDER: string[] = AREAS
-/** Front, Back, IT, and a ticket with no category after them all. */
+/** Front, Back, IT, and a ticket with no area after them all. */
 const areaRank = (t: Sortable) => {
-  const i = AREA_ORDER.indexOf(t.category?.area ?? '')
+  const i = AREA_ORDER.indexOf(t.category?.area ?? t.area ?? '')
   return i < 0 ? AREA_ORDER.length : i
 }
 
-type Sortable = { urgency: string; created_at: string; category: { area: string } | null }
+// A walkthrough ticket with no category carries its own area (OT-141).
+type Sortable = { urgency: string; created_at: string; category: { area: string } | null; area?: string | null }
 
 /** Urgent always on top, then Front of House, Back of House and IT, then whatever has waited longest. */
 export function byPriority(a: Sortable, b: Sortable) {

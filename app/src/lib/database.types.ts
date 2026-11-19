@@ -1175,14 +1175,14 @@ isOneToOne: false
                   ]
                 },"tickets": {
                   Row: {
-                    "assignee_id": string | null,"category_id": string,"closed_at": string | null,"closed_by": string | null,"created_at": string,"created_by": string,"description": string | null,"display_id": string | null,"equipment_id": string | null,"id": string,"last_closed_at": string | null,"number": number,"parent_ticket_id": string | null,"reopen_count": number,"reopened_at": string | null,"resolution": string | null,"restaurant_id": string,"scheduled_for": string | null,"source": Database["public"]['Enums']["ticket_source"],"status": Database["public"]['Enums']["ticket_status"],"title": string,"updated_at": string,"urgency": Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id": string | null,"walkthrough_id": string | null
+                    "area": Database["public"]['Enums']["area"] | null,"assignee_id": string | null,"category_id": string | null,"checklist_place": string | null,"closed_at": string | null,"closed_by": string | null,"created_at": string,"created_by": string,"description": string | null,"display_id": string | null,"equipment_id": string | null,"id": string,"last_closed_at": string | null,"number": number,"parent_ticket_id": string | null,"reopen_count": number,"reopened_at": string | null,"resolution": string | null,"restaurant_id": string,"scheduled_for": string | null,"source": Database["public"]['Enums']["ticket_source"],"status": Database["public"]['Enums']["ticket_status"],"title": string,"updated_at": string,"urgency": Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id": string | null,"walkthrough_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "assignee_id"?: string | null,"category_id": string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by": string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number": number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id": string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title": string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id"?: string | null,"walkthrough_id"?: string | null
+                    "area"?: Database["public"]['Enums']["area"] | null,"assignee_id"?: string | null,"category_id"?: string | null,"checklist_place"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by": string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number": number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id": string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title": string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Update: {
-                    "assignee_id"?: string | null,"category_id"?: string,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by"?: string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number"?: number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id"?: string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title"?: string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id"?: string | null,"walkthrough_id"?: string | null
+                    "area"?: Database["public"]['Enums']["area"] | null,"assignee_id"?: string | null,"category_id"?: string | null,"checklist_place"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"created_at"?: string,"created_by"?: string,"description"?: string | null,"display_id"?: never,"equipment_id"?: string | null,"id"?: string,"last_closed_at"?: string | null,"number"?: number,"parent_ticket_id"?: string | null,"reopen_count"?: number,"reopened_at"?: string | null,"resolution"?: string | null,"restaurant_id"?: string,"scheduled_for"?: string | null,"source"?: Database["public"]['Enums']["ticket_source"],"status"?: Database["public"]['Enums']["ticket_status"],"title"?: string,"updated_at"?: string,"urgency"?: Database["public"]['Enums']["ticket_urgency"],"walkthrough_check_id"?: string | null,"walkthrough_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -2278,13 +2278,13 @@ isOneToOne: false
 { Args: { "p_contractor_id": string }; Returns: (string)[]
                            },
 "convert_inhouse_fix":
-{ Args: { "p_category_id"?: string,"p_id": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"] }; Returns: string
+{ Args: { "p_area"?: Database["public"]['Enums']["area"],"p_category_id"?: string,"p_id": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"] }; Returns: string
                            },
 "copy_checklist":
 { Args: { "p_name": string,"p_template": string }; Returns: string
                            },
 "create_walkthrough_ticket":
-{ Args: { "p_category_id"?: string,"p_description"?: string,"p_equipment_id"?: string,"p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"],"p_walkthrough_id": string }; Returns: string
+{ Args: { "p_area"?: Database["public"]['Enums']["area"],"p_category_id"?: string,"p_description"?: string,"p_equipment_id"?: string,"p_item_id"?: string,"p_task_id"?: string,"p_title": string,"p_urgency"?: Database["public"]['Enums']["ticket_urgency"],"p_walkthrough_id": string }; Returns: string
                            },
 "delete_category":
 { Args: { "p_id": string }; Returns: undefined
@@ -2612,6 +2612,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"walkthrough_place":
+{ Args: { "p_item_id": string,"p_task_id": string,"w": Omit<Database["public"]['Tables']["walkthroughs"]['Row'], Database["public"]['Tables']["walkthroughs"]['ComputedFields']> }; Returns: Record<string, unknown>
+                           },
 "walkthrough_quarter_tasks":
 { Args: { "p_walkthrough_id": string }; Returns: {
               "check_id": string,"check_walkthrough_id": string,"directions": string,"done": boolean,"fixes": number,"sort_order": number,"task_id": string,"tickets": number,"title": string,"video_url": string

@@ -14,7 +14,7 @@ export function useClosedTickets(restaurantIds: string[]) {
       const { data, error } = await requireSupabase()
         .from('tickets')
         .select(
-          'id, display_id, title, source, restaurant_id, category_id, created_by, assignee_id, closed_at, category:categories (name, area), equipment (name), closer:profiles!tickets_closed_by_fkey (full_name)',
+          'id, display_id, title, source, restaurant_id, category_id, created_by, assignee_id, closed_at, area, checklist_place, category:categories (name, area), equipment (name), closer:profiles!tickets_closed_by_fkey (full_name)',
         )
         .in('restaurant_id', restaurantIds)
         .eq('status', 'closed')

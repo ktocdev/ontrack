@@ -1,5 +1,5 @@
 import { AREA_SEGMENTS, areaOr, type Area } from '../../app/areas'
-import { useSearchParams } from 'react-router'
+import { useLocation, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { CategoryTile } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
@@ -22,6 +22,8 @@ import { useCategories } from './useCreateTicket'
 export function CreateAreaScreen() {
   const { user, restaurants } = useUser()
   const [params, setParams] = useSearchParams()
+  // A ticket started from a closed one (Create ticket from this) keeps its link to it.
+  const from: unknown = useLocation().state
   const area: Area = areaOr(params.get('area'), 'foh')
   const restaurant =
     restaurants.find((r) => r.id === params.get('restaurant')) ??
@@ -75,7 +77,13 @@ export function CreateAreaScreen() {
             ? data
                 .filter((c) => c.area === area)
                 .map((c) => (
-                  <CategoryTile key={c.id} to={`/tickets/new/${c.id}?${here}`} name={c.name} count={c.count} />
+                  <CategoryTile
+                    key={c.id}
+                    to={`/tickets/new/${c.id}?${here}`}
+                    name={c.name}
+                    count={c.count}
+                    state={from}
+                  />
                 ))
             : Array.from({ length: 8 }).map((_, i) => <Sk key={i} h={76} r={14} />)}
         </div>

@@ -163,7 +163,11 @@ export function ChecklistDetailsSheet({
   )
 }
 
-/** A section: its name, short name and area (Exterior has none). */
+/**
+ * A section: its name, short name and area. The area is needed (OT-141), since a ticket from
+ * an item with no category takes it; a section saved before then may have none, and keeps
+ * none until it is edited here.
+ */
 export function SectionSheet({
   section,
   deletable,
@@ -174,7 +178,7 @@ export function SectionSheet({
 }: Common & {
   section: EditorSection | null
   deletable: boolean
-  onSave: (v: { name: string; shortName: string; area: Area | null }) => void
+  onSave: (v: { name: string; shortName: string; area: Area }) => void
   onActive: (active: boolean) => void
   onDelete: () => void
 }) {
@@ -200,8 +204,16 @@ export function SectionSheet({
         value={shortName}
         onChange={(e) => setShortName(e.target.value)}
       />
-      <Select label="Area" optional value={area} onChange={(e) => setArea(e.target.value)}>
-        <option value="">None</option>
+      <Select
+        label="Area"
+        hint="A ticket from an item with no category goes to this area."
+        value={area}
+        onChange={(e) => setArea(e.target.value)}
+        error={tried && !area ? 'Pick the section’s area.' : undefined}
+      >
+        <option value="" disabled>
+          Pick an area
+        </option>
         {AREAS.map((a) => (
           <option key={a} value={a}>
             {AREA_LABEL[a]}
@@ -213,7 +225,7 @@ export function SectionSheet({
         loading={c.saving}
         onClick={() => {
           setTried(true)
-          if (name.trim()) onSave({ name, shortName, area: (area || null) as Area | null })
+          if (name.trim() && area) onSave({ name, shortName, area: area as Area })
         }}
       >
         {section ? 'Save' : 'Add section'}

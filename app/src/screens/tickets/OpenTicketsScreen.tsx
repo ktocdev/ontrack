@@ -12,7 +12,8 @@ import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskListEmpty } from '../../components/TaskRow'
 import { TicketCard } from '../../components/TicketCard'
 import { IconCheckCircle, IconPlus, IconWarning } from '../../components/icons'
-import { activityLine, AREA_LABEL, scheduledLabel } from './tickets'
+import { ticketPlace } from '../../app/areas'
+import { activityLine, scheduledLabel } from './tickets'
 import { listed, useListView } from '../mycategories/useMyCategories'
 import { expectNothingOpen, useOpenTickets } from './useOpenTickets'
 
@@ -153,9 +154,7 @@ export function OpenTicketsScreen() {
                       t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
                     }
                     walkthrough={t.source === 'walkthrough'}
-                    place={[t.category && AREA_LABEL[t.category.area], t.category?.name, t.equipment?.name]
-                      .filter(Boolean)
-                      .join(' · ')}
+                    place={[...ticketPlace(t, 'long'), t.equipment?.name].filter(Boolean).join(' · ')}
                     restaurant={place}
                     who={t.assignee ? `${t.assignee.full_name} is on it` : 'Not picked up yet'}
                     when={activityLine(t)}

@@ -12,7 +12,7 @@ import { money, timeline } from '../tickets/closed'
 import { ClosingComment, Fact, HandedBackFact, Timeline } from '../tickets/ClosedParts'
 import { ROLE_WORD } from '../tickets/thread'
 import { useRoleNames } from '../../auth/group'
-import { AREA_LABEL } from '../tickets/tickets'
+import { ticketPlace } from '../../app/areas'
 import { useClosedFacts } from '../tickets/useCloseTicket'
 import { useSignedPhotos } from '../tickets/usePhotos'
 import { TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
@@ -68,7 +68,7 @@ export function OpsClosedTicketScreen({ ticket, data }: { ticket: Ticket; data: 
                 {ticket.restaurant.name}
               </span>
             )}
-            {ticket.category && ` · ${AREA_LABEL[ticket.category.area]} › ${ticket.category.name}`}
+            {ticketPlace(ticket, 'long').length > 0 && ` · ${ticketPlace(ticket, 'long').join(' › ')}`}
             {ticket.equipment && ` · ${ticket.equipment.name}`}
             {closedOn && ` · Closed ${closedOn}`}
           </span>

@@ -105,17 +105,19 @@ export function useAddTask() {
 /**
  * Convert to ticket (WT-Ops-Fix, OT-131): an open fix becomes a ticket with nobody on it,
  * with the Walkthrough tag when it came from one; the fix leaves the restaurant's list.
- * The category is the fix's or its item's, else the one picked on the sheet. Returns the
+ * The category is the fix's or its item's, else the one picked on the sheet; a walkthrough's
+ * fix with neither becomes a ticket with none (OT-141), with its area. Returns the
  * new ticket's number for the line that confirms it.
  */
 export function useConvertFix() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, categoryId }: { id: string; categoryId?: string | null }) => {
+    mutationFn: async ({ id, categoryId, area }: { id: string; categoryId?: string | null; area?: Area | null }) => {
       const sb = requireSupabase()
       const { data: ticketId, error } = await sb.rpc('convert_inhouse_fix', {
         p_id: id,
         ...(categoryId ? { p_category_id: categoryId } : {}),
+        ...(area ? { p_area: area } : {}),
       })
       if (error) throw error
       const { data } = await sb.from('tickets').select('display_id').eq('id', ticketId).maybeSingle()
