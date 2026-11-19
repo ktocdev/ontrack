@@ -89,6 +89,7 @@ export function BackBar({
   label,
   bordered = true,
   roomy = false,
+  underBanner = false,
   action,
   state,
   children,
@@ -99,6 +100,8 @@ export function BackBar({
   state?: unknown
   bordered?: boolean
   roomy?: boolean
+  /** Under ReadOnlyBanner, which already takes the phone's top inset. */
+  underBanner?: boolean
   /** A link at the right end (Edit on a unit's page). */
   action?: ReactNode
   children?: ReactNode
@@ -107,8 +110,8 @@ export function BackBar({
     <div
       className={`flex flex-none items-center gap-1 px-3 ${
         bordered
-          ? `mb-2 border-b border-border pb-2 ${roomy ? 'pt-[calc(12px+var(--safe-top))]' : 'pt-safe'}`
-          : 'pb-1 pt-[calc(12px+var(--safe-top))]'
+          ? `mb-2 border-b border-border pb-2 ${roomy ? (underBanner ? 'pt-3' : 'pt-[calc(12px+var(--safe-top))]') : underBanner ? '' : 'pt-safe'}`
+          : `pb-1 ${underBanner ? 'pt-3' : 'pt-[calc(12px+var(--safe-top))]'}`
       }`}
     >
       <Link

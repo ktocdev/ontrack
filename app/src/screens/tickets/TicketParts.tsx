@@ -18,16 +18,19 @@ export function TicketBar({
   to,
   label,
   scrolled,
+  underBanner = false,
   children,
 }: {
   to: string
   label: string
   scrolled: boolean
+  /** Under ReadOnlyBanner, which already takes the phone's top inset. */
+  underBanner?: boolean
   children: ReactNode
 }) {
   return (
     <div
-      className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 pt-[calc(12px+var(--safe-top))] transition-shadow ${
+      className={`relative z-10 flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-3 ${underBanner ? 'pt-3' : 'pt-[calc(12px+var(--safe-top))]'} transition-shadow ${
         scrolled ? 'shadow-scrolled' : ''
       }`}
     >

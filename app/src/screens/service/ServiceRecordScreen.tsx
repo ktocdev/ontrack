@@ -4,6 +4,7 @@ import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button } from '../../components/Button'
 import { RestaurantSquare } from '../../components/RestaurantName'
+import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { BackBar, Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { DetailSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
@@ -25,27 +26,35 @@ import { useReplaceInvoice, useServiceRecord, type ServiceRecordData } from './u
  * log_cost and are hidden under View as. There is no delete: a visit is a record, and a
  * replaced invoice file stays in Storage beside the new one.
  * The file's page count on the board isn't known without opening it, so the line gives
- * its number and size.
+ * its number and size. Leadership's (Exec-Service-Record, OT-145) is the same record at
+ * /lead/service/<id>, read-only under READ-ONLY VIEW: no Edit, Replace or Attach, the
+ * contractor by its lasting link, the ticket to leadership's ticket, the unit as text.
  */
-export function ServiceRecordScreen() {
+export function ServiceRecordScreen({ base = '/ops' }: { base?: '/ops' | '/lead' }) {
   const { id = '' } = useParams()
   const location = useLocation()
   const { data, isPending, isError, refetch } = useServiceRecord(id)
   const from = (location.state as { from?: string } | null)?.from
   // Back goes where the record was opened from, if that is a screen of this app.
+  const lead = base === '/lead'
   const back =
-    from && from.startsWith('/ops/')
+    from && from.startsWith(`${base}/`)
       ? from
-      : data?.record.equipment
-        ? `/ops/equipment/${data.record.equipment.id}/service`
-        : data?.record.ticket
-          ? `/ops/tickets/${data.record.ticket.id}`
-          : '/ops/equipment'
+      : lead
+        ? data?.record.ticket
+          ? `/lead/tickets/${data.record.ticket.id}`
+          : '/lead/contractors'
+        : data?.record.equipment
+          ? `/ops/equipment/${data.record.equipment.id}/service`
+          : data?.record.ticket
+            ? `/ops/tickets/${data.record.ticket.id}`
+            : '/ops/equipment'
 
   if (isPending || isError)
     return (
       <Screen>
-        <BackBar to={back} label="Back" roomy>
+        {lead && <ReadOnlyBanner />}
+        <BackBar to={back} label="Back" roomy underBanner={lead}>
           <span className="font-display text-20 font-bold text-text">Service record</span>
         </BackBar>
         {isError ? (
@@ -63,12 +72,13 @@ export function ServiceRecordScreen() {
       </Screen>
     )
   if (!data) return <NotFoundScreen />
-  return <Record data={data} back={back} />
+  return <Record data={data} back={back} lead={lead} />
 }
 
-function Record({ data, back }: { data: ServiceRecordData; back: string }) {
+function Record({ data, back, lead }: { data: ServiceRecordData; back: string; lead: boolean }) {
   const { viewingAs } = useUser()
-  const canLog = !!useRight('log_cost') && !viewingAs
+  const canLog = !!useRight('log_cost') && !viewingAs && !lead
+  const linked = !viewingAs
   const { record: r, lines, invoice, totalCents } = data
   const here = `/ops/service/${r.id}`
   const backLabel = r.equipment ? `Back to ${r.equipment.name}` : r.ticket ? `Back to ${r.ticket.display_id}` : 'Back'
@@ -76,10 +86,12 @@ function Record({ data, back }: { data: ServiceRecordData; back: string }) {
 
   return (
     <Screen>
+      {lead && <ReadOnlyBanner />}
       <BackBar
         to={back}
         label={backLabel}
         roomy
+        underBanner={lead}
         action={
           canLog ? (
             <Link
@@ -152,7 +164,13 @@ function Record({ data, back }: { data: ServiceRecordData; back: string }) {
             <>
               <Row
                 label="Contractor"
-                to={r.contractor && !viewingAs ? `/ops/contractors/${r.contractor.id}` : undefined}
+                to={
+                  r.contractor && linked
+                    ? lead
+                      ? `/c/${r.contractor.id}`
+                      : `/ops/contractors/${r.contractor.id}`
+                    : undefined
+                }
               >
                 {r.contractor?.name ?? '—'}
               </Row>
@@ -162,13 +180,13 @@ function Record({ data, back }: { data: ServiceRecordData; back: string }) {
             <Row label="Done by">{r.technician ?? 'In-house'}</Row>
           )}
           {r.ticket && (
-            <Row label="Ticket" to={viewingAs ? undefined : `/ops/tickets/${r.ticket.id}`}>
+            <Row label="Ticket" to={linked ? `${lead ? '/lead' : '/ops'}/tickets/${r.ticket.id}` : undefined}>
               <span className="font-mono font-medium">{r.ticket.display_id}</span>
             </Row>
           )}
           {r.equipment && (
-            <Row label="Equipment" to={viewingAs ? undefined : `/ops/equipment/${r.equipment.id}`}>
-              {r.equipment.name}
+            <Row label="Equipment" to={linked && !lead ? `/ops/equipment/${r.equipment.id}` : undefined}>
+              {lead && r.restaurant ? `${r.equipment.name} · ${r.restaurant.name}` : r.equipment.name}
             </Row>
           )}
           <Row label="Logged by">
@@ -182,12 +200,23 @@ function Record({ data, back }: { data: ServiceRecordData; back: string }) {
 
 const KIND: Record<string, string> = { labor: 'Labor', parts: 'Parts', trip: 'Trip fee' }
 
-function Rows({ children }: { children: ReactNode }) {
+/** A card of detail rows (a service record's cost and details; leadership's ticket). */
+export function Rows({ children }: { children: ReactNode }) {
   return <div className="flex-none overflow-hidden rounded-card border border-border bg-surface">{children}</div>
 }
 
 /** A label and its value, 48px, 10px 14px; a link has a hover and a chevron. */
-function Row({ label, to, total, children }: { label: string; to?: string; total?: boolean; children: ReactNode }) {
+export function Row({
+  label,
+  to,
+  total,
+  children,
+}: {
+  label: string
+  to?: string
+  total?: boolean
+  children: ReactNode
+}) {
   const body = (
     <>
       <span className={`flex-none text-13 ${total ? 'font-bold text-text' : 'text-text-muted'}`}>{label}</span>
@@ -293,7 +322,7 @@ function InvoiceCard({
           </button>
         )}
       </div>
-      {replace.input}
+      {canReplace && replace.input}
       {replace.error && (
         <span role="alert" className="block border-t border-border px-3.5 py-2.5 text-13 font-semibold text-danger">
           {replace.error}
@@ -320,7 +349,7 @@ function MissingInvoice({ id, canAttach }: { id: string; canAttach: boolean }) {
           Attach invoice
         </Button>
       )}
-      {attach.input}
+      {canAttach && attach.input}
       {attach.error && (
         <span role="alert" className="text-13 font-semibold text-danger">
           {attach.error}
