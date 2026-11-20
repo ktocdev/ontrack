@@ -8,6 +8,7 @@ import {
   MapField,
   NotImported,
   ReadyList,
+  ReviewTable,
   ReviewCounts,
   TemplateCard,
 } from './ImportParts'
@@ -110,6 +111,25 @@ export function ImportPartsDemo() {
           { title: 'Northstar HVAC', sub: 'HVAC · Kevin Brooks · (312) 555-0144' },
           { title: 'Pipeworks Plumbing', sub: 'Plumbing · Marco Ruiz · (773) 555-0121' },
         ]}
+      />
+      <ReviewTable
+        columns={[
+          { key: 'name', title: 'Company' },
+          { key: 'trades', title: 'Trade' },
+          { key: 'phone', title: 'Phone' },
+        ]}
+        rows={[
+          { row: 2, values: { name: 'Northstar HVAC', trades: 'HVAC', phone: '(312) 555-0144' }, state: 'ready' },
+          { row: 3, values: { name: 'Arctic Air', trades: 'Refrig.', phone: '(312) 555-0102' }, state: 'fix' },
+          { row: 4, values: { name: 'Pat Lee Plumbing', trades: 'Plumbing', phone: '' }, state: 'skipped' },
+          {
+            row: 5,
+            values: { name: 'Windy City Glass', trades: 'Glass', phone: '' },
+            state: 'duplicate',
+            update: true,
+          },
+        ]}
+        problems={new Set(['3:trades'])}
       />
       <ImportDone
         title="40 contractors imported"

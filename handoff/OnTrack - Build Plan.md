@@ -805,7 +805,7 @@ No board draws a desktop layout, so these are built from the phone boards' own p
 | OT-158 | Reading widths: one-column screens in a reading column, full-screen forms as a centered panel, every sheet checked as a dialog (Escape, focus), menus and pickers; screenshots of each role's screens at 1024 and 1440 |
 | OT-159 | List and detail for tickets: a `SplitView` layout by route, from 1024 px; the Ops dashboard, Open tickets, both Closed lists, Admin tickets, leadership's restaurant tickets; the empty pane; kept scroll and filters |
 | OT-160 | List and detail for the rest: equipment and its unit, Contractors and Invoices with the contractor and service record, Users and the person |
-| OT-161 | Wide lists in columns; the import review as a table |
+| OT-161 | The import review as a table: from 1024 px every row of the file, as it will import, in a table beside the same fix cards, with fixes and skips showing in its cells and each row's status; the lists (walkthroughs, Categories, Trades, Job titles) stay one column in the reading width, since rows split into columns read worse (decided Nov 20, 2026) |
 | OT-162 | Code quality and accessibility pass over Phase 8: keyboard, focus, Escape, both themes, nothing changed under 768 px |
 | OT-163 | The done test as one flow; the phase note |
 | OT-164 | From feedback (Nov 20, 2026): no empty pane; a list starts on its own in the reading column, an item opens beside it with an X to close it, so Open tickets and In-house line up; the same for every list and panel |

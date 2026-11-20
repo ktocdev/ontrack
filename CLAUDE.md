@@ -180,7 +180,7 @@ The plan's Phase 8 section says what ships. Phase 8 is the desktop view only (de
 | OT-158 | Reading widths, full-screen forms as a centered panel, every sheet as a dialog, menus and pickers |
 | OT-159 | `SplitView` for tickets: Ops dashboard, Open tickets, both Closed lists, Admin tickets, leadership's restaurant tickets |
 | OT-160 | `SplitView` for equipment, Contractors and Invoices, service records, Users |
-| OT-161 | Wide lists in columns; the import review as a table |
+| OT-161 | The import review as a table from 1024 px (`ReviewTable`: every row as it will import, beside the fix cards); the lists stay one column, which reads better (decided Nov 20, 2026) |
 | OT-162 | Code quality and accessibility pass over Phase 8 |
 | OT-163 | The done test as one flow; the phase note |
 | OT-164 | From feedback (Nov 20, 2026): a list starts on its own in the reading column, an open item has an X that closes it, so Open tickets and In-house line up |

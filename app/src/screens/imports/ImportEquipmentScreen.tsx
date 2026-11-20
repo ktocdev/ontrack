@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router'
+import { useLaptop } from '../../lib/useWide'
 import { AREA_SHORT } from '../../app/areas'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
@@ -18,7 +19,7 @@ import {
   type Category,
   type EquipmentField,
 } from './equipmentImport'
-import { MapField, NotImported, ReadyList, ReviewCounts } from './ImportParts'
+import { MapField, NotImported, ReadyList, ReviewCounts, ReviewTable } from './ImportParts'
 import {
   DuplicateList,
   ImportDoneStep,
@@ -126,6 +127,24 @@ function ImportEquipment() {
   const name = (id: string | undefined) => restaurants.find((r) => r.id === id)?.name
   const readyRows = fixed.filter((r) => states.get(r.row) === 'ready')
 
+  // On a laptop every row shows in a table beside the fixes (OT-161).
+  const laptop = useLaptop()
+  const table =
+    step === 'review' && laptop ? (
+      <ReviewTable
+        columns={EQUIPMENT_FIELDS.filter((f) => mapped.has(f.key)).map((f) => ({ key: f.key, title: f.title }))}
+        rows={fixed.map((r) => ({
+          row: r.row,
+          values: r.values,
+          state: states.get(r.row)!,
+          update: updates.has(r.row),
+        }))}
+        problems={
+          new Set(issues.filter((x) => !resolutions[x.id]).flatMap((x) => x.rows.map((n) => `${n}:${x.field}`)))
+        }
+      />
+    ) : undefined
+
   return (
     <ImportSteps
       kind="equipment"
@@ -140,6 +159,7 @@ function ImportEquipment() {
       waiting={!units}
       pending={run.isPending}
       onSubmit={submit}
+      table={table}
     >
       {step === 'start' && (
         <StartStep
@@ -199,24 +219,26 @@ function ImportEquipment() {
             updates={updates}
             onChange={setUpdates}
           />
-          {n.ready > 0 && <span className="eyebrow pt-1.5">Ready · {n.ready}</span>}
-          <ReadyList
-            total={n.ready}
-            rows={readyRows.slice(0, 3).map((r) => {
-              const area = areaOf(r.values.area)
-              return {
-                title: r.values.name,
-                sub: [
-                  name(restaurantOf(r.values.restaurant, restaurants, oneRestaurant)),
-                  area && AREA_SHORT[area],
-                  r.values.category,
-                  r.values.brand,
-                ]
-                  .filter(Boolean)
-                  .join(' · '),
-              }
-            })}
-          />
+          {!table && n.ready > 0 && <span className="eyebrow pt-1.5">Ready · {n.ready}</span>}
+          {!table && (
+            <ReadyList
+              total={n.ready}
+              rows={readyRows.slice(0, 3).map((r) => {
+                const area = areaOf(r.values.area)
+                return {
+                  title: r.values.name,
+                  sub: [
+                    name(restaurantOf(r.values.restaurant, restaurants, oneRestaurant)),
+                    area && AREA_SHORT[area],
+                    r.values.category,
+                    r.values.brand,
+                  ]
+                    .filter(Boolean)
+                    .join(' · '),
+                }
+              })}
+            />
+          )}
           {run.isError && <ImportFailed error={run.error} />}
         </>
       )}
