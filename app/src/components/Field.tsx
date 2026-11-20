@@ -59,11 +59,19 @@ type InputProps = Omit<ComponentPropsWithRef<'input'>, 'id'> & {
   optional?: boolean
   hint?: ReactNode
   error?: ReactNode
+  labelClassName?: string
 }
 
-export function Input({ label, optional, hint, error, className, ref, ...rest }: InputProps) {
+export function Input({ label, optional, hint, error, className, labelClassName, ref, ...rest }: InputProps) {
   return (
-    <FieldWrap label={label} optional={optional} hint={hint} error={error} className={className}>
+    <FieldWrap
+      label={label}
+      optional={optional}
+      hint={hint}
+      error={error}
+      className={className}
+      labelClassName={labelClassName}
+    >
       {(id, describedBy) => (
         <input
           ref={ref}
@@ -79,10 +87,18 @@ export function Input({ label, optional, hint, error, className, ref, ...rest }:
 }
 
 /** Password input with a Show / Hide button inside its right edge. */
-export function PasswordField({ label, hint, error, className, ref, ...rest }: Omit<InputProps, 'type' | 'optional'>) {
+export function PasswordField({
+  label,
+  hint,
+  error,
+  className,
+  labelClassName,
+  ref,
+  ...rest
+}: Omit<InputProps, 'type' | 'optional'>) {
   const [shown, setShown] = useState(false)
   return (
-    <FieldWrap label={label} hint={hint} error={error} className={className}>
+    <FieldWrap label={label} hint={hint} error={error} className={className} labelClassName={labelClassName}>
       {(id, describedBy) => (
         <div className="relative flex">
           <input

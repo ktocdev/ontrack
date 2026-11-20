@@ -5,6 +5,7 @@ import { useRight } from '../../auth/rights'
 import { Button } from '../../components/Button'
 import { Input, Textarea } from '../../components/Field'
 import { ErrorBanner } from '../../components/Notice'
+import { ImportBanner } from '../imports/ImportParts'
 import { CloseBar, Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { Spinner } from '../../components/Skeleton'
@@ -135,6 +136,7 @@ function Form({ editing, inUse = true }: { editing?: ContractorRow; inUse?: bool
       />
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-4 pb-4 pt-3">
+          {!editing && <ImportBanner to="/ops/contractors/import" noun="contractors" />}
           {save.isError && code !== '23505' && (
             <div ref={banner} className="flex-none">
               <ErrorBanner title="Couldn't save yet.">
