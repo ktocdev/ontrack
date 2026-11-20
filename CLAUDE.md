@@ -165,7 +165,26 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 7 · Leadership, Admin tickets and imports
+## Current phase: 8 · Desktop layouts
+
+The plan's Phase 8 section says what ships. Phase 8 is the desktop view only (decided Nov 20, 2026); offline, reports and the rest wait under the plan's Later. Done when an Ops manager on a laptop at 1440 px works a ticket beside the dashboard's list with the sidebar on screen throughout, leadership reads the Overview and a restaurant's tickets side by side, and a phone at 390 px is unchanged.
+
+- The phone layouts are the base and never change below 768 px. From 768 px (`md`) the `Sidebar` replaces the tab bar, on detail screens too, and one-column screens sit in a reading column; from 1024 px (`lg`) lists open their item beside them; past 1440 px (`max-w-desktop`) the frame centers.
+- No board draws a desktop layout. Build it from the phone boards' parts, spacing and tokens, with no new colors or type sizes; a new layout component goes on `/kit` and in the design-system docs first, and is checked in both themes.
+- A detail pane is the detail's own route, so lasting links, Back and reload behave as on a phone. Data hooks and permissions don't change in this phase.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-156 | Plan update and this split; Phase 7 to the record |
+| OT-157 | The frame: sidebar from 768 px in `Shell` and the signed-in `BareShell` (the role's tabs, the shield, the avatar), tab bar hidden there, the 1440 cap; mock e2e at 390, 768 and 1440 |
+| OT-158 | Reading widths, full-screen forms as a centered panel, every sheet as a dialog, menus and pickers |
+| OT-159 | `SplitView` for tickets: Ops dashboard, Open tickets, both Closed lists, Admin tickets, leadership's restaurant tickets |
+| OT-160 | `SplitView` for equipment, Contractors and Invoices, service records, Users |
+| OT-161 | Wide lists in columns; the import review as a table |
+| OT-162 | Code quality and accessibility pass over Phase 8 |
+| OT-163 | The done test as one flow; the phase note |
+
+## Phase 7, for the record
 
 The plan's Phase 7 section says what ships and what it works around. Done when the assistant ops manager imports the group's real contractor spreadsheet from a phone with no help, and leadership can open the Overview on a laptop and see the same totals Ops sees. Playwright runs the seeded half (`last/done-phase-7.spec.ts`, OT-155: Bert imports a contractor sheet with a new row, a fix and a duplicate he updates; Lee's Open and Urgent match Bert's dashboard, and a visit by the imported contractor raises Lee's Spend, Bert's Invoices and his Closed month by the same amount); the real spreadsheet is tried by hand on the live app.
 
