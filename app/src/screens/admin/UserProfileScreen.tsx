@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { Avatar } from '../../components/Avatar'
 import { Button, ButtonLink } from '../../components/Button'
 import { ListCard } from '../../components/Card'
-import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
+import { BackLink, Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { Spinner } from '../../components/Skeleton'
 import { Switch } from '../../components/Switch'
 import { useToast } from '../../components/Toast'
-import { IconCheck, IconChevronLeft, IconEye, IconShieldAlert, IconShieldCheck } from '../../components/icons'
+import { IconCheck, IconEye, IconShieldAlert, IconShieldCheck } from '../../components/icons'
 import { useUser } from '../../auth/context'
 import { firstName } from '../../lib/words'
 import { FunctionError } from '../../lib/functions'
@@ -121,13 +121,7 @@ function ProfileForm({ id, person, roleDefaults }: { id: string; person: Person;
   return (
     <Screen>
       <div className="flex flex-none items-center gap-1 border-b border-border pb-2 pl-3 pr-3 pt-[calc(12px+var(--safe-top))]">
-        <Link
-          to="/admin/users"
-          aria-label="Back to users"
-          className="flex h-11 w-11 items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-        >
-          <IconChevronLeft size={22} />
-        </Link>
+        <BackLink to="/admin/users" label="Back to users" size={22} />
         <span className="eyebrow">Admin · User profile</span>
       </div>
 

@@ -1,5 +1,6 @@
 import type { ComponentPropsWithRef, HTMLAttributes, ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
+import { usePaneClose } from '../app/SplitView'
 import { IconChevronLeft, IconClose, Logo } from './icons'
 
 /**
@@ -101,6 +102,30 @@ export function ScreenHeader({
   )
 }
 
+const BACK =
+  'flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0'
+
+/**
+ * The 44px back arrow at the start of an item's header. In the pane beside a list on a
+ * laptop it is an X that closes the pane, back to the list as it was left (OT-164).
+ */
+export function BackLink({ to, label, state, size }: { to: string; label: string; state?: unknown; size?: number }) {
+  const close = usePaneClose()
+  const icon = size ? { size } : {}
+  if (close) {
+    return (
+      <Link to={close} aria-label="Close panel" className={BACK}>
+        <IconClose {...icon} />
+      </Link>
+    )
+  }
+  return (
+    <Link to={to} state={state} aria-label={label} className={BACK}>
+      <IconChevronLeft {...icon} />
+    </Link>
+  )
+}
+
 /**
  * Back bar for detail screens: 44px back target, a crumb, bottom divider. The Create form
  * draws it with no line. Roomy adds the 12px above a two-line header (Service record:
@@ -136,14 +161,7 @@ export function BackBar({
           : `pb-1 ${underBanner ? 'pt-3' : 'pt-[calc(12px+var(--safe-top))]'}`
       }`}
     >
-      <Link
-        to={to}
-        state={state}
-        aria-label={label}
-        className="flex h-11 w-11 items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-      >
-        <IconChevronLeft />
-      </Link>
+      <BackLink to={to} state={state} label={label} />
       <div className="min-w-0 flex-1 text-13 font-semibold leading-snug text-text-muted">{children}</div>
       {action}
     </div>

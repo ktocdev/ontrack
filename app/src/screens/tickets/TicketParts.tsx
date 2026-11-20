@@ -1,9 +1,8 @@
 import { useState, type ReactNode, type UIEvent } from 'react'
-import { Link } from 'react-router'
 import { Card, CardLink } from '../../components/Card'
 import { PhotoThumb } from '../../components/Photo'
-import { SectionLabel } from '../../components/Screen'
-import { IconChevronLeft, IconChevronRight, IconWrench } from '../../components/icons'
+import { BackLink, SectionLabel } from '../../components/Screen'
+import { IconChevronRight, IconWrench } from '../../components/icons'
 
 /** The pieces every ticket screen shares, for managers and Ops, open and closed. */
 
@@ -34,13 +33,7 @@ export function TicketBar({
         scrolled ? 'shadow-scrolled' : ''
       }`}
     >
-      <Link
-        to={to}
-        aria-label={label}
-        className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
-      >
-        <IconChevronLeft size={22} />
-      </Link>
+      <BackLink to={to} label={label} size={22} />
       {children}
     </div>
   )

@@ -14,8 +14,6 @@ import { SplitView } from './SplitView'
 import {
   ADMIN_TICKET_LISTS,
   ADMIN_USER_LISTS,
-  CONTRACTOR_PANE,
-  EQUIPMENT_PANE,
   LEAD_CONTRACTOR_LISTS,
   LEAD_TICKET_LISTS,
   MANAGER_EQUIPMENT_LISTS,
@@ -23,8 +21,6 @@ import {
   OPS_CONTRACTOR_LISTS,
   OPS_EQUIPMENT_LISTS,
   OPS_TICKET_LISTS,
-  PERSON_PANE,
-  TICKET_PANE,
 } from './splitLists'
 
 /**
@@ -191,7 +187,7 @@ export const router = createBrowserRouter([
                 element: <Shell />,
                 children: [
                   {
-                    element: <SplitView lists={MANAGER_TICKET_LISTS} fallback="/tickets" empty={TICKET_PANE} />,
+                    element: <SplitView lists={MANAGER_TICKET_LISTS} fallback="/tickets" />,
                     children: [
                       {
                         path: '/tickets',
@@ -234,7 +230,7 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    element: <SplitView lists={MANAGER_EQUIPMENT_LISTS} fallback="/equipment" empty={EQUIPMENT_PANE} />,
+                    element: <SplitView lists={MANAGER_EQUIPMENT_LISTS} fallback="/equipment" />,
                     children: [
                       {
                         path: '/equipment',
@@ -324,7 +320,7 @@ export const router = createBrowserRouter([
                 element: <Shell />,
                 children: [
                   {
-                    element: <SplitView lists={OPS_TICKET_LISTS} fallback="/ops" empty={TICKET_PANE} />,
+                    element: <SplitView lists={OPS_TICKET_LISTS} fallback="/ops" />,
                     children: [
                       {
                         path: '/ops',
@@ -354,7 +350,7 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    element: <SplitView lists={OPS_EQUIPMENT_LISTS} fallback="/ops/equipment" empty={EQUIPMENT_PANE} />,
+                    element: <SplitView lists={OPS_EQUIPMENT_LISTS} fallback="/ops/equipment" />,
                     children: [
                       {
                         path: '/ops/equipment',
@@ -373,7 +369,7 @@ export const router = createBrowserRouter([
                     ],
                   },
                   {
-                    element: <SplitView lists={OPS_CONTRACTOR_LISTS} empty={CONTRACTOR_PANE} />,
+                    element: <SplitView lists={OPS_CONTRACTOR_LISTS} />,
                     children: [
                       {
                         path: '/ops/contractors',
@@ -536,7 +532,7 @@ export const router = createBrowserRouter([
                 children: [
                   { path: '/admin', element: <Navigate to="/admin/users" replace /> },
                   {
-                    element: <SplitView lists={ADMIN_USER_LISTS} fallback="/admin/users" empty={PERSON_PANE} />,
+                    element: <SplitView lists={ADMIN_USER_LISTS} fallback="/admin/users" />,
                     children: [
                       {
                         path: '/admin/users',
@@ -562,7 +558,7 @@ export const router = createBrowserRouter([
                     lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).RolesScreen }),
                   },
                   {
-                    element: <SplitView lists={ADMIN_TICKET_LISTS} fallback="/admin/tickets" empty={TICKET_PANE} />,
+                    element: <SplitView lists={ADMIN_TICKET_LISTS} fallback="/admin/tickets" />,
                     children: [
                       {
                         path: '/admin/tickets',
@@ -653,7 +649,7 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    element: <SplitView lists={LEAD_TICKET_LISTS} empty={TICKET_PANE} />,
+                    element: <SplitView lists={LEAD_TICKET_LISTS} />,
                     children: [
                       {
                         path: '/lead/restaurants',
@@ -691,7 +687,7 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    element: <SplitView lists={LEAD_CONTRACTOR_LISTS} empty={CONTRACTOR_PANE} />,
+                    element: <SplitView lists={LEAD_CONTRACTOR_LISTS} />,
                     children: [
                       {
                         path: '/lead/contractors',
