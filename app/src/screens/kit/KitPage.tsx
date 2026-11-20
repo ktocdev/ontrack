@@ -244,7 +244,7 @@ export function KitPage() {
         ))}
       </Sidebar>
 
-      <Screen data-testid="kit">
+      <Screen width="full" data-testid="kit">
         <ScreenHeader
           className="lg:px-10"
           title="Component kit"

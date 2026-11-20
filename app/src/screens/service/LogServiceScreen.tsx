@@ -78,7 +78,7 @@ function Load({ origin }: { origin: Origin }) {
 /** The form's frame while what it needs loads, or a line if it couldn't. */
 export function FormLoading({ to, title, failed }: { to: string; title: string; failed: boolean }) {
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to={to} title={title} bordered={false} />
       <div className="flex flex-1 items-center justify-center">
         {failed ? (
@@ -193,7 +193,7 @@ function Form({ origin, loaded }: { origin: Origin; loaded: LogServiceOrigin }) 
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to={back} title="Log service" subtitle={subtitle} bordered={false} />
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="pb-4 pt-3">

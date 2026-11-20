@@ -60,7 +60,7 @@ function Edit({ ops }: { ops: boolean }) {
   const { data, isPending, isError } = useEquipmentToEdit(id)
   if (isPending || isError)
     return (
-      <Screen>
+      <Screen width="form">
         <CloseBar to={`${ops ? '/ops' : ''}/equipment/${id}`} title="Edit equipment" />
         <div className="flex flex-1 items-center justify-center">
           {isError ? (
@@ -172,7 +172,7 @@ function Form({ ops, editing }: { ops: boolean; editing?: EquipmentToEdit }) {
   const code = (save.error as { code?: string } | null)?.code
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to={closeTo} title={editing ? 'Edit equipment' : 'Add equipment'} />
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-4 pb-4 pt-4">

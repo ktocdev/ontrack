@@ -34,7 +34,7 @@ type Props = {
 /** The screen while the list loads, before the form has anything to start from. */
 export function RestaurantFormLoading({ title }: { title: string }) {
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to="/admin/restaurants" title={title} />
       <div className="flex flex-1 items-center justify-center">
         <Spinner />
@@ -103,7 +103,7 @@ export function RestaurantForm({
       : 'Every preset color is in use. Pick a custom color.'
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to="/admin/restaurants" title={title} />
       <form onSubmit={submit} onChange={clearError} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-[18px] py-4">

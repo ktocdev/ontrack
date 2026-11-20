@@ -86,7 +86,7 @@ export function InviteUserScreen() {
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to="/admin/users" title="Invite a user" bordered={false} />
       <form onSubmit={submit} onChange={clearError} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-4 pb-4 pt-3">

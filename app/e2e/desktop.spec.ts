@@ -29,6 +29,16 @@ test.describe('a phone at 390 px', () => {
 test.describe('a tablet at 768 px', () => {
   test.use({ viewport: { width: 768, height: 1024 } })
 
+  test('a sheet is a centered dialog that Escape closes', async ({ page }) => {
+    await page.goto('/kit')
+    await page.getByRole('button', { name: 'Open sheet' }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    expect((await dialog.boundingBox())!.width).toBe(440)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+  })
+
   test('has the sidebar in place of the tab bar', async ({ page }) => {
     await signInAs(page, 'manager')
     await expect(page.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
@@ -70,6 +80,22 @@ test.describe('a laptop at 1440 px', () => {
     await expect(sidebar(page)).toBeVisible()
     await page.getByRole('navigation', { name: 'Manager' }).getByRole('link', { name: 'Equipment' }).click()
     await expect(page.getByRole('heading', { name: 'Equipment' })).toBeVisible()
+  })
+
+  test('one-column screens sit in a 720 px reading column beside the sidebar', async ({ page }) => {
+    await signInAs(page, 'manager')
+    await expect(page.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
+    const column = (await page.locator('[data-screen="reading"]').boundingBox())!
+    expect(column.width).toBe(720)
+    // Centered in the 1192 px beside the 248 px sidebar.
+    expect(column.x).toBe(248 + (1440 - 248 - 720) / 2)
+  })
+
+  test('the 404 board has no tab bar', async ({ page }) => {
+    await signInAs(page, 'ops')
+    await page.goto('/this/does/not/exist')
+    await expect(page.getByRole('heading', { name: "We can't find that page" })).toBeVisible()
+    await expect(page.getByTestId('tab-bar')).toBeHidden()
   })
 
   test('the row stops at 1440 px and centers on a wider screen', async ({ page }) => {

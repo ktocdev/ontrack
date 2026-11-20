@@ -8,9 +8,31 @@ import { IconChevronLeft, IconClose, Logo } from './icons'
  * token; fixed chrome adds the safe-area insets.
  */
 
-export function Screen({ className = '', children, ...rest }: HTMLAttributes<HTMLDivElement>) {
+const WIDTH = {
+  // A phone's column, centered at a reading width beside the sidebar.
+  reading: 'md:mx-auto md:w-full md:max-w-reading',
+  // A form opened from a list (Invite user, Log service): a centered panel with its own edge.
+  form: 'md:mx-auto md:my-6 md:w-full md:max-w-form md:overflow-hidden md:rounded-sheet md:border md:border-border md:shadow-dialog',
+  // The screen lays out its own width (the kit, list and detail).
+  full: '',
+}
+
+/**
+ * From 768 px a screen is not stretched across the space beside the sidebar (OT-158): it
+ * sits in a reading column, or as a panel for a form; `full` leaves the width to the screen.
+ */
+export function Screen({
+  className = '',
+  width = 'reading',
+  children,
+  ...rest
+}: HTMLAttributes<HTMLDivElement> & { width?: keyof typeof WIDTH }) {
   return (
-    <div className={`flex min-h-0 flex-1 flex-col bg-bg text-text ${className}`} {...rest}>
+    <div
+      data-screen={width}
+      className={`flex min-h-0 flex-1 flex-col bg-bg text-text ${WIDTH[width]} ${className}`}
+      {...rest}
+    >
       {children}
     </div>
   )

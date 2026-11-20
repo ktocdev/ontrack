@@ -124,7 +124,7 @@ function Form({ data }: { data: ServiceRecordData }) {
   const subtitle = [r.ticket?.display_id, r.equipment?.name].filter(Boolean).join(' · ') || undefined
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to={recordTo} title="Edit service record" subtitle={subtitle} bordered={false} />
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="pb-4 pt-3">

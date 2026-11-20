@@ -169,6 +169,9 @@
   /* Desktop (laptop and up): the layout stops growing at 1440 */
   --desktop-max: 1440px;
   --sidebar-w: 248px;
+  /* From 768: a one-column screen's reading width, and a form opened from a list as a panel (OT-158) */
+  --reading-max: 720px;
+  --form-max: 560px;
 }
 
 [data-theme='dark'] {
@@ -417,4 +420,6 @@
   --spacing-safe-right: var(--safe-right);
   --spacing-sidebar: var(--sidebar-w);
   --container-desktop: var(--desktop-max);
+  --container-reading: var(--reading-max);
+  --container-form: var(--form-max);
 }

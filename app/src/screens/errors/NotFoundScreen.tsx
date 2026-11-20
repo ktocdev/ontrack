@@ -8,7 +8,7 @@ import { ROLE_EQUIPMENT, ROLE_HOME, ROLE_TABS } from '../../app/roles'
 import { useOptionalAuth } from '../../auth/context'
 import { ErrorBlock } from './ErrorBlock'
 
-/** Error · Page not found (404). Keeps the role's tab bar when signed in. */
+/** Error · Page not found (404). Keeps the role's tab bar when signed in, on a phone; from 768 px the button home is the way back. */
 export function NotFoundScreen() {
   const auth = useOptionalAuth()
   const user = auth?.status === 'signed-in' ? auth.user : null
@@ -45,7 +45,7 @@ export function NotFoundScreen() {
           )}
         </div>
       </ErrorBlock>
-      {user && <TabBar label={ROLE_TABS[user.role].label} items={ROLE_TABS[user.role].items} />}
+      {user && <TabBar label={ROLE_TABS[user.role].label} items={ROLE_TABS[user.role].items} phoneOnly />}
     </Screen>
   )
 }
