@@ -38,6 +38,10 @@ export function useImportContractors() {
       if (error) throw error
       return data as unknown as ImportResult
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contractors'] }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['contractors'] }),
+        queryClient.invalidateQueries({ queryKey: ['imports'] }),
+      ]),
   })
 }

@@ -2651,6 +2651,9 @@ isOneToOne: false
 "undo_import":
 { Args: { "p_id": string }; Returns: Json
                            },
+"undo_import_preview":
+{ Args: { "p_id": string }; Returns: Json
+                           },
 "update_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_id": string,"p_name": string,"p_phone": string }; Returns: undefined
                            },

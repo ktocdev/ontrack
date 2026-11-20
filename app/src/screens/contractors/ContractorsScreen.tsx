@@ -14,6 +14,7 @@ import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconBriefcase, IconChevronRight, IconPlus, IconSearchOff, IconWarning } from '../../components/icons'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
+import { UndoImportBanner } from '../imports/UndoImport'
 import { LeadershipHeader } from '../leadership/LeadershipHeader'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantScope } from '../ops/useRestaurantScope'
@@ -267,6 +268,7 @@ function Directory({ base }: { base: '/ops' | '/lead' }) {
         </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-0">
+          {canEditTrades && <UndoImportBanner kind="contractors" />}
           {isPending ? (
             <CardFeedSkeleton count={4} label="Loading contractors" />
           ) : (
