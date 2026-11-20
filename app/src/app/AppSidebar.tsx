@@ -47,8 +47,17 @@ function WideSidebar() {
         />
       }
     >
-      {tabs.items.map(({ to, label, icon, end, also }) => (
-        <SidebarLink key={to} to={to} end={end} also={also} icon={icon} inert={inert} current={inert && !!end}>
+      {tabs.items.map(({ to, label, icon, end, also, lightsOn }) => (
+        <SidebarLink
+          key={to}
+          to={to}
+          end={end}
+          also={also}
+          lightsOn={lightsOn}
+          icon={icon}
+          inert={inert}
+          current={inert && !!end}
+        >
           {label}
         </SidebarLink>
       ))}

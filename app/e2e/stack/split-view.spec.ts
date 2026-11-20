@@ -27,6 +27,10 @@ test('Ops opens a ticket beside the dashboard, and the dashboard stays', async (
   await expect(page.getByRole('heading', { name: 'Walk-in cooler not holding temp', level: 1 })).toBeVisible()
   await expect(pane(page).getByRole('heading', { name: 'Dashboard' })).toBeVisible()
   await expect(card).toHaveAttribute('aria-current', 'page')
+  // The sidebar keeps Dashboard lit while one of its tickets is open.
+  await expect(
+    page.getByRole('navigation', { name: 'Operations' }).getByRole('link', { name: 'Dashboard' }),
+  ).toHaveAttribute('aria-current', 'page')
   await shot(page, info, 'ops-ticket-beside-list')
 
   // Another card swaps the ticket, not the list.

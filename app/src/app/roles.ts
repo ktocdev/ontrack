@@ -79,7 +79,15 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
     label: 'Manager',
     items: [
       { to: '/tickets/new', label: 'Create ticket', icon: IconPlusSquare },
-      { to: '/tickets', label: 'Open tickets', icon: IconList, end: true, also: '/tickets/in-house' },
+      {
+        to: '/tickets',
+        label: 'Open tickets',
+        icon: IconList,
+        end: true,
+        also: '/tickets/in-house',
+        // A ticket and Closed tickets, which open beside Open tickets on a laptop (OT-159).
+        lightsOn: /^\/tickets\/(closed|[0-9a-f-]{36})(\/|$)/,
+      },
       { to: '/walkthrough', label: 'Walkthrough', icon: IconClipboardCheck },
       { to: '/equipment', label: 'Equipment', icon: IconWrench },
     ],
@@ -87,7 +95,14 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
   ops: {
     label: 'Operations',
     items: [
-      { to: '/ops', label: 'Dashboard', icon: IconDashboard, end: true, also: '/ops/closed' },
+      {
+        to: '/ops',
+        label: 'Dashboard',
+        icon: IconDashboard,
+        end: true,
+        also: '/ops/closed',
+        lightsOn: /^\/ops\/tickets\//,
+      },
       { to: '/ops/walkthroughs', label: 'Walkthroughs', icon: IconClipboardCheck },
       { to: '/ops/equipment', label: 'Equipment', icon: IconWrench },
       { to: '/ops/contractors', label: 'Contractors', icon: IconBriefcase },
@@ -106,7 +121,7 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
     label: 'Leadership',
     items: [
       { to: '/lead', label: 'Overview', icon: IconDashboard, end: true },
-      { to: '/lead/restaurants', label: 'Restaurants', icon: IconStorefront },
+      { to: '/lead/restaurants', label: 'Restaurants', icon: IconStorefront, lightsOn: /^\/lead\/tickets\// },
       { to: '/lead/walkthroughs', label: 'Walkthroughs', icon: IconClipboardCheck },
       { to: '/lead/contractors', label: 'Contractors', icon: IconBriefcase },
     ],

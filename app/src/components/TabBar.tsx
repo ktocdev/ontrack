@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react'
-import { NavLink, useLocation } from 'react-router'
+import type { ComponentType, ReactNode } from 'react'
+import { Link, useLocation, useMatch } from 'react-router'
 
 /**
  * The bottom tab bar: white, 1px top border, 6px 8px on top and sides. The
@@ -16,6 +16,15 @@ export type TabItem = {
   end?: boolean
   /** A route under this tab that `end` would otherwise leave out (In-house under Open tickets). */
   also?: string
+  /** Addresses outside the tab's own path that still light it: a ticket opened from its list (OT-159). */
+  lightsOn?: RegExp
+}
+
+/** Whether a tab is the current one: its own path, or an address it lights on. */
+export function useTabLit({ to, end, also, lightsOn }: Pick<TabItem, 'to' | 'end' | 'also' | 'lightsOn'>) {
+  const { pathname } = useLocation()
+  const own = useMatch({ path: to, end: !!end && pathname !== also })
+  return !!own || !!lightsOn?.test(pathname)
 }
 
 export function TabBar({
@@ -34,7 +43,6 @@ export function TabBar({
   /** Hidden from 768 px, where the sidebar takes its place (OT-157). /kit samples show it at every width. */
   phoneOnly?: boolean
 }) {
-  const { pathname } = useLocation()
   return (
     <nav
       aria-label={label}
@@ -42,7 +50,7 @@ export function TabBar({
       className={`flex flex-none border-t border-border bg-surface px-2 pt-1.5 ${phoneOnly ? 'md:hidden' : ''}`}
       style={{ paddingBottom: inset ? 'max(8px, var(--safe-bottom))' : '8px' }}
     >
-      {items.map(({ to, label: text, icon: Icon, end, also }) =>
+      {items.map(({ to, label: text, icon: Icon, end, also, lightsOn }) =>
         inert ? (
           <span
             key={to}
@@ -53,21 +61,27 @@ export function TabBar({
             {text}
           </span>
         ) : (
-          <NavLink
-            key={to}
-            to={to}
-            end={end && pathname !== also}
-            className={({ isActive }) =>
-              `flex min-h-tap flex-1 flex-col items-center gap-[3px] rounded-control py-1.5 text-12 font-semibold transition-colors active:bg-surface-muted active:duration-0 ${
-                isActive ? 'text-brand' : 'text-text-muted hover:text-text-secondary'
-              }`
-            }
-          >
+          <TabLink key={to} to={to} end={end} also={also} lightsOn={lightsOn}>
             <Icon size={24} />
             {text}
-          </NavLink>
+          </TabLink>
         ),
       )}
     </nav>
+  )
+}
+
+function TabLink({ children, ...item }: Pick<TabItem, 'to' | 'end' | 'also' | 'lightsOn'> & { children: ReactNode }) {
+  const lit = useTabLit(item)
+  return (
+    <Link
+      to={item.to}
+      aria-current={lit ? 'page' : undefined}
+      className={`flex min-h-tap flex-1 flex-col items-center gap-[3px] rounded-control py-1.5 text-12 font-semibold transition-colors active:bg-surface-muted active:duration-0 ${
+        lit ? 'text-brand' : 'text-text-muted hover:text-text-secondary'
+      }`}
+    >
+      {children}
+    </Link>
   )
 }
