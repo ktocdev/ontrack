@@ -175,7 +175,9 @@ export function MapField({
   sample,
   suggestion,
   note,
+  satisfied = false,
   onPick,
+  children,
 }: {
   title: string
   required?: boolean
@@ -186,10 +188,14 @@ export function MapField({
   suggestion?: { title: string; i: number } | null
   /** When it isn't in the sheet and that's fine ("You can mark preferred contractors after importing."). */
   note?: string
+  /** Settled without a column (every row at one restaurant), so not marked. */
+  satisfied?: boolean
   onPick: (column: number | null) => void
+  /** Under the column choice: another way to settle it ("Every row is at"). */
+  children?: ReactNode
 }) {
   const matched = column !== null
-  const warn = !matched && !note
+  const warn = !matched && !note && !satisfied
   return (
     <div
       className={`flex flex-none flex-col gap-2 rounded-card border px-3.5 py-3 ${
@@ -200,7 +206,7 @@ export function MapField({
         <span className="text-15 font-bold">
           {title} {required && <span className="text-11 font-bold text-urgent">Required</span>}
         </span>
-        {matched ? (
+        {matched || satisfied ? (
           <span className="inline-flex items-center gap-1 text-12 font-bold text-brand-strong">
             <IconCheck size={14} strokeWidth={2.6} />
             Matched
@@ -233,6 +239,7 @@ export function MapField({
         </button>
       )}
       {!matched && note && <span className="text-12 leading-[1.4] text-text-secondary">{note}</span>}
+      {children}
     </div>
   )
 }

@@ -1,11 +1,13 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
+import { useUser } from '../../auth/context'
+import { useRight } from '../../auth/rights'
 import { Button, ButtonLink } from '../../components/Button'
 import { ErrorBanner } from '../../components/Notice'
 import { Screen } from '../../components/Screen'
-import { guessColumns, readByColumns, sampleOf, splitSheet, unusedColumns, type Sheet } from '../../lib/import/columns'
+import { guessColumns, readByColumns, sampleOf, unusedColumns } from '../../lib/import/columns'
 import { toCsv } from '../../lib/import/csv'
-import { downloadText, readSheetFile, SheetError } from '../../lib/import/sheet'
+import { downloadText } from '../../lib/import/sheet'
 import { splitList } from '../../lib/import/values'
 import { useCanEditTrades, useTrades } from '../trades/useTrades'
 import {
@@ -24,13 +26,13 @@ import {
   FooterHint,
   ImportDone,
   ImportFrame,
-  IssueCard,
   MapField,
   NotImported,
   ReadyList,
   ReviewCounts,
   TemplateCard,
 } from './ImportParts'
+import { importMessage, IssueList, useSheetPick } from './importFlow'
 import { applyFixes, counts, rowStates, type Resolutions } from './review'
 import { useContractorNames, useImportContractors, type ImportResult } from './useImportContractors'
 
@@ -51,7 +53,11 @@ const NO_NAMES: { id: string; name: string }[] = []
  * cost and admins, as Add contractor; never under View as.
  */
 export function ImportContractorsScreen() {
+  const { user } = useUser()
+  const logsCost = useRight('log_cost')
   const canEdit = useCanEditTrades()
+  // Wait for the right to load; send away only a real no, so a fresh load doesn't bounce.
+  if (!user.is_admin && user.role === 'ops' && logsCost === undefined) return null
   if (!canEdit) return <Navigate to={HOME} replace />
   return <ImportContractors />
 }
@@ -60,35 +66,18 @@ function ImportContractors() {
   const trades = useTrades().data ?? NO_TRADES
   const names = useContractorNames().data ?? NO_NAMES
   const run = useImportContractors()
-  const input = useRef<HTMLInputElement>(null)
   const [step, setStep] = useState<Step>('start')
-  const [file, setFile] = useState<{ name: string; sheet: Sheet } | null>(null)
-  const [reading, setReading] = useState(false)
-  const [readError, setReadError] = useState<string | null>(null)
   const [chosen, setChosen] = useState<Chosen | null>(null)
   const [resolutions, setResolutions] = useState<Resolutions>({})
   const [updates, setUpdates] = useState<Set<number>>(new Set())
   const [result, setResult] = useState<(ImportResult & { skippedHere: number }) | null>(null)
-
-  const pick = async (f: File | undefined) => {
-    if (!f) return
-    setReadError(null)
-    setReading(true)
-    try {
-      const sheet = splitSheet(await readSheetFile(f))
-      if (sheet.body.length === 0) throw new SheetError('That sheet has no rows under its first row of titles.')
-      setFile({ name: f.name, sheet })
-      const guesses = guessColumns(sheet, CONTRACTOR_FIELDS)
-      setChosen(Object.fromEntries(guesses.map((g) => [g.key, g.column])) as Chosen)
-      setResolutions({})
-      setUpdates(new Set())
-    } catch (e) {
-      setReadError(e instanceof SheetError ? e.message : 'That file couldn’t be read. Try it as .xlsx or .csv.')
-    } finally {
-      setReading(false)
-      if (input.current) input.current.value = ''
-    }
-  }
+  const sheet = useSheetPick((read) => {
+    const g = guessColumns(read, CONTRACTOR_FIELDS)
+    setChosen(Object.fromEntries(g.map((x) => [x.key, x.column])) as Chosen)
+    setResolutions({})
+    setUpdates(new Set())
+  })
+  const file = sheet.file
 
   const guesses = useMemo(() => (file ? guessColumns(file.sheet, CONTRACTOR_FIELDS) : []), [file])
   const records = useMemo(() => (file && chosen ? readByColumns(file.sheet, chosen) : []), [file, chosen])
@@ -162,7 +151,7 @@ function ImportContractors() {
       <ButtonLink to={HOME}>View contractors</ButtonLink>
     )
 
-  const columns = file ? file.sheet.header.map((t, i) => ({ title: t, i })).filter((c) => c.title !== '') : []
+  const columns = sheet.columns
   const readyRows = fixed.filter((r) => states.get(r.row) === 'ready')
 
   return (
@@ -180,28 +169,9 @@ function ImportContractors() {
             <p className="flex-none text-14 leading-normal text-text-body">
               Use the contractor list you already keep. Any layout works. You’ll match its columns to OnTrack next.
             </p>
-            <input
-              ref={input}
-              type="file"
-              accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              className="sr-only"
-              aria-label="Spreadsheet to import"
-              onChange={(e) => void pick(e.target.files?.[0])}
-            />
-            <FileChoice
-              reading={reading}
-              file={
-                file && {
-                  name: file.name,
-                  rows: file.sheet.body.length,
-                  columns: columns.length,
-                  firstRows: file.sheet.body.slice(0, 3).map((r) => r.cells.filter(Boolean).slice(0, 3).join(' · ')),
-                }
-              }
-              onChoose={() => input.current?.click()}
-              onChange={() => input.current?.click()}
-            />
-            {readError && <ErrorBanner title="Couldn't read that file.">{readError}</ErrorBanner>}
+            {sheet.fileInput}
+            <FileChoice reading={sheet.reading} file={sheet.summary} onChoose={sheet.choose} onChange={sheet.choose} />
+            {sheet.error && <ErrorBanner title="Couldn't read that file.">{sheet.error}</ErrorBanner>}
             <TemplateCard onDownload={() => downloadText('contractors-template.csv', toCsv(CONTRACTOR_TEMPLATE))} />
           </>
         )}
@@ -240,37 +210,7 @@ function ImportContractors() {
         {step === 'review' && (
           <>
             <ReviewCounts ready={n.ready} fix={n.fix} duplicate={n.duplicate} />
-            {review.issues.length > 0 && <span className="eyebrow pt-1.5">Needs a fix</span>}
-            {review.issues.map((x) => {
-              const res = resolutions[x.id]
-              const many = x.rows.length > 1
-              return (
-                <IssueCard
-                  key={x.id}
-                  title={x.title}
-                  who={x.who}
-                  rows={x.rows.length}
-                  kind={x.kind}
-                  options={x.options}
-                  pickLabel={x.pickLabel}
-                  initial={x.initial}
-                  inputType={x.inputType}
-                  placeholder={x.placeholder}
-                  done={
-                    res &&
-                    (res.status === 'fixed'
-                      ? {
-                          fixed: true,
-                          text: `${x.fixedText(res.value)} · ${x.rows.length} ${many ? 'rows' : 'row'} ready`,
-                        }
-                      : { fixed: false, text: `Skipped ${x.rows.length} ${many ? 'rows' : 'row'}` })
-                  }
-                  onApply={(value) => setResolutions({ ...resolutions, [x.id]: { status: 'fixed', value } })}
-                  onSkip={() => setResolutions({ ...resolutions, [x.id]: { status: 'skipped' } })}
-                  onUndo={() => setResolutions({ ...resolutions, [x.id]: undefined })}
-                />
-              )
-            })}
+            <IssueList issues={review.issues} resolutions={resolutions} onChange={setResolutions} />
             {review.duplicates.size > 0 && <span className="eyebrow pt-1.5">Already in OnTrack</span>}
             {fixed
               .filter((r) => states.get(r.row) === 'duplicate')
@@ -319,11 +259,4 @@ function ImportContractors() {
       </ImportFrame>
     </Screen>
   )
-}
-
-/** The database's "row 14: …", with a capital, or a plain line when the connection failed. */
-function importMessage(error: unknown) {
-  const message = (error as { message?: string } | null)?.message ?? ''
-  if (/^row \d+:/.test(message)) return `Row ${message.slice(4)}.`
-  return 'Check your connection and try again.'
 }

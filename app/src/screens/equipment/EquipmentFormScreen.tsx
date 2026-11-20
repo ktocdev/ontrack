@@ -27,6 +27,7 @@ import {
   type EquipmentValues,
   type FileChange,
 } from './useEquipmentForm'
+import { ImportBanner } from '../imports/ImportParts'
 
 /**
  * Add equipment and Edit equipment (design/screens/Ops-Add-Equipment, Ops-Edit-Equipment),
@@ -175,6 +176,12 @@ function Form({ ops, editing }: { ops: boolean; editing?: EquipmentToEdit }) {
       <CloseBar to={closeTo} title={editing ? 'Edit equipment' : 'Add equipment'} />
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col" noValidate>
         <ScreenBody className="gap-4 pb-4 pt-4">
+          {ops && !editing && (
+            <ImportBanner
+              to={`/ops/equipment/import${scope.selected ? `?restaurant=${scope.selected.id}` : ''}`}
+              noun="equipment"
+            />
+          )}
           {save.isError && (
             <div ref={banner} className="flex-none">
               <ErrorBanner title="Couldn't save yet.">

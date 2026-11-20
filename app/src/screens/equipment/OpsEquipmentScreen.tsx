@@ -146,12 +146,20 @@ export function OpsEquipmentScreen() {
                   Add
                 </ButtonLink>
               )}
-              {canEditCategories && (
-                <OverflowMenu
-                  label="More options for equipment"
-                  items={[{ to: '/ops/equipment/categories', label: 'Categories' }]}
-                />
-              )}
+              <OverflowMenu
+                label="More options for equipment"
+                items={[
+                  ...(canAdd
+                    ? [
+                        {
+                          to: `/ops/equipment/import${scope.selected ? `?restaurant=${scope.selected.id}` : ''}`,
+                          label: 'Import from a spreadsheet',
+                        },
+                      ]
+                    : []),
+                  ...(canEditCategories ? [{ to: '/ops/equipment/categories', label: 'Categories' }] : []),
+                ]}
+              />
             </span>
           ) : undefined
         }
