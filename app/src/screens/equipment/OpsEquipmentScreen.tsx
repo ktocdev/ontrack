@@ -29,6 +29,7 @@ import {
   type Filters,
 } from './equipment'
 import { useEquipmentList } from './useEquipmentList'
+import { UndoImportBanner } from '../imports/UndoImport'
 
 /**
  * Ops · Equipment list (from design/screens/Ops-Equipment-List). The units in service
@@ -213,6 +214,7 @@ export function OpsEquipmentScreen() {
         </ScreenEmpty>
       ) : (
         <ScreenBody className="gap-2.5 pb-4 pt-1">
+          {canAdd && <UndoImportBanner kind="equipment" />}
           {isPending ? (
             <GroupedListSkeleton />
           ) : groups.length + retired.length === 0 ? (

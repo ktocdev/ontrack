@@ -44,6 +44,7 @@ export function useImportEquipment() {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ['tickets'] }),
         queryClient.invalidateQueries({ queryKey: ['equipment-edit'] }),
+        queryClient.invalidateQueries({ queryKey: ['imports'] }),
       ]),
   })
 }
