@@ -10,6 +10,14 @@ import { ContractorLinkScreen } from '../screens/contractors/ContractorLinkScree
 import { EquipmentLinkScreen } from '../screens/equipment/EquipmentLinkScreen'
 import { TicketLinkScreen } from '../screens/tickets/TicketLinkScreen'
 import { BareShell, Shell, SignedInShell } from './Shell'
+import { SplitView } from './SplitView'
+import {
+  ADMIN_TICKET_LISTS,
+  LEAD_TICKET_LISTS,
+  MANAGER_TICKET_LISTS,
+  OPS_TICKET_LISTS,
+  TICKET_PANE,
+} from './splitLists'
 
 /**
  * Routes follow the design's href links. Signed-in routes sit under
@@ -175,10 +183,29 @@ export const router = createBrowserRouter([
                 element: <Shell />,
                 children: [
                   {
-                    path: '/tickets',
-                    lazy: async () => ({
-                      Component: (await import('../screens/tickets/OpenTicketsScreen')).OpenTicketsScreen,
-                    }),
+                    element: <SplitView lists={MANAGER_TICKET_LISTS} fallback="/tickets" empty={TICKET_PANE} />,
+                    children: [
+                      {
+                        path: '/tickets',
+                        lazy: async () => ({
+                          Component: (await import('../screens/tickets/OpenTicketsScreen')).OpenTicketsScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/tickets/closed',
+                        lazy: async () => ({
+                          Component: (await import('../screens/tickets/ClosedTicketsScreen')).ClosedTicketsScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/tickets/:id',
+                        lazy: async () => ({
+                          Component: (await import('../screens/tickets/TicketScreen')).TicketScreen,
+                        }),
+                      },
+                    ],
                   },
                   {
                     path: '/tickets/new',
@@ -241,12 +268,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/tickets/closed',
-                    lazy: async () => ({
-                      Component: (await import('../screens/tickets/ClosedTicketsScreen')).ClosedTicketsScreen,
-                    }),
-                  },
-                  {
                     path: '/tickets/new/:categoryId',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/CreateFormScreen')).CreateFormScreen,
@@ -271,12 +292,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/tickets/:id',
-                    lazy: async () => ({
-                      Component: (await import('../screens/tickets/TicketScreen')).TicketScreen,
-                    }),
-                  },
-                  {
                     path: '/tickets/:id/edit',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/EditTicketScreen')).EditTicketScreen,
@@ -295,14 +310,28 @@ export const router = createBrowserRouter([
                 element: <Shell />,
                 children: [
                   {
-                    path: '/ops',
-                    lazy: async () => ({
-                      Component: (await import('../screens/ops/OpsDashboardScreen')).OpsDashboardScreen,
-                    }),
-                  },
-                  {
-                    path: '/ops/closed',
-                    lazy: async () => ({ Component: (await import('../screens/ops/OpsClosedScreen')).OpsClosedScreen }),
+                    element: <SplitView lists={OPS_TICKET_LISTS} fallback="/ops" empty={TICKET_PANE} />,
+                    children: [
+                      {
+                        path: '/ops',
+                        lazy: async () => ({
+                          Component: (await import('../screens/ops/OpsDashboardScreen')).OpsDashboardScreen,
+                        }),
+                      },
+                      {
+                        path: '/ops/closed',
+                        lazy: async () => ({
+                          Component: (await import('../screens/ops/OpsClosedScreen')).OpsClosedScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/ops/tickets/:id',
+                        lazy: async () => ({
+                          Component: (await import('../screens/ops/OpsTicketScreen')).OpsTicketScreen,
+                        }),
+                      },
+                    ],
                   },
                   {
                     path: '/ops/walkthroughs',
@@ -412,10 +441,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/ops/tickets/:id',
-                    lazy: async () => ({ Component: (await import('../screens/ops/OpsTicketScreen')).OpsTicketScreen }),
-                  },
-                  {
                     path: '/ops/tickets/:id/service/new',
                     lazy: async () => ({
                       Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromTicketScreen,
@@ -497,17 +522,22 @@ export const router = createBrowserRouter([
                     lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).RolesScreen }),
                   },
                   {
-                    path: '/admin/tickets',
-                    lazy: async () => ({
-                      Component: (await import('../screens/admin/AdminTicketsScreen')).AdminTicketsScreen,
-                    }),
-                  },
-                  {
-                    path: '/admin/tickets/:id',
-                    lazy: async () => {
-                      const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')
-                      return { Component: () => <ReadOnlyTicketScreen base="/admin" /> }
-                    },
+                    element: <SplitView lists={ADMIN_TICKET_LISTS} fallback="/admin/tickets" empty={TICKET_PANE} />,
+                    children: [
+                      {
+                        path: '/admin/tickets',
+                        lazy: async () => ({
+                          Component: (await import('../screens/admin/AdminTicketsScreen')).AdminTicketsScreen,
+                        }),
+                      },
+                      {
+                        path: '/admin/tickets/:id',
+                        lazy: async () => {
+                          const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')
+                          return { Component: () => <ReadOnlyTicketScreen base="/admin" /> }
+                        },
+                      },
+                    ],
                   },
                   {
                     path: '/admin/restaurants',
@@ -589,24 +619,29 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/lead/restaurants',
-                    lazy: async () => ({
-                      Component: (await import('../screens/leadership/LeadRestaurantScreen')).LeadRestaurantsIndex,
-                    }),
-                  },
-                  {
-                    path: '/lead/restaurants/:id',
-                    lazy: async () => {
-                      const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
-                      return { Component: () => <LeadRestaurantScreen tab="tickets" /> }
-                    },
-                  },
-                  {
-                    path: '/lead/tickets/:id',
-                    lazy: async () => {
-                      const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')
-                      return { Component: () => <ReadOnlyTicketScreen base="/lead" /> }
-                    },
+                    element: <SplitView lists={LEAD_TICKET_LISTS} empty={TICKET_PANE} />,
+                    children: [
+                      {
+                        path: '/lead/restaurants',
+                        lazy: async () => ({
+                          Component: (await import('../screens/leadership/LeadRestaurantScreen')).LeadRestaurantsIndex,
+                        }),
+                      },
+                      {
+                        path: '/lead/restaurants/:id',
+                        lazy: async () => {
+                          const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
+                          return { Component: () => <LeadRestaurantScreen tab="tickets" /> }
+                        },
+                      },
+                      {
+                        path: '/lead/tickets/:id',
+                        lazy: async () => {
+                          const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')
+                          return { Component: () => <ReadOnlyTicketScreen base="/lead" /> }
+                        },
+                      },
+                    ],
                   },
                   {
                     path: '/lead/service/:id',

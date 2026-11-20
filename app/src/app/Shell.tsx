@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, type ReactNode } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import { Outlet, useLocation, useMatches } from 'react-router'
 import { TabBar } from '../components/TabBar'
 import { AppSidebar } from './AppSidebar'
 import { useUser } from '../auth/context'
@@ -21,6 +21,9 @@ export function Shell() {
   const queryClient = useQueryClient()
   const { pathname } = useLocation()
   const tabs = tabsFor(user, pathname)
+  // A detail screen kept in this shell so its list stays beside it on a laptop (OT-159)
+  // has no tab bar on a phone, as in SignedInShell.
+  const bare = useMatches().some((m) => (m.handle as { bare?: boolean } | undefined)?.bare)
   // Nothing depends on this working: a device that misses it just tries again next time.
   // It may turn push back on, so Profile's switch reads the device again after.
   useEffect(() => {
@@ -32,7 +35,7 @@ export function Shell() {
   return (
     <Frame>
       <Outlet />
-      <TabBar label={tabs.label} items={tabs.items} phoneOnly />
+      {!bare && <TabBar label={tabs.label} items={tabs.items} phoneOnly />}
       <InstallOnce skip={!!viewingAs} />
     </Frame>
   )

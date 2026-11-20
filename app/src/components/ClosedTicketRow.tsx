@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { useOpenInPane } from '../app/SplitView'
 import { RestaurantSquare } from './RestaurantName'
 
 /**
@@ -31,10 +32,12 @@ export function ClosedTicketRow({
   date: string
   cost?: string
 }) {
+  const open = useOpenInPane(to)
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 border-t border-surface-muted px-3.5 py-[11px] text-text no-underline transition-colors first:border-t-0 hover:bg-surface-hover hover:text-text active:bg-surface-sunken active:duration-0"
+      aria-current={open ? 'page' : undefined}
+      className={`flex items-center gap-3 border-t border-surface-muted px-3.5 py-[11px] text-text no-underline transition-colors first:border-t-0 hover:bg-surface-hover hover:text-text active:bg-surface-sunken active:duration-0 ${open ? 'bg-brand-tint-faint' : ''}`}
     >
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-15 font-semibold [overflow-wrap:anywhere]">{title}</span>

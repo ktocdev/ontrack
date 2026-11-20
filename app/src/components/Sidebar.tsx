@@ -1,8 +1,9 @@
 import type { ComponentType, ReactNode } from 'react'
-import { Link, NavLink, useLocation } from 'react-router'
+import { Link } from 'react-router'
 import type { AppRole } from '../lib/supabase'
 import { Avatar } from './Avatar'
 import { Logo } from './icons'
+import { useTabLit } from './TabBar'
 
 /**
  * Sidebar: the tablet-and-up stand-in for the bottom tab bar (OT-157). Hidden
@@ -45,6 +46,7 @@ export function SidebarLink({
   to,
   end,
   also,
+  lightsOn,
   icon: Icon,
   inert = false,
   current = false,
@@ -53,12 +55,13 @@ export function SidebarLink({
   to: string
   end?: boolean
   also?: string
+  lightsOn?: RegExp
   icon?: ComponentType<{ size?: number }>
   inert?: boolean
   current?: boolean
   children: ReactNode
 }) {
-  const { pathname } = useLocation()
+  const lit = useTabLit({ to, end, also, lightsOn })
   if (inert) {
     return (
       <span
@@ -71,14 +74,10 @@ export function SidebarLink({
     )
   }
   return (
-    <NavLink
-      to={to}
-      end={end && pathname !== also}
-      className={({ isActive }) => `${ITEM} ${isActive ? CURRENT : IDLE}`}
-    >
+    <Link to={to} aria-current={lit ? 'page' : undefined} className={`${ITEM} ${lit ? CURRENT : IDLE}`}>
       {Icon && <Icon size={22} />}
       {children}
-    </NavLink>
+    </Link>
   )
 }
 

@@ -53,12 +53,12 @@ test('a restaurant’s open tickets with what is logged on each, its Reporter, t
   await expect(page.getByRole('heading', { name: 'Federale’s Logan Square' })).toBeVisible()
   await expect(page.getByText('Manager: Maya Reyes')).toBeVisible()
   await expect(page.getByRole('link', { name: `Open tickets · ${open.length}` })).toBeVisible()
-  const cards = page.locator('a[href^="/t/OT-"]')
+  const cards = page.locator('a[href^="/lead/tickets/"]')
   await expect(cards).toHaveCount(open.length)
   const cost = costs.find((c) => c.ticket_id === costed.id)!.total_cents
   await expect(cards.filter({ hasText: costed.display_id })).toContainText(`${money(cost)} logged`)
   await expect(cards.filter({ hasText: bare.display_id })).toContainText('No cost yet')
-  await expect(cards.filter({ hasText: costed.display_id })).toHaveAttribute('href', `/t/${costed.display_id}`)
+  await expect(cards.filter({ hasText: costed.display_id })).toHaveAttribute('href', `/lead/tickets/${costed.id}`)
   await shot(page, testInfo, 'restaurant · open tickets')
 
   // The title picks another restaurant.

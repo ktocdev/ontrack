@@ -73,3 +73,22 @@ describe('the admin view', () => {
     expect(tabsFor(plain, '/admin/users')).toBe(ROLE_TABS.admin)
   })
 })
+
+describe('a tab lit by a ticket opened from its list', () => {
+  const id = '66666666-6666-4666-8666-000000001042'
+  const open = ROLE_TABS.manager.items.find((t) => t.label === 'Open tickets')!.lightsOn!
+  const dashboard = ROLE_TABS.ops.items.find((t) => t.label === 'Dashboard')!.lightsOn!
+
+  it('lights Open tickets on a ticket and Closed tickets, never on Create ticket', () => {
+    expect(open.test(`/tickets/${id}`)).toBe(true)
+    expect(open.test(`/tickets/${id}/edit`)).toBe(true)
+    expect(open.test('/tickets/closed')).toBe(true)
+    expect(open.test('/tickets/new')).toBe(false)
+    expect(open.test('/tickets/new/abc')).toBe(false)
+  })
+
+  it('lights Dashboard on an Ops ticket only', () => {
+    expect(dashboard.test(`/ops/tickets/${id}`)).toBe(true)
+    expect(dashboard.test('/ops/equipment')).toBe(false)
+  })
+})

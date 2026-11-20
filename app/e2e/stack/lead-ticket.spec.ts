@@ -19,7 +19,7 @@ const shot = async (page: Page, testInfo: TestInfo, name: string) =>
 test('leadership reads a ticket and its service record, and can change neither', async ({ page }, testInfo) => {
   await signIn(page, LEE)
   await page.goto(`/lead/restaurants/${LOGAN}`)
-  await page.locator('a[href="/t/OT-1042"]').click()
+  await page.locator(`a[href="/lead/tickets/${T1042}"]`).click()
   await expect(page).toHaveURL(new RegExp(`/lead/tickets/${T1042}$`))
 
   await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()

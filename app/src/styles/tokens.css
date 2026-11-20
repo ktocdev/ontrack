@@ -172,6 +172,8 @@
   /* From 768: a one-column screen's reading width, and a form opened from a list as a panel (OT-158) */
   --reading-max: 720px;
   --form-max: 560px;
+  /* From 1024: the list beside an open item (OT-159) */
+  --list-pane: 380px;
 }
 
 [data-theme='dark'] {
@@ -419,6 +421,7 @@
   --spacing-safe-left: var(--safe-left);
   --spacing-safe-right: var(--safe-right);
   --spacing-sidebar: var(--sidebar-w);
+  --spacing-list-pane: var(--list-pane);
   --container-desktop: var(--desktop-max);
   --container-reading: var(--reading-max);
   --container-form: var(--form-max);
