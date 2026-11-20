@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
+import { useLaptop } from '../../lib/useWide'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { guessColumns, readByColumns, sampleOf, unusedColumns } from '../../lib/import/columns'
@@ -15,7 +16,7 @@ import {
   type ContractorField,
   type Trade,
 } from './contractorImport'
-import { MapField, NotImported, ReadyList, ReviewCounts } from './ImportParts'
+import { MapField, NotImported, ReadyList, ReviewCounts, ReviewTable } from './ImportParts'
 import {
   DuplicateList,
   ImportDoneStep,
@@ -108,6 +109,23 @@ function ImportContractors() {
   }
 
   const readyRows = fixed.filter((r) => states.get(r.row) === 'ready')
+  // On a laptop every row shows in a table beside the fixes (OT-161).
+  const laptop = useLaptop()
+  const table =
+    step === 'review' && laptop ? (
+      <ReviewTable
+        columns={CONTRACTOR_FIELDS.filter((f) => mapped.has(f.key)).map((f) => ({ key: f.key, title: f.title }))}
+        rows={fixed.map((r) => ({
+          row: r.row,
+          values: r.values,
+          state: states.get(r.row)!,
+          update: updates.has(r.row),
+        }))}
+        problems={
+          new Set(review.issues.filter((x) => !resolutions[x.id]).flatMap((x) => x.rows.map((n) => `${n}:${x.field}`)))
+        }
+      />
+    ) : undefined
 
   return (
     <ImportSteps
@@ -122,6 +140,7 @@ function ImportContractors() {
       importing={importing}
       pending={run.isPending}
       onSubmit={submit}
+      table={table}
     >
       {step === 'start' && (
         <StartStep
@@ -172,16 +191,18 @@ function ImportContractors() {
             updates={updates}
             onChange={setUpdates}
           />
-          {n.ready > 0 && <span className="eyebrow pt-1.5">Ready · {n.ready}</span>}
-          <ReadyList
-            total={n.ready}
-            rows={readyRows.slice(0, 3).map((r) => ({
-              title: r.values.name,
-              sub: [splitList(r.values.trades).join(', '), r.values.contact, r.values.phone]
-                .filter(Boolean)
-                .join(' · '),
-            }))}
-          />
+          {!table && n.ready > 0 && <span className="eyebrow pt-1.5">Ready · {n.ready}</span>}
+          {!table && (
+            <ReadyList
+              total={n.ready}
+              rows={readyRows.slice(0, 3).map((r) => ({
+                title: r.values.name,
+                sub: [splitList(r.values.trades).join(', '), r.values.contact, r.values.phone]
+                  .filter(Boolean)
+                  .join(' · '),
+              }))}
+            />
+          )}
           {run.isError && <ImportFailed error={run.error} />}
         </>
       )}

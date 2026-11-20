@@ -37,6 +37,7 @@ export function ImportSteps({
   waiting = false,
   pending,
   onSubmit,
+  table,
   children,
 }: {
   kind: Kind
@@ -55,6 +56,8 @@ export function ImportSteps({
   waiting?: boolean
   pending: boolean
   onSubmit: () => void
+  /** The review table, on a laptop (OT-161). */
+  table?: ReactNode
   children: ReactNode
 }) {
   const title =
@@ -92,8 +95,9 @@ export function ImportSteps({
       <ButtonLink to={home}>View {kind}</ButtonLink>
     )
   return (
-    <Screen>
+    <Screen width={table ? 'full' : 'reading'}>
       <ImportFrame
+        table={table}
         step={NUMBER[step]}
         label={LABEL[kind]}
         title={title}

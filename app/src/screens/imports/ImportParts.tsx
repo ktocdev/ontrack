@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import type { RowState } from './review'
 import { Button } from '../../components/Button'
 import { Input, Select } from '../../components/Field'
 import { Segmented } from '../../components/Segmented'
@@ -27,8 +28,11 @@ export function ImportFrame({
   onBack,
   closeTo,
   footer,
+  table,
   children,
 }: {
+  /** The review table, on a laptop: the cards go in a column on the left and it fills the rest (OT-161). */
+  table?: ReactNode
   /** 1 to 3, or 4 when done. */
   step: 1 | 2 | 3 | 4
   label: string
@@ -74,9 +78,16 @@ export function ImportFrame({
           ))}
         </div>
       </header>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-screen py-4">{children}</div>
-      <div className="flex flex-none flex-col gap-2 border-t border-border bg-bg px-screen pb-[max(24px,var(--safe-bottom))] pt-3">
-        {footer}
+      {table ? (
+        <div className="flex min-h-0 flex-1 gap-6 px-screen py-4">
+          <div className="-mx-1 flex w-[400px] flex-none flex-col gap-3 overflow-y-auto px-1">{children}</div>
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">{table}</div>
+        </div>
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-screen py-4">{children}</div>
+      )}
+      <div className="flex flex-none flex-col border-t border-border bg-bg px-screen pb-[max(24px,var(--safe-bottom))] pt-3">
+        <div className={`flex flex-col gap-2 ${table ? 'w-[400px]' : ''}`}>{footer}</div>
       </div>
     </div>
   )
@@ -494,5 +505,93 @@ export function ImportBanner({ to, noun }: { to: string; noun: string }) {
       </span>
       <IconChevronRight size={18} className="flex-none" />
     </Link>
+  )
+}
+
+/** A row's place in the review table (OT-161): its state, and for one already in OnTrack, whether it updates. */
+export type TableRow = { row: number; values: Record<string, string>; state: RowState; update?: boolean }
+
+/** Cells that read wrong broken across lines: a phone number, a model or serial, a date. */
+const NO_WRAP = new Set(['phone', 'model', 'serial', 'installed', 'warranty'])
+
+const ROW_TAG: Record<RowState | 'update', { text: string; cls: string }> = {
+  ready: { text: 'Ready', cls: 'bg-status-fixed-bg text-status-fixed-text' },
+  fix: { text: 'Needs a fix', cls: 'bg-status-open-bg text-status-open-text' },
+  skipped: { text: 'Skipped', cls: 'bg-status-closed-bg text-status-closed-text' },
+  duplicate: { text: 'In OnTrack · skipped', cls: 'bg-status-closed-bg text-status-closed-text' },
+  update: { text: 'Updates existing', cls: 'bg-status-progress-bg text-status-progress-text' },
+}
+
+/**
+ * The review on a laptop (OT-161; no board draws it): every row of the file in a table, as
+ * it will be imported, beside the same fix cards. Fixes show in the cells as they are
+ * made; a cell an open problem points at is marked, and an empty one says Missing. Wider
+ * than its column, it scrolls sideways inside its card.
+ */
+export function ReviewTable({
+  columns,
+  rows,
+  problems,
+}: {
+  columns: { key: string; title: string }[]
+  rows: TableRow[]
+  /** "row:field" for each cell an unresolved problem points at. */
+  problems: Set<string>
+}) {
+  return (
+    <section aria-label="Every row" className="flex min-h-0 w-full min-w-0 max-w-full flex-col gap-2">
+      <span className="eyebrow">Every row · {rows.length}</span>
+      <div className="min-h-0 w-full max-w-full overflow-auto rounded-card border border-border bg-surface">
+        <table className="w-full border-collapse text-left text-13">
+          <thead className="sticky top-0 z-10 bg-surface">
+            <tr className="border-b border-border text-12 font-semibold text-text-secondary">
+              <th scope="col" className="px-3 py-2.5 font-semibold">
+                Row
+              </th>
+              {columns.map((c) => (
+                <th key={c.key} scope="col" className="whitespace-nowrap px-3 py-2.5 font-semibold">
+                  {c.title}
+                </th>
+              ))}
+              <th scope="col" className="px-3 py-2.5 font-semibold">
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const tag = ROW_TAG[r.state === 'duplicate' && r.update ? 'update' : r.state]
+              const out = r.state === 'skipped' || (r.state === 'duplicate' && !r.update)
+              return (
+                <tr key={r.row} className="border-t border-surface-muted first:border-t-0">
+                  <td className="px-3 py-2 font-mono text-12 text-text-muted">{r.row}</td>
+                  {columns.map((c) => {
+                    const value = r.values[c.key] ?? ''
+                    const problem = problems.has(`${r.row}:${c.key}`)
+                    return (
+                      <td
+                        key={c.key}
+                        className={`max-w-[260px] px-3 py-2 align-top [overflow-wrap:break-word] ${NO_WRAP.has(c.key) ? 'whitespace-nowrap' : ''} ${
+                          problem ? 'font-semibold text-status-open-text' : out ? 'text-text-muted' : 'text-text-body'
+                        }`}
+                      >
+                        {value || (problem ? 'Missing' : '')}
+                      </td>
+                    )
+                  })}
+                  <td className="px-3 py-2">
+                    <span
+                      className={`inline-flex whitespace-nowrap rounded-chip px-2 py-0.5 text-12 font-semibold ${tag.cls}`}
+                    >
+                      {tag.text}
+                    </span>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
   )
 }
