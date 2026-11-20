@@ -167,7 +167,10 @@ function Directory({ base }: { base: '/ops' | '/lead' }) {
                 {canEditTrades && (
                   <OverflowMenu
                     label="More options for contractors"
-                    items={[{ to: '/ops/contractors/trades', label: 'Trades' }]}
+                    items={[
+                      { to: '/ops/contractors/import', label: 'Import from a spreadsheet' },
+                      { to: '/ops/contractors/trades', label: 'Trades' },
+                    ]}
                   />
                 )}
               </span>
@@ -217,6 +220,11 @@ function Directory({ base }: { base: '/ops' | '/lead' }) {
                 icon={<IconPlus size={18} strokeWidth={2.2} />}
               >
                 Add contractor
+              </ButtonLink>
+            )}
+            {canAdd && (
+              <ButtonLink to="/ops/contractors/import" variant="secondary" className="mt-2.5 w-full">
+                Import from a spreadsheet
               </ButtonLink>
             )}
           </EmptyState>

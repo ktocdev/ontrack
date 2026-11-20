@@ -174,6 +174,13 @@ export const IconFile = (p: IconProps) => (
     <path d="M14 3v5h5" />
   </svg>
 )
+/** A page with an arrow up out of it: choose a spreadsheet to import. */
+export const IconFileUpload = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5M12 17v-6M9.5 13.5 12 11l2.5 2.5" />
+  </svg>
+)
 /** Info in a circle (the note on Closed tickets). */
 export const IconInfo = (p: IconProps) => (
   <svg {...base(p, 2, false)}>

@@ -137,6 +137,7 @@ import { MOCK_RESTAURANTS } from '../../auth/mock'
 import { isHex, normalizeHex, presetHex, PRESETS } from '../../lib/colors'
 import type { AppRole } from '../../lib/supabase'
 import { useTheme } from '../../theme/useTheme'
+import { ImportPartsDemo } from '../imports/ImportPartsDemo'
 
 /**
  * /kit: every shared component in both themes, plus links to the full-screen
@@ -164,6 +165,7 @@ const SECTIONS = {
   choices: 'Chips, radio cards and empty',
   fields: 'Fields',
   switch: 'Switch',
+  imports: 'Imports',
   overlays: 'Sheet and toast',
   loading: 'Loading',
   errors: 'Error screens',
@@ -1302,6 +1304,10 @@ export function KitPage() {
               </ListCard>
               <SectionLabel>View setting (My categories, a job title&apos;s starting view)</SectionLabel>
               <ViewSettingDemo />
+            </Section>
+
+            <Section id="imports">
+              <ImportPartsDemo />
             </Section>
 
             <Section id="overlays">

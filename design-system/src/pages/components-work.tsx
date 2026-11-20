@@ -65,6 +65,7 @@ import { Kpi } from '@app/components/Kpi'
 import { MonthStepper } from '@app/components/MonthStepper'
 import { ReadOnlyBanner } from '@app/components/ReadOnlyBanner'
 import { SAMPLE_RESTAURANTS } from './components-basics'
+import { ImportPartsDemo } from '@app/screens/imports/ImportPartsDemo'
 
 const LOGAN = SAMPLE_RESTAURANTS[0]!
 const PORTER = SAMPLE_RESTAURANTS[3]!
@@ -978,6 +979,27 @@ export function LoadingPage() {
         <Example title="Metrics and detail">
           <MetricsSkeleton />
           <DetailSkeleton keys={['Name', 'Brand', 'Model']} />
+        </Example>
+      </Section>
+    </>
+  )
+}
+
+export function ImportsPage() {
+  return (
+    <>
+      <PageHeader eyebrow="Components" title="Imports" source={['screens/imports/ImportParts.tsx']}>
+        <p>
+          The steps of importing a spreadsheet (contractors, and equipment on the same pieces): the banner that leads
+          there from Add, choosing the file, matching each field to a column with a one-tap suggestion, the review's
+          counts, a problem fixed once for every row it covers, a row already in OnTrack to skip or update, the rows
+          ready, and the done step. The frame around them, with its step line and four-part progress, is the screen
+          itself.
+        </p>
+      </PageHeader>
+      <Section title="The pieces" intro="With the boards' sample values. Tap through: nothing imports.">
+        <Example width="phone">
+          <ImportPartsDemo />
         </Example>
       </Section>
     </>
