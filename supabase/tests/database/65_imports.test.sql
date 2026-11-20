@@ -108,7 +108,7 @@ select pg_temp.login('bert.velilla@example.com');
 select is((select count(*)::int from public.imports where id = :'c_import'), 1, 'Ops reads the import');
 select pg_temp.login('maya.reyes@example.com');
 select is((select count(*)::int from public.imports where id = :'c_import'), 0, 'a Reporter doesn''t');
-select throws_ok(format('select public.undo_import(%L)', :'c_import'), '42501', null, 'nor undoes it');
+select throws_ok(format('select public.undo_import(%L)', :'c_import'), 'P0002', null, 'nor undoes it (to them there is no such import, OT-154)');
 
 -- Undo --------------------------------------------------------------------------------
 

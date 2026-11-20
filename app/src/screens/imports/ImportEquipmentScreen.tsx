@@ -3,13 +3,8 @@ import { Navigate, useSearchParams } from 'react-router'
 import { AREA_SHORT } from '../../app/areas'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
-import { Button, ButtonLink } from '../../components/Button'
 import { Select } from '../../components/Field'
-import { ErrorBanner } from '../../components/Notice'
-import { Screen } from '../../components/Screen'
 import { guessColumns, readByColumns, sampleOf, unusedColumns } from '../../lib/import/columns'
-import { toCsv } from '../../lib/import/csv'
-import { downloadText } from '../../lib/import/sheet'
 import { useAllCategories } from '../mycategories/useMyCategories'
 import {
   areaOf,
@@ -23,24 +18,22 @@ import {
   type Category,
   type EquipmentField,
 } from './equipmentImport'
-import { importMessage, IssueList, useSheetPick } from './importFlow'
+import { MapField, NotImported, ReadyList, ReviewCounts } from './ImportParts'
 import {
-  DuplicateCard,
-  FileChoice,
-  FooterHint,
-  ImportDone,
-  ImportFrame,
-  MapField,
-  NotImported,
-  ReadyList,
-  ReviewCounts,
-  TemplateCard,
-} from './ImportParts'
+  DuplicateList,
+  ImportDoneStep,
+  ImportFailed,
+  ImportSteps,
+  IssueList,
+  MapIntro,
+  StartStep,
+  type ImportStep,
+} from './ImportSteps'
 import { applyFixes, counts, rowStates, type Resolutions } from './review'
 import { type ImportResult } from './useImportContractors'
 import { useImportEquipment, useUnitsForImport } from './useImportEquipment'
+import { useSheetPick } from './useSheetPick'
 
-type Step = 'start' | 'map' | 'review' | 'done'
 type Chosen = Record<EquipmentField, number | null>
 
 const HOME = '/ops/equipment'
@@ -72,7 +65,7 @@ function ImportEquipment() {
   const ids = useMemo(() => restaurants.map((r) => r.id), [restaurants])
   const units = useUnitsForImport(ids).data
   const run = useImportEquipment()
-  const [step, setStep] = useState<Step>('start')
+  const [step, setStep] = useState<ImportStep>('start')
   const [chosen, setChosen] = useState<Chosen | null>(null)
   const [one, setOne] = useState<string | null>(() => {
     const asked = params.get('restaurant')
@@ -113,7 +106,7 @@ function ImportEquipment() {
     (f) => f.required && chosen?.[f.key] == null && !(f.key === 'restaurant' && one),
   )
 
-  const go = (s: Step) => {
+  const go = (s: ImportStep) => {
     run.reset()
     setStep(s)
   }
@@ -130,176 +123,111 @@ function ImportEquipment() {
     )
   }
 
-  const back = step === 'map' ? () => go('start') : step === 'review' ? () => go('map') : undefined
-  const title =
-    step === 'start'
-      ? 'Import equipment'
-      : step === 'map'
-        ? 'Match columns'
-        : step === 'review'
-          ? `Review ${records.length} ${records.length === 1 ? 'row' : 'rows'}`
-          : 'Import complete'
-  const footer =
-    step === 'start' ? (
-      <Button disabled={!file} onClick={() => go('map')}>
-        Next: match columns
-      </Button>
-    ) : step === 'map' ? (
-      <>
-        {reqMissing && <FooterHint>Match every required field to continue.</FooterHint>}
-        <Button disabled={reqMissing} onClick={() => go('review')}>
-          Next: review rows
-        </Button>
-      </>
-    ) : step === 'review' ? (
-      <>
-        {n.fix > 0 && (
-          <FooterHint>
-            {n.fix} {n.fix === 1 ? 'row that still needs a fix' : 'rows that still need a fix'} will be skipped.
-          </FooterHint>
-        )}
-        <Button disabled={importing === 0 || !units} loading={run.isPending} onClick={submit}>
-          Import {importing} {importing === 1 ? 'unit' : 'units'}
-        </Button>
-      </>
-    ) : (
-      <ButtonLink to={HOME}>View equipment</ButtonLink>
-    )
-
   const name = (id: string | undefined) => restaurants.find((r) => r.id === id)?.name
   const readyRows = fixed.filter((r) => states.get(r.row) === 'ready')
 
   return (
-    <Screen>
-      <ImportFrame
-        step={step === 'start' ? 1 : step === 'map' ? 2 : step === 'review' ? 3 : 4}
-        label="Equipment"
-        title={title}
-        onBack={back}
-        closeTo={HOME}
-        footer={footer}
-      >
-        {step === 'start' && (
-          <>
-            <p className="flex-none text-14 leading-normal text-text-body">
-              Import one restaurant or all of them from the same sheet. You’ll match its columns to OnTrack next.
-            </p>
-            {sheet.fileInput}
-            <FileChoice reading={sheet.reading} file={sheet.summary} onChoose={sheet.choose} onChange={sheet.choose} />
-            {sheet.error && <ErrorBanner title="Couldn't read that file.">{sheet.error}</ErrorBanner>}
-            <TemplateCard onDownload={() => downloadText('equipment-template.csv', toCsv(EQUIPMENT_TEMPLATE))} />
-          </>
-        )}
+    <ImportSteps
+      kind="equipment"
+      step={step}
+      onGo={go}
+      home={HOME}
+      rows={records.length}
+      hasFile={!!file}
+      reqMissing={reqMissing}
+      fix={n.fix}
+      importing={importing}
+      waiting={!units}
+      pending={run.isPending}
+      onSubmit={submit}
+    >
+      {step === 'start' && (
+        <StartStep
+          intro="Import one restaurant or all of them from the same sheet. You’ll match its columns to OnTrack next."
+          sheet={sheet}
+          templateName="equipment-template.csv"
+          template={EQUIPMENT_TEMPLATE}
+        />
+      )}
 
-        {step === 'map' && file && chosen && (
-          <>
-            <p className="flex-none text-14 leading-normal text-text-body">
-              We matched{' '}
-              <b>
-                {mapped.size} of {EQUIPMENT_FIELDS.length}
-              </b>{' '}
-              fields to your columns. Check anything marked, then continue.
-            </p>
-            {EQUIPMENT_FIELDS.map((f) => {
-              const column = chosen[f.key]
-              const used = new Set(Object.values(chosen).filter((c): c is number => c !== null))
-              const s = guesses.find((g) => g.key === f.key)?.suggestion ?? null
-              const isRestaurant = f.key === 'restaurant'
-              return (
-                <MapField
-                  key={f.key}
-                  title={f.title}
-                  required={f.required}
-                  column={column}
-                  columns={sheet.columns}
-                  sample={sampleOf(file.sheet, column)}
-                  suggestion={s !== null && !used.has(s) ? { title: file.sheet.header[s]!, i: s } : null}
-                  note={column === null && !f.required ? EQUIPMENT_LATER[f.key] : undefined}
-                  satisfied={isRestaurant && column === null && !!one}
-                  onPick={(c) => setChosen({ ...chosen, [f.key]: c })}
-                >
-                  {isRestaurant && column === null && (
-                    <Select
-                      label="Or every row is at"
-                      value={one ?? ''}
-                      onChange={(e) => setOne(e.target.value || null)}
-                    >
-                      <option value="">Choose a restaurant</option>
-                      {restaurants.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </Select>
-                  )}
-                </MapField>
-              )
-            })}
-            <NotImported titles={unusedColumns(file.sheet, Object.values(chosen)).map((c) => c.title)} />
-          </>
-        )}
+      {step === 'map' && file && chosen && (
+        <>
+          <MapIntro mapped={mapped.size} total={EQUIPMENT_FIELDS.length} />
+          {EQUIPMENT_FIELDS.map((f) => {
+            const column = chosen[f.key]
+            const used = new Set(Object.values(chosen).filter((c): c is number => c !== null))
+            const s = guesses.find((g) => g.key === f.key)?.suggestion ?? null
+            const isRestaurant = f.key === 'restaurant'
+            return (
+              <MapField
+                key={f.key}
+                title={f.title}
+                required={f.required}
+                column={column}
+                columns={sheet.columns}
+                sample={sampleOf(file.sheet, column)}
+                suggestion={s !== null && !used.has(s) ? { title: file.sheet.header[s]!, i: s } : null}
+                note={column === null && !f.required ? EQUIPMENT_LATER[f.key] : undefined}
+                satisfied={isRestaurant && column === null && !!one}
+                onPick={(c) => setChosen({ ...chosen, [f.key]: c })}
+              >
+                {isRestaurant && column === null && (
+                  <Select label="Or every row is at" value={one ?? ''} onChange={(e) => setOne(e.target.value || null)}>
+                    <option value="">Choose a restaurant</option>
+                    {restaurants.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name}
+                      </option>
+                    ))}
+                  </Select>
+                )}
+              </MapField>
+            )
+          })}
+          <NotImported titles={unusedColumns(file.sheet, Object.values(chosen)).map((c) => c.title)} />
+        </>
+      )}
 
-        {step === 'review' && (
-          <>
-            <ReviewCounts ready={n.ready} fix={n.fix} duplicate={n.duplicate} />
-            <IssueList issues={issues} resolutions={resolutions} onChange={setResolutions} />
-            {second.duplicates.size > 0 && <span className="eyebrow pt-1.5">Already in OnTrack</span>}
-            {fixed
+      {step === 'review' && (
+        <>
+          <ReviewCounts ready={n.ready} fix={n.fix} duplicate={n.duplicate} />
+          <IssueList issues={issues} resolutions={resolutions} onChange={setResolutions} />
+          <DuplicateList
+            rows={fixed
               .filter((r) => states.get(r.row) === 'duplicate')
-              .map((r) => {
-                const d = second.duplicates.get(r.row)!
-                return (
-                  <DuplicateCard
-                    key={r.row}
-                    title={d.title}
-                    sub={d.sub}
-                    update={updates.has(r.row)}
-                    onChange={(u) => {
-                      const next = new Set(updates)
-                      if (u) next.add(r.row)
-                      else next.delete(r.row)
-                      setUpdates(next)
-                    }}
-                  />
-                )
-              })}
-            {n.ready > 0 && <span className="eyebrow pt-1.5">Ready · {n.ready}</span>}
-            <ReadyList
-              total={n.ready}
-              rows={readyRows.slice(0, 3).map((r) => {
-                const area = areaOf(r.values.area)
-                return {
-                  title: r.values.name,
-                  sub: [
-                    name(restaurantOf(r.values.restaurant, restaurants, oneRestaurant)),
-                    area && AREA_SHORT[area],
-                    r.values.category,
-                    r.values.brand,
-                  ]
-                    .filter(Boolean)
-                    .join(' · '),
-                }
-              })}
-            />
-            {run.isError && (
-              <ErrorBanner title="Nothing was imported.">
-                {importMessage(run.error)} Fix it in the sheet and choose it again, or skip that row.
-              </ErrorBanner>
-            )}
-          </>
-        )}
-
-        {step === 'done' && result && file && (
-          <ImportDone
-            title={`${result.added + result.updated} ${result.added + result.updated === 1 ? 'unit' : 'units'} imported`}
-            file={file.name}
-            added={result.added}
-            updated={result.updated}
-            skipped={result.skipped + result.skippedHere}
-            note="Imported by mistake? You can undo this import for 24 hours from Equipment."
+              .map((r) => ({ row: r.row, ...second.duplicates.get(r.row)! }))}
+            updates={updates}
+            onChange={setUpdates}
           />
-        )}
-      </ImportFrame>
-    </Screen>
+          {n.ready > 0 && <span className="eyebrow pt-1.5">Ready · {n.ready}</span>}
+          <ReadyList
+            total={n.ready}
+            rows={readyRows.slice(0, 3).map((r) => {
+              const area = areaOf(r.values.area)
+              return {
+                title: r.values.name,
+                sub: [
+                  name(restaurantOf(r.values.restaurant, restaurants, oneRestaurant)),
+                  area && AREA_SHORT[area],
+                  r.values.category,
+                  r.values.brand,
+                ]
+                  .filter(Boolean)
+                  .join(' · '),
+              }
+            })}
+          />
+          {run.isError && <ImportFailed error={run.error} />}
+        </>
+      )}
+
+      {step === 'done' && result && file && (
+        <ImportDoneStep
+          kind="equipment"
+          file={file.name}
+          result={{ ...result, skipped: result.skipped + result.skippedHere }}
+        />
+      )}
+    </ImportSteps>
   )
 }

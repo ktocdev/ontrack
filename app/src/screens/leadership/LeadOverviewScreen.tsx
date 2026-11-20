@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
@@ -25,9 +26,11 @@ import { useOverview } from './useOverview'
  */
 export function LeadOverviewScreen() {
   const { restaurants, viewingAs } = useUser()
-  const overview = useOverview(restaurants.map((r) => r.id))
+  const ids = useMemo(() => restaurants.map((r) => r.id), [restaurants])
+  const overview = useOverview(ids)
   const [params, setParams] = useSearchParams()
-  const current = monthKey(new Date())
+  // This month, once per visit, so a render reads no clock.
+  const [current] = useState(() => monthKey(new Date()))
   const { earliest, latest } = monthBounds(overview.data?.months ?? [], current)
   const asked = params.get('month')
   const wanted = asked && /^\d{4}-\d{2}$/.test(asked) ? `${asked}-01` : null

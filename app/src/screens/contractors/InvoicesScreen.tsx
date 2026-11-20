@@ -1,5 +1,5 @@
 import { DropdownMenu } from 'radix-ui'
-import { useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation } from 'react-router'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
@@ -59,7 +59,8 @@ function Invoices({ base }: { base: '/ops' | '/lead' }) {
   const lead = base === '/lead'
   const { restaurants } = useUser()
   const scope = useRestaurantScope()
-  const ids = lead ? restaurants.map((r) => r.id) : scope.ids
+  const allIds = useMemo(() => restaurants.map((r) => r.id), [restaurants])
+  const ids = lead ? allIds : scope.ids
   const { ordered } = useRestaurantOrder()
   const { data, isPending, isError, refetch } = useInvoices(true)
   const [now] = useState(() => new Date())

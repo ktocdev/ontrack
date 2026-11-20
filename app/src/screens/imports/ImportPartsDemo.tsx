@@ -11,6 +11,7 @@ import {
   ReviewCounts,
   TemplateCard,
 } from './ImportParts'
+import { UndoImportLine, UndoPreviewList } from './UndoImportParts'
 
 /**
  * The import steps' pieces with the boards' sample values (Import-Contractors-*), for /kit
@@ -117,6 +118,17 @@ export function ImportPartsDemo() {
         updated={0}
         skipped={1}
         note="Imported by mistake? You can undo this import for 24 hours from Contractors."
+      />
+      <UndoImportLine
+        kind="contractors"
+        rows={40}
+        fileName="Vendors 2026.xlsx"
+        when="2h ago"
+        onUndo={() => undefined}
+      />
+      <UndoPreviewList
+        kind="contractors"
+        preview={{ remove: 39, restore: 1, keep: ['Arctic Air'], until: '2026-11-20T15:30:00' }}
       />
     </div>
   )

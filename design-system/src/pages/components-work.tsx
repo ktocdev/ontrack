@@ -988,13 +988,17 @@ export function LoadingPage() {
 export function ImportsPage() {
   return (
     <>
-      <PageHeader eyebrow="Components" title="Imports" source={['screens/imports/ImportParts.tsx']}>
+      <PageHeader
+        eyebrow="Components"
+        title="Imports"
+        source={['screens/imports/ImportParts.tsx', 'screens/imports/UndoImportParts.tsx']}
+      >
         <p>
           The steps of importing a spreadsheet (contractors, and equipment on the same pieces): the banner that leads
           there from Add, choosing the file, matching each field to a column with a one-tap suggestion, the review's
           counts, a problem fixed once for every row it covers, a row already in OnTrack to skip or update, the rows
-          ready, and the done step. The frame around them, with its step line and four-part progress, is the screen
-          itself.
+          ready, the done step, and the line that offers Undo for 24 hours with what undo takes back and keeps. The
+          frame around them, with its step line and four-part progress, is the screen itself.
         </p>
       </PageHeader>
       <Section title="The pieces" intro="With the boards' sample values. Tap through: nothing imports.">

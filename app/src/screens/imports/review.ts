@@ -40,6 +40,16 @@ export function namesLine(names: string[]) {
   return more > 0 ? `${shown.join(', ')} and ${more} more` : shown.join(', ')
 }
 
+/** How undo names each kind of import's rows, and what keeps one (OT-153). */
+export const UNDO_WORDS: Record<'contractors' | 'equipment', { one: string; many: string; history: string }> = {
+  contractors: { one: 'contractor', many: 'contractors', history: 'visits on record' },
+  equipment: { one: 'unit', many: 'units', history: 'tickets, service, tasks or files' },
+}
+
+/** "1 contractor", "40 units". */
+export const importCount = (n: number, kind: 'contractors' | 'equipment') =>
+  `${n} ${n === 1 ? UNDO_WORDS[kind].one : UNDO_WORDS[kind].many}`
+
 /** "3 rows · Arctic Air, Polar Service, Kold Kings", or "Brightway Glass · row 14" for one. */
 export function whoLine(rows: { row: number; label: string }[]) {
   if (rows.length === 1) return [rows[0]!.label, `row ${rows[0]!.row}`].filter(Boolean).join(' · ')

@@ -199,3 +199,18 @@ describe('duplicates', () => {
     expect(twice.map((t) => [t.row.row, t.first.row])).toEqual([[7, 6]])
   })
 })
+
+// The same examples are pinned on the database's import_key() in 67_phase7_audit.test.sql
+// (OT-154), so the review and the import can't drift apart on what counts as a duplicate.
+describe('importKey matches the database', () => {
+  it.each([
+    ['Coldline  Refrigeration', 'coldlinerefrigeration'],
+    ['Coldline\tRefrigeration', 'coldlinerefrigeration'],
+    ['Cold line', 'coldline'],
+    ['ÉCLAIR Bakery', 'éclairbakery'],
+    ['Cold-line', 'cold-line'],
+    ['Ice Machine 2', 'icemachine2'],
+  ])('%j is %j', (value, key) => {
+    expect(importKey(value)).toBe(key)
+  })
+})

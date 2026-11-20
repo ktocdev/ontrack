@@ -71,9 +71,16 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' | '/admin' }) {
         ? '/admin/tickets'
         : `${base}/restaurants/${ticket.restaurant_id}`
   const by = `by ${ticket.opener?.full_name ?? 'someone'}, ${shortDay(opened)} ${opened.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
-  const items = threadItems(data.updates, user.id, data.names, {
-    roleWord: (role) => roles.name(role, ROLE_WORD[role]),
-  })
+  // The database already keeps internal notes from leadership and the Admin role; someone
+  // holding Admin on the Support Team reads them, so this screen leaves them out as it says.
+  const items = threadItems(
+    data.updates.filter((u) => !u.internal),
+    user.id,
+    data.names,
+    {
+      roleWord: (role) => roles.name(role, ROLE_WORD[role]),
+    },
+  )
   const count = items.filter((i) => i.type === 'message').length
   const status =
     ticket.status === 'scheduled' && ticket.scheduled_for ? scheduledLabel(ticket.scheduled_for) : undefined

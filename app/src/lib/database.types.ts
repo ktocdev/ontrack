@@ -2410,11 +2410,49 @@ isOneToOne: false
 "import_contractors":
 { Args: { "p_columns": (string)[],"p_file_name"?: string,"p_new_trades"?: (string)[],"p_rows": Json }; Returns: Json
                            },
+"import_current":
+{ Args: { "p_id": string,"p_kind": string }; Returns: Json
+                           },
 "import_equipment":
 { Args: { "p_columns": (string)[],"p_file_name"?: string,"p_restaurant_id": string,"p_rows": Json }; Returns: Json
                            },
+"import_for_undo":
+{ Args: { "p_id": string,"p_lock": boolean }; Returns: {
+              "added": (string)[],
+"columns": (string)[],
+"created_at": string,
+"created_by": string | null,
+"file_name": string | null,
+"id": string,
+"kind": string,
+"new_trades": (string)[],
+"restaurant_id": string | null,
+"skipped": number,
+"undo_result": Json | null,
+"undone_at": string | null,
+"undone_by": string | null,
+"updated": NonNullable<Json>
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "imports"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"import_id":
+{ Args: { "p_key": string,"p_n": number,"p_row": Json,"p_what": string }; Returns: string
+                           },
 "import_key":
 { Args: { "p": string }; Returns: string
+                           },
+"import_put_back":
+{ Args: { "p_after": Json,"p_col": string,"p_columns": (string)[],"p_current": Json }; Returns: boolean
+                           },
+"import_restorable":
+{ Args: { "p_columns": (string)[],"p_kind": string,"p_updated": Json }; Returns: number
+                           },
+"import_row_number":
+{ Args: { "p_place": number,"p_row": Json }; Returns: number
                            },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
