@@ -1,3 +1,4 @@
+import { ticketPath } from '../../app/roles'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router'
 import { AREA_SEGMENTS, ticketPlace } from '../../app/areas'
 import { useUser } from '../../auth/context'
@@ -132,7 +133,8 @@ function OpenTickets({ name, query }: { name: string; query: ReturnType<typeof u
       {tickets.map((t) => (
         <TicketCard
           key={t.id}
-          to={`/t/${t.display_id}`}
+          // Leadership's own ticket route, so on a laptop it opens beside this list (OT-159).
+          to={ticketPath('leadership', t.id)}
           displayId={t.display_id ?? ''}
           title={t.title}
           status={t.status}

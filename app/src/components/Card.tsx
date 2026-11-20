@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Link, type LinkProps } from 'react-router'
+import { useOpenInPane } from '../app/SplitView'
 import { IconChevronDown } from './icons'
 
 /**
@@ -25,10 +26,16 @@ export function Card({ className = '', children, ...rest }: HTMLAttributes<HTMLD
   )
 }
 
+// The item open in the pane beside its list, on a laptop (OT-159).
+const OPEN_CARD = 'border-brand hover:border-brand'
+const OPEN_ROW = 'bg-brand-tint-faint'
+
 export function CardLink({ className = '', children, ...rest }: LinkProps) {
+  const open = useOpenInPane(typeof rest.to === 'string' ? rest.to : undefined)
   return (
     <Link
-      className={`${CARD} block transition-colors hover:border-border-muted active:bg-surface-hover active:duration-0 ${className}`}
+      aria-current={open ? 'page' : undefined}
+      className={`${CARD} block transition-colors hover:border-border-muted active:bg-surface-hover active:duration-0 ${open ? OPEN_CARD : ''} ${className}`}
       {...rest}
     >
       {children}
@@ -82,8 +89,13 @@ export function ListRow({ className = '', ...body }: RowProps) {
 
 /** Row that navigates inside the app. */
 export function ListRowLink({ title, subtitle, leading, trailing, className = '', ...rest }: RowProps & LinkProps) {
+  const open = useOpenInPane(typeof rest.to === 'string' ? rest.to : undefined)
   return (
-    <Link className={`${ROW} ${PRESSABLE} ${className}`} {...rest}>
+    <Link
+      aria-current={open ? 'page' : undefined}
+      className={`${ROW} ${PRESSABLE} ${open ? OPEN_ROW : ''} ${className}`}
+      {...rest}
+    >
       <RowBody title={title} subtitle={subtitle} leading={leading} trailing={trailing} />
     </Link>
   )

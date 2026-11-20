@@ -84,7 +84,8 @@ test.describe('a laptop at 1440 px', () => {
 
   test('one-column screens sit in a 720 px reading column beside the sidebar', async ({ page }) => {
     await signInAs(page, 'manager')
-    await expect(page.getByRole('heading', { name: 'Open tickets' })).toBeVisible()
+    await page.getByRole('link', { name: 'Your profile' }).click()
+    await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
     const column = (await page.locator('[data-screen="reading"]').boundingBox())!
     expect(column.width).toBe(720)
     // Centered in the 1192 px beside the 248 px sidebar.
