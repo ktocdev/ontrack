@@ -233,7 +233,7 @@ function EditForm({ defaults, people }: { defaults: Map<string, boolean>; people
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar to="/admin/roles" title="Roles & rights" />
       <ScreenBody className="gap-3 pb-4 pt-3">
         <div

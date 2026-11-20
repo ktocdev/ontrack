@@ -45,7 +45,7 @@ export function EditContractorScreen() {
   const { data, isPending, isError } = useContractor(id, false)
   if (isPending || isError)
     return (
-      <Screen>
+      <Screen width="form">
         <CloseBar to={`/ops/contractors/${id}`} title="Edit contractor" />
         <div className="flex flex-1 items-center justify-center">
           {isError ? (
@@ -127,7 +127,7 @@ function Form({ editing, inUse = true }: { editing?: ContractorRow; inUse?: bool
   }
 
   return (
-    <Screen>
+    <Screen width="form">
       <CloseBar
         to={closeTo}
         title={editing ? 'Edit contractor' : 'Add contractor'}

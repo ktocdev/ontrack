@@ -60,7 +60,7 @@ export function useSwipeToClose(onClose: () => void, enabled: boolean) {
       const start = (e: TouchEvent) => {
         tracking = false
         const t = e.touches[0]
-        if (e.touches.length !== 1 || !t || matchMedia('(min-width: 64rem)').matches) return
+        if (e.touches.length !== 1 || !t || matchMedia('(min-width: 48rem)').matches) return
         if (e.target instanceof Element && e.target.closest(NO_SWIPE)) return
         if (scrolled(e.target)) return
         tracking = true

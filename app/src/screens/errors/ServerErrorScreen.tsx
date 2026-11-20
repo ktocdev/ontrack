@@ -108,7 +108,7 @@ export function ServerErrorScreen({ error: given, onRetry }: { error?: unknown; 
           )}
         </div>
       </ErrorBlock>
-      {user && <TabBar label={ROLE_TABS[user.role].label} items={ROLE_TABS[user.role].items} />}
+      {user && <TabBar label={ROLE_TABS[user.role].label} items={ROLE_TABS[user.role].items} phoneOnly />}
 
       {user && <ReportSheet open={reportOpen} onOpenChange={setReportOpen} context={`Error 500 · REF ${ref}`} />}
     </Screen>

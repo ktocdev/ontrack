@@ -6,7 +6,7 @@ import { useSwipeToClose } from './swipeToClose'
  * Bottom sheet: scrim at 45% text color, panel on the screen background with
  * 22px top corners, a 40×5 handle, a 22px Archivo title, 10px 20px 24px
  * padding plus the home-bar inset. On a phone a swipe down closes it (see
- * swipeToClose), except a `modal` one. From the lg breakpoint it is a centered
+ * swipeToClose), except a `modal` one. From the md breakpoint (768, where the sidebar starts) it is a centered
  * 440px dialog with all four corners rounded and no handle.
  */
 type Props = {
@@ -72,11 +72,11 @@ export function Sheet({
           onEscapeKeyDown={hold}
           onPointerDownOutside={hold}
           onInteractOutside={hold}
-          className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] lg:bottom-auto lg:top-1/2 lg:max-w-[440px] lg:-translate-y-1/2 lg:rounded-sheet lg:p-6 lg:shadow-dialog`}
+          className={`fixed inset-x-0 bottom-0 z-40 mx-auto flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-sheet ${surface ? 'bg-surface' : 'bg-bg'} px-screen pb-[calc(24px+var(--safe-bottom))] pt-2.5 outline-none data-[state=open]:animate-[sheet-up_.2s_ease-out] md:bottom-auto md:top-1/2 md:max-w-[440px] md:-translate-y-1/2 md:rounded-sheet md:p-6 md:shadow-dialog`}
         >
           <span
             aria-hidden="true"
-            className="h-[5px] w-10 flex-none self-center rounded-square bg-border-strong lg:hidden"
+            className="h-[5px] w-10 flex-none self-center rounded-square bg-border-strong md:hidden"
           />
           {icon}
           {action ? (
