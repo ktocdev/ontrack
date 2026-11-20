@@ -26,6 +26,7 @@ import { Switch, SwitchListRow, SwitchRow } from '@app/components/Switch'
 import { ViewSettingFields, viewSummary, type ViewSetting } from '@app/components/ViewSetting'
 import { HiddenCategories } from '@app/components/HiddenCategories'
 import { TabBar } from '@app/components/TabBar'
+import { SidebarBrand, SidebarLink, SidebarProfile } from '@app/components/Sidebar'
 import { TabAlert } from '@app/components/Pill'
 import { EquipmentMenu, TicketMenu } from '@app/components/TicketMenu'
 import { useToast } from '@app/components/Toast'
@@ -338,7 +339,12 @@ export function NavigationPage() {
       <PageHeader
         eyebrow="Components"
         title="Navigation"
-        source={['components/Screen.tsx', 'components/TabBar.tsx', 'components/AdminShield.tsx']}
+        source={[
+          'components/Screen.tsx',
+          'components/TabBar.tsx',
+          'components/Sidebar.tsx',
+          'components/AdminShield.tsx',
+        ]}
       >
         <p>
           Home screens sit in the tab bar shell; detail screens get a back bar instead. Every screen is built from{' '}
@@ -412,6 +418,30 @@ export function NavigationPage() {
               <TabBar label={ROLE_TABS[role].label} items={ROLE_TABS[role].items} inset={false} />
             </div>
           ))}
+        </Example>
+      </Section>
+      <Section
+        title="Sidebar"
+        intro="From 768 px the sidebar takes the tab bar's place, on detail screens too, so a computer never loses its way home. The mark and the group's name on top, the role's tabs, the Admin row for someone holding Admin on top of their role, and who is signed in at the foot, opening Profile. Under View as nothing is a link and the home tab is lit. The header's avatar and shield hide at this width."
+      >
+        <Example
+          code={`<Sidebar label="Operations" header={<SidebarBrand group={group} />} footer={<SidebarProfile … />}>
+  {tabs.items.map((t) => <SidebarLink {...t}>{t.label}</SidebarLink>)}
+</Sidebar>`}
+        >
+          <div className="flex w-[248px] flex-col gap-6">
+            <div className="px-3">
+              <SidebarBrand group="4C | Four Corners" />
+            </div>
+            <nav aria-label="Sidebar sample" className="flex flex-col gap-0.5">
+              {ROLE_TABS.ops.items.map(({ to, label, icon }, i) => (
+                <SidebarLink key={to} to="#" icon={icon} inert current={i === 0}>
+                  {label}
+                </SidebarLink>
+              ))}
+            </nav>
+            <SidebarProfile to="#" name="Rosa Delgado" role="ops" subtitle="Ops manager" />
+          </div>
         </Example>
       </Section>
     </>
