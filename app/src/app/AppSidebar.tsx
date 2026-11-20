@@ -5,6 +5,7 @@ import { Sidebar, SidebarBrand, SidebarLink, SidebarProfile } from '../component
 import { IconShieldCheck } from '../components/icons'
 import { useJobTitleName } from '../screens/jobtitles/useJobTitles'
 import { useAvatarUrl } from '../screens/profile/useProfile'
+import { useWide } from '../lib/useWide'
 import { adminOnTop, inAdminView, ROLE_HOME, tabsFor } from './roles'
 
 /**
@@ -16,6 +17,11 @@ import { adminOnTop, inAdminView, ROLE_HOME, tabsFor } from './roles'
  * with nothing a link and their home tab lit, as the inert tab bar does.
  */
 export function AppSidebar() {
+  // Not on the page at all on a phone, so its text never doubles the header's.
+  return useWide() ? <WideSidebar /> : null
+}
+
+function WideSidebar() {
   const { user, viewingAs } = useUser()
   const { pathname } = useLocation()
   const group = useGroupLabel()
