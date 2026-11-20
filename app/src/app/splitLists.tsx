@@ -73,12 +73,3 @@ export const LEAD_CONTRACTOR_LISTS: SplitList[] = [
 ]
 
 export const ADMIN_USER_LISTS: SplitList[] = [{ path: '/admin/users', element: <Users /> }]
-
-/** What the empty pane says beside each kind of list. */
-export const TICKET_PANE = { title: 'No ticket open', body: 'Pick a ticket on the left to see it here.' }
-export const EQUIPMENT_PANE = { title: 'No equipment open', body: 'Pick a unit on the left to see it here.' }
-export const CONTRACTOR_PANE = {
-  title: 'No contractor open',
-  body: 'Pick a contractor, or an invoice on Invoices, to see it here.',
-}
-export const PERSON_PANE = { title: 'No one open', body: 'Pick a person on the left to see their profile here.' }

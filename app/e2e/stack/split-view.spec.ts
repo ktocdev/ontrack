@@ -2,14 +2,17 @@ import { expect, test, type Page, type TestInfo } from '@playwright/test'
 import { signIn } from './helpers'
 
 /**
- * List and detail on a laptop (OT-159): from 1024 px a ticket opens beside its list, which
- * keeps its place; the address is the ticket's own, so a reload keeps both. A phone shows
- * one or the other, as before.
+ * List and detail on a laptop (OT-159, OT-164): from 1024 px a list starts on its own, a
+ * ticket opens beside it, and its X closes it again; the list keeps its place throughout.
+ * The address is the ticket's own, so a reload keeps both. A phone shows one or the other.
  */
 
 test.use({ viewport: { width: 1440, height: 900 } })
 
-const pane = (page: Page) => page.locator('.w-list-pane')
+// The list, alone in the reading column or in the pane beside an open item.
+const pane = (page: Page) => page.locator('[data-split-list]')
+const alone = (page: Page) => expect(pane(page)).toHaveAttribute('data-split-list', 'alone')
+const beside = (page: Page) => expect(pane(page)).toHaveAttribute('data-split-list', 'beside')
 
 async function shot(page: Page, info: TestInfo, name: string) {
   await info.attach(name, { body: await page.screenshot(), contentType: 'image/png' })
@@ -18,13 +21,14 @@ async function shot(page: Page, info: TestInfo, name: string) {
 test('Ops opens a ticket beside the dashboard, and the dashboard stays', async ({ page }, info) => {
   await signIn(page, 'bert.velilla@example.com')
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-  await expect(page.getByTestId('split-empty')).toContainText('No ticket open')
-  await shot(page, info, 'ops-empty-pane')
+  await alone(page)
+  await shot(page, info, 'ops-list-alone')
 
   const card = pane(page).getByRole('link', { name: /Walk-in cooler not holding temp/ })
   await card.click()
   await expect(page).toHaveURL(/\/ops\/tickets\/[0-9a-f-]+$/)
   await expect(page.getByRole('heading', { name: 'Walk-in cooler not holding temp', level: 1 })).toBeVisible()
+  await beside(page)
   await expect(pane(page).getByRole('heading', { name: 'Dashboard' })).toBeVisible()
   await expect(card).toHaveAttribute('aria-current', 'page')
   // The sidebar keeps Dashboard lit while one of its tickets is open.
@@ -44,6 +48,12 @@ test('Ops opens a ticket beside the dashboard, and the dashboard stays', async (
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Bar sink draining slowly', level: 1 })).toBeVisible()
   await expect(pane(page).getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+
+  // The X closes the ticket, and the dashboard has the column to itself again.
+  await page.getByRole('link', { name: 'Close panel', exact: true }).click()
+  await expect(page).toHaveURL(/\/ops$/)
+  await alone(page)
+  await expect(page.getByRole('heading', { name: 'Bar sink draining slowly', level: 1 })).toHaveCount(0)
 
   // Closed tickets keeps its own place beside a closed ticket.
   await page.goto('/ops/closed')
@@ -87,7 +97,7 @@ test('Ops opens a unit beside the equipment list, and a contractor beside the di
   const nav = page.getByRole('navigation', { name: 'Operations' })
 
   await nav.getByRole('link', { name: 'Equipment' }).click()
-  await expect(page.getByTestId('split-empty')).toContainText('No equipment open')
+  await alone(page)
   await pane(page).getByLabel('Search equipment').fill('Walk-in Cooler 1')
   const unit = pane(page).locator('a[href^="/ops/equipment/"]', { hasText: 'Walk-in Cooler 1' }).first()
   await unit.click()
@@ -98,7 +108,7 @@ test('Ops opens a unit beside the equipment list, and a contractor beside the di
   await shot(page, info, 'ops-unit-beside-list')
 
   await nav.getByRole('link', { name: 'Contractors' }).click()
-  await expect(page.getByTestId('split-empty')).toContainText('No contractor open')
+  await alone(page)
   const coldline = pane(page).getByRole('article', { name: 'Coldline Refrigeration' })
   await coldline.getByRole('link').first().click()
   await expect(page.getByRole('heading', { name: 'Coldline Refrigeration', level: 1 })).toBeVisible()
@@ -119,7 +129,7 @@ test('Ops opens a unit beside the equipment list, and a contractor beside the di
 test('a manager opens a unit beside their equipment', async ({ page }) => {
   await signIn(page, 'maya.reyes@example.com')
   await page.getByRole('navigation', { name: 'Manager' }).getByRole('link', { name: 'Equipment' }).click()
-  await expect(page.getByTestId('split-empty')).toBeVisible()
+  await alone(page)
   // The manager's list opens on Front of House with every group closed.
   await pane(page).getByRole('radio', { name: 'Back of House' }).click()
   await pane(page)
@@ -133,7 +143,7 @@ test('a manager opens a unit beside their equipment', async ({ page }) => {
 
 test('an admin opens a person beside Users', async ({ page }, info) => {
   await signIn(page, 'admin@example.com')
-  await expect(page.getByTestId('split-empty')).toContainText('No one open')
+  await alone(page)
   await pane(page)
     .getByRole('link', { name: /Maya Reyes/ })
     .click()
@@ -141,6 +151,18 @@ test('an admin opens a person beside Users', async ({ page }, info) => {
   await expect(pane(page).getByRole('heading', { name: 'Users', level: 1 })).toBeVisible()
   await expect(pane(page).getByRole('link', { name: /Maya Reyes/ })).toHaveAttribute('aria-current', 'page')
   await shot(page, info, 'admin-person-beside-users')
+})
+
+test('a manager’s Open tickets and In-house sit in the same column', async ({ page }, info) => {
+  await signIn(page, 'maya.reyes@example.com')
+  await alone(page)
+  const openBox = (await page.locator('[data-screen="reading"]').first().boundingBox())!
+  await page.getByRole('link', { name: /^In-house/ }).click()
+  await expect(page).toHaveURL(/\/tickets\/in-house$/)
+  const inHouseBox = (await page.locator('[data-screen="reading"]').first().boundingBox())!
+  expect(inHouseBox.x).toBe(openBox.x)
+  expect(inHouseBox.width).toBe(openBox.width)
+  await shot(page, info, 'manager-in-house')
 })
 
 test.describe('on a phone', () => {
