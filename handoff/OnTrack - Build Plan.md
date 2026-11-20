@@ -26,6 +26,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Between 6a and 6b · Who does what | Done (Nov 17, 2026) | OT-112 and OT-113 plan updates, then OT-114 to OT-120: role names, the IT area, My categories' backend, job titles, My categories and its switches (see its section after Phase 6) |
 | Between 6a and 6b · Admin on any role | Done (Nov 17, 2026) | OT-121 plan update, then OT-122 to OT-124: Admin held on top of a role, the shield and the admin view, a security pass (see its section after Phase 6) |
 | 7 · Leadership, Admin tickets and imports | Done, except the real-iPhone checks and a try on the live app with the group's real contractor spreadsheet (Nov 19, 2026) | OT-140 plan update, then OT-141 to OT-155 (see Phase 7) |
+| 8 · Desktop layouts | Started (Nov 20, 2026) | OT-156 plan update, then OT-157 to OT-163 (see Phase 8); offline and the rest moved to Later |
 
 Phase 0 notes:
 
@@ -778,11 +779,40 @@ The read-only views for leadership and admin, and the spreadsheet imports that m
 - **The group's name.** The boards' "4C | Four Corners LC" comes from `group_settings`, never from code.
 - **View as** shows only the home screen, so leadership's Overview replaces its placeholder in `ViewAsScreen`; every screen still scopes its data from `useUser()`.
 
-## Phase 8 · Desktop layouts, offline, and later
+## Phase 8 · Desktop layouts
+
+Phase 8 is the desktop view only (decided Nov 20, 2026); offline, reports and the rest wait under Later. The phone layouts stay as the base, and a phone shows every screen exactly as before. On a tablet or a computer the same screens get a frame and room: a sidebar in place of the tab bar, a list with its open item beside it, dialogs in place of sheets, and the import review as a table. This is CSS and a few layout components, not new screens.
+
+No board draws a desktop layout, so these are built from the phone boards' own parts, spacing and tokens, with no new colors or type, and checked in both themes on `/kit` and in screenshots at 1024 and 1440 px. The groundwork is already in the repo: the kit's `Sidebar` (only `/kit` uses it so far), the `--desktop-max` (1440) and `--sidebar-w` (248) tokens, and `Sheet`, which already becomes a centered dialog from 1024 px.
+
+**Ships**
+
+- **Widths.** Below 768 px nothing changes. From 768 px (a tablet) the sidebar replaces the tab bar and one-column screens sit in a reading column. From 1024 px (a laptop) lists open their item in a pane beside them. Nothing grows past 1440 px; past that the frame centers
+- **The sidebar.** The group's mark and short name (from `group_settings`), the role's tabs from `tabsFor()` (the admin view's under `/admin`), the shield for someone holding Admin, and the avatar to Profile at the foot. It stays on detail screens too, so a computer never loses its way home; their Back bars stay. View as keeps its band across the top
+- **Reading widths.** A one-column screen (a form, Profile, a ticket on its own, a checklist) is capped at a readable width and centered, not stretched. A full-screen form opened from a list (Invite user, Add restaurant, Log service, Add equipment) becomes a centered panel. Every sheet is a centered dialog with Escape and focus kept inside; menus and pickers keep their size
+- **List and detail.** From 1024 px: the Ops dashboard, a manager's Open tickets, both Closed lists, Admin tickets and leadership's restaurant tickets open a ticket beside the list; equipment opens its unit; Contractors and Invoices open the contractor and the service record; Users opens the person. The address is the detail's own route, as on a phone, so a lasting link, Back and a reload all work, and the list keeps its scroll, picker and filters. With nothing open the pane says what to pick. Realtime keeps both sides up
+- **Wide lists.** Lists with no detail pane (leadership's Overview and walkthroughs, the Ops walkthroughs overview, Categories, Trades, Job titles) use the width with columns where a card allows. The import review becomes a table, one row per file row, with the same fixes and suggestions
+- **Pointer and keyboard.** Hover states already exist; focus rings, Tab order, Escape and Enter are checked on a computer, and drag to reorder the dashboard's restaurants works with a mouse
+
+**Done when:** an Ops manager on a laptop at 1440 px works a ticket without leaving the dashboard (opens it beside the list, marks it In progress, posts an update and closes it, with the sidebar on screen throughout and the card moving to Closed), leadership reads the Overview and a restaurant's tickets side by side, and a phone at 390 px is unchanged. Playwright runs it on Chromium and WebKit in `e2e/stack` at 1440 px; the mock suite checks the frame at 390, 768 and 1440 px; each role's screens are compared by screenshot at 1024 and 1440 in light and dark.
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-156 | Plan update and this split; Phase 7 to the record in `CLAUDE.md` |
+| OT-157 | The frame: `Shell` and the signed-in `BareShell` get the sidebar from 768 px (the role's tabs, the shield, the avatar), the tab bar hides there, the 1440 cap; `/kit` and the design-system docs show it; mock e2e at three widths |
+| OT-158 | Reading widths: one-column screens in a reading column, full-screen forms as a centered panel, every sheet checked as a dialog (Escape, focus), menus and pickers; screenshots of each role's screens at 1024 and 1440 |
+| OT-159 | List and detail for tickets: a `SplitView` layout by route, from 1024 px; the Ops dashboard, Open tickets, both Closed lists, Admin tickets, leadership's restaurant tickets; the empty pane; kept scroll and filters |
+| OT-160 | List and detail for the rest: equipment and its unit, Contractors and Invoices with the contractor and service record, Users and the person |
+| OT-161 | Wide lists in columns; the import review as a table |
+| OT-162 | Code quality and accessibility pass over Phase 8: keyboard, focus, Escape, both themes, nothing changed under 768 px |
+| OT-163 | The done test as one flow; the phase note |
+
+## Later
 
 These come after the group is using the app daily, in whatever order the feedback puts them.
 
-- **Desktop layouts.** Tablet and desktop up to 1440 px: the tab bar becomes a sidebar, lists become list-plus-detail panes, sheets become dialogs, and the import review becomes a table. The phone layouts stay as the base; this is CSS and a few layout components, not new screens
 - **Offline.** Cache the lists and tickets you have opened; queue new tickets and updates with the Not sent yet card and the Saved-at banner; retry on reconnect; handle a conflict by appending, never overwriting. This is the Error · Offline screen from the design
 - **Reports.** Monthly spend per restaurant and per category as a PDF or CSV for leadership; repeat-repair flags on a unit
 - **Microsoft 365 sign-on,** if another group needs it; Google sign-in moved up to OT-59, now deferred until the group's IT person is involved
