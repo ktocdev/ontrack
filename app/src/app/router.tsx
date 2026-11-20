@@ -9,7 +9,7 @@ import { CenteredLoading, CheckingInvite } from '../screens/loading/CenteredLoad
 import { ContractorLinkScreen } from '../screens/contractors/ContractorLinkScreen'
 import { EquipmentLinkScreen } from '../screens/equipment/EquipmentLinkScreen'
 import { TicketLinkScreen } from '../screens/tickets/TicketLinkScreen'
-import { BareShell, Shell } from './Shell'
+import { BareShell, Shell, SignedInShell } from './Shell'
 
 /**
  * Routes follow the design's href links. Signed-in routes sit under
@@ -127,12 +127,16 @@ export const router = createBrowserRouter([
         element: <RequireAuth />,
         children: [
           { path: '/', element: <RoleHome /> },
-          { path: '/t/:id', element: <BareShell />, children: [{ index: true, element: <TicketLinkScreen /> }] },
-          { path: '/e/:id', element: <BareShell />, children: [{ index: true, element: <EquipmentLinkScreen /> }] },
-          { path: '/c/:id', element: <BareShell />, children: [{ index: true, element: <ContractorLinkScreen /> }] },
+          { path: '/t/:id', element: <SignedInShell />, children: [{ index: true, element: <TicketLinkScreen /> }] },
+          { path: '/e/:id', element: <SignedInShell />, children: [{ index: true, element: <EquipmentLinkScreen /> }] },
+          {
+            path: '/c/:id',
+            element: <SignedInShell />,
+            children: [{ index: true, element: <ContractorLinkScreen /> }],
+          },
           {
             path: '/profile',
-            element: <BareShell />,
+            element: <SignedInShell />,
             children: [
               {
                 index: true,
@@ -203,7 +207,7 @@ export const router = createBrowserRouter([
                 ],
               },
               {
-                element: <BareShell />,
+                element: <SignedInShell />,
                 children: [
                   {
                     path: '/walkthrough/:id/fixes',
@@ -327,7 +331,7 @@ export const router = createBrowserRouter([
                 ],
               },
               {
-                element: <BareShell />,
+                element: <SignedInShell />,
                 children: [
                   {
                     path: '/ops/walkthroughs/schedule',
@@ -525,8 +529,18 @@ export const router = createBrowserRouter([
                   },
                 ],
               },
+              // View as draws its own frame: the person viewed's sidebar, not the admin's.
               {
                 element: <BareShell />,
+                children: [
+                  {
+                    path: '/admin/users/:id/view',
+                    lazy: async () => ({ Component: (await import('../screens/admin/ViewAsScreen')).ViewAsScreen }),
+                  },
+                ],
+              },
+              {
+                element: <SignedInShell />,
                 children: [
                   {
                     path: '/admin/users/new',
@@ -539,10 +553,6 @@ export const router = createBrowserRouter([
                     lazy: async () => ({
                       Component: (await import('../screens/admin/UserProfileScreen')).UserProfileScreen,
                     }),
-                  },
-                  {
-                    path: '/admin/users/:id/view',
-                    lazy: async () => ({ Component: (await import('../screens/admin/ViewAsScreen')).ViewAsScreen }),
                   },
                   {
                     path: '/admin/roles/edit',

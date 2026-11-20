@@ -96,7 +96,7 @@ import {
 } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
-import { Sidebar, SidebarAnchor } from '../../components/Sidebar'
+import { Sidebar, SidebarAnchor, SidebarBrand, SidebarLink, SidebarProfile } from '../../components/Sidebar'
 import {
   ButtonSpinner,
   CardFeedSkeleton,
@@ -118,6 +118,7 @@ import {
   IconCalendar,
   IconChevronLeft,
   IconChevronRight,
+  IconShieldCheck,
   IconClose,
   IconHelpCircle,
   IconPlus,
@@ -169,7 +170,7 @@ const SECTIONS = {
   overlays: 'Sheet and toast',
   loading: 'Loading',
   errors: 'Error screens',
-  tabbars: 'Tab bars',
+  tabbars: 'Tab bars and sidebar',
 } as const
 type SectionId = keyof typeof SECTIONS
 
@@ -1429,6 +1430,38 @@ export function KitPage() {
               <p className="text-13 text-text-muted">
                 Tabs link to the real routes; <Link to="/sign-in">sign in</Link> first to use them.
               </p>
+              <p className="text-13 text-text-muted">
+                From 768 px the sidebar takes the tab bar&apos;s place, on detail screens too. Its pieces:
+              </p>
+              <div
+                className="flex w-sidebar max-w-full flex-col gap-6 rounded-card border border-border px-4 py-6"
+                data-testid="kit-sidebar"
+              >
+                <div className="px-3">
+                  <SidebarBrand group="4C | Four Corners" />
+                </div>
+                <nav aria-label="Sidebar sample" className="flex flex-col gap-0.5">
+                  {ROLE_TABS.ops.items.map(({ to, label, icon, end, also }) => (
+                    <SidebarLink key={to} to={to} end={end} also={also} icon={icon}>
+                      {label}
+                    </SidebarLink>
+                  ))}
+                  <div className="mt-3 border-t border-border pt-3">
+                    <SidebarLink to="/admin/users" icon={IconShieldCheck}>
+                      Admin
+                    </SidebarLink>
+                  </div>
+                </nav>
+                <SidebarProfile to="/profile" name="Rosa Delgado" role="ops" subtitle="Ops manager" />
+                <div className="flex flex-col gap-0.5 border-t border-border pt-3">
+                  <span className="eyebrow px-3 pb-1">Inert, under View as</span>
+                  {ROLE_TABS.manager.items.map(({ to, label, icon, end }) => (
+                    <SidebarLink key={to} to={to} icon={icon} inert current={!!end}>
+                      {label}
+                    </SidebarLink>
+                  ))}
+                </div>
+              </div>
             </Section>
           </div>
         </ScreenBody>

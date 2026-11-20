@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { AppSidebar } from '../../app/AppSidebar'
 import { ROLE_TABS } from '../../app/roles'
 import { TabBar } from '../../components/TabBar'
 import { Spinner } from '../../components/Skeleton'
@@ -72,8 +73,22 @@ export function ViewAsScreen() {
         </button>
       </div>
       <AuthContext.Provider value={viewed}>
-        {role === 'manager' ? <OpenTicketsScreen /> : role === 'ops' ? <OpsDashboardScreen /> : <LeadOverviewScreen />}
-        <TabBar label={tabs.label} items={tabs.items} inert />
+        {/* From 768 px the person's sidebar, inert, in place of their tab bar (OT-157). */}
+        <div className="flex min-h-0 flex-1 justify-center">
+          <div className="flex min-h-0 w-full max-w-desktop">
+            <AppSidebar />
+            <div className="flex min-w-0 flex-1 flex-col">
+              {role === 'manager' ? (
+                <OpenTicketsScreen />
+              ) : role === 'ops' ? (
+                <OpsDashboardScreen />
+              ) : (
+                <LeadOverviewScreen />
+              )}
+              <TabBar label={tabs.label} items={tabs.items} inert phoneOnly />
+            </div>
+          </div>
+        </div>
       </AuthContext.Provider>
       <ReportSheet open={reporting} onOpenChange={setReporting} context={`Viewing as ${viewed.user.full_name}`} />
     </>

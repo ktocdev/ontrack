@@ -23,6 +23,7 @@ export function TabBar({
   label,
   inset = true,
   inert = false,
+  phoneOnly = false,
 }: {
   items: TabItem[]
   label: string
@@ -30,12 +31,15 @@ export function TabBar({
   inset?: boolean
   /** Shown but not links, with the first home tab lit (View as). */
   inert?: boolean
+  /** Hidden from 768 px, where the sidebar takes its place (OT-157). /kit samples show it at every width. */
+  phoneOnly?: boolean
 }) {
   const { pathname } = useLocation()
   return (
     <nav
       aria-label={label}
-      className="flex flex-none border-t border-border bg-surface px-2 pt-1.5"
+      data-testid="tab-bar"
+      className={`flex flex-none border-t border-border bg-surface px-2 pt-1.5 ${phoneOnly ? 'md:hidden' : ''}`}
       style={{ paddingBottom: inset ? 'max(8px, var(--safe-bottom))' : '8px' }}
     >
       {items.map(({ to, label: text, icon: Icon, end, also }) =>
