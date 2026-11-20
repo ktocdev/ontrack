@@ -44,7 +44,9 @@ test('Ops opens a ticket beside the dashboard, and the dashboard stays', async (
   // Closed tickets keeps its own place beside a closed ticket.
   await page.goto('/ops/closed')
   await expect(pane(page).getByRole('heading', { name: 'Closed tickets' })).toBeVisible()
-  await pane(page).getByRole('button', { name: /See October/ }).click()
+  await pane(page)
+    .getByRole('button', { name: /See October/ })
+    .click()
   await pane(page).locator('a[href^="/ops/tickets/"]').first().click()
   await expect(page).toHaveURL(/\/ops\/tickets\//)
   await expect(pane(page).getByRole('heading', { name: 'Closed tickets' })).toBeVisible()
