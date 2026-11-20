@@ -18,7 +18,7 @@ app/                 the PWA
   src/index.css           Tailwind entry, base styles, dark variant
   src/theme/              theme preference (system/light/dark) saved per device
   src/pwa/                install prompt and update hooks
-  src/lib/                env, typed Supabase client, generated database.types.ts, import/ (spreadsheet imports: CSV, .xlsx, header mapping, diff), words.ts (first name, short day, video link shape)
+  src/lib/                env, typed Supabase client, generated database.types.ts, import/ (spreadsheet imports: CSV, .xlsx, header mapping, diff; since OT-150 column guesses, value suggestions, days and yes/no, duplicates), words.ts (first name, short day, video link shape)
   src/auth/               AuthProvider (session + profile + restaurants), guards, e2e mock
   src/app/                router, Shell (Outlet + tab bar), roles (homes, tabs, role names), areas (Front, Back, IT)
   src/components/         shared kit, every piece shown on /kit
