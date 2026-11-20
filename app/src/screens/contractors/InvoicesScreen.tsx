@@ -1,6 +1,7 @@
 import { DropdownMenu } from 'radix-ui'
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation } from 'react-router'
+import { useOpenInPane } from '../../app/SplitView'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
@@ -262,6 +263,7 @@ function Row({ row: r, base }: { row: InvoiceRow; base: '/ops' | '/lead' }) {
     .join(', ')
   const cls =
     'flex min-h-16 items-center gap-3 border-t border-border px-3.5 py-2.5 text-text first:border-t-0 transition-colors'
+  const open = useOpenInPane(`${base}/service/${r.id}`)
   return viewingAs ? (
     <div className={cls}>{body}</div>
   ) : (
@@ -269,7 +271,8 @@ function Row({ row: r, base }: { row: InvoiceRow; base: '/ops' | '/lead' }) {
       to={`${base}/service/${r.id}`}
       state={{ from: location.pathname }}
       aria-label={label}
-      className={`${cls} hover:bg-surface-hover active:bg-surface-muted active:duration-0`}
+      aria-current={open ? 'page' : undefined}
+      className={`${cls} hover:bg-surface-hover active:bg-surface-muted active:duration-0 ${open ? 'bg-brand-tint-faint' : ''}`}
     >
       {body}
     </Link>

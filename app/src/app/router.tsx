@@ -13,9 +13,17 @@ import { BareShell, Shell, SignedInShell } from './Shell'
 import { SplitView } from './SplitView'
 import {
   ADMIN_TICKET_LISTS,
+  ADMIN_USER_LISTS,
+  CONTRACTOR_PANE,
+  EQUIPMENT_PANE,
+  LEAD_CONTRACTOR_LISTS,
   LEAD_TICKET_LISTS,
+  MANAGER_EQUIPMENT_LISTS,
   MANAGER_TICKET_LISTS,
+  OPS_CONTRACTOR_LISTS,
+  OPS_EQUIPMENT_LISTS,
   OPS_TICKET_LISTS,
+  PERSON_PANE,
   TICKET_PANE,
 } from './splitLists'
 
@@ -226,10 +234,22 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/equipment',
-                    lazy: async () => ({
-                      Component: (await import('../screens/equipment/EquipmentScreen')).EquipmentScreen,
-                    }),
+                    element: <SplitView lists={MANAGER_EQUIPMENT_LISTS} fallback="/equipment" empty={EQUIPMENT_PANE} />,
+                    children: [
+                      {
+                        path: '/equipment',
+                        lazy: async () => ({
+                          Component: (await import('../screens/equipment/EquipmentScreen')).EquipmentScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/equipment/:id/:tab?',
+                        lazy: async () => ({
+                          Component: (await import('../screens/equipment/EquipmentDetailScreen')).EquipmentDetailScreen,
+                        }),
+                      },
+                    ],
                   },
                 ],
               },
@@ -286,12 +306,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/equipment/:id/:tab?',
-                    lazy: async () => ({
-                      Component: (await import('../screens/equipment/EquipmentDetailScreen')).EquipmentDetailScreen,
-                    }),
-                  },
-                  {
                     path: '/tickets/:id/edit',
                     lazy: async () => ({
                       Component: (await import('../screens/tickets/EditTicketScreen')).EditTicketScreen,
@@ -340,22 +354,54 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/ops/equipment',
-                    lazy: async () => ({
-                      Component: (await import('../screens/equipment/OpsEquipmentScreen')).OpsEquipmentScreen,
-                    }),
+                    element: <SplitView lists={OPS_EQUIPMENT_LISTS} fallback="/ops/equipment" empty={EQUIPMENT_PANE} />,
+                    children: [
+                      {
+                        path: '/ops/equipment',
+                        lazy: async () => ({
+                          Component: (await import('../screens/equipment/OpsEquipmentScreen')).OpsEquipmentScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/ops/equipment/:id/:tab?',
+                        lazy: async () => ({
+                          Component: (await import('../screens/equipment/EquipmentDetailScreen'))
+                            .OpsEquipmentDetailScreen,
+                        }),
+                      },
+                    ],
                   },
                   {
-                    path: '/ops/contractors',
-                    lazy: async () => ({
-                      Component: (await import('../screens/contractors/ContractorsScreen')).ContractorsScreen,
-                    }),
-                  },
-                  {
-                    path: '/ops/contractors/invoices',
-                    lazy: async () => ({
-                      Component: (await import('../screens/contractors/InvoicesScreen')).InvoicesScreen,
-                    }),
+                    element: <SplitView lists={OPS_CONTRACTOR_LISTS} empty={CONTRACTOR_PANE} />,
+                    children: [
+                      {
+                        path: '/ops/contractors',
+                        lazy: async () => ({
+                          Component: (await import('../screens/contractors/ContractorsScreen')).ContractorsScreen,
+                        }),
+                      },
+                      {
+                        path: '/ops/contractors/invoices',
+                        lazy: async () => ({
+                          Component: (await import('../screens/contractors/InvoicesScreen')).InvoicesScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/ops/contractors/:id/:tab?',
+                        lazy: async () => ({
+                          Component: (await import('../screens/contractors/ContractorScreen')).ContractorScreen,
+                        }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/ops/service/:id',
+                        lazy: async () => ({
+                          Component: (await import('../screens/service/ServiceRecordScreen')).ServiceRecordScreen,
+                        }),
+                      },
+                    ],
                   },
                 ],
               },
@@ -435,12 +481,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/ops/equipment/:id/:tab?',
-                    lazy: async () => ({
-                      Component: (await import('../screens/equipment/EquipmentDetailScreen')).OpsEquipmentDetailScreen,
-                    }),
-                  },
-                  {
                     path: '/ops/tickets/:id/service/new',
                     lazy: async () => ({
                       Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromTicketScreen,
@@ -450,12 +490,6 @@ export const router = createBrowserRouter([
                     path: '/ops/equipment/:id/service/new',
                     lazy: async () => ({
                       Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromEquipmentScreen,
-                    }),
-                  },
-                  {
-                    path: '/ops/service/:id',
-                    lazy: async () => ({
-                      Component: (await import('../screens/service/ServiceRecordScreen')).ServiceRecordScreen,
                     }),
                   },
                   {
@@ -483,12 +517,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/ops/contractors/:id/:tab?',
-                    lazy: async () => ({
-                      Component: (await import('../screens/contractors/ContractorScreen')).ContractorScreen,
-                    }),
-                  },
-                  {
                     path: '/ops/contractors/:id/service/new',
                     lazy: async () => ({
                       Component: (await import('../screens/service/LogServiceScreen')).LogServiceFromContractorScreen,
@@ -508,8 +536,20 @@ export const router = createBrowserRouter([
                 children: [
                   { path: '/admin', element: <Navigate to="/admin/users" replace /> },
                   {
-                    path: '/admin/users',
-                    lazy: async () => ({ Component: (await import('../screens/admin/UsersScreen')).UsersScreen }),
+                    element: <SplitView lists={ADMIN_USER_LISTS} fallback="/admin/users" empty={PERSON_PANE} />,
+                    children: [
+                      {
+                        path: '/admin/users',
+                        lazy: async () => ({ Component: (await import('../screens/admin/UsersScreen')).UsersScreen }),
+                      },
+                      {
+                        handle: { bare: true },
+                        path: '/admin/users/:id',
+                        lazy: async () => ({
+                          Component: (await import('../screens/admin/UserProfileScreen')).UserProfileScreen,
+                        }),
+                      },
+                    ],
                   },
                   {
                     path: '/admin/users/titles',
@@ -579,12 +619,6 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/admin/users/:id',
-                    lazy: async () => ({
-                      Component: (await import('../screens/admin/UserProfileScreen')).UserProfileScreen,
-                    }),
-                  },
-                  {
                     path: '/admin/roles/edit',
                     lazy: async () => ({ Component: (await import('../screens/admin/RolesScreen')).EditRolesScreen }),
                   },
@@ -644,13 +678,6 @@ export const router = createBrowserRouter([
                     ],
                   },
                   {
-                    path: '/lead/service/:id',
-                    lazy: async () => {
-                      const { ServiceRecordScreen } = await import('../screens/service/ServiceRecordScreen')
-                      return { Component: () => <ServiceRecordScreen base="/lead" /> }
-                    },
-                  },
-                  {
                     path: '/lead/restaurants/:id/equipment',
                     lazy: async () => {
                       const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
@@ -664,25 +691,37 @@ export const router = createBrowserRouter([
                     }),
                   },
                   {
-                    path: '/lead/contractors',
-                    lazy: async () => {
-                      const { ContractorsScreen } = await import('../screens/contractors/ContractorsScreen')
-                      return { Component: () => <ContractorsScreen base="/lead" /> }
-                    },
-                  },
-                  {
-                    path: '/lead/contractors/invoices',
-                    lazy: async () => {
-                      const { InvoicesScreen } = await import('../screens/contractors/InvoicesScreen')
-                      return { Component: () => <InvoicesScreen base="/lead" /> }
-                    },
-                  },
-                  {
-                    path: '/lead/contractors/:id/:tab?',
-                    lazy: async () => {
-                      const { ContractorScreen } = await import('../screens/contractors/ContractorScreen')
-                      return { Component: () => <ContractorScreen base="/lead" /> }
-                    },
+                    element: <SplitView lists={LEAD_CONTRACTOR_LISTS} empty={CONTRACTOR_PANE} />,
+                    children: [
+                      {
+                        path: '/lead/contractors',
+                        lazy: async () => {
+                          const { ContractorsScreen } = await import('../screens/contractors/ContractorsScreen')
+                          return { Component: () => <ContractorsScreen base="/lead" /> }
+                        },
+                      },
+                      {
+                        path: '/lead/contractors/invoices',
+                        lazy: async () => {
+                          const { InvoicesScreen } = await import('../screens/contractors/InvoicesScreen')
+                          return { Component: () => <InvoicesScreen base="/lead" /> }
+                        },
+                      },
+                      {
+                        path: '/lead/contractors/:id/:tab?',
+                        lazy: async () => {
+                          const { ContractorScreen } = await import('../screens/contractors/ContractorScreen')
+                          return { Component: () => <ContractorScreen base="/lead" /> }
+                        },
+                      },
+                      {
+                        path: '/lead/service/:id',
+                        lazy: async () => {
+                          const { ServiceRecordScreen } = await import('../screens/service/ServiceRecordScreen')
+                          return { Component: () => <ServiceRecordScreen base="/lead" /> }
+                        },
+                      },
+                    ],
                   },
                 ],
               },

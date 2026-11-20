@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { useOpenInPane } from '../../app/SplitView'
 import { Avatar } from '../../components/Avatar'
 import { ButtonLink } from '../../components/Button'
 import { ListCard, ListRowLink } from '../../components/Card'
@@ -174,10 +175,12 @@ function PersonRowView({ person: p }: { person: PersonRow }) {
   const roleNames = useRoleNames()
   const titleName = useJobTitleName()
   const photo = useAvatarUrl(p.avatarPath)
+  const open = useOpenInPane(`/admin/users/${p.id}`)
   return (
     <Link
       to={`/admin/users/${p.id}`}
-      className={`${ROW} text-text no-underline transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-muted active:duration-0`}
+      aria-current={open ? 'page' : undefined}
+      className={`${ROW} text-text no-underline transition-colors hover:bg-surface-hover hover:text-text active:bg-surface-muted active:duration-0 ${open ? 'bg-brand-tint-faint' : ''}`}
     >
       <Avatar name={p.name} role={p.role} size={38} src={photo.data} />
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">

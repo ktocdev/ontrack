@@ -2,7 +2,7 @@ import { lazy } from 'react'
 import type { SplitList } from './SplitView'
 
 /**
- * The lists that keep their place beside an open ticket on a laptop (OT-159), loaded only
+ * The lists that keep their place beside an open item on a laptop (OT-159, OT-160), loaded only
  * when shown. Each path is the list's own route; SplitView renders it at the address the
  * person last had it.
  */
@@ -27,6 +27,22 @@ const LeadRestaurantsIndex = lazy(async () => ({
   default: (await import('../screens/leadership/LeadRestaurantScreen')).LeadRestaurantsIndex,
 }))
 
+const Equipment = lazy(async () => ({
+  default: (await import('../screens/equipment/EquipmentScreen')).EquipmentScreen,
+}))
+const OpsEquipment = lazy(async () => ({
+  default: (await import('../screens/equipment/OpsEquipmentScreen')).OpsEquipmentScreen,
+}))
+const Contractors = lazy(async () => {
+  const { ContractorsScreen } = await import('../screens/contractors/ContractorsScreen')
+  return { default: ({ base }: { base?: '/lead' }) => <ContractorsScreen base={base} /> }
+})
+const Invoices = lazy(async () => {
+  const { InvoicesScreen } = await import('../screens/contractors/InvoicesScreen')
+  return { default: ({ base }: { base?: '/lead' }) => <InvoicesScreen base={base} /> }
+})
+const Users = lazy(async () => ({ default: (await import('../screens/admin/UsersScreen')).UsersScreen }))
+
 export const MANAGER_TICKET_LISTS: SplitList[] = [
   { path: '/tickets', element: <OpenTickets /> },
   { path: '/tickets/closed', element: <ClosedTickets /> },
@@ -44,5 +60,25 @@ export const LEAD_TICKET_LISTS: SplitList[] = [
   { path: '/lead/restaurants/:id', element: <LeadRestaurant /> },
 ]
 
-/** What the empty pane says beside a list of tickets. */
+export const MANAGER_EQUIPMENT_LISTS: SplitList[] = [{ path: '/equipment', element: <Equipment /> }]
+export const OPS_EQUIPMENT_LISTS: SplitList[] = [{ path: '/ops/equipment', element: <OpsEquipment /> }]
+
+export const OPS_CONTRACTOR_LISTS: SplitList[] = [
+  { path: '/ops/contractors', element: <Contractors /> },
+  { path: '/ops/contractors/invoices', element: <Invoices /> },
+]
+export const LEAD_CONTRACTOR_LISTS: SplitList[] = [
+  { path: '/lead/contractors', element: <Contractors base="/lead" /> },
+  { path: '/lead/contractors/invoices', element: <Invoices base="/lead" /> },
+]
+
+export const ADMIN_USER_LISTS: SplitList[] = [{ path: '/admin/users', element: <Users /> }]
+
+/** What the empty pane says beside each kind of list. */
 export const TICKET_PANE = { title: 'No ticket open', body: 'Pick a ticket on the left to see it here.' }
+export const EQUIPMENT_PANE = { title: 'No equipment open', body: 'Pick a unit on the left to see it here.' }
+export const CONTRACTOR_PANE = {
+  title: 'No contractor open',
+  body: 'Pick a contractor, or an invoice on Invoices, to see it here.',
+}
+export const PERSON_PANE = { title: 'No one open', body: 'Pick a person on the left to see their profile here.' }

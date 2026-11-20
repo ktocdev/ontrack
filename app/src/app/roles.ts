@@ -105,7 +105,7 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
       },
       { to: '/ops/walkthroughs', label: 'Walkthroughs', icon: IconClipboardCheck },
       { to: '/ops/equipment', label: 'Equipment', icon: IconWrench },
-      { to: '/ops/contractors', label: 'Contractors', icon: IconBriefcase },
+      { to: '/ops/contractors', label: 'Contractors', icon: IconBriefcase, lightsOn: /^\/ops\/service\// },
     ],
   },
   admin: {
@@ -123,7 +123,7 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
       { to: '/lead', label: 'Overview', icon: IconDashboard, end: true },
       { to: '/lead/restaurants', label: 'Restaurants', icon: IconStorefront, lightsOn: /^\/lead\/tickets\// },
       { to: '/lead/walkthroughs', label: 'Walkthroughs', icon: IconClipboardCheck },
-      { to: '/lead/contractors', label: 'Contractors', icon: IconBriefcase },
+      { to: '/lead/contractors', label: 'Contractors', icon: IconBriefcase, lightsOn: /^\/lead\/service\// },
     ],
   },
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { useOpenInPane } from '../app/SplitView'
 import { RestaurantName } from './RestaurantName'
 import { IconChevronDown, IconChevronRight } from './icons'
 
@@ -93,6 +94,7 @@ type RowProps = {
 
 /** A unit in its category: name, restaurant, brand · serial, then spend and its open badge. */
 export function EquipmentRow({ to, name, restaurant, brand, serial, spend, openCount = 0 }: RowProps) {
+  const open = useOpenInPane(to)
   const body = (
     <>
       <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
@@ -130,7 +132,8 @@ export function EquipmentRow({ to, name, restaurant, brand, serial, spend, openC
   return to ? (
     <Link
       to={to}
-      className={`${cls} transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0`}
+      aria-current={open ? 'page' : undefined}
+      className={`${cls} transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0 ${open ? 'bg-brand-tint-faint' : ''}`}
     >
       {body}
     </Link>

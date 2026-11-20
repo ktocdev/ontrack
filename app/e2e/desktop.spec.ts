@@ -79,7 +79,7 @@ test.describe('a laptop at 1440 px', () => {
     await expect(page).toHaveURL(/\/profile$/)
     await expect(sidebar(page)).toBeVisible()
     await page.getByRole('navigation', { name: 'Manager' }).getByRole('link', { name: 'Equipment' }).click()
-    await expect(page.getByRole('heading', { name: 'Equipment' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Equipment', exact: true })).toBeVisible()
   })
 
   test('one-column screens sit in a 720 px reading column beside the sidebar', async ({ page }) => {
