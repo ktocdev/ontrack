@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
+import { useUser } from '../../auth/context'
+import { useRight } from '../../auth/rights'
 import { Button, ButtonLink } from '../../components/Button'
 import { ErrorBanner } from '../../components/Notice'
 import { Screen } from '../../components/Screen'
@@ -51,7 +53,11 @@ const NO_NAMES: { id: string; name: string }[] = []
  * cost and admins, as Add contractor; never under View as.
  */
 export function ImportContractorsScreen() {
+  const { user } = useUser()
+  const logsCost = useRight('log_cost')
   const canEdit = useCanEditTrades()
+  // Wait for the right to load; send away only a real no, so a fresh load doesn't bounce.
+  if (!user.is_admin && user.role === 'ops' && logsCost === undefined) return null
   if (!canEdit) return <Navigate to={HOME} replace />
   return <ImportContractors />
 }

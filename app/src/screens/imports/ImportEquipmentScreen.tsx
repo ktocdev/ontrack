@@ -58,8 +58,10 @@ const NO_CATEGORIES: Category[] = []
  */
 export function ImportEquipmentScreen() {
   const { user, viewingAs } = useUser()
-  const canEdit = useRight('edit_equipment') === true && !viewingAs && (user.role === 'ops' || user.is_admin)
-  if (!canEdit) return <Navigate to={HOME} replace />
+  const right = useRight('edit_equipment')
+  // Wait for the right to load; send away only a real no, so a fresh load doesn't bounce.
+  if (right === undefined && !viewingAs) return null
+  if (!right || viewingAs || !(user.role === 'ops' || user.is_admin)) return <Navigate to={HOME} replace />
   return <ImportEquipment />
 }
 
