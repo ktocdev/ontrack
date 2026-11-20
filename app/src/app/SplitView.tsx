@@ -10,10 +10,10 @@ export type SplitList = { path: string; element: ReactNode }
 /** The path open in the pane beside a list, so the list can mark its card. */
 const OpenItem = createContext<string | null>(null)
 
-/** Whether `to` is what the pane beside the list has open (OT-159). */
+/** Whether `to` is what the pane beside the list has open (OT-159), on any of its tabs. */
 export function useOpenInPane(to: string | undefined) {
   const open = useContext(OpenItem)
-  return !!to && open === to
+  return !!to && !!open && (open === to || open.startsWith(`${to}/`))
 }
 
 /**

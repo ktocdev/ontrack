@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { useOpenInPane } from '../app/SplitView'
 import { IconPhone, IconStar } from './icons'
 
 /**
@@ -62,15 +63,17 @@ export function ContractorCard({
       {visits && <span className="text-12 text-text-muted">{visits}</span>}
     </>
   )
+  const open = useOpenInPane(to)
   const main = 'flex min-w-0 flex-1 flex-col gap-[5px] text-text'
   return (
     <article
       aria-label={name}
-      className="flex flex-none items-start gap-3 rounded-card border border-border bg-surface px-3.5 py-3"
+      className={`flex flex-none items-start gap-3 rounded-card border bg-surface px-3.5 py-3 ${open ? 'border-brand' : 'border-border'}`}
     >
       {to ? (
         <Link
           to={to}
+          aria-current={open ? 'page' : undefined}
           className={`${main} -m-1 rounded-control p-1 transition-colors active:bg-surface-hover active:duration-0`}
         >
           {body}
