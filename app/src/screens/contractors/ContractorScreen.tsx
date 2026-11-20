@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { useUser } from '../../auth/context'
 import { useRoleNames } from '../../auth/group'
@@ -106,12 +106,13 @@ function Detail({ data, tab, seeCosts, base }: { data: ContractorData; tab?: str
   const lead = base === '/lead'
   const { viewingAs, restaurants } = useUser()
   const scope = useRestaurantScope()
+  const allIds = useMemo(() => restaurants.map((r) => r.id), [restaurants])
   const selected = lead ? null : scope.selected
   const canEdit = !!useRight('log_cost') && !viewingAs && !lead
   const [year] = useState(() => new Date().getFullYear())
   const { contractor: c } = data
   const here = `${base}/contractors/${c.id}`
-  const s = summarizeVisits(data.visits, lead ? restaurants.map((r) => r.id) : scope.ids, year)
+  const s = summarizeVisits(data.visits, lead ? allIds : scope.ids, year)
   const warning = insuranceWarning(c.insurance_until)
   const insurance = c.insurance_until ? insuranceLine(c.insurance_until) : null
   const tel = c.phone?.replace(/[^\d+]/g, '')

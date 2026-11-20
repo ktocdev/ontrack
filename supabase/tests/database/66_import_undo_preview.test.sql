@@ -39,10 +39,10 @@ select is((select count(*)::int from public.contractors where name like 'Preview
 select is((select undone_at from public.imports where id = :'imp'), null, 'and the import is still open');
 
 select pg_temp.login('chris.novak@example.com');
-select throws_ok(format('select public.undo_import_preview(%L)', :'imp'), '42501', null,
+select throws_ok(format('select public.undo_import_preview(%L)', :'imp'), 'P0002', null,
   'another Ops manager can''t undo Bert''s import');
 select pg_temp.login('maya.reyes@example.com');
-select throws_ok(format('select public.undo_import_preview(%L)', :'imp'), '42501', null,
+select throws_ok(format('select public.undo_import_preview(%L)', :'imp'), 'P0002', null,
   'nor can a Reporter');
 
 select pg_temp.login('bert.velilla@example.com');
