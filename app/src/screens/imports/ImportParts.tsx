@@ -576,6 +576,8 @@ export function ReviewTable({
                         }`}
                       >
                         {value || (problem ? 'Missing' : '')}
+                        {/* The mark is a color, so say it in words too (OT-162). */}
+                        {problem && value && <span className="sr-only"> (needs a fix)</span>}
                       </td>
                     )
                   })}

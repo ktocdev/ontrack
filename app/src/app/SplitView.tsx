@@ -1,5 +1,5 @@
-import { createContext, Suspense, useContext, useState, type ReactNode } from 'react'
-import { matchPath, Outlet, Route, Routes, useLocation, type Location } from 'react-router'
+import { createContext, Suspense, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { matchPath, Outlet, Route, Routes, useLocation, useNavigate, type Location } from 'react-router'
 import { useLaptop } from '../lib/useWide'
 
 /** A list SplitView can show: its route pattern and the screen. */
@@ -39,6 +39,10 @@ export function usePaneClose() {
  * (its tab, month or restaurant), and stays mounted while items open and close, so it
  * keeps its scroll; opened straight from a link, it is `fallback`, or none, and the item
  * has the width to itself.
+ *
+ * For the keyboard (OT-162): opening an item moves focus into the panel, Escape closes it
+ * when no sheet or menu is open and nothing is being typed, and closing it puts focus back
+ * on the item's card in the list.
  */
 export function SplitView({
   lists,
@@ -59,15 +63,52 @@ export function SplitView({
     setListAt(location)
   }
 
-  if (!laptop) return <Outlet />
-  const list = listAt && lists.find((l) => matchPath(l.path, listAt.pathname))
+  const navigate = useNavigate()
+  const listRef = useRef<HTMLDivElement>(null)
+  const paneRef = useRef<HTMLDivElement>(null)
+  const lastOpen = useRef<string | null>(null)
+  const list = laptop && listAt ? lists.find((l) => matchPath(l.path, listAt.pathname)) : undefined
+  const open = !!list && !atList
+  const closeTo = listAt ? listAt.pathname + listAt.search : null
+
+  // Focus into the panel as an item opens; back to its card as the panel closes.
+  useEffect(() => {
+    if (open) {
+      if (lastOpen.current !== location.pathname) paneRef.current?.focus({ preventScroll: true })
+      lastOpen.current = location.pathname
+      return
+    }
+    const was = lastOpen.current
+    lastOpen.current = null
+    if (!was || !listRef.current) return
+    const card = [...listRef.current.querySelectorAll<HTMLAnchorElement>('a[href]')].find((a) => {
+      const href = a.getAttribute('href')!
+      return was === href || was.startsWith(`${href}/`)
+    })
+    card?.focus({ preventScroll: true })
+  }, [open, location.pathname])
+
+  // Escape closes the panel, unless a sheet, menu or picker has it, or someone is typing.
+  useEffect(() => {
+    if (!open || !closeTo) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.defaultPrevented) return
+      if (document.querySelector('[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"]')) return
+      const el = document.activeElement
+      if (el instanceof HTMLElement && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return
+      navigate(closeTo)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open, closeTo, navigate])
+
   if (!list) return <Outlet />
-  const open = !atList
 
   return (
     <div className="flex min-h-0 flex-1">
       {/* The same element open or not, so the list is never remounted. */}
       <div
+        ref={listRef}
         data-split-list={open ? 'beside' : 'alone'}
         className={`flex min-h-0 flex-col ${open ? 'w-list-pane flex-none border-r border-border' : 'min-w-0 flex-1'}`}
       >
@@ -80,8 +121,15 @@ export function SplitView({
         </OpenItem.Provider>
       </div>
       {open && (
-        <div data-split-pane className="flex min-w-0 flex-1 flex-col animate-[fade-in_.15s_ease-out]">
-          <PaneClose.Provider value={listAt!.pathname + listAt!.search}>
+        <div
+          ref={paneRef}
+          tabIndex={-1}
+          role="region"
+          aria-label="Details"
+          data-split-pane
+          className="flex min-w-0 flex-1 flex-col animate-[fade-in_.15s_ease-out] outline-none motion-reduce:animate-none"
+        >
+          <PaneClose.Provider value={closeTo}>
             <Outlet />
           </PaneClose.Provider>
         </div>

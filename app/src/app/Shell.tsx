@@ -61,9 +61,19 @@ export function SignedInShell() {
 export function Frame({ sidebar = <AppSidebar />, children }: { sidebar?: ReactNode; children: ReactNode }) {
   return (
     <div className="flex h-dvh justify-center bg-bg text-text">
+      {/* Past the sidebar's links in one press, for the keyboard (OT-162). Seen only when focused. */}
+      <button
+        type="button"
+        onClick={() => document.getElementById('content')?.focus()}
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-control focus:bg-surface focus:px-4 focus:py-2.5 focus:text-14 focus:font-semibold focus:text-brand focus:shadow-raised"
+      >
+        Skip to content
+      </button>
       <div className="flex min-h-0 w-full max-w-desktop">
         {sidebar}
-        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+        <div id="content" tabIndex={-1} className="flex min-w-0 flex-1 flex-col outline-none">
+          {children}
+        </div>
       </div>
     </div>
   )

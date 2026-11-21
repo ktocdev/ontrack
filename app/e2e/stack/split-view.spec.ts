@@ -165,6 +165,20 @@ test('a manager’s Open tickets and In-house sit in the same column', async ({ 
   await shot(page, info, 'manager-in-house')
 })
 
+test('the keyboard: focus moves into the panel, Escape closes it, focus returns to the card', async ({ page }) => {
+  await signIn(page, 'bert.velilla@example.com')
+  const card = pane(page).getByRole('link', { name: /OT-1031/ })
+  await card.focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('heading', { name: 'Bar sink draining slowly', level: 1 })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Details' })).toBeFocused()
+
+  await page.keyboard.press('Escape')
+  await expect(page).toHaveURL(/\/ops$/)
+  await alone(page)
+  await expect(card).toBeFocused()
+})
+
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 } })
 
