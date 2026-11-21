@@ -99,6 +99,20 @@ test.describe('a laptop at 1440 px', () => {
     await expect(page.getByTestId('tab-bar')).toBeHidden()
   })
 
+  test('the first Tab offers Skip to content, past the sidebar', async ({ page }) => {
+    await signInAs(page, 'ops')
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+    const skip = page.getByRole('button', { name: 'Skip to content' })
+    // A fresh page, so Tab starts from the top.
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+    await page.keyboard.press('Tab')
+    await expect(skip).toBeFocused()
+    await expect(skip).toBeInViewport()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('#content')).toBeFocused()
+  })
+
   test('the row stops at 1440 px and centers on a wider screen', async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 })
     await signInAs(page, 'leadership')

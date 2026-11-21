@@ -11,6 +11,7 @@ import { InstallSheet } from '@app/components/InstallSheet'
 import { ErrorBanner, Notice } from '@app/components/Notice'
 import { RadioCard } from '@app/components/RadioCard'
 import {
+  BackLink,
   BackBar,
   BrandBackBar,
   CloseBar,
@@ -418,6 +419,14 @@ export function NavigationPage() {
               <TabBar label={ROLE_TABS[role].label} items={ROLE_TABS[role].items} inset={false} />
             </div>
           ))}
+        </Example>
+      </Section>
+      <Section
+        title="List and panel"
+        intro="From 1024 px a list starts on its own in the reading column. Opening an item moves the list into a 380 px pane on the left and opens the item beside it; the item's back arrow, BackLink, becomes an X (Close panel) that returns to the list as it was left. Focus moves into the panel as it opens and back to the item's card as it closes, and Escape closes it when no sheet or menu is open. A card or row whose link is the open item is marked through useOpenInPane. Every frame with a sidebar starts with Skip to content, seen only when focused."
+      >
+        <Example code={`<BackLink to="/ops" label="Back to dashboard" />  // an X, Close panel, inside the panel`}>
+          <BackLink to="#" label="Back to dashboard" size={22} />
         </Example>
       </Section>
       <Section
