@@ -81,7 +81,8 @@ test('a new ticket reaches Ops by push and email, with a link, and nobody else',
   // The email carries enough to summarize, and the lasting link.
   const search = await request.get(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${BERT} "${title}"`)}`)
   const { messages } = (await search.json()) as { messages: { ID: string; Subject: string }[] }
-  expect(messages[0]!.Subject).toMatch(/^\[OT-\d+\] New ticket at Porter$/)
+  // Number, title, what happened, restaurant: what an inbox is read by (OT-166).
+  expect(messages[0]!.Subject).toBe(`[${messages[0]!.Subject.match(/OT-\d+/)![0]}] ${title} · New · Porter`)
   const message = await request.get(`${MAILPIT}/api/v1/message/${messages[0]!.ID}`)
   const { Text } = (await message.json()) as { Text: string }
   expect(Text).toContain(title)
@@ -168,7 +169,7 @@ test('a reminder Ops sends by hand reaches the restaurant’s Reporter, saying w
   await expect.poll(newest, { timeout: 20_000, intervals: [500] }).toBeTruthy()
   const mail = (await newest())!
   // October is past its due day, which only a reminder sent by hand can be.
-  expect(mail.Subject).toMatch(/^October walkthrough overdue · /)
+  expect(mail.Subject).toMatch(/^October walkthrough · overdue · /)
   const message = await request.get(`${MAILPIT}/api/v1/message/${mail.ID}`)
   expect(((await message.json()) as { Text: string }).Text).toContain('from Bert Velilla')
 
@@ -209,13 +210,13 @@ test('tasks from Ops reach the restaurant’s Reporter: one added, a ticket hand
   // 1. A task added for Porter.
   await rpc('add_inhouse_task', { p_restaurant: PORTER, p_title: `Wipe the gasket ${stamp}` })
   const added = await mail(`Wipe the gasket ${stamp}`)
-  expect(added.subject).toBe('In-house task from Bert Velilla · Porter')
+  expect(added.subject).toBe(`Wipe the gasket ${stamp} · In-house task from Bert Velilla · Porter`)
 
   // 2. Dana's ticket handed back: one notification, the task, and no Closed of its own.
   const { id } = await newTicket(browser, testInfo, 'Handed')
   await rpc('hand_back_ticket', { p_ticket: id, p_title: `Replace the bulb ${stamp}`, p_note: 'It’s the 2-pin kind' })
   const back = await mail(`Replace the bulb ${stamp}`)
-  expect(back.subject).toBe('In-house task from Bert Velilla · Porter')
+  expect(back.subject).toBe(`Replace the bulb ${stamp} · In-house task from Bert Velilla · Porter`)
   expect(back.text).toContain('It’s the 2-pin kind')
   expect(back.text).toMatch(/Handed back from OT-\d+/)
   expect((await sent(request, DANA, id)).filter((s) => s.startsWith('status_change'))).toEqual([])
@@ -230,6 +231,7 @@ test('tasks from Ops reach the restaurant’s Reporter: one added, a ticket hand
   const [task] = (await own.json()) as { id: string }[]
   await rpc('convert_inhouse_fix', { p_id: task!.id, p_category_id: REFRIGERATION })
   const converted = await mail(`Cooler rattles ${stamp}`)
-  expect(converted.subject).toBe('In-house fix is now a ticket · Porter')
+  expect(converted.subject).toMatch(/^\[OT-\d+\] Cooler rattles .+ · Now a ticket · Porter$/)
+  expect(converted.subject).toContain(`Cooler rattles ${stamp} ·`)
   expect(converted.text).toContain('Bert Velilla made it a ticket')
 })

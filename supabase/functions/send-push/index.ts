@@ -48,26 +48,37 @@ function sameSecret(a: string, b: string) {
   return diff === 0
 }
 
-/** What a notification says. A photo with no words still needs saying. */
+/**
+ * An email's subject, in the order an inbox is read by (Nov 23, 2026): what it is, what
+ * happened, where. `[OT-1234] Sink is leaking · In progress · Federale's Logan Square`.
+ * A title is typed by people, so its line breaks and runs of spaces become one space.
+ */
+function subjectLine(...parts: (string | null | undefined)[]) {
+  return parts
+    .map((p) => (p ?? '').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join(' · ')
+}
+
+/**
+ * What a notification says. A photo with no words still needs saying. `status` is the
+ * subject's middle part: what happened to the ticket, in a word or two.
+ */
 function describe(n: Row, ticketLabel: string, restaurant: string, actor: string) {
   const words = n.body?.trim() || null
   switch (n.kind) {
     case 'new_ticket':
-      return { headline: `New ticket at ${restaurant}`, line: ticketLabel, words }
+      return { headline: `New ticket at ${restaurant}`, status: 'New', line: ticketLabel, words }
     case 'reopened':
-      return { headline: `Reopened at ${restaurant}`, line: ticketLabel, words }
-    case 'status_change':
-      return {
-        headline: n.status_to ? `${STATUS[n.status_to] ?? 'Status changed'} · ${restaurant}` : `Picked up · ${restaurant}`,
-        line: ticketLabel,
-        words,
-      }
-    case 'update':
-      return {
-        headline: `${n.internal ? 'Internal note' : 'Update'} from ${actor}`,
-        line: ticketLabel,
-        words: words ?? 'Sent a photo.',
-      }
+      return { headline: `Reopened at ${restaurant}`, status: 'Reopened', line: ticketLabel, words }
+    case 'status_change': {
+      const status = n.status_to ? (STATUS[n.status_to] ?? 'Status changed') : 'Picked up'
+      return { headline: `${status} · ${restaurant}`, status, line: ticketLabel, words }
+    }
+    case 'update': {
+      const status = `${n.internal ? 'Internal note' : 'Update'} from ${actor}`
+      return { headline: status, status, line: ticketLabel, words: words ?? 'Sent a photo.' }
+    }
     case 'walkthrough_reminder':
     case 'inhouse_task':
       throw new Error('not about a ticket alone')
@@ -190,7 +201,7 @@ async function deliver(db: Db, server: Server, appUrl: string, n: Row) {
     title: `${said.headline}${date}`,
     body: said.words ? `${said.line}\n${said.words}` : said.line,
     path,
-    subject: `[${ticket.display_id}] ${said.headline}${date}`,
+    subject: subjectLine(`[${ticket.display_id}] ${ticket.title}`, said.status + date, restaurant),
     html: emailFrame(`
 <h1 style="${s.h1}">${escapeHtml(said.headline + date)}</h1>
 <p style="${s.p}"><b>${escapeHtml(ticketLabel)}</b><br>${escapeHtml(restaurant)} · ${escapeHtml(actorName)}${n.internal ? ' · Ops only' : ''}</p>
@@ -262,7 +273,7 @@ async function deliverReminder(db: Db, server: Server, appUrl: string, n: Row, w
     title: `${headline} · ${restaurant}`,
     body: `${when}\n${progress}`,
     path,
-    subject: `${headline} · ${restaurant}`,
+    subject: subjectLine(`${month} walkthrough`, due, restaurant),
     html: emailFrame(`
 <h1 style="${s.h1}">${escapeHtml(headline)}</h1>
 <p style="${s.p}"><b>${escapeHtml(restaurant)}</b><br>${escapeHtml(when)} · ${escapeHtml(progress)}</p>
@@ -309,7 +320,9 @@ async function deliverTask(db: Db, server: Server, appUrl: string, n: Row, fixId
     title: headline,
     body: words ? `${line}\n${words}` : line,
     path,
-    subject: headline,
+    subject: converted
+      ? subjectLine(`[${ticket?.display_id}] ${fix.title}`, 'Now a ticket', restaurant)
+      : subjectLine(fix.title, `In-house task from ${sender}`, restaurant),
     html: emailFrame(`
 <h1 style="${s.h1}">${escapeHtml(headline)}</h1>
 <p style="${s.p}"><b>${escapeHtml(line)}</b></p>
