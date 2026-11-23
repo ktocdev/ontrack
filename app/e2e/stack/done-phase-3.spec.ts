@@ -1,6 +1,6 @@
 import { createECDH, randomBytes } from 'node:crypto'
 import { expect, test, type APIRequestContext } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { openRestaurants, signIn, tokenFor } from './helpers'
 
 /**
  * Phase 3's done test as one flow: a manager creates a ticket and the ops manager is sent
@@ -86,6 +86,7 @@ test('a manager reports a problem, Ops works it to closed, and a reopen comes ba
     // 2. Bert finds it on the dashboard and marks it In progress, which puts Bert on it.
     await addDevice(request, DANA)
     await signIn(page, BERT)
+    await openRestaurants(page)
     await page.getByRole('link', { name: new RegExp(title) }).click()
     await page.getByRole('button', { name: /^Status/ }).click()
     await page.getByRole('menuitemradio', { name: 'In progress' }).click()

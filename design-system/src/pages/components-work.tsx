@@ -66,6 +66,7 @@ import { MonthStepper } from '@app/components/MonthStepper'
 import { ReadOnlyBanner } from '@app/components/ReadOnlyBanner'
 import { SAMPLE_RESTAURANTS } from './components-basics'
 import { ImportPartsDemo } from '@app/screens/imports/ImportPartsDemo'
+import { RestaurantGroupDemo } from '@app/screens/ops/RestaurantGroupDemo'
 
 const LOGAN = SAMPLE_RESTAURANTS[0]!
 const PORTER = SAMPLE_RESTAURANTS[3]!
@@ -166,6 +167,16 @@ export function TicketsPage() {
             meta="BOH · Refrigeration · just now"
             createdAt={openedAt}
           />
+        </Example>
+      </Section>
+      <Section
+        title="Restaurant rows"
+        intro="The Ops dashboard, read at a glance in the morning: each restaurant is a row with its name, how many are open and how many urgent. Closed, it still shows its urgent tickets (and the one open beside the list on a laptop). Every row starts closed each day; one opened stays open on that device until the next day. With one restaurant picked, the row is a plain heading over every ticket."
+      >
+        <Example
+          code={`<RestaurantGroup name={r.name} color={r.color} open={isOpen(r.id)} onToggle={() => toggle(r.id)} openCount={7} urgentCount={2} items={[{ key, pinned: urgent, node: <OpsTicketCard … /> }]} />`}
+        >
+          <RestaurantGroupDemo restaurants={SAMPLE_RESTAURANTS} />
         </Example>
       </Section>
       <Section

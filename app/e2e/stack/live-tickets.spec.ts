@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { signIn, tokenFor, openRestaurants } from './helpers'
 
 /**
  * Lists keep up on their own (OT-58). The screens also reread every 30 seconds, so each wait
@@ -26,7 +26,7 @@ async function danaCreates(request: APIRequestContext, title: string) {
 test('a new ticket appears on the Ops dashboard by itself', async ({ page, request }, testInfo) => {
   const title = `Live new ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, 'bert.velilla@example.com')
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+  await openRestaurants(page)
   await page.waitForTimeout(2_000) // Long enough to be subscribed.
   await danaCreates(request, title)
   await expect(page.getByRole('link', { name: new RegExp(title) })).toBeVisible(QUICK)

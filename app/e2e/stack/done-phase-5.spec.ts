@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Locator, type Page } from '@playwright/test'
-import { signIn } from './helpers'
+import { signIn, openRestaurants } from './helpers'
 
 /**
  * Phase 5's done test as one flow: logging a $397.40 Coldline visit on a ticket raises that
@@ -93,6 +93,7 @@ test('a $397.40 Coldline visit raises the unit, the contractor and the month by 
 
   // 2. Bert opens it from the dashboard and logs Coldline's visit, with the invoice.
   await page.goto('/ops')
+  await openRestaurants(page)
   await page.getByRole('link', { name: new RegExp(title) }).click()
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
   const ticketPath = new URL(page.url()).pathname

@@ -71,6 +71,19 @@ export async function bigPhoto(page: Page, name = 'big.png') {
   return { name, mimeType: 'image/png', buffer: Buffer.from(dataUrl.split(',')[1]!, 'base64') }
 }
 
+/**
+ * Opens every restaurant row on the Ops dashboard (OT-168), which start closed each day
+ * showing only urgent tickets, for a flow that needs the rest. Kept on this page for the day.
+ */
+export async function openRestaurants(page: Page) {
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible()
+  // Each click takes a row out of this list, so it is always the first that is still closed.
+  const closed = page.locator('section > h2 > button[aria-expanded="false"]')
+  for (let n = await closed.count(); n > 0; n--) await closed.first().click()
+  await expect(closed).toHaveCount(0)
+}
+
 /** Sign in through the real form and wait for the role's home screen. */
 export async function signIn(page: Page, email: string, password = SEED_PASSWORD) {
   await page.goto('/sign-in')

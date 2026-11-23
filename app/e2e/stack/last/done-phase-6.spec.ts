@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page, type TestInfo } from '@playwright/test'
-import { signIn } from '../helpers'
+import { openRestaurants, signIn } from '../helpers'
 
 /**
  * Phase 6's done test as one flow: next month's walkthrough is opened by the database for
@@ -164,7 +164,7 @@ test('next month opens for every restaurant, a manager submits it with two ticke
   const ops = await context.newPage()
   try {
     await signIn(ops, BERT)
-    await expect(ops.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+    await openRestaurants(ops)
     const group = ops.getByRole('region', { name: manager.name, exact: true })
     for (const title of [outlet, bulbs]) {
       await expect(group.getByRole('link', { name: new RegExp(title) })).toContainText('Walkthrough')

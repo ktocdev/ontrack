@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Browser, type Page, type TestInfo } from '@playwright/test'
-import { SEED_PASSWORD, signIn, tokenFor } from './helpers'
+import { SEED_PASSWORD, signIn, tokenFor, openRestaurants } from './helpers'
 
 /**
  * Admin on any role (OT-123, the done test from OT-121). Rosa, the head ops manager, is on
@@ -90,6 +90,7 @@ test('the head ops manager reaches the admin view by the shield, gives Admin, an
   await expect(page.getByRole('navigation', { name: 'Operations' })).toBeVisible()
 
   // She works a ticket as the Support Team does, under her own name.
+  await openRestaurants(page)
   await page.getByRole('link', { name: new RegExp(title) }).click()
   await page.getByRole('button', { name: /^Status/ }).click()
   await page.getByRole('menuitemradio', { name: 'In progress' }).click()

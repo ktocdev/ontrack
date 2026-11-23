@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { bigPhoto, signIn, tokenFor } from './helpers'
+import { bigPhoto, openRestaurants, signIn, tokenFor } from './helpers'
 
 /**
  * Ops · Ticket against the seed. Status changes happen on OT-1047, an open ticket at
@@ -82,6 +82,7 @@ test('In progress puts you on it, and back to Open takes you off, on the dashboa
   await pick(page, 'Open')
   await expect(onIt(page)).toContainText('Nobody yet')
   await page.getByRole('link', { name: 'Back to dashboard' }).click()
+  await openRestaurants(page)
   await expect(page.getByRole('link', { name: /OT-1047/ })).toContainText('Open')
 })
 
@@ -269,6 +270,7 @@ test('a reopened ticket is an ordinary ticket with its badge, and nobody on it',
   await context.close()
 
   await signIn(page, BERT)
+  await openRestaurants(page)
   const card = page.getByRole('link', { name: new RegExp(title) })
   await expect(card).toContainText('Reopened')
   await expect(card.getByTitle(/is working on this/)).toHaveCount(0)
@@ -305,6 +307,7 @@ test('Ops closes a ticket with a comment, and the restaurant sees it', async ({ 
   const ticketUrl = new URL(dana.url()).pathname
 
   await signIn(page, BERT)
+  await openRestaurants(page)
   await page.getByRole('link', { name: new RegExp(title) }).click()
   await statusButton(page).click()
   await page.getByRole('menuitem', { name: 'Close ticket' }).click()

@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { openRestaurants, signIn, tokenFor } from './helpers'
 
 /**
  * Phase 4's done test as one flow: Maya, a manager at Federale's Logan Square, finds a unit
@@ -95,6 +95,7 @@ test('a manager makes a ticket from a unit, and Ops adds a unit the manager sees
 
     // 4. And on the Ops dashboard, with the unit on the ticket.
     await signIn(ops, BERT)
+    await openRestaurants(ops)
     const card = ops.getByRole('link', { name: new RegExp(title) })
     await expect(card).toBeVisible()
     await shot(ops, testInfo, 'ops-dashboard')

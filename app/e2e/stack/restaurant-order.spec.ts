@@ -3,8 +3,11 @@ import { signIn } from './helpers'
 
 /** Reorder restaurants on the Ops dashboard. Saved on the device, so nothing here touches the seed. */
 
+/** The restaurants' rows on the dashboard, in order, by name (OT-168). */
 const labels = async (page: Page) =>
-  (await page.getByRole('heading', { level: 2 }).allTextContents()).map((l) => l.split(' · ')[0])
+  (
+    await page.locator('section > h2 > button').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label') ?? ''))
+  ).map((l) => l.split(', ')[0])
 
 async function openSheet(page: Page) {
   await page.getByRole('button', { name: 'More ticket options' }).click()
@@ -19,7 +22,7 @@ test('dragging a handle changes the dashboard’s order, the picker’s, and it 
   // WebKit's iPhone emulation sends no pointer events for a mouse drag; the keyboard test covers it.
   test.skip(browserName === 'webkit')
   await signIn(page, 'bert.velilla@example.com')
-  await expect(page.getByRole('heading', { name: /^Porter · / })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   expect((await labels(page))[0]).toBe('Federale’s Logan Square')
 
   const sheet = await openSheet(page)
@@ -44,7 +47,7 @@ test('dragging a handle changes the dashboard’s order, the picker’s, and it 
   expect((await labels(page))[0]).toBe('Porter')
 
   await page.reload()
-  await expect(page.getByRole('heading', { name: /^Porter · / })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   expect((await labels(page))[0]).toBe('Porter')
 
   await page.getByRole('button', { name: /All restaurants \(\d+\)/ }).click()
@@ -53,7 +56,7 @@ test('dragging a handle changes the dashboard’s order, the picker’s, and it 
 
 test('the keyboard can move a restaurant too', async ({ page }) => {
   await signIn(page, 'bert.velilla@example.com')
-  await expect(page.getByRole('heading', { name: /^Porter · / })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   const sheet = await openSheet(page)
   const rows = sheet.getByRole('listitem')
 
@@ -70,19 +73,19 @@ test('the keyboard can move a restaurant too', async ({ page }) => {
   await expect(sheet).toHaveCount(0)
   expect((await labels(page)).slice(0, 2)).toEqual(['Federale’s West Loop', 'Federale’s Logan Square'])
   await page.reload()
-  await expect(page.getByRole('heading', { name: /^Porter · / })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   expect((await labels(page))[0]).toBe('Federale’s West Loop')
 })
 
 test('a person’s order doesn’t reach anyone else on the device', async ({ page }) => {
   await signIn(page, 'bert.velilla@example.com')
-  await expect(page.getByRole('heading', { name: /^Porter · / })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   await page.evaluate(() => {
     const id = '11111111-1111-4111-8111-000000000003'
     localStorage.setItem('ontrack.opsRestaurantOrder.someone-else', JSON.stringify([id]))
   })
   await page.reload()
-  await expect(page.getByRole('heading', { name: /^Porter · / })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   expect((await labels(page))[0]).toBe('Federale’s Logan Square')
 })
 
