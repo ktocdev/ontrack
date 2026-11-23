@@ -1,13 +1,14 @@
 import { ticketPlace } from '../../app/areas'
 import { lazy, Suspense, useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
+import { useIsOpenInPane } from '../../app/SplitView'
 import { useUser } from '../../auth/context'
 import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { HiddenCategories } from '../../components/HiddenCategories'
 import { OverflowMenu } from '../../components/Menu'
 import { OpsTicketCard } from '../../components/OpsTicketCard'
-import { RestaurantSquare } from '../../components/RestaurantName'
+import { RestaurantGroup } from '../../components/RestaurantGroup'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
@@ -17,6 +18,7 @@ import { ago, scheduledLabel } from '../tickets/tickets'
 import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { listed, useListView } from '../mycategories/useMyCategories'
 import { groupByRestaurant } from './dashboard'
+import { useDashboardOpen } from './useDashboardOpen'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantOrder } from './useRestaurantOrder'
 import { useRestaurantScope } from './useRestaurantScope'
@@ -32,6 +34,12 @@ import { useRestaurantScope } from './useRestaurantScope'
  * categories are left off, apart from tickets they are on, with the line that says so and
  * Show all (OT-118). Under View as, nothing leads anywhere, and the viewed person's
  * settings apply.
+ *
+ * From feedback (Nov 23, 2026), to read at a glance in the morning: each restaurant is a
+ * row with its name, how many are open and how many urgent. It starts closed each day,
+ * still showing its urgent tickets (and the one open beside the list on a laptop); one
+ * opened stays open on this device until the next day (useDashboardOpen). With one
+ * restaurant picked, its row is simply open.
  */
 
 const RestaurantOrderSheet = lazy(() => import('./RestaurantOrderSheet'))
@@ -47,6 +55,8 @@ export function OpsDashboardScreen() {
   const scope = useRestaurantScope()
   const { ordered, reorder } = useRestaurantOrder()
   const [reordering, setReordering] = useState(false)
+  const rows = useDashboardOpen(!viewingAs)
+  const openInPane = useIsOpenInPane()
   const { data, isPending, isError, refetch } = useOpsDashboard(scope.ids)
 
   const view = useListView()
@@ -132,31 +142,40 @@ export function OpsDashboardScreen() {
                 <TaskListEmpty>Nothing open in the categories you show. Show all lists the rest.</TaskListEmpty>
               )}
               {groups.map(({ restaurant, tickets }) => (
-                <section key={restaurant.id} aria-label={restaurant.name} className="flex flex-none flex-col gap-2.5">
-                  <h2 className="eyebrow flex items-center gap-1.5">
-                    <RestaurantSquare color={restaurant.color} />
-                    <span className="min-w-0 truncate">
-                      {restaurant.name} · {tickets.length}
-                    </span>
-                  </h2>
-                  {tickets.map((t) => (
-                    <OpsTicketCard
-                      key={t.id}
-                      to={viewingAs ? undefined : `/ops/tickets/${t.id}`}
-                      displayId={t.display_id ?? ''}
-                      title={t.title}
-                      status={t.status}
-                      statusLabel={
-                        t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
-                      }
-                      urgent={t.urgency === 'urgent'}
-                      walkthrough={t.source === 'walkthrough'}
-                      createdAt={t.created_at}
-                      meta={[...ticketPlace(t), ago(new Date(t.created_at), new Date())].filter(Boolean).join(' · ')}
-                      worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
-                    />
-                  ))}
-                </section>
+                <RestaurantGroup
+                  key={restaurant.id}
+                  name={restaurant.name}
+                  color={restaurant.color}
+                  open={rows.isOpen(restaurant.id)}
+                  onToggle={scope.selected ? undefined : () => rows.toggle(restaurant.id)}
+                  openCount={tickets.length}
+                  urgentCount={tickets.filter((t) => t.urgency === 'urgent').length}
+                  items={tickets.map((t) => {
+                    const to = viewingAs ? undefined : `/ops/tickets/${t.id}`
+                    return {
+                      key: t.id,
+                      pinned: t.urgency === 'urgent' || openInPane(to),
+                      node: (
+                        <OpsTicketCard
+                          to={to}
+                          displayId={t.display_id ?? ''}
+                          title={t.title}
+                          status={t.status}
+                          statusLabel={
+                            t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
+                          }
+                          urgent={t.urgency === 'urgent'}
+                          walkthrough={t.source === 'walkthrough'}
+                          createdAt={t.created_at}
+                          meta={[...ticketPlace(t), ago(new Date(t.created_at), new Date())]
+                            .filter(Boolean)
+                            .join(' · ')}
+                          worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
+                        />
+                      ),
+                    }
+                  })}
+                />
               ))}
             </>
           )}

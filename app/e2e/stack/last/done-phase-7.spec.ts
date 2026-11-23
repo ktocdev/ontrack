@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Locator, type Page, type TestInfo } from '@playwright/test'
-import { signIn } from '../helpers'
+import { openRestaurants, signIn } from '../helpers'
 
 /**
  * Phase 7's done test as one flow (the seeded half; the group's real spreadsheet is tried by
@@ -73,13 +73,16 @@ async function overview(lee: Page) {
   }
 }
 
-/** Bert's dashboard, every restaurant: each restaurant's count, and the urgent cards. */
+/** Bert's dashboard, every restaurant: each restaurant's open count (OT-168's rows), and the urgent cards. */
 async function dashboard(page: Page) {
   await page.goto('/ops')
   await expect(page.getByText(/All restaurants \(\d+\)/)).toBeVisible()
   await expect(page.getByRole('link', { name: /OT-\d+/ }).first()).toBeVisible()
-  const headings = await page.getByRole('heading', { level: 2 }).allTextContents()
-  const open = headings.reduce((n, h) => n + Number(h.match(/ · (\d+)$/)?.[1] ?? 0), 0)
+  // A closed row still shows every urgent card, so both read the same open or closed.
+  const rows = await page
+    .locator('section > h2 > button')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('aria-label') ?? ''))
+  const open = rows.reduce((n, label) => n + Number(label.match(/, (\d+) open/)?.[1] ?? 0), 0)
   const urgent = (await page.getByRole('link', { name: /OT-\d+/ }).allTextContents()).filter((t) =>
     t.includes('URGENT'),
   ).length
@@ -192,6 +195,7 @@ test('Bert imports the contractor sheet, and Lee’s Overview shows what Ops see
     expect((await overview(lee.page)).open, 'the new ticket is open for Lee').toBe(before.open + 1)
     expect((await dashboard(page)).open, 'and on Bert’s dashboard').toBe(ops.open + 1)
 
+    await openRestaurants(page)
     await page.getByRole('link', { name: new RegExp(title) }).click()
     await expect(page.getByRole('heading', { name: title })).toBeVisible()
     await page.getByRole('region', { name: 'Service & cost' }).getByRole('link', { name: '+ Log service' }).click()

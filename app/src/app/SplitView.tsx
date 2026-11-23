@@ -13,9 +13,20 @@ const PaneClose = createContext<string | null>(null)
 
 /** Whether `to` is what the pane beside the list has open (OT-159), on any of its tabs. */
 export function useOpenInPane(to: string | undefined) {
-  const open = useContext(OpenItem)
-  return !!to && !!open && (open === to || open.startsWith(`${to}/`))
+  return isOpenIn(useContext(OpenItem), to)
 }
+
+/**
+ * The same question for many links at once: a function that answers it for each, for a
+ * list that must keep the open item's card on screen (a closed restaurant on the dashboard).
+ */
+export function useIsOpenInPane() {
+  const open = useContext(OpenItem)
+  return (to: string | undefined) => isOpenIn(open, to)
+}
+
+const isOpenIn = (open: string | null, to: string | undefined) =>
+  !!to && !!open && (open === to || open.startsWith(`${to}/`))
 
 /**
  * Inside the pane beside a list, where its X goes (OT-164): the list as it was left, so

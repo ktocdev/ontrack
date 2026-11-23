@@ -139,6 +139,7 @@ import { isHex, normalizeHex, presetHex, PRESETS } from '../../lib/colors'
 import type { AppRole } from '../../lib/supabase'
 import { useTheme } from '../../theme/useTheme'
 import { ImportPartsDemo } from '../imports/ImportPartsDemo'
+import { RestaurantGroupDemo } from '../ops/RestaurantGroupDemo'
 
 /**
  * /kit: every shared component in both themes, plus links to the full-screen
@@ -620,6 +621,7 @@ export function KitPage() {
                   cost="$420.00"
                 />
               </Card>
+              <RestaurantGroupDemo restaurants={KIT_RESTAURANTS} />
               <OpsTicketCard
                 to="#"
                 displayId="OT-0988"

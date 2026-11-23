@@ -1,5 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
-import { signIn } from './helpers'
+import { signIn, openRestaurants } from './helpers'
 
 /**
  * List and detail on a laptop (OT-159, OT-164): from 1024 px a list starts on its own, a
@@ -20,7 +20,7 @@ async function shot(page: Page, info: TestInfo, name: string) {
 
 test('Ops opens a ticket beside the dashboard, and the dashboard stays', async ({ page }, info) => {
   await signIn(page, 'bert.velilla@example.com')
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+  await openRestaurants(page)
   await alone(page)
   await shot(page, info, 'ops-list-alone')
 
@@ -167,6 +167,7 @@ test('a manager’s Open tickets and In-house sit in the same column', async ({ 
 
 test('the keyboard: focus moves into the panel, Escape closes it, focus returns to the card', async ({ page }) => {
   await signIn(page, 'bert.velilla@example.com')
+  await openRestaurants(page)
   const card = pane(page).getByRole('link', { name: /OT-1031/ })
   await card.focus()
   await page.keyboard.press('Enter')

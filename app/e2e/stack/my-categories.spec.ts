@@ -1,6 +1,6 @@
 import { createECDH, randomBytes } from 'node:crypto'
 import { expect, test, type APIRequestContext, type Browser, type TestInfo } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { signIn, tokenFor, openRestaurants } from './helpers'
 
 /**
  * My categories (OT-118). Theo is seeded with the IT title's starting view (Front and Back
@@ -76,6 +76,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   page,
 }, testInfo) => {
   await signIn(page, THEO)
+  await openRestaurants(page)
   const pos = page.getByRole('link', { name: new RegExp(POS) })
   const fridge = page.getByRole('link', { name: new RegExp(FRIDGE) })
   await expect(pos).toBeVisible()
@@ -84,6 +85,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await testInfo.attach('dashboard-hidden', { body: await page.screenshot(), contentType: 'image/png' })
 
   await page.getByRole('button', { name: 'Show all' }).click()
+  await openRestaurants(page)
   await expect(fridge).toBeVisible()
   await page.getByRole('button', { name: 'Hide them' }).click()
   await expect(fridge).toHaveCount(0)
@@ -118,6 +120,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await expect(allBack).toHaveAccessibleName(/Notify off · Hidden · 1 set on its own/)
 
   await page.goto('/ops')
+  await openRestaurants(page)
   await expect(fridge).toBeVisible()
   await expect(page.getByRole('link', { name: /Dish machine not reaching rinse temp/ })).toHaveCount(0)
 
@@ -140,6 +143,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await expect(backSwitch).toBeChecked()
   await testInfo.attach('switches', { body: await page.screenshot(), contentType: 'image/png' })
   await page.goto('/ops')
+  await openRestaurants(page)
   await expect(fridge).toBeVisible()
   await page.goto('/profile/categories')
   await backSwitch.click()
@@ -176,6 +180,7 @@ test('IT hears of a POS ticket and not a Back of House one; the Ops manager titl
     expect(await sent(request, CHRIS, fridge.id)).toEqual(['new_ticket:email', 'new_ticket:push'])
 
     await signIn(page, CHRIS)
+    await openRestaurants(page)
     await expect(page.getByRole('link', { name: new RegExp(pos.title) })).toBeVisible()
     await expect(page.getByText(/categories hidden/)).toHaveCount(0)
   } finally {

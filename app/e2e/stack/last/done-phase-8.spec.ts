@@ -1,5 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
-import { signIn } from '../helpers'
+import { openRestaurants, signIn } from '../helpers'
 
 /**
  * Phase 8's done test as one flow (OT-163): the desktop view. Maya files a ticket on her
@@ -58,6 +58,7 @@ test('the desktop view: Bert works a ticket beside the dashboard, Lee reads besi
   // 2. Bert on a laptop: the dashboard on its own, with the sidebar.
   await page.setViewportSize(LAPTOP)
   await signIn(page, BERT)
+  await openRestaurants(page)
   const nav = page.getByRole('navigation', { name: 'Operations' })
   const dashboardTab = nav.getByRole('link', { name: 'Dashboard' })
   const list = page.locator('[data-split-list]')

@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
-import { signIn, tokenFor } from './helpers'
+import { openRestaurants, signIn, tokenFor } from './helpers'
 
 /**
  * Job titles (OT-117) against the seed: the migration's four titles, Maya a General
@@ -132,6 +132,7 @@ test('the badge naming who is on a ticket gives their title', async ({ page, req
   expect(res.ok()).toBe(true)
 
   await signIn(page, 'bert.velilla@example.com')
+  await openRestaurants(page)
   await expect(
     page.getByRole('link', { name: /Bar POS won't print kitchen tickets/ }).getByText('Theo Grant · IT'),
   ).toBeVisible()
