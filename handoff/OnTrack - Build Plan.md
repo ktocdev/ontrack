@@ -1,6 +1,6 @@
 # OnTrack — Build Plan
 
-Oct 28, 2026 · Katie · updated Nov 19, 2026 with Phases 1 to 6 as built, who does what between 6a and 6b, Admin on any role, and the Phase 7 pull requests
+Oct 28, 2026 · Katie · updated Nov 23, 2026 with Phases 1 to 8 as built, who does what between 6a and 6b, Admin on any role, and the feedback after Phase 8
 
 ## How to read this
 
@@ -27,6 +27,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Between 6a and 6b · Admin on any role | Done (Nov 17, 2026) | OT-121 plan update, then OT-122 to OT-124: Admin held on top of a role, the shield and the admin view, a security pass (see its section after Phase 6) |
 | 7 · Leadership, Admin tickets and imports | Done, except the real-iPhone checks and a try on the live app with the group's real contractor spreadsheet (Nov 19, 2026) | OT-140 plan update, then OT-141 to OT-155 (see Phase 7) |
 | 8 · Desktop layouts | Done, except a try on a real tablet and laptop on the live app (Nov 20, 2026) | OT-156 plan update, then OT-157 to OT-164 (see Phase 8); offline and the rest moved to Later |
+| From feedback after Phase 8 | Planned (Nov 23, 2026) | OT-165 plan update, then OT-166 to OT-170: email subjects, ask for equipment, the dashboard at a glance, leadership files tickets (see After Phase 8) |
 
 Phase 0 notes:
 
@@ -816,6 +817,26 @@ No board draws a desktop layout, so these are built from the phone boards' own p
 | OT-162 | Code quality and accessibility pass over Phase 8: keyboard, focus, Escape, both themes, nothing changed under 768 px |
 | OT-163 | The done test as one flow; the phase note |
 | OT-164 | From feedback (Nov 20, 2026): no empty pane; a list starts on its own in the reading column, an item opens beside it with an X to close it, so Open tickets and In-house line up; the same for every list and panel |
+
+## After Phase 8 · From feedback (Nov 23, 2026)
+
+Notes from the ops manager and the team after Phase 8. Small, separate changes, one pull request each, in this order.
+
+- **Email subjects name the ticket.** An email's subject is what shows in the inbox the ops manager summarizes his day from, so it carries the ticket's number, title, where it stands and its restaurant: `[OT-1234] Sink is leaking into the room drain · In progress · Federale's Logan Square`. A new ticket reads New, a closed one Closed, a reopened one Reopened, an update Update. A walkthrough reminder and a task from the Support Team follow the same order (what it is · what happened · restaurant). Push titles stay as they are, since a phone shows the app's name and the text below
+- **Ask for equipment, don't require it.** A ticket already needs no unit. Submit asks Attach equipment? the way it asks Add a photo? (OT-77), only when the restaurant has units in that category; a nudge, not enforced. With no photo and no unit, one sheet asks for both, so nobody meets two in a row
+- **Ops dashboard at a glance.** The ops manager wants to look at it in the morning and know the priorities. Each restaurant's label becomes a row that opens and closes, with the restaurant's name larger and two counts beside it, open and urgent ("7 open · 2 urgent"). Urgent tickets show under their restaurant even when the row is closed; opening it shows the rest. The phone remembers which rows were left open for the day, and every row starts closed again on the next day in the group's time zone. Within a restaurant the order stays as it is: urgent, then Front of House, then the oldest (Front of House first was already the case). No board draws it, so it is built from the dashboard's own parts and tokens, on `/kit` first, in both themes, and the reorder sheet still orders the rows
+- **Leadership files tickets.** `create_tickets` becomes on by default for leadership. Since writing in a thread follows that right, and leadership is in scope at every restaurant, they may post on any open ticket (decided Nov 23, 2026), not only their own; they still never see internal notes or change a status. New ticket is on the Overview's header (pick the restaurant first) and on a restaurant's page (that restaurant already picked), through the same Create ticket screens. A Filed by you list on the Overview shows their open tickets. Their ticket screen gets the message box and, for their own ticket, Edit, Close and Reopen as a Reporter has; the read-only band comes off the ticket screens only, and the Overview, Restaurants, Contractors and Walkthroughs stay read-only. Whoever filed a ticket hears what happens to it, whatever their role. View as still hides every control. Where Filed by you sits is a first try, to be looked at once built
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-165 | This plan update; Phase 8 to the record in `CLAUDE.md` |
+| OT-166 | Email subjects in `send-push`: number, title, status, restaurant; the walkthrough reminder and the Support Team's task in the same order |
+| OT-167 | Create ticket: Attach equipment? on Submit when the category has units, one sheet with Add a photo? when both are missing |
+| OT-168 | Ops dashboard: a row per restaurant that opens and closes, larger name, open and urgent counts, urgent shown while closed, open rows remembered for the day; `/kit` and the design-system docs |
+| OT-169 | Leadership files tickets, backend: `create_tickets` on by default for leadership, posting in any open thread, no internal notes, the filer always notified; the Roles & rights grid's default; pgTAP |
+| OT-170 | Leadership files tickets, screens: New ticket on the Overview and a restaurant's page, Filed by you, the message box and the filer's Edit, Close and Reopen; the read-only band off the ticket screens; View as; a stack flow |
 
 ## Later
 
