@@ -42,6 +42,11 @@ test('a ticket is created with a photo, shrunk to 1600px, and another manager ca
   await testInfo.attach('form-photo', { body: await page.screenshot(), contentType: 'image/png' })
 
   await page.getByRole('button', { name: 'Submit ticket' }).click()
+  // A photo and no unit: Attach equipment? asks once, and equipment stays optional (OT-167).
+  await page
+    .getByRole('dialog', { name: 'Attach equipment?' })
+    .getByRole('button', { name: 'Proceed without equipment' })
+    .click()
   await expect(page).toHaveURL(/\/tickets$/)
   await page.getByRole('link', { name: new RegExp(title) }).click()
 

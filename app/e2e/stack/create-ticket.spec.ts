@@ -132,6 +132,8 @@ test('Open Camera adds the photo to the form, and creates nothing until Submit',
   await page.goto('/tickets/new?area=boh')
   await page.getByRole('link', { name: /^Refrigeration/ }).click()
   await page.getByLabel('Title').fill(title)
+  // A unit picked, so the prompt asks only for the photo.
+  await page.getByRole('radiogroup', { name: 'Equipment' }).getByRole('radio').first().click()
   const created: string[] = []
   page.on('request', (r) => {
     if (r.method() === 'POST' && r.url().includes('/rest/v1/tickets')) created.push(r.url())
@@ -161,11 +163,83 @@ test('Open Camera adds the photo to the form, and creates nothing until Submit',
   expect(created).toHaveLength(1)
 })
 
+test('with no unit picked where the category has some, Submit asks for one, once (OT-167)', async ({
+  page,
+}, testInfo) => {
+  const png = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+    'base64',
+  )
+  const stamp = `${testInfo.project.name} ${Date.now() % 100000}`
+  await signIn(page, 'ari.kim@example.com')
+
+  // No photo and no unit: one sheet asks for both, and Choose equipment goes to the list.
+  await page.goto('/tickets/new?area=boh')
+  await page.getByRole('link', { name: /^Refrigeration/ }).click()
+  await page.getByLabel('Title').fill(`Cooler door sags ${stamp}`)
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  const both = page.getByRole('dialog', { name: 'Add a photo and equipment?' })
+  await expect(both.getByRole('button')).toHaveText([
+    'Open Camera',
+    'Choose equipment',
+    'Proceed without photo or equipment',
+    'Photo tips',
+  ])
+  await page.waitForTimeout(250)
+  await testInfo.attach('equipment-prompt-both', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.waitForTimeout(150)
+  await testInfo.attach('equipment-prompt-both-dark', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.emulateMedia({ colorScheme: 'light' })
+  await both.getByRole('button', { name: 'Choose equipment' }).click()
+  await expect(both).toHaveCount(0)
+  const units = page.getByRole('radiogroup', { name: 'Equipment' }).getByRole('radio')
+  await expect(units.first()).toBeFocused()
+  await units.first().click()
+
+  // With a unit, it is the photo prompt as before.
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  await page
+    .getByRole('dialog', { name: 'Add a photo?' })
+    .getByRole('button', { name: 'Proceed without photo' })
+    .click()
+  await expect(page).toHaveURL(/\/tickets$/)
+  await page.getByRole('link', { name: new RegExp(`Cooler door sags ${stamp}`) }).click()
+  await expect(page.locator('a[href^="/equipment/"]')).toBeVisible()
+
+  // A photo and no unit: Attach equipment? alone, and once said no, never again on this form.
+  await page.goto('/tickets/new?area=boh')
+  await page.getByRole('link', { name: /^Refrigeration/ }).click()
+  await page.getByLabel('Title').fill(`Gasket torn ${stamp}`)
+  await page.getByLabel('Choose photos').setInputFiles({ name: 'gasket.png', mimeType: 'image/png', buffer: png })
+  await expect(page.getByRole('list', { name: 'Photos to send' }).getByRole('img')).toHaveCount(1)
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  const unit = page.getByRole('dialog', { name: 'Attach equipment?' })
+  await expect(unit.getByRole('button')).toHaveText(['Choose equipment', 'Proceed without equipment'])
+  await page.waitForTimeout(250)
+  await testInfo.attach('equipment-prompt', { body: await page.screenshot(), contentType: 'image/png' })
+  await page.keyboard.press('Escape')
+  await expect(unit).toHaveCount(0)
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  await expect(page).toHaveURL(/\/tickets$/)
+  await expect(page.getByRole('status').filter({ hasText: /OT-\d+ created\./ })).toBeVisible()
+
+  // A category with no units here asks nothing about equipment.
+  await page.goto('/tickets/new?area=it')
+  await page.getByRole('link', { name: /^Website/ }).click()
+  await page.getByLabel('Title').fill(`Menu page is old ${stamp}`)
+  await expect(page.getByRole('radiogroup', { name: 'Equipment' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Submit ticket' }).click()
+  await expect(page.getByRole('dialog', { name: 'Add a photo?' })).toBeVisible()
+})
+
 test('Photo tips opens from beside Add photo and from the photo prompt', async ({ page }, testInfo) => {
   await signIn(page, 'ari.kim@example.com')
   await page.goto('/tickets/new?area=boh')
   await page.getByRole('link', { name: /^Refrigeration/ }).click()
   await page.getByLabel('Title').fill('Photo tips check')
+  // A unit picked, so the prompt asks only for the photo.
+  await page.getByRole('radiogroup', { name: 'Equipment' }).getByRole('radio').first().click()
 
   await page.getByRole('button', { name: 'Photo tips' }).click()
   const tips = page.getByRole('dialog', { name: 'Photo tips' })

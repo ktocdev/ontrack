@@ -26,7 +26,9 @@ import { usePickedPhotos } from './usePhotos'
  * back up to it. Equipment is what this restaurant has in this category, and tapping
  * the chosen unit again clears it. Photos go up after the ticket, whose folder they
  * need, so if they fail the ticket still stands and the message says so. With no
- * photo, Submit asks for one first (PhotoPromptSheet, from feedback, OT-77).
+ * photo, Submit asks for one first (PhotoPromptSheet, from feedback, OT-77). With no unit
+ * picked where the category has some, the same sheet asks for one (OT-167), once per
+ * form: equipment stays optional, and someone who said no isn't asked again.
  */
 export function CreateFormScreen() {
   const { categoryId = '' } = useParams()
@@ -91,6 +93,9 @@ function CreateForm({
   )
   const [reporting, setReporting] = useState(false)
   const [askingForPhoto, setAskingForPhoto] = useState(false)
+  const [equipmentAsked, setEquipmentAsked] = useState(false)
+  const [asking, setAsking] = useState({ photo: false, equipment: false })
+  const equipmentList = useRef<HTMLDivElement>(null)
   const [tips, setTips] = useState(false)
   const picked = usePickedPhotos()
   const banner = useRef<HTMLDivElement>(null)
@@ -103,8 +108,18 @@ function CreateForm({
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
-    if (picked.photos.length === 0) setAskingForPhoto(true)
-    else save()
+    const photo = picked.photos.length === 0
+    const unit = equipment.length > 0 && equipmentId === null && !equipmentAsked
+    if (!photo && !unit) return save()
+    if (unit) setEquipmentAsked(true)
+    setAsking({ photo, equipment: unit })
+    setAskingForPhoto(true)
+  }
+  // Choose equipment on the prompt: the list, scrolled to, with its first unit focused.
+  const chooseEquipment = () => {
+    const list = equipmentList.current
+    list?.scrollIntoView({ block: 'center' })
+    list?.querySelector<HTMLElement>('[role="radio"]')?.focus({ preventScroll: true })
   }
   const save = () =>
     create.mutate(
@@ -189,6 +204,7 @@ function CreateForm({
               <div
                 role="radiogroup"
                 aria-label="Equipment"
+                ref={equipmentList}
                 className="overflow-hidden rounded-card border border-border bg-surface"
               >
                 {equipment.map((e) => (
@@ -215,6 +231,9 @@ function CreateForm({
         onOpenChange={setAskingForPhoto}
         onFiles={(files) => void picked.add(files)}
         onProceed={save}
+        askPhoto={asking.photo}
+        askEquipment={asking.equipment}
+        onChooseEquipment={chooseEquipment}
       />
       <PhotoTipsSheet open={tips} onOpenChange={setTips} />
       <ReportSheet open={reporting} onOpenChange={setReporting} context="Creating a ticket" />

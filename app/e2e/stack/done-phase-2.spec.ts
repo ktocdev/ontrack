@@ -52,6 +52,11 @@ test('a manager reports a problem with a photo, and a manager elsewhere cannot s
     await page.getByLabel('Choose photos').setInputFiles(await bigPhoto(page))
     await expect(page.getByRole('list', { name: 'Photos to send' }).getByRole('img')).toHaveCount(1)
     await page.getByRole('button', { name: 'Submit ticket' }).click()
+    // A photo and no unit: Attach equipment? asks once, and equipment stays optional (OT-167).
+    await page
+      .getByRole('dialog', { name: 'Attach equipment?' })
+      .getByRole('button', { name: 'Proceed without equipment' })
+      .click()
 
     await expect(page).toHaveURL(/\/tickets$/)
     await page.getByRole('link', { name: new RegExp(title) }).click()
