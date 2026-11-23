@@ -30,6 +30,12 @@ type Props = {
    * button is at the bottom (Photo tips): it then opens at the top, handle and all.
    */
   focusPanel?: boolean
+  /**
+   * Where focus goes as the sheet closes; call `preventDefault()` on the event and focus
+   * something else to send it there instead of back to what opened the sheet (Choose
+   * equipment on Add a photo?, which goes to the form's equipment list).
+   */
+  onCloseAutoFocus?: (e: Event) => void
 }
 
 export function Sheet({
@@ -44,6 +50,7 @@ export function Sheet({
   icon,
   action,
   focusPanel = false,
+  onCloseAutoFocus,
 }: Props) {
   const hold = modal ? (e: Event) => e.preventDefault() : undefined
   const swipe = useSwipeToClose(() => onOpenChange(false), !modal)
@@ -69,6 +76,7 @@ export function Sheet({
                 }
               : undefined
           }
+          onCloseAutoFocus={onCloseAutoFocus}
           onEscapeKeyDown={hold}
           onPointerDownOutside={hold}
           onInteractOutside={hold}
