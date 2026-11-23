@@ -165,9 +165,27 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current phase: 8 · Desktop layouts
+## Current work: from feedback after Phase 8
 
-The plan's Phase 8 section says what ships. Phase 8 is the desktop view only (decided Nov 20, 2026); offline, reports and the rest wait under the plan's Later. Done when an Ops manager on a laptop at 1440 px works a ticket beside the dashboard's list with the sidebar on screen throughout, leadership reads the Overview and a restaurant's tickets side by side, and a phone at 390 px is unchanged. Playwright runs it (`last/done-phase-8.spec.ts`, OT-163: Maya files a ticket on her phone; Bert opens it beside the dashboard, marks it In progress, posts an update and closes it, and it opens beside Closed tickets; Lee reads the Overview and a ticket beside a restaurant's list, and closes it with the X); a real tablet and laptop on the live app are tried by hand.
+The plan's After Phase 8 section (Nov 23, 2026) says what ships: small changes from the ops manager and the team, one PR each.
+
+- Email subjects carry the ticket's number, title, status and restaurant (`[OT-1234] Sink is leaking into the room drain · In progress · Federale's Logan Square`); push titles stay as they are.
+- Equipment stays optional on a ticket. Submit asks Attach equipment? as it asks Add a photo?, only when the category has units at the restaurant, and one sheet asks for both when both are missing.
+- The Ops dashboard is a row per restaurant that opens and closes, with a larger name and open and urgent counts; urgent tickets show while a row is closed. Open rows are remembered on the device for the day and close again on the next day in the group's time zone. The order inside a restaurant doesn't change (urgent, Front of House, oldest).
+- Leadership files tickets (OT-169, OT-170): `create_tickets` on by default, so they post in any open thread (decided Nov 23, 2026) but never read internal notes or change a status. Until OT-169 merges, the rules below that say leadership writes nothing in a thread still describe the code; OT-169 rewrites them. Only the ticket screens lose the read-only band.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-165 | Plan update; Phase 8 to the record |
+| OT-166 | Email subjects in `send-push` |
+| OT-167 | Attach equipment? on Create ticket, with Add a photo? |
+| OT-168 | Ops dashboard: restaurant rows that open and close, counts, urgent while closed, remembered for the day |
+| OT-169 | Leadership files tickets, backend: the default right, posting in threads, the filer notified; pgTAP |
+| OT-170 | Leadership files tickets, screens: New ticket, Filed by you, the message box; View as; a stack flow |
+
+## Phase 8, for the record
+
+The plan's Phase 8 section says what shipped. Phase 8 is the desktop view only (decided Nov 20, 2026); offline, reports and the rest wait under the plan's Later. Done when an Ops manager on a laptop at 1440 px works a ticket beside the dashboard's list with the sidebar on screen throughout, leadership reads the Overview and a restaurant's tickets side by side, and a phone at 390 px is unchanged. Playwright runs it (`last/done-phase-8.spec.ts`, OT-163: Maya files a ticket on her phone; Bert opens it beside the dashboard, marks it In progress, posts an update and closes it, and it opens beside Closed tickets; Lee reads the Overview and a ticket beside a restaurant's list, and closes it with the X); a real tablet and laptop on the live app are tried by hand.
 
 - The phone layouts are the base and never change below 768 px. From 768 px (`md`) the `Sidebar` replaces the tab bar, on detail screens too, and one-column screens sit in a reading column; from 1024 px (`lg`) lists open their item beside them; past 1440 px (`max-w-desktop`) the frame centers.
 - No board draws a desktop layout. Build it from the phone boards' parts, spacing and tokens, with no new colors or type sizes; a new layout component goes on `/kit` and in the design-system docs first, and is checked in both themes.
