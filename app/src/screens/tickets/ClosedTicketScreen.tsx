@@ -3,13 +3,11 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Button, ButtonLink } from '../../components/Button'
 import { Card } from '../../components/Card'
-import { Textarea } from '../../components/Field'
-import { ErrorBanner, Notice } from '../../components/Notice'
-import { AddPhotoButton, PhotoTray, PhotoViewer } from '../../components/Photo'
+import { Notice } from '../../components/Notice'
+import { PhotoViewer } from '../../components/Photo'
 import { StatusPill } from '../../components/Pill'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
-import { Sheet } from '../../components/Sheet'
 import { TicketMenu } from '../../components/TicketMenu'
 import { IconPlus, IconReopen } from '../../components/icons'
 import { longDate, money, reopenDaysLeft, timeline, timeToClose } from './closed'
@@ -17,8 +15,9 @@ import { ClosingComment, Fact, HandedBackFact, Step, Timeline } from './ClosedPa
 import { TicketBar, TicketPhotos, useScrolled } from './TicketParts'
 import { ROLE_WORD, type Update } from './thread'
 import { useRoleNames } from '../../auth/group'
-import { useClosedFacts, useReopenTicket } from './useCloseTicket'
-import { usePickedPhotos, useSignedPhotos } from './usePhotos'
+import { useClosedFacts } from './useCloseTicket'
+import { ReopenSheet } from './ReopenSheet'
+import { useSignedPhotos } from './usePhotos'
 import type { useTicket } from './useTicket'
 
 /**
@@ -51,12 +50,9 @@ export function ClosedTicketScreen({
   const fromList = params.get('from') === 'closed'
   const facts = useClosedFacts(ticket.id).data
   const roleNames = useRoleNames()
-  const reopen = useReopenTicket(ticket.id)
-  const picked = usePickedPhotos()
   const paths = photos.filter((p) => !p.update_id).map((p) => p.path)
   const urls = useSignedPhotos(paths)
   const [asking, setAsking] = useState(false)
-  const [note, setNote] = useState('')
   const [viewing, setViewing] = useState<string | null>(null)
   const { scrolled, onScroll } = useScrolled()
 
@@ -66,18 +62,6 @@ export function ClosedTicketScreen({
   const left = closedAt ? reopenDaysLeft(closedAt) : 0
   const closerName = facts?.closer?.full_name
   const steps = timeline(updates)
-  const refused = (reopen.error as { code?: string } | null)?.code === '42501'
-
-  const send = () =>
-    reopen.mutate(
-      { note: note.trim(), photos: picked.photos },
-      {
-        onSuccess: () => {
-          setAsking(false)
-          onReopened(note.trim())
-        },
-      },
-    )
 
   return (
     <Screen>
@@ -210,40 +194,13 @@ export function ClosedTicketScreen({
         )}
       </ScreenFooter>
 
-      <Sheet
+      <ReopenSheet
+        ticketId={ticket.id}
+        closerName={closerName}
         open={asking}
-        onOpenChange={(open) => {
-          if (!open) reopen.reset()
-          setAsking(open)
-        }}
-        title="Is the problem back?"
-        description={`${closerName ?? 'Ops'} closed this. Describe what’s happening and it goes back on the Ops list as Reopened.`}
-      >
-        {reopen.isError && (
-          <ErrorBanner title="Couldn't reopen yet.">
-            {refused
-              ? 'This ticket was closed too long ago, or your account can’t reopen it.'
-              : 'Check your connection and try again.'}{' '}
-            What you wrote is still here.
-          </ErrorBanner>
-        )}
-        <div className="flex flex-col gap-1.5">
-          <Textarea label="What's happening?" value={note} onChange={(e) => setNote(e.target.value)} />
-          <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
-          {picked.error && (
-            <span role="alert" className="text-13 font-semibold text-danger">
-              {picked.error}
-            </span>
-          )}
-          <AddPhotoButton disabled={picked.reading} onFiles={(f) => void picked.add(f)} />
-        </div>
-        <Button loading={reopen.isPending} disabled={!note.trim() || picked.reading} onClick={send}>
-          Reopen ticket
-        </Button>
-        <Button variant="secondary" onClick={() => setAsking(false)}>
-          Cancel
-        </Button>
-      </Sheet>
+        onOpenChange={setAsking}
+        onReopened={onReopened}
+      />
       <PhotoViewer src={viewing} alt="Photo on this ticket" onClose={() => setViewing(null)} />
     </Screen>
   )

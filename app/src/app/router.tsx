@@ -643,14 +643,15 @@ export const router = createBrowserRouter([
                 element: <Shell />,
                 children: [
                   {
-                    path: '/lead',
-                    lazy: async () => ({
-                      Component: (await import('../screens/leadership/LeadOverviewScreen')).LeadOverviewScreen,
-                    }),
-                  },
-                  {
+                    // The Overview is a list too since OT-170: Filed by you opens a ticket beside it.
                     element: <SplitView lists={LEAD_TICKET_LISTS} />,
                     children: [
+                      {
+                        path: '/lead',
+                        lazy: async () => ({
+                          Component: (await import('../screens/leadership/LeadOverviewScreen')).LeadOverviewScreen,
+                        }),
+                      },
                       {
                         path: '/lead/restaurants',
                         lazy: async () => ({
@@ -718,6 +719,33 @@ export const router = createBrowserRouter([
                         },
                       },
                     ],
+                  },
+                ],
+              },
+              {
+                // Leadership files tickets on a Reporter's Create ticket screens (OT-170).
+                element: <SignedInShell />,
+                children: [
+                  {
+                    path: '/lead/tickets/new',
+                    lazy: async () => {
+                      const { CreateAreaScreen } = await import('../screens/tickets/CreateAreaScreen')
+                      return { Component: () => <CreateAreaScreen base="/lead" /> }
+                    },
+                  },
+                  {
+                    path: '/lead/tickets/new/:categoryId',
+                    lazy: async () => {
+                      const { CreateFormScreen } = await import('../screens/tickets/CreateFormScreen')
+                      return { Component: () => <CreateFormScreen base="/lead" /> }
+                    },
+                  },
+                  {
+                    path: '/lead/tickets/:id/edit',
+                    lazy: async () => {
+                      const { EditTicketScreen } = await import('../screens/tickets/EditTicketScreen')
+                      return { Component: () => <EditTicketScreen base="/lead" /> }
+                    },
                   },
                 ],
               },

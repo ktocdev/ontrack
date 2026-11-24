@@ -19,6 +19,9 @@ const OpsClosed = lazy(async () => ({ default: (await import('../screens/ops/Ops
 const AdminTickets = lazy(async () => ({
   default: (await import('../screens/admin/AdminTicketsScreen')).AdminTicketsScreen,
 }))
+const LeadOverview = lazy(async () => ({
+  default: (await import('../screens/leadership/LeadOverviewScreen')).LeadOverviewScreen,
+}))
 const LeadRestaurant = lazy(async () => {
   const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
   return { default: () => <LeadRestaurantScreen tab="tickets" /> }
@@ -56,6 +59,7 @@ export const OPS_TICKET_LISTS: SplitList[] = [
 export const ADMIN_TICKET_LISTS: SplitList[] = [{ path: '/admin/tickets', element: <AdminTickets /> }]
 
 export const LEAD_TICKET_LISTS: SplitList[] = [
+  { path: '/lead', element: <LeadOverview /> },
   { path: '/lead/restaurants', element: <LeadRestaurantsIndex /> },
   { path: '/lead/restaurants/:id', element: <LeadRestaurant /> },
 ]

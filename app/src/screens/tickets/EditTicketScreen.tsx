@@ -39,8 +39,11 @@ import { monthName } from '../walkthrough/walkthrough'
  * names the section, group and item, calls the title What's wrong?, shows the latest
  * update, and goes back to the checklist. A ticket from a walkthrough says so on its
  * Opened line wherever it is edited.
+ *
+ * Leadership edits a ticket they filed on the same screen (`base="/lead"`, OT-170), which
+ * returns to their ticket screen, and once closed to the Overview.
  */
-export function EditTicketScreen() {
+export function EditTicketScreen({ base = '' }: { base?: '' | '/lead' }) {
   const { id = '', walkthroughId, section } = useParams()
   const { data, isPending } = useTicket(id)
   const checklist = walkthroughId && section ? `/walkthrough/${walkthroughId}/${section}` : null
@@ -55,7 +58,7 @@ export function EditTicketScreen() {
   }
   const ticket = data?.ticket
   if (!ticket) return <NotFoundScreen />
-  if (ticket.status === 'closed' && closedHere === null) return <Navigate to={`/tickets/${id}`} replace />
+  if (ticket.status === 'closed' && closedHere === null) return <Navigate to={`${base}/tickets/${id}`} replace />
   const latest = [...(data.updates ?? [])].reverse().find((u) => u.kind === 'message' && !u.internal && u.body)
   return (
     <EditForm
@@ -64,6 +67,7 @@ export function EditTicketScreen() {
       onClosed={setClosedHere}
       checklist={checklist}
       latest={checklist ? latest : undefined}
+      base={base}
     />
   )
 }
@@ -76,6 +80,7 @@ function EditForm({
   onClosed,
   checklist,
   latest,
+  base,
 }: {
   ticket: Ticket
   closedNote: string | null
@@ -83,6 +88,7 @@ function EditForm({
   /** The checklist this was opened from, which Back and Save return to. */
   checklist: string | null
   latest?: Update
+  base: '' | '/lead'
 }) {
   const { user } = useUser()
   const navigate = useNavigate()
@@ -110,6 +116,8 @@ function EditForm({
       ? ticket.equipment
       : chosen && { name: chosen.name, brand: null, serial: chosen.serial }
   const pill = closed ? 'closed' : ticket.status
+  const ticketTo = `${base}/tickets/${ticket.id}`
+  const home = base ? { to: '/lead', label: 'Back to overview' } : { to: '/tickets', label: 'Back to open tickets' }
 
   const submit = () =>
     save.mutate(
@@ -124,7 +132,7 @@ function EditForm({
       {
         onSuccess: () => {
           toast.show('Changes saved.')
-          navigate(checklist ?? `/tickets/${ticket.id}`, { state: back })
+          navigate(checklist ?? ticketTo, { state: back })
         },
       },
     )
@@ -133,7 +141,7 @@ function EditForm({
     <Screen>
       <div className="flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-5 pt-[calc(12px+var(--safe-top))]">
         <Link
-          to={checklist ?? `/tickets/${ticket.id}`}
+          to={checklist ?? ticketTo}
           state={back}
           aria-label={checklist ? 'Back to checklist' : 'Back to ticket'}
           className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-text transition-colors hover:bg-surface-hover active:bg-surface-sunken active:duration-0"
@@ -281,10 +289,10 @@ function EditForm({
       <ScreenFooter>
         {closed ? (
           <>
-            <ButtonLink to={checklist ?? '/tickets'} state={back} className="w-full">
-              {checklist ? 'Back to checklist' : 'Back to open tickets'}
+            <ButtonLink to={checklist ?? home.to} state={back} className="w-full">
+              {checklist ? 'Back to checklist' : home.label}
             </ButtonLink>
-            <ButtonLink to={`/tickets/${ticket.id}`} variant="secondary" className="w-full">
+            <ButtonLink to={ticketTo} variant="secondary" className="w-full">
               View closed ticket
             </ButtonLink>
           </>
@@ -328,6 +336,7 @@ function EditForm({
           onClosed(note)
           setClosing(false)
           void queryClient.invalidateQueries({ queryKey: ['ticket', ticket.id] })
+          void queryClient.invalidateQueries({ queryKey: ['ops-ticket', ticket.id] })
         }}
       />
     </Screen>

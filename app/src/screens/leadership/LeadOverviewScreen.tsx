@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import { ticketPlace } from '../../app/areas'
+import { ticketPath } from '../../app/roles'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
@@ -8,11 +10,15 @@ import { MonthStepper } from '../../components/MonthStepper'
 import { RestaurantSquare } from '../../components/RestaurantName'
 import { Screen, ScreenBody, ScreenEmpty } from '../../components/Screen'
 import { MetricsSkeleton } from '../../components/Skeleton'
+import { TicketCard } from '../../components/TicketCard'
 import { IconChart, IconWarning } from '../../components/icons'
 import { monthKey, monthName } from '../ops/closedMonths'
 import { money } from '../tickets/closed'
+import { scheduledLabel } from '../tickets/tickets'
+import { NewTicketButton } from './NewTicketButton'
 import { LeadershipHeader } from './LeadershipHeader'
 import { addMonths, closeTime, monthBounds, overviewFor, type OverviewRow } from './overview'
+import { useFiledByYou } from './useFiledByYou'
 import { useOverview } from './useOverview'
 
 /**
@@ -23,9 +29,14 @@ import { useOverview } from './useOverview'
  * way between months, but the empty state's "See September" changes it, so the Ops
  * walkthroughs overview's stepper sits under the title, from the earliest month with
  * anything recorded to this one, and the month is in the address (?month=2026-10). Scoped by useUser(), so View as shows the person viewed.
+ *
+ * Leadership files tickets (OT-170): New ticket beside the title, picking the restaurant on
+ * Create ticket, and Filed by you under the restaurants, their open tickets, each opening
+ * beside the Overview on a laptop. No board draws either; where Filed by you sits is a first
+ * try. Under View as there is no New ticket and the cards open nothing.
  */
 export function LeadOverviewScreen() {
-  const { restaurants, viewingAs } = useUser()
+  const { user, restaurants, viewingAs } = useUser()
   const ids = useMemo(() => restaurants.map((r) => r.id), [restaurants])
   const overview = useOverview(ids)
   const [params, setParams] = useSearchParams()
@@ -41,7 +52,7 @@ export function LeadOverviewScreen() {
   const name = monthName(month)
 
   const header = (
-    <LeadershipHeader title="Overview">
+    <LeadershipHeader title="Overview" action={<NewTicketButton back="/lead" />}>
       <MonthStepper month={month} older={older} newer={newer} onGo={go} />
     </LeadershipHeader>
   )
@@ -121,8 +132,34 @@ export function LeadOverviewScreen() {
             ))}
           </div>
         )}
+        <FiledByYou userId={user.id} linked={!viewingAs} />
       </ScreenBody>
     </Screen>
+  )
+}
+
+/** The open tickets this person filed, at every restaurant; nothing at all while there are none. */
+function FiledByYou({ userId, linked }: { userId: string; linked: boolean }) {
+  const { data } = useFiledByYou(userId)
+  if (!data?.length) return null
+  return (
+    <section aria-label="Filed by you" className="flex flex-none flex-col gap-2.5">
+      <h2 className="eyebrow pt-2">Filed by you · {data.length}</h2>
+      {data.map((t) => (
+        <TicketCard
+          key={t.id}
+          to={linked ? ticketPath('leadership', t.id) : undefined}
+          displayId={t.display_id ?? ''}
+          title={t.title}
+          status={t.status}
+          statusLabel={t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined}
+          walkthrough={t.source === 'walkthrough'}
+          restaurant={t.restaurant ?? undefined}
+          place={ticketPlace(t).join(' · ')}
+          createdAt={t.created_at}
+        />
+      ))}
+    </section>
   )
 }
 

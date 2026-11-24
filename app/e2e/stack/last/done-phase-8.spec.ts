@@ -127,7 +127,7 @@ test('the desktop view: Bert works a ticket beside the dashboard, Lee reads besi
     await lee.getByRole('navigation', { name: 'Leadership' }).getByRole('link', { name: 'Restaurants' }).click()
     const leeList = lee.locator('[data-split-list]')
     await expect(leeList).toHaveAttribute('data-split-list', 'alone')
-    const leeCard = leeList.locator('a[href^="/lead/tickets/"]').first()
+    const leeCard = leeList.locator('a[href^="/lead/tickets/"]:not([href^="/lead/tickets/new"])').first()
     await leeCard.click()
     await expect(lee).toHaveURL(/\/lead\/tickets\//)
     await expect(leeList).toHaveAttribute('data-split-list', 'beside')

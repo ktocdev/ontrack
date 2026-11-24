@@ -76,12 +76,18 @@ test('leadership’s Overview shows what Ops sees: open now, and a month’s spe
 
   // On a laptop the four figures sit in one row.
   await page.setViewportSize({ width: 1280, height: 800 })
-  const tops = await Promise.all(
-    ['Open tickets', 'Urgent', /^Spend · October/, 'Avg. time to close'].map(async (l) =>
-      Math.round((await tile(page, l).boundingBox())!.y),
-    ),
-  )
-  expect(new Set(tops).size, 'one row of figures').toBe(1)
+  // The Overview is a list beside its tickets since OT-170, so the wider frame draws it again;
+  // the figures are measured once they are all back on screen.
+  const labels = ['Open tickets', 'Urgent', /^Spend · October/, 'Avg. time to close']
+  await expect
+    .poll(
+      async () => {
+        const boxes = await Promise.all(labels.map((l) => tile(page, l).boundingBox()))
+        return boxes.every(Boolean) ? new Set(boxes.map((b) => Math.round(b!.y))).size : 0
+      },
+      { message: 'one row of figures' },
+    )
+    .toBe(1)
   await shot(page, testInfo, 'overview · laptop')
 
   // A row opens the restaurant.
@@ -89,7 +95,7 @@ test('leadership’s Overview shows what Ops sees: open now, and a month’s spe
   await expect(page).toHaveURL(/\/lead\/restaurants\/[0-9a-f-]{36}$/)
 })
 
-test('View as shows leadership’s Overview, and its rows open nothing', async ({ page }) => {
+test('View as shows leadership’s Overview, and nothing on it files a ticket or opens anything', async ({ page }) => {
   await signIn(page, 'admin@example.com')
   await page.goto(`/admin/users/${LEE_ID}/view`)
   await expect(page.getByText('Viewing as Lee Chen')).toBeVisible()
@@ -97,4 +103,7 @@ test('View as shows leadership’s Overview, and its rows open nothing', async (
   await expect(tile(page, 'Open tickets')).toBeVisible()
   await expect(page.getByText(/^\d+ open/).first()).toBeVisible()
   await expect(page.locator('a[href^="/lead/restaurants"]')).toHaveCount(0)
+  // No New ticket, and Filed by you's cards open nothing (OT-170).
+  await expect(page.getByRole('link', { name: 'New ticket' })).toHaveCount(0)
+  await expect(page.locator('a[href^="/lead/tickets"]')).toHaveCount(0)
 })

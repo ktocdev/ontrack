@@ -20,6 +20,7 @@ import { EquipmentByArea, useEquipmentByArea } from '../equipment/EquipmentByAre
 import { useEquipmentList } from '../equipment/useEquipmentList'
 import { money } from '../tickets/closed'
 import { scheduledLabel } from '../tickets/tickets'
+import { NewTicketButton } from './NewTicketButton'
 import { useLeadRestaurant } from './useLeadRestaurant'
 
 /**
@@ -40,6 +41,7 @@ export function LeadRestaurantsIndex() {
  * belongs and what has been logged on it, opening the ticket by its lasting link; with none,
  * when the last one closed. Equipment, which no board draws: the units by area and type, as
  * a Reporter browses them, opening nothing, since no board draws leadership's unit page.
+ * New ticket beside the title files one here (OT-170), and comes back to this page.
  */
 export function LeadRestaurantScreen({ tab }: { tab: 'tickets' | 'equipment' }) {
   const { restaurants } = useUser()
@@ -61,11 +63,16 @@ export function LeadRestaurantScreen({ tab }: { tab: 'tickets' | 'equipment' }) 
       <ReadOnlyBanner />
       <header className="flex flex-none flex-col gap-3.5 px-screen pt-[18px]">
         <div className="flex flex-col gap-1">
-          <RestaurantTitlePicker
-            restaurants={restaurants}
-            selected={restaurant}
-            onSelect={(r) => navigate(`/lead/restaurants/${r}${tab === 'equipment' ? '/equipment' : ''}`)}
-          />
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <RestaurantTitlePicker
+                restaurants={restaurants}
+                selected={restaurant}
+                onSelect={(r) => navigate(`/lead/restaurants/${r}${tab === 'equipment' ? '/equipment' : ''}`)}
+              />
+            </div>
+            <NewTicketButton restaurantId={restaurant.id} back={base} />
+          </div>
           {reporters.length > 0 && (
             <span className="text-13 text-text-secondary">
               {roles.name('manager')}: {reporters.join(', ')}
