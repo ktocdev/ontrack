@@ -165,9 +165,29 @@ A screen that needs real data can only render against the stack, which runs in C
 - Secrets live only in Supabase and GitHub Actions settings. Never commit a `.env`.
 - Each phase ends with a short note of what changed and what the client should try.
 
-## Current work: from feedback after Phase 8
+## Current work: second round of feedback after Phase 8
 
-The plan's After Phase 8 section (Nov 23, 2026) says what ships: small changes from the ops manager and the team, one PR each.
+The plan's After Phase 8 section (Nov 24, 2026) says what ships, one PR each; the concepts it points to are in `handoff/feedback-nov-24/` (a starting point, not boards to match exactly).
+
+- Restaurant panels: a restaurant's row and its tickets in one panel tinted from the restaurant's color (`color-mix` into the surface, since the color is data; no new hex), one shared component that leadership's list reuses.
+- Sort restaurants on the dashboard's ⋯ menu: Most urgent (default), Ticket count, Custom order (replaces OT-50's reorder sheet), saved on the device.
+- Show first: inside a restaurant, urgent, then the person's first area, then the rest in the usual order, oldest first. Saved on the account, starting from the job title's first area (IT's is IT, everyone else Front of House); never name a title in code.
+- Leadership gets the same: Open and Urgent on the Overview open an all-restaurants list in panels with the Sort sheet and Show first; a smaller restaurant heading; the read-only band off every leadership screen (the admin's ticket screen keeps View only).
+- Small fixes: no invite-only line on Sign in, hidden categories below the list, Profile's Back to where it came from, Edit job title's Cancel, Support Team as a new group's Ops role name; Chef starts with IT off.
+
+| PR    | Scope |
+| ----- | ----- |
+| OT-171 | Plan update; the Nov 23 round to the record |
+| OT-172 | Restaurant panels on the Ops dashboard; `/kit` and the docs |
+| OT-173 | Sort restaurants sheet, saved on the device |
+| OT-174 | Show first: per job title and per person on the account; pgTAP; the Sort sheet; a stack flow |
+| OT-175 | Leadership: all-restaurants list from Open and Urgent, Sort sheet, smaller heading, no read-only band |
+| OT-176 | Small fixes: sign-in text, hidden categories, Profile Back, job title Cancel, Support Team by default |
+| OT-177 | Chef starts with IT off; pgTAP |
+
+## First round of feedback after Phase 8, for the record
+
+The plan's After Phase 8 section (Nov 23, 2026) says what shipped: small changes from the ops manager and the team, one PR each.
 
 - Email subjects carry the ticket's number, title, status and restaurant (`[OT-1234] Sink is leaking into the room drain · In progress · Federale's Logan Square`); push titles stay as they are.
 - Equipment stays optional on a ticket. Submit asks Attach equipment? as it asks Add a photo?, only when the category has units at the restaurant, and one sheet asks for both when both are missing.
