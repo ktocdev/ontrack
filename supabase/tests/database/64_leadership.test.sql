@@ -101,15 +101,15 @@ select is((select count(*)::int from storage.objects where bucket_id = 'invoices
 select pg_temp.login('lee.chen@example.com');
 
 -- ---------------------------------------------------------------------------
--- 3. Leadership writes nothing
+-- 3. Leadership files and posts on tickets (OT-169), and writes nothing else
 -- ---------------------------------------------------------------------------
 
-select throws_ok(format('insert into public.tickets (restaurant_id, category_id, title, created_by)
+select lives_ok(format('insert into public.tickets (restaurant_id, category_id, title, created_by)
   values (%L, %L, ''From leadership'', auth.uid())', :logan, '33333333-3333-4333-8333-000000000012'),
-  '42501', null, 'leadership files no ticket');
-select throws_ok(format('insert into public.ticket_updates (ticket_id, author_id, kind, body) values (%L, auth.uid(), ''message'', ''Hi'')', :t1042),
-  '42501', null, 'writes in no thread directly');
-select throws_ok(format('select public.post_ticket_update(%L, ''Hi'')', :t1042), '42501', null, 'nor through post_ticket_update');
+  'leadership files a ticket');
+select lives_ok(format('insert into public.ticket_updates (ticket_id, author_id, kind, body) values (%L, auth.uid(), ''message'', ''Hi'')', :t1042),
+  'writes in a thread directly');
+select lives_ok(format('select public.post_ticket_update(%L, ''Hi'')', :t1042), 'and through post_ticket_update');
 select throws_ok(format('select public.set_ticket_status(%L, ''in_progress'')', :t1042), 'P0002', null, 'changes no status');
 select throws_ok(format('select public.take_ticket(%L)', :t1042), 'P0002', null, 'takes no ticket');
 select throws_ok(format('select public.log_service(''in_house'', current_date, %L)', :t1042), '42501', null, 'logs no service');
