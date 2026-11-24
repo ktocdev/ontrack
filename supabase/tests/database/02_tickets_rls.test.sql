@@ -144,13 +144,13 @@ select is(
 select pg_temp.logout();
 
 -- ---------------------------------------------------------------------------
--- Lee, leadership: read only
+-- Lee, leadership: files tickets (OT-169)
 -- ---------------------------------------------------------------------------
 select pg_temp.login('lee.chen@example.com');
-select throws_ok($$
+select lives_ok($$
   insert into public.tickets (restaurant_id, category_id, title, created_by)
   values ('11111111-1111-4111-8111-000000000001', '33333333-3333-4333-8333-000000000012', 'Test: leadership', '22222222-2222-4222-8222-000000000005')
-$$, '42501', null, 'leadership cannot create tickets');
+$$, 'leadership creates tickets');
 select pg_temp.logout();
 
 select * from finish();

@@ -52,7 +52,7 @@ select pg_temp.logout();
 -- Leadership (Lee)
 select pg_temp.login('lee.chen@example.com');
 select ok(public.can('see_costs') and public.can('see_contractors') and public.can('see_all_tickets'), 'leadership: read rights');
-select ok(not public.can('create_tickets') and not public.can('update_status') and not public.can('edit_equipment'), 'leadership: no write rights');
+select ok(public.can('create_tickets') and not public.can('update_status') and not public.can('edit_equipment'), 'leadership: files tickets (OT-169), and no other write rights');
 select pg_temp.logout();
 
 -- Admin

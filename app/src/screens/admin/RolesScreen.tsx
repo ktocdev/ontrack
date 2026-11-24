@@ -143,7 +143,7 @@ function Help() {
             <b>{roleNames.short('ops')}</b> {roleNames.name('ops', 'Operations manager')}
           </span>
           <span>
-            <b>{roleNames.short('leadership')}</b> {roleNames.name('leadership')} (read-only)
+            <b>{roleNames.short('leadership')}</b> {roleNames.name('leadership')} (files tickets, otherwise read-only)
           </span>
           <span>
             <b>Own</b> Only the restaurants assigned to them

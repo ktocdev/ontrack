@@ -71,15 +71,15 @@ select pg_temp.login('ari.kim@example.com');
 select ok(not public.can_see_ticket_photo((:t1042) || '/one.jpg'), 'another restaurant''s manager cannot');
 
 -- ---------------------------------------------------------------------------
--- Leadership reads and does not write.
+-- Leadership posts on an open ticket and adds photos to it (OT-169).
 -- ---------------------------------------------------------------------------
 select pg_temp.login('lee.chen@example.com');
 select ok(public.can_see_ticket_photo((:t1042) || '/one.jpg'), 'leadership can open a photo');
-select throws_ok(format($$ select public.post_ticket_update('%s', 'Leadership here') $$, :t1042), '42501', null,
-  'leadership cannot post a message');
-select throws_ok(format($$
+select lives_ok(format($$ select public.post_ticket_update('%s', 'Leadership here') $$, :t1042),
+  'leadership posts a message');
+select lives_ok(format($$
   insert into public.ticket_photos (ticket_id, path, created_by) values ('%1$s', '%1$s/lee.jpg', auth.uid())
-$$, :t1042), '42501', null, 'or add a photo');
+$$, :t1042), 'and adds a photo');
 
 select * from finish();
 rollback;
