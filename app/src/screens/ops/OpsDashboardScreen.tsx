@@ -127,17 +127,12 @@ export function OpsDashboardScreen() {
           </EmptyState>
         </ScreenEmpty>
       ) : (
-        <ScreenBody className="gap-5 pb-4 pt-1">
+        <ScreenBody className="gap-3 pb-4 pt-1">
           {isPending ? (
             <CardFeedSkeleton />
           ) : (
             <>
-              <HiddenCategories
-                count={view.hidden}
-                showAll={view.showAll}
-                onShowAll={view.setShowAll}
-                className="-mb-3"
-              />
+              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
               {groups.length === 0 && (
                 <TaskListEmpty>Nothing open in the categories you show. Show all lists the rest.</TaskListEmpty>
               )}

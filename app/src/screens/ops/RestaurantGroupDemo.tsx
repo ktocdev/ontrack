@@ -34,7 +34,7 @@ export function RestaurantGroupDemo({ restaurants }: { restaurants: { name: stri
     [card('OT-1050', 'Patio heater won’t light')],
   ]
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-3">
       {groups.map((items, i) => {
         const r = restaurants[i % restaurants.length]!
         return (

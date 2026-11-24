@@ -132,6 +132,11 @@
   --restaurant-ranallis-logan: #1b4f91;
   --restaurant-porter: #9a6a00;
 
+  /* Restaurant panels: how much of a restaurant's own color (data, not a token) tints its
+     panel on the dashboard and its edge, mixed into the page and the border */
+  --restaurant-panel-mix: 10%;
+  --restaurant-panel-edge-mix: 26%;
+
   /* Restaurant color presets offered on Add restaurant */
   --preset-ocean: #0e7490;
   --preset-brick: #9b2c2c;
@@ -260,6 +265,8 @@
   --toast-action: var(--brand-fill); /* derived: the toast turns light in dark mode */
 
   --square-outline: rgba(238, 241, 238, 0.22);
+  --restaurant-panel-mix: 16%; /* derived: a dark page needs more of the color to show it */
+  --restaurant-panel-edge-mix: 36%; /* derived */
 
   /* derived: on a dark screen the scrim and shadows go black and a little stronger */
   --scrim: rgba(0, 0, 0, 0.6);
