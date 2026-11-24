@@ -838,6 +838,29 @@ Notes from the ops manager and the team after Phase 8. Small, separate changes, 
 | OT-169 | Leadership files tickets, backend: `create_tickets` on by default for leadership, posting in any open thread, no internal notes, the filer always notified; the Roles & rights grid's default; pgTAP |
 | OT-170 | Leadership files tickets, screens: New ticket on the Overview and a restaurant's page, Filed by you, the message box and the filer's Edit, Close and Reopen; the read-only band off the ticket screens; View as; a stack flow |
 
+## After Phase 8 · From feedback (Nov 24, 2026)
+
+Notes from trying OT-165 to OT-170 with the ops manager. The pictures are in `handoff/feedback-nov-24/`: `dashboard-panels.png` and `sort-sheet.png` are concepts drawn for this round, a starting point rather than boards to match exactly, and `lead-restaurant-heading.png` shows the problem. Small, separate changes, one pull request each, in this order.
+
+- **Restaurant panels.** On the Ops dashboard, each restaurant's row and the tickets under it sit in one rounded panel tinted with the restaurant's own color, so a restaurant reads as one group at a glance (`dashboard-panels.png`). The font sizes stay as OT-168 built them. A restaurant's color is the group's data, not a token, so the tint and its border are mixed from that color into the surface (`color-mix`), faint in light and dark; no new hex in app code. One shared component, on `/kit` and in the design-system docs first, in both themes, since leadership's list uses it too
+- **Sort restaurants.** The dashboard's ⋯ menu gets Sort restaurants (View Closed Tickets, In-house tasks, Sort restaurants), a sheet with three choices (`sort-sheet.png`): Most urgent (urgent tickets first, then most open; the default), Ticket count (most open first, urgent or not) and Custom order, which shows Your order to drag and replaces OT-50's reorder sheet. Saved on the device, as the restaurant order is now; a custom order already saved carries over
+- **Show first.** Inside each restaurant, tickets go urgent first, then an area, then the other areas in their usual order (Front of House, Back of House, IT), oldest first within each. Which area comes first is the person's own, picked as Show first on the Sort sheet under a Tickets heading, and saved on their account so it follows them from phone to laptop. It starts from their job title: each title names a first area (IT starts with IT; the rest, and someone with no title, with Front of House), so a new group's titles work the same way and no title is named in code. One choice is enough for now; ranking all three can come later if asked for
+- **Leadership, the same way.** The Overview's Open and Urgent cards open a list of every open ticket across the restaurants in scope (Urgent: only urgent ones), in the same restaurant panels, with the same Sort sheet and Show first. The restaurant's name on a restaurant's page is too large and wraps a word per line beside New ticket (`lead-restaurant-heading.png`): smaller, full width, with New ticket under it. The read-only band comes off every leadership screen, since they file and post now and nothing else on their screens looks changeable; the admin's ticket screen keeps its View only line, which is true there. View as still hides every control
+- **Small fixes.** Sign in loses "OnTrack is invite-only…". "N categories hidden · Show all" moves below the list wherever it shows (the dashboard, a Reporter's Open tickets and In-house, Ops In-house, both Closed lists). Profile's Back returns to the screen it was opened from, and home only when Profile was opened on its own. Cancel at the foot of Edit job title closes the sheet on Job titles. A new group starts with Support Team as the Ops role's name, so Admin tickets reads "View only · Support Team manages tickets" without anyone setting it; this group's live app had no names saved
+- **Chefs start with IT off.** The Chef job title starts with IT off on Notify and Show, as well as Front of House. Editing a title changes nobody who already has it, and there are no chefs on the live app yet, so nobody needs moving
+
+**Pull requests**
+
+| PR | Scope |
+| --- | --- |
+| OT-171 | This plan update; the round in `CLAUDE.md` |
+| OT-172 | Restaurant panels tinted from the restaurant's color on the Ops dashboard; the shared component on `/kit` and in the design-system docs |
+| OT-173 | Sort restaurants sheet: Most urgent, Ticket count, Custom order (replacing the reorder sheet), saved on the device |
+| OT-174 | Show first: a first area per job title and per person, saved on the account, the title's as the start; pgTAP; Show first on the Sort sheet; a stack flow |
+| OT-175 | Leadership: Open and Urgent open the all-restaurants list in panels with the Sort sheet; the smaller restaurant heading; the read-only band off every leadership screen; View as |
+| OT-176 | Small fixes: sign-in text, hidden categories below the list, Profile's Back, Edit job title's Cancel, Support Team as a new group's Ops role name |
+| OT-177 | Chef starts with IT off: migration and pgTAP |
+
 ## Later
 
 These come after the group is using the app daily, in whatever order the feedback puts them.
