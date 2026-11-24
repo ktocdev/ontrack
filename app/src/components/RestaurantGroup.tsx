@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from 'react'
+import { useId, type CSSProperties, type ReactNode } from 'react'
 import { RestaurantSquare } from './RestaurantName'
 import { IconChevronDown } from './icons'
 
@@ -9,6 +9,11 @@ import { IconChevronDown } from './icons'
  * are urgent, and a chevron. Closed, it still shows its `pinned` items (urgent tickets,
  * and the ticket open beside the list); open, it shows every item in the order given.
  * Without `onToggle` it is a plain heading over every item, for one restaurant picked.
+ *
+ * The row and its items sit in one panel tinted with the restaurant's own color (from
+ * feedback, Nov 24, 2026), so a restaurant reads as one group. The color is the group's
+ * data, not a token, so the tint is mixed from it into the page and the border by the
+ * `--restaurant-panel-mix` and `--restaurant-panel-edge-mix` tokens, set per theme.
  */
 export type GroupItem = { key: string; node: ReactNode; pinned?: boolean }
 
@@ -50,7 +55,11 @@ export function RestaurantGroup({
     </span>
   )
   return (
-    <section aria-label={name} className="flex flex-none flex-col gap-2.5">
+    <section
+      aria-label={name}
+      style={{ '--restaurant': color } as CSSProperties}
+      className="flex flex-none flex-col gap-1 rounded-card border border-[color-mix(in_srgb,var(--restaurant)_var(--restaurant-panel-edge-mix),var(--border))] bg-[color-mix(in_srgb,var(--restaurant)_var(--restaurant-panel-mix),var(--bg))] p-2"
+    >
       {onToggle ? (
         <h2 className="flex">
           <button
@@ -59,7 +68,7 @@ export function RestaurantGroup({
             aria-controls={listId}
             aria-label={`${name}, ${openCount} open${urgentCount > 0 ? `, ${urgentCount} urgent` : ''}`}
             onClick={onToggle}
-            className="-mx-2 flex min-h-tap flex-1 items-center gap-2.5 rounded-control px-2 text-left transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0"
+            className="flex min-h-tap flex-1 items-center gap-2.5 rounded-control px-2 text-left transition-colors hover:bg-text/5 active:bg-text/10 active:duration-0"
           >
             {title}
             {counts}
@@ -71,13 +80,13 @@ export function RestaurantGroup({
           </button>
         </h2>
       ) : (
-        <h2 className="flex min-h-tap items-center gap-2.5">
+        <h2 className="flex min-h-tap items-center gap-2.5 px-2">
           {title}
           {counts}
         </h2>
       )}
       {shown.length > 0 && (
-        <div id={listId} className="flex flex-col gap-2.5">
+        <div id={listId} className="flex flex-col gap-2.5 pb-0.5">
           {shown.map((i) => (
             <div key={i.key} className="contents">
               {i.node}

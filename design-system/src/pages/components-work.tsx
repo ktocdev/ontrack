@@ -171,7 +171,7 @@ export function TicketsPage() {
       </Section>
       <Section
         title="Restaurant rows"
-        intro="The Ops dashboard, read at a glance in the morning: each restaurant is a row with its name, how many are open and how many urgent. Closed, it still shows its urgent tickets (and the one open beside the list on a laptop). Every row starts closed each day; one opened stays open on that device until the next day. With one restaurant picked, the row is a plain heading over every ticket."
+        intro="The Ops dashboard, read at a glance in the morning: each restaurant is a row with its name, how many are open and how many urgent. Closed, it still shows its urgent tickets (and the one open beside the list on a laptop). Every row starts closed each day; one opened stays open on that device until the next day. With one restaurant picked, the row is a plain heading over every ticket. The row and its tickets sit in one panel tinted with the restaurant's own color, mixed into the page by `--restaurant-panel-mix` and into the border by `--restaurant-panel-edge-mix` (stronger in dark), since the color is data, not a token."
       >
         <Example
           code={`<RestaurantGroup name={r.name} color={r.color} open={isOpen(r.id)} onToggle={() => toggle(r.id)} openCount={7} urgentCount={2} items={[{ key, pinned: urgent, node: <OpsTicketCard … /> }]} />`}
