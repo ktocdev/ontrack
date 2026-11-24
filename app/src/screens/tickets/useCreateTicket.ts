@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { requireSupabase, type Enums } from '../../lib/supabase'
+import { safeReturnPath } from '../../auth/returnPath'
 import { uploadPhotos, type PickedPhoto } from './usePhotos'
 
 /**
@@ -8,6 +9,15 @@ import { uploadPhotos, type PickedPhoto } from './usePhotos'
  */
 
 export type Urgency = Enums<'ticket_urgency'>
+
+/**
+ * Where leadership's Create ticket goes back to, and where a filed ticket returns (OT-170):
+ * one of their own screens named in `?back=`, else the Overview.
+ */
+export function leadBack(asked: string | null) {
+  const path = safeReturnPath(asked)
+  return path && (path === '/lead' || path.startsWith('/lead/')) ? path : '/lead'
+}
 
 export function useCategories(restaurantId: string | undefined) {
   return useQuery({

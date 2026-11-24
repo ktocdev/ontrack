@@ -82,9 +82,11 @@ test('leadership reads a restaurant’s tickets beside it', async ({ page }, inf
   await signIn(page, 'lee.chen@example.com')
   await page.getByRole('navigation', { name: 'Leadership' }).getByRole('link', { name: 'Restaurants' }).click()
   await expect(page).toHaveURL(/\/lead\/restaurants\//)
-  await pane(page).locator('a[href^="/lead/tickets/"]').first().click()
+  await pane(page).locator('a[href^="/lead/tickets/"]:not([href^="/lead/tickets/new"])').first().click()
   await expect(page).toHaveURL(/\/lead\/tickets\//)
-  await expect(pane(page).locator('a[href^="/lead/tickets/"][aria-current="page"]')).toHaveCount(1)
+  await expect(
+    pane(page).locator('a[href^="/lead/tickets/"]:not([href^="/lead/tickets/new"])[aria-current="page"]'),
+  ).toHaveCount(1)
   await shot(page, info, 'lead-ticket-beside-restaurant')
 
   // Straight from a link there is no restaurant to show, so the ticket has the width.

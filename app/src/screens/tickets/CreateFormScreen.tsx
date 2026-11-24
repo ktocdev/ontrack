@@ -17,7 +17,7 @@ import { PhotoPromptSheet } from './PhotoPromptSheet'
 import { PhotoTipsLink, PhotoTipsSheet } from './PhotoTips'
 import { AREA_LABEL } from './tickets'
 import type { Area } from '../../app/areas'
-import { useCreateTicket, useTicketForm, type Urgency } from './useCreateTicket'
+import { leadBack, useCreateTicket, useTicketForm, type Urgency } from './useCreateTicket'
 import { usePickedPhotos } from './usePhotos'
 
 /**
@@ -29,8 +29,11 @@ import { usePickedPhotos } from './usePhotos'
  * photo, Submit asks for one first (PhotoPromptSheet, from feedback, OT-77). With no unit
  * picked where the category has some, the same sheet asks for one (OT-167), once per
  * form: equipment stays optional, and someone who said no isn't asked again.
+ *
+ * Leadership's (`base="/lead"`, OT-170) is the same form; once filed it returns to where
+ * Create ticket was opened (`?back=`), the Overview unless a restaurant's page.
  */
-export function CreateFormScreen() {
+export function CreateFormScreen({ base = '' }: { base?: '' | '/lead' }) {
   const { categoryId = '' } = useParams()
   const [params] = useSearchParams()
   const { user, restaurants } = useUser()
@@ -39,6 +42,7 @@ export function CreateFormScreen() {
     restaurants.find((r) => r.id === user.home_restaurant_id) ??
     restaurants[0]
   const { data, isPending } = useTicketForm(categoryId, restaurant?.id)
+  const back = base ? leadBack(params.get('back')) : null
 
   if (!restaurant || (data && !data.category)) return <NotFoundScreen />
   if (isPending || !data?.category) {
@@ -54,7 +58,8 @@ export function CreateFormScreen() {
       restaurantName={restaurant.name}
       category={data.category}
       equipment={data.equipment}
-      backTo={`/tickets/new?area=${data.category.area}&restaurant=${restaurant.id}`}
+      backTo={`${base}/tickets/new?area=${data.category.area}&restaurant=${restaurant.id}${back ? `&back=${encodeURIComponent(back)}` : ''}`}
+      doneTo={back ?? '/tickets'}
     />
   )
 }
@@ -65,12 +70,15 @@ function CreateForm({
   category,
   equipment,
   backTo,
+  doneTo,
 }: {
   restaurantId: string
   restaurantName: string
   category: { id: string; name: string; area: Area }
   equipment: { id: string; name: string; serial: string | null }[]
   backTo: string
+  /** Where it goes once filed: a Reporter's Open tickets, or where leadership opened it. */
+  doneTo: string
 }) {
   const { user } = useUser()
   const navigate = useNavigate()
@@ -141,7 +149,7 @@ function CreateForm({
               ? `${ticket.displayId} created, but its photos didn't upload. Add them in an update.`
               : `${ticket.displayId} created.`,
           )
-          navigate('/tickets')
+          navigate(doneTo)
         },
       },
     )

@@ -5,11 +5,11 @@ import { CategoryTile } from '../../components/Card'
 import { EmptyState } from '../../components/EmptyState'
 import { Select } from '../../components/Field'
 import { RestaurantName } from '../../components/RestaurantName'
-import { Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
+import { BackBar, Screen, ScreenBody, ScreenHeader } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { Sk } from '../../components/Skeleton'
 import { IconStorefront } from '../../components/icons'
-import { useCategories } from './useCreateTicket'
+import { leadBack, useCategories } from './useCreateTicket'
 
 /**
  * Manager · Create ticket: area (design/screens/Create-Area). Front or Back of House,
@@ -17,9 +17,13 @@ import { useCategories } from './useCreateTicket'
  * the address, so coming back from the form keeps them. Someone with more than one
  * restaurant picks which, which has no board. It opens on Front of House, where the
  * board opens on Back (from feedback, Nov 4, 2026). Scan a QR code waits for Phase 4.
+ *
+ * Leadership's (`base="/lead"`, OT-170) is the same screen, opened from the Overview or a
+ * restaurant's page rather than a tab: a back arrow to where it was opened (`?back=`), and the
+ * restaurant picked first, or already picked from a restaurant's page (`?restaurant=`).
  */
 
-export function CreateAreaScreen() {
+export function CreateAreaScreen({ base = '' }: { base?: '' | '/lead' }) {
   const { user, restaurants } = useUser()
   const [params, setParams] = useSearchParams()
   // A ticket started from a closed one (Create ticket from this) keeps its link to it.
@@ -30,17 +34,24 @@ export function CreateAreaScreen() {
     restaurants.find((r) => r.id === user.home_restaurant_id) ??
     restaurants[0]
   const { data } = useCategories(restaurant?.id)
+  const back = base ? leadBack(params.get('back')) : null
 
   const set = (next: { area?: Area; restaurant?: string }) =>
     setParams(
-      { area: next.area ?? area, ...(restaurant ? { restaurant: next.restaurant ?? restaurant.id } : {}) },
+      {
+        area: next.area ?? area,
+        ...(restaurant ? { restaurant: next.restaurant ?? restaurant.id } : {}),
+        ...(back ? { back } : {}),
+      },
       { replace: true },
     )
+  const backBar = back && <BackBar to={back} label="Back" bordered={false} />
 
   if (!restaurant) {
     return (
       <Screen>
-        <ScreenHeader title="Create a ticket" />
+        {backBar}
+        <ScreenHeader title="Create a ticket" underBanner={Boolean(backBar)} />
         <EmptyState
           titleSize={20}
           icon={<IconStorefront size={30} />}
@@ -51,11 +62,13 @@ export function CreateAreaScreen() {
     )
   }
 
-  const here = `area=${area}&restaurant=${restaurant.id}`
+  const here = `area=${area}&restaurant=${restaurant.id}${back ? `&back=${encodeURIComponent(back)}` : ''}`
   return (
     <Screen>
+      {backBar}
       <ScreenHeader
         title="Create a ticket"
+        underBanner={Boolean(backBar)}
         topLeft={
           restaurants.length === 1 ? <RestaurantName name={restaurant.name} color={restaurant.color} /> : undefined
         }
@@ -79,7 +92,7 @@ export function CreateAreaScreen() {
                 .map((c) => (
                   <CategoryTile
                     key={c.id}
-                    to={`/tickets/new/${c.id}?${here}`}
+                    to={`${base}/tickets/new/${c.id}?${here}`}
                     name={c.name}
                     count={c.count}
                     state={from}

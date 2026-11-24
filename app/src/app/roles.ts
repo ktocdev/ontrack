@@ -120,8 +120,14 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
   leadership: {
     label: 'Leadership',
     items: [
-      { to: '/lead', label: 'Overview', icon: IconDashboard, end: true },
-      { to: '/lead/restaurants', label: 'Restaurants', icon: IconStorefront, lightsOn: /^\/lead\/tickets\// },
+      // Filing a ticket starts from the Overview (OT-170); a ticket lights Restaurants.
+      { to: '/lead', label: 'Overview', icon: IconDashboard, end: true, lightsOn: /^\/lead\/tickets\/new(\/|$)/ },
+      {
+        to: '/lead/restaurants',
+        label: 'Restaurants',
+        icon: IconStorefront,
+        lightsOn: /^\/lead\/tickets\/(?!new(\/|$))/,
+      },
       { to: '/lead/walkthroughs', label: 'Walkthroughs', icon: IconClipboardCheck },
       { to: '/lead/contractors', label: 'Contractors', icon: IconBriefcase, lightsOn: /^\/lead\/service\// },
     ],
@@ -156,7 +162,7 @@ export function tabsFor(user: { role: AppRole; is_admin: boolean }, pathname: st
   return adminOnTop(user) && inAdminView(pathname) ? ADMIN_VIEW_TABS : ROLE_TABS[user.role]
 }
 
-/** Where a ticket's lasting link leads for each role; leadership's (OT-145) and the plain admin's (OT-148) are read-only. */
+/** Where a ticket's lasting link leads for each role; the plain admin's (OT-148) is read-only. */
 export function ticketPath(role: AppRole, id: string) {
   const safe = encodeURIComponent(id)
   if (role === 'manager') return `/tickets/${safe}`

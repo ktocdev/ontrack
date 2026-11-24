@@ -1,28 +1,37 @@
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRef, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
 import { ticketPlace } from '../../app/areas'
 import { useUser } from '../../auth/context'
 import { useRoleNames } from '../../auth/group'
 import { useRight } from '../../auth/rights'
+import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
-import { PhotoViewer } from '../../components/Photo'
+import { ErrorBanner } from '../../components/Notice'
+import { AddPhotoButton, PhotoTray, PhotoViewer } from '../../components/Photo'
 import { RestaurantName } from '../../components/RestaurantName'
 import { StatusPill, UrgentTag } from '../../components/Pill'
 import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
-import { Screen, ScreenBody, SectionLabel } from '../../components/Screen'
+import { Screen, ScreenBody, ScreenFooter, SectionLabel } from '../../components/Screen'
 import { Spinner } from '../../components/Skeleton'
-import { IconChevronRight } from '../../components/icons'
+import { Composer } from '../../components/Thread'
+import { TicketMenu } from '../../components/TicketMenu'
+import { useToast } from '../../components/Toast'
+import { IconChevronRight, IconReopen } from '../../components/icons'
 import { shortDay } from '../../lib/words'
 import { NotFoundScreen } from '../errors/NotFoundScreen'
 import { useOpsTicket } from '../ops/useOpsTicket'
 import { serviceDay } from '../service/service'
 import { Row, Rows } from '../service/ServiceRecordScreen'
 import { useTicketService } from '../service/useLogService'
-import { money } from '../tickets/closed'
+import { money, reopenDaysLeft } from '../tickets/closed'
+import { CloseTicketSheet } from '../tickets/CloseTicketSheet'
+import { ReopenSheet } from '../tickets/ReopenSheet'
 import { ThreadFeed } from '../tickets/ThreadFeed'
 import { ROLE_WORD, threadItems } from '../tickets/thread'
 import { TicketBar, TicketPhotos, useScrolled } from '../tickets/TicketParts'
-import { useSignedPhotos } from '../tickets/usePhotos'
+import { usePickedPhotos, useSignedPhotos } from '../tickets/usePhotos'
+import { usePostUpdate } from '../tickets/useTicket'
 import { scheduledLabel } from '../tickets/tickets'
 
 /**
@@ -36,20 +45,34 @@ import { scheduledLabel } from '../tickets/tickets'
  * with its resolution. Back returns where it came from inside this app, else to the
  * ticket's restaurant.
  *
- * The admin's (/admin/tickets/<id>, OT-148) differs as its board does: the restaurant with
- * its color, no Description label, and Back to Tickets. Visits open nothing, since no board
- * draws an admin's service record.
+ * Since OT-170 leadership files tickets, so their ticket screen loses the band: the message
+ * box while the ticket is open (they post on any open ticket, as `can_post_on_ticket()`
+ * allows, never an internal note), and on a ticket they filed Edit and Close in the menu and
+ * Reopen for 30 days once closed, as a Reporter has. Under View as there are none of these.
+ *
+ * The admin's (/admin/tickets/<id>, OT-148) stays read-only and differs as its board does: the
+ * restaurant with its color, no Description label, and Back to Tickets. Visits open nothing,
+ * since no board draws an admin's service record.
  */
 export function ReadOnlyTicketScreen({ base }: { base: '/lead' | '/admin' }) {
   const { id = '' } = useParams()
   const location = useLocation()
-  const { user } = useUser()
+  const { user, viewingAs } = useUser()
   const roles = useRoleNames()
   const { data, isPending } = useOpsTicket(id)
   const urls = useSignedPhotos(data?.photos.map((p) => p.path) ?? [])
   const [viewing, setViewing] = useState<{ src: string; alt: string } | null>(null)
   const { scrolled, onScroll } = useScrolled()
   const from = (location.state as { from?: string } | null)?.from
+  const files = useRight('create_tickets') === true
+  const post = usePostUpdate(id)
+  const picked = usePickedPhotos()
+  const [draft, setDraft] = useState('')
+  const [closing, setClosing] = useState(false)
+  const [reopening, setReopening] = useState(false)
+  const body = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
+  const toast = useToast()
 
   if (isPending) {
     return (
@@ -85,14 +108,75 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' | '/admin' }) {
   const status =
     ticket.status === 'scheduled' && ticket.scheduled_for ? scheduledLabel(ticket.scheduled_for) : undefined
 
+  // Leadership's controls (OT-170); the database holds them to what can_post_on_ticket() and
+  // tickets_update allow, and View as shows none.
+  const acts = !admin && !viewingAs
+  const open = ticket.status !== 'closed'
+  const mine = acts && ticket.created_by === user.id
+  const canPost = acts && files && open
+  const left = mine && !open && ticket.closed_at ? reopenDaysLeft(ticket.closed_at) : 0
+  const refresh = () => void queryClient.invalidateQueries({ queryKey: ['ops-ticket', id] })
+
+  const send = () =>
+    post.mutate(
+      { body: draft.trim(), photos: picked.photos },
+      {
+        onSuccess: () => {
+          setDraft('')
+          picked.clear()
+          // After the refreshed thread has drawn.
+          requestAnimationFrame(() => body.current?.scrollTo({ top: body.current.scrollHeight }))
+        },
+      },
+    )
+
   return (
     <Screen>
-      <ReadOnlyBanner />
-      <TicketBar to={back} label="Back" scrolled={scrolled} underBanner>
+      {admin && <ReadOnlyBanner />}
+      <TicketBar to={back} label="Back" scrolled={scrolled} underBanner={admin}>
         <span className="flex-1 font-mono text-13 text-text-secondary">{ticket.display_id}</span>
         {ticket.urgency === 'urgent' && <UrgentTag className="mr-2" />}
+        {acts && (
+          <TicketMenu
+            displayId={ticket.display_id ?? ''}
+            title={ticket.title}
+            items={
+              mine && open
+                ? [
+                    { to: `/lead/tickets/${ticket.id}/edit`, label: 'Edit ticket' },
+                    { onSelect: () => setClosing(true), label: 'Close ticket' },
+                  ]
+                : []
+            }
+          />
+        )}
       </TicketBar>
-      <ScreenBody className="gap-3.5 pb-6 pt-3.5" onScroll={onScroll}>
+      {mine && (
+        <>
+          <CloseTicketSheet
+            ticketId={ticket.id}
+            displayId={ticket.display_id ?? ''}
+            open={closing}
+            onOpenChange={setClosing}
+            onClosed={() => {
+              setClosing(false)
+              toast.show(`${ticket.display_id} closed.`)
+              refresh()
+            }}
+          />
+          <ReopenSheet
+            ticketId={ticket.id}
+            closerName={ticket.closer?.full_name}
+            open={reopening}
+            onOpenChange={setReopening}
+            onReopened={() => {
+              toast.show(`${ticket.display_id} reopened and sent to ${roles.name('ops', 'Ops')}.`)
+              refresh()
+            }}
+          />
+        </>
+      )}
+      <ScreenBody ref={body} className="gap-3.5 pb-6 pt-3.5" onScroll={onScroll}>
         <div className="flex flex-none flex-col gap-1">
           <h1 className="font-display text-24 font-bold leading-[1.2] tracking-[-0.02em] [overflow-wrap:anywhere]">
             {ticket.title}
@@ -148,9 +232,64 @@ export function ReadOnlyTicketScreen({ base }: { base: '/lead' | '/admin' }) {
         <h2 className="eyebrow -mb-1 pt-1">Updates · {count}</h2>
         <ThreadFeed items={items} photos={data.photos} urls={urls.data} onOpen={setViewing} />
         <p className="pt-2 text-center text-13 leading-normal text-text-muted">
-          You can view this ticket but not change it. {roles.name('ops', 'Ops')} internal notes aren&apos;t shown.
+          {canPost || left > 0 ? '' : 'You can view this ticket but not change it. '}
+          {roles.name('ops', 'Ops')} internal notes aren&apos;t shown.
         </p>
       </ScreenBody>
+      {canPost && (
+        <>
+          {post.isError && (
+            <div className="flex-none px-3 pb-2">
+              <ErrorBanner title="Couldn't post that yet.">
+                Check your connection and try again. Your update is still here.
+              </ErrorBanner>
+            </div>
+          )}
+          <Composer
+            label={`Write an update for ${roles.name('ops', 'Ops')}`}
+            placeholder="Write an update…"
+            maxLength={4000}
+            value={draft}
+            onChange={(value) => {
+              if (post.isError) post.reset()
+              setDraft(value)
+            }}
+            onSend={send}
+            busy={post.isPending || picked.reading}
+            canSendEmpty={picked.photos.length > 0}
+            leading={
+              <AddPhotoButton
+                variant="icon"
+                disabled={post.isPending || picked.reading}
+                onFiles={(files) => {
+                  if (post.isError) post.reset()
+                  void picked.add(files)
+                }}
+              />
+            }
+            above={
+              <>
+                <PhotoTray photos={picked.photos} reading={picked.reading} onRemove={picked.remove} />
+                {picked.error && (
+                  <span role="alert" className="text-13 font-semibold text-danger">
+                    {picked.error}
+                  </span>
+                )}
+              </>
+            }
+          />
+        </>
+      )}
+      {left > 0 && (
+        <ScreenFooter>
+          <Button variant="tall" icon={<IconReopen size={20} />} onClick={() => setReopening(true)}>
+            Reopen ticket
+          </Button>
+          <span className="text-center text-12 text-text-secondary">
+            You can report this to {roles.name('ops', 'Ops')} for {left} more {left === 1 ? 'day' : 'days'}.
+          </span>
+        </ScreenFooter>
+      )}
       <PhotoViewer src={viewing?.src ?? null} alt={viewing?.alt ?? ''} onClose={() => setViewing(null)} />
     </Screen>
   )

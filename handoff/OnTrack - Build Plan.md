@@ -27,7 +27,7 @@ Each phase lists what it ships, the screens it covers from the design, the backe
 | Between 6a and 6b · Admin on any role | Done (Nov 17, 2026) | OT-121 plan update, then OT-122 to OT-124: Admin held on top of a role, the shield and the admin view, a security pass (see its section after Phase 6) |
 | 7 · Leadership, Admin tickets and imports | Done, except the real-iPhone checks and a try on the live app with the group's real contractor spreadsheet (Nov 19, 2026) | OT-140 plan update, then OT-141 to OT-155 (see Phase 7) |
 | 8 · Desktop layouts | Done, except a try on a real tablet and laptop on the live app (Nov 20, 2026) | OT-156 plan update, then OT-157 to OT-164 (see Phase 8); offline and the rest moved to Later |
-| From feedback after Phase 8 | Planned (Nov 23, 2026) | OT-165 plan update, then OT-166 to OT-170: email subjects, ask for equipment, the dashboard at a glance, leadership files tickets (see After Phase 8) |
+| From feedback after Phase 8 | Built (Nov 23, 2026), waiting on a try on the live app | OT-165 plan update, then OT-166 to OT-170: email subjects, ask for equipment, the dashboard at a glance, leadership files tickets (see After Phase 8) |
 
 Phase 0 notes:
 

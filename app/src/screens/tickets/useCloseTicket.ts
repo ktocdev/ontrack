@@ -46,6 +46,8 @@ export function useSaveTicket(ticketId: string) {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] }),
         queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+        // Leadership's ticket screen reads it as Ops' does (OT-170).
+        queryClient.invalidateQueries({ queryKey: ['ops-ticket', ticketId] }),
         // A walkthrough's ticket is listed under its item.
         queryClient.invalidateQueries({ queryKey: ['walkthrough'] }),
       ]),
@@ -65,6 +67,8 @@ export function useCloseTicket(ticketId: string) {
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+        // Leadership's ticket screen reads it as Ops' does (OT-170).
+        queryClient.invalidateQueries({ queryKey: ['ops-ticket', ticketId] }),
         queryClient.invalidateQueries({ queryKey: ['ticket-closed', ticketId] }),
         queryClient.invalidateQueries({ queryKey: ['walkthrough'] }),
         queryClient.invalidateQueries({ queryKey: ['walkthrough-home'] }),
@@ -88,6 +92,8 @@ export function useReopenTicket(ticketId: string) {
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+        // Leadership's ticket screen reads it as Ops' does (OT-170).
+        queryClient.invalidateQueries({ queryKey: ['ops-ticket', ticketId] }),
         queryClient.invalidateQueries({ queryKey: ['walkthrough'] }),
         queryClient.invalidateQueries({ queryKey: ['walkthrough-home'] }),
       ]),

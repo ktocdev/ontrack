@@ -2,9 +2,11 @@ import { expect, test, type Page, type TestInfo } from '@playwright/test'
 import { signIn } from './helpers'
 
 /**
- * Leadership · Ticket and Service record, read-only (Exec-Ticket, Exec-Service-Record,
- * OT-145) against the seed's OT-1042 at Logan Square: Bert is on it, Coldline's visit has
- * its invoice, and Ops left an internal note that leadership must not see. It only reads.
+ * Leadership · Ticket and Service record (Exec-Ticket, Exec-Service-Record, OT-145) against
+ * the seed's OT-1042 at Logan Square: Bert is on it, Coldline's visit has its invoice, and
+ * Ops left an internal note that leadership must not see. Since OT-170 leadership may post on
+ * any open ticket, so the ticket has no read-only band and has the message box, but Maya filed
+ * it, so Lee can't edit or close it. The service record stays read-only. It only reads.
  */
 
 test.use({ timezoneId: 'America/Chicago' })
@@ -16,14 +18,16 @@ const T1042 = '66666666-6666-4666-8666-000000001042'
 const shot = async (page: Page, testInfo: TestInfo, name: string) =>
   testInfo.attach(name, { body: await page.screenshot(), contentType: 'image/png' })
 
-test('leadership reads a ticket and its service record, and can change neither', async ({ page }, testInfo) => {
+test('leadership reads someone else’s ticket and its service record, and changes neither', async ({
+  page,
+}, testInfo) => {
   await signIn(page, LEE)
   await page.goto(`/lead/restaurants/${LOGAN}`)
   await page.locator(`a[href="/lead/tickets/${T1042}"]`).click()
   await expect(page).toHaveURL(new RegExp(`/lead/tickets/${T1042}$`))
 
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Walk-in cooler not holding temp' })).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await expect(page.getByText(/^Federale’s Logan Square · by Maya Reyes, Oct 19/)).toBeVisible()
   await expect(page.getByText('URGENT', { exact: true })).toBeVisible()
   await expect(page.getByText('On it')).toBeVisible()
@@ -34,11 +38,15 @@ test('leadership reads a ticket and its service record, and can change neither',
   const visit = page.getByRole('link', { name: /Coldline Refrigeration Oct 19, 2026/ })
   await expect(visit).toContainText('Invoice attached')
   await expect(visit).toContainText('$397.40')
-  await expect(page.getByText(/You can view this ticket but not change it\./)).toBeVisible()
-  // Nothing to write with, and no internal note.
+  await expect(page.getByText(/You can view this ticket but not change it\./)).toHaveCount(0)
+  // The message box, but no status, no internal note, and only Share link on someone else's.
+  await expect(page.getByRole('textbox', { name: /^Write an update for/ })).toBeVisible()
   await expect(page.getByRole('button', { name: /Add update|Status/ })).toHaveCount(0)
-  await expect(page.getByRole('textbox')).toHaveCount(0)
+  await expect(page.getByRole('switch', { name: /internal/i })).toHaveCount(0)
   await expect(page.getByText(/Coldline quoted \$185/)).toHaveCount(0)
+  await page.getByRole('button', { name: 'More options for this ticket' }).click()
+  await expect(page.getByRole('menuitem')).toHaveText(['Share link'])
+  await page.keyboard.press('Escape')
   await shot(page, testInfo, 'ticket')
 
   // The visit opens its service record, read-only.
