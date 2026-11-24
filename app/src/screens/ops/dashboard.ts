@@ -39,3 +39,30 @@ export function inChosenOrder<R extends { id: string }>(restaurants: R[], chosen
   const placed = chosen.flatMap((id) => restaurants.filter((r) => r.id === id))
   return [...placed, ...restaurants.filter((r) => !chosen.includes(r.id))]
 }
+
+/** How the dashboard orders its restaurants, chosen on Sort restaurants (from feedback, Nov 24, 2026). */
+export type RestaurantSort = 'urgent' | 'count' | 'custom'
+
+export const RESTAURANT_SORTS: { value: RestaurantSort; title: string; subtitle: string }[] = [
+  { value: 'urgent', title: 'Most urgent', subtitle: 'Most urgent tickets first, then most open tickets' },
+  { value: 'count', title: 'Ticket count', subtitle: 'Most open tickets first, urgent or not' },
+  { value: 'custom', title: 'Custom order', subtitle: 'Drag restaurants into your own order' },
+]
+
+export const isRestaurantSort = (v: unknown): v is RestaurantSort => RESTAURANT_SORTS.some((s) => s.value === v)
+
+/**
+ * The restaurant groups in the chosen sort, counting the tickets each one lists. The groups
+ * come in the person's own order, which settles a tie, so restaurants that are level stay put.
+ */
+export function sortGroups<G extends { tickets: { urgency: string }[] }>(groups: G[], sort: RestaurantSort): G[] {
+  if (sort === 'custom') return groups
+  const urgent = (g: G) => g.tickets.filter((t) => t.urgency === 'urgent').length
+  return groups
+    .map((g, i) => ({ g, i }))
+    .sort(
+      (a, b) =>
+        (sort === 'urgent' ? urgent(b.g) - urgent(a.g) : 0) || b.g.tickets.length - a.g.tickets.length || a.i - b.i,
+    )
+    .map(({ g }) => g)
+}

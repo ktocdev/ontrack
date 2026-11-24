@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { byPriority, groupByRestaurant, inChosenOrder } from './dashboard'
+import { byPriority, groupByRestaurant, inChosenOrder, sortGroups } from './dashboard'
 
 describe('byPriority', () => {
   const ticket = (id: string, urgency: string, area: string | null, created_at: string) => ({
@@ -81,5 +81,29 @@ describe('inChosenOrder', () => {
 
   it('puts a restaurant added since after the rest, and drops one that is gone', () => {
     expect(ids(['c', 'gone', 'a'])).toEqual(['c', 'a', 'b'])
+  })
+})
+
+describe('sortGroups', () => {
+  const t = (urgent = false) => ({ urgency: urgent ? 'urgent' : 'normal' })
+  // In the person's own order: a has 1 urgent of 3, b none of 5, c 2 urgent of 2, d none of 3.
+  const groups = [
+    { id: 'a', tickets: [t(true), t(), t()] },
+    { id: 'b', tickets: [t(), t(), t(), t(), t()] },
+    { id: 'c', tickets: [t(true), t(true)] },
+    { id: 'd', tickets: [t(), t(), t()] },
+  ]
+  const ids = (sort: Parameters<typeof sortGroups>[1]) => sortGroups(groups, sort).map((g) => g.id)
+
+  it('puts the most urgent first, then the most open', () => {
+    expect(ids('urgent')).toEqual(['c', 'a', 'b', 'd'])
+  })
+
+  it('puts the most open first, urgent or not, keeping the own order on a tie', () => {
+    expect(ids('count')).toEqual(['b', 'a', 'd', 'c'])
+  })
+
+  it('keeps the own order for Custom order', () => {
+    expect(ids('custom')).toEqual(['a', 'b', 'c', 'd'])
   })
 })

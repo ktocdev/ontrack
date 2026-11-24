@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from 'react'
  * Swipe down to close a bottom sheet, as a phone's own sheets do. A swipe starts
  * anywhere on the sheet, but only while it and whatever is under the finger are
  * scrolled to the top, so a swipe on a list inside it scrolls the list first. It
- * never starts on a field or on a drag handle (`touch-none`, as Reorder restaurants'
+ * never starts on a field or on a drag handle (`touch-none`, as Sort restaurants'
  * are, or `data-no-swipe`). The sheet follows the finger; let go past a third of its
  * height, or with a quick flick, and it slides away, otherwise it springs back. From
  * the lg breakpoint the sheet is a centered dialog and none of this applies.
