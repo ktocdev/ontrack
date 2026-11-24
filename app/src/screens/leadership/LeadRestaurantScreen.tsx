@@ -7,7 +7,6 @@ import { useRight } from '../../auth/rights'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { EquipmentRow } from '../../components/Equipment'
-import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { RestaurantTitlePicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenEmpty, UnderlineTabs } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
@@ -60,24 +59,22 @@ export function LeadRestaurantScreen({ tab }: { tab: 'tickets' | 'equipment' }) 
 
   return (
     <Screen>
-      <ReadOnlyBanner />
-      <header className="flex flex-none flex-col gap-3.5 px-screen pt-[18px]">
+      <header className="flex flex-none flex-col gap-3.5 px-screen pt-[calc(18px+var(--safe-top))]">
         <div className="flex flex-col gap-1">
+          {/* The name has the width to itself and New ticket sits under it, beside who runs
+              it, so a long name doesn't wrap a word per line (from feedback, Nov 24, 2026). */}
+          <RestaurantTitlePicker
+            size="medium"
+            restaurants={restaurants}
+            selected={restaurant}
+            onSelect={(r) => navigate(`/lead/restaurants/${r}${tab === 'equipment' ? '/equipment' : ''}`)}
+          />
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <RestaurantTitlePicker
-                restaurants={restaurants}
-                selected={restaurant}
-                onSelect={(r) => navigate(`/lead/restaurants/${r}${tab === 'equipment' ? '/equipment' : ''}`)}
-              />
-            </div>
+            <span className="min-w-0 text-13 text-text-secondary">
+              {reporters.length > 0 && `${roles.name('manager')}: ${reporters.join(', ')}`}
+            </span>
             <NewTicketButton restaurantId={restaurant.id} back={base} />
           </div>
-          {reporters.length > 0 && (
-            <span className="text-13 text-text-secondary">
-              {roles.name('manager')}: {reporters.join(', ')}
-            </span>
-          )}
         </div>
         <UnderlineTabs
           label="Restaurant sections"

@@ -6,7 +6,6 @@ import { useRight } from '../../auth/rights'
 import { Button, ButtonLink, buttonClasses } from '../../components/Button'
 import { Card, KeyValueRow, ListCard } from '../../components/Card'
 import { Kpi } from '../../components/Kpi'
-import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { EmptyState } from '../../components/EmptyState'
 import { RestaurantName } from '../../components/RestaurantName'
 import { BackBar, Screen, ScreenBody, ScreenEmpty, SectionLabel, UnderlineTabs } from '../../components/Screen'
@@ -45,7 +44,7 @@ import { useContractor, type ContractorData } from './useContractor'
  * changes anything or leads anywhere.
  *
  * Leadership's contractor page (design/screens/Exec-Contractor, OT-146) is this screen at
- * /lead/contractors/<id> under READ-ONLY VIEW: no Edit or menu, Call and Email kept, the
+ * /lead/contractors/<id>, read-only: no Edit or menu, Call and Email kept, the
  * amounts and lists for every restaurant, each visit opening leadership's read-only
  * service record, and a missing invoice says Ops hasn't attached it yet.
  */
@@ -59,13 +58,7 @@ export function ContractorScreen({ base = '/ops' }: { base?: Base }) {
   const seeContractors = useRight('see_contractors')
   const seeCosts = !!useRight('see_costs')
   const { data, isPending, isError, refetch } = useContractor(id, seeCosts)
-  const lead = base === '/lead'
-  const back = (
-    <>
-      {lead && <ReadOnlyBanner />}
-      <BackBar to={`${base}/contractors`} label="Back to contractors" underBanner={lead} />
-    </>
-  )
+  const back = <BackBar to={`${base}/contractors`} label="Back to contractors" />
 
   if (seeContractors === false) return <NotFoundScreen />
   if (isPending)
@@ -120,11 +113,10 @@ function Detail({ data, tab, seeCosts, base }: { data: ContractorData; tab?: str
 
   return (
     <Screen>
-      {lead && <ReadOnlyBanner />}
       <BackBar
         to={`${base}/contractors`}
         label="Back to contractors"
-        underBanner={lead}
+
         action={
           viewingAs || lead ? undefined : (
             <span className="flex flex-none items-center gap-1">

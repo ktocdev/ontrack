@@ -15,7 +15,7 @@ test('leadership sees the month, the share on time, and each restaurant’s reco
   await signIn(page, 'lee.chen@example.com')
   await page.getByRole('navigation', { name: 'Leadership' }).getByRole('link', { name: 'Walkthroughs' }).click()
   await expect(page).toHaveURL(/\/lead\/walkthroughs$/)
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Walkthroughs', level: 1 })).toBeVisible()
 
   await expect(page.getByText('Submitted · October')).toBeVisible()

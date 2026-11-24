@@ -52,7 +52,7 @@ test('leadership reads someone else’s ticket and its service record, and chang
   // The visit opens its service record, read-only.
   await visit.click()
   await expect(page).toHaveURL(/\/lead\/service\/[0-9a-f-]{36}$/)
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Condenser fan motor replaced' })).toBeVisible()
   await expect(page.getByText('Walk-in Cooler 1 · Federale’s Logan Square').first()).toBeVisible()
   // The seed's invoice has no file in Storage, so there is nothing to sign for View here.

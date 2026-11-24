@@ -132,7 +132,7 @@ test('the desktop view: Bert works a ticket beside the dashboard, Lee reads besi
     await expect(lee).toHaveURL(/\/lead\/tickets\//)
     await expect(leeList).toHaveAttribute('data-split-list', 'beside')
     await expect(leeCard).toHaveAttribute('aria-current', 'page')
-    await expect(lee.getByText('READ-ONLY VIEW').first()).toBeVisible()
+    await expect(lee.getByText('READ-ONLY VIEW')).toHaveCount(0)
     await shot(lee, testInfo, 'lee-ticket-beside-restaurant')
 
     // The X closes it, back to the restaurant on its own.

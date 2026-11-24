@@ -21,7 +21,7 @@ test('leadership files a ticket from the Overview, posts on it, edits, closes an
   const title = `Lobby door sticks ${testInfo.project.name} ${Date.now() % 100000}`
   await signIn(page, LEE)
   await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible()
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await page.getByRole('link', { name: 'New ticket' }).click()
 
   // A Reporter's Create ticket, under /lead, with the restaurant to pick first.
@@ -93,7 +93,7 @@ test('leadership files a ticket from the Overview, posts on it, edits, closes an
 test('New ticket on a restaurant’s page starts with that restaurant, and Back returns to it', async ({ page }) => {
   await signIn(page, LEE)
   await page.goto(`/lead/restaurants/${RANALLIS}`)
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await page.getByRole('link', { name: 'New ticket' }).click()
   await expect(page.getByRole('heading', { name: 'Create a ticket' })).toBeVisible()
   await expect(page.getByLabel('Restaurant')).toHaveValue(RANALLIS)

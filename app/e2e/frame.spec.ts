@@ -56,10 +56,11 @@ test.describe('role shells', () => {
     await expect(nav.getByRole('link')).toHaveText(['Users', 'Roles & rights', 'Tickets', 'Restaurants'])
   })
 
-  test('leadership lands on Overview with the read-only banner', async ({ page }) => {
+  test('leadership lands on Overview, with no read-only band since OT-175', async ({ page }) => {
     await signInAs(page, 'leadership')
     await expect(page).toHaveURL(/\/lead$/)
-    await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible()
+    await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
     const nav = page.getByRole('navigation', { name: 'Leadership' })
     await expect(nav.getByRole('link')).toHaveText(['Overview', 'Restaurants', 'Walkthroughs', 'Contractors'])
   })
