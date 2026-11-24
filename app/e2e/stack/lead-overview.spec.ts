@@ -32,7 +32,8 @@ const shot = async (page: Page, testInfo: TestInfo, name: string) =>
 /** A figure tile by its label. */
 const tile = (page: Page, label: string | RegExp) =>
   page
-    .locator('div')
+    // Open tickets and Urgent are links since OT-175, the rest boxes.
+    .locator('div, a')
     .filter({ has: page.getByText(label, { exact: true }) })
     .last()
 
@@ -56,7 +57,7 @@ test('leadership’s Overview shows what Ops sees: open now, and a month’s spe
 
   await signIn(page, LEE)
   await expect(page).toHaveURL(/\/lead$/)
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible()
   await expect(tile(page, 'Open tickets')).toContainText(String(openNow))
   await expect(tile(page, 'Urgent')).toContainText(String(urgentNow))

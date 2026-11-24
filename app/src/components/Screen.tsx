@@ -193,9 +193,22 @@ export function BrandBackBar({ to, label, state }: { to: string; label: string; 
  * Title bar for a pushed screen (Profile, Help): 44px back target and a 20px
  * Archivo title on one line, 1px bottom border. 12px 20px 8px 8px padding.
  */
-export function TitleBar({ to, label, title }: { to: string; label: string; title: ReactNode }) {
+export function TitleBar({
+  to,
+  label,
+  title,
+  action,
+}: {
+  to: string
+  label: string
+  title: ReactNode
+  /** At the right end (the ⋯ menu on leadership's tickets). */
+  action?: ReactNode
+}) {
   return (
-    <div className="flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pr-5 pt-[calc(12px+var(--safe-top))]">
+    <div
+      className={`flex flex-none items-center gap-1 border-b border-border pb-2 pl-2 pt-[calc(12px+var(--safe-top))] ${action ? 'pr-3' : 'pr-5'}`}
+    >
       <Link
         to={to}
         aria-label={label}
@@ -203,7 +216,8 @@ export function TitleBar({ to, label, title }: { to: string; label: string; titl
       >
         <IconChevronLeft size={22} />
       </Link>
-      <h1 className="font-display text-20 font-bold">{title}</h1>
+      <h1 className="flex-1 font-display text-20 font-bold">{title}</h1>
+      {action}
     </div>
   )
 }

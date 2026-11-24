@@ -1,8 +1,9 @@
 import { IconEye } from './icons'
 
 /**
- * READ-ONLY VIEW across the top of leadership's screens and the admin's tickets (Exec-*,
- * Admin-Ticket): 36px of the text color with the background color on it. It sits above the
+ * READ-ONLY VIEW across the top of the admin's ticket (Admin-Ticket; leadership's screens drew
+ * it too until it came off from feedback, Nov 24, 2026, since leadership files and posts):
+ * 36px of the text color with the background color on it. It sits above the
  * header, so it takes the phone's top inset, and the header under it is drawn without one.
  * From 768 px, in the reading column, it is an inset band with rounded corners (OT-158).
  */

@@ -26,6 +26,9 @@ const LeadRestaurant = lazy(async () => {
   const { LeadRestaurantScreen } = await import('../screens/leadership/LeadRestaurantScreen')
   return { default: () => <LeadRestaurantScreen tab="tickets" /> }
 })
+const LeadTickets = lazy(async () => ({
+  default: (await import('../screens/leadership/LeadTicketsScreen')).LeadTicketsScreen,
+}))
 const LeadRestaurantsIndex = lazy(async () => ({
   default: (await import('../screens/leadership/LeadRestaurantScreen')).LeadRestaurantsIndex,
 }))
@@ -62,6 +65,7 @@ export const LEAD_TICKET_LISTS: SplitList[] = [
   { path: '/lead', element: <LeadOverview /> },
   { path: '/lead/restaurants', element: <LeadRestaurantsIndex /> },
   { path: '/lead/restaurants/:id', element: <LeadRestaurant /> },
+  { path: '/lead/tickets', element: <LeadTickets /> },
 ]
 
 export const MANAGER_EQUIPMENT_LISTS: SplitList[] = [{ path: '/equipment', element: <Equipment /> }]

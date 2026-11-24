@@ -55,14 +55,15 @@ async function device(browser: Browser, testInfo: TestInfo, viewport?: { width: 
 /** A figure tile on leadership's Overview, by its label. */
 const tile = (page: Page, label: string | RegExp): Locator =>
   page
-    .locator('div')
+    // Open tickets and Urgent are links since OT-175, the rest boxes.
+    .locator('div, a')
     .filter({ has: page.getByText(label, { exact: true }) })
     .last()
 
 /** Lee's Overview for this month: open and urgent now, and the month's spend. */
 async function overview(lee: Page) {
   await lee.goto('/lead')
-  await expect(lee.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(lee.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await expect(lee.getByText(MONTH_YEAR).first()).toBeVisible()
   const open = tile(lee, 'Open tickets')
   await expect(open).toContainText(/\d/)

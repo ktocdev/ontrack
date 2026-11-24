@@ -49,7 +49,7 @@ test('a restaurant’s open tickets with what is logged on each, its Reporter, t
   await signIn(page, LEE)
   await page.goto(`/lead/restaurants?restaurant=${LOGAN}`)
   await expect(page).toHaveURL(new RegExp(`/lead/restaurants/${LOGAN}$`))
-  await expect(page.getByText('READ-ONLY VIEW')).toBeVisible()
+  await expect(page.getByText('READ-ONLY VIEW')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Federale’s Logan Square' })).toBeVisible()
   await expect(page.getByText('Manager: Maya Reyes')).toBeVisible()
   await expect(page.getByRole('link', { name: `Open tickets · ${open.length}` })).toBeVisible()

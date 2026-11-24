@@ -120,8 +120,15 @@ export const ROLE_TABS: Record<AppRole, { label: string; items: TabItem[] }> = {
   leadership: {
     label: 'Leadership',
     items: [
-      // Filing a ticket starts from the Overview (OT-170); a ticket lights Restaurants.
-      { to: '/lead', label: 'Overview', icon: IconDashboard, end: true, lightsOn: /^\/lead\/tickets\/new(\/|$)/ },
+      // Filing a ticket starts from the Overview (OT-170), and so do its Open and Urgent
+      // tickets (OT-175); a ticket lights Restaurants.
+      {
+        to: '/lead',
+        label: 'Overview',
+        icon: IconDashboard,
+        end: true,
+        lightsOn: /^\/lead\/tickets(\/new(\/|$)|$)/,
+      },
       {
         to: '/lead/restaurants',
         label: 'Restaurants',

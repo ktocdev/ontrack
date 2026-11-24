@@ -104,27 +104,30 @@ export function RestaurantTitlePicker({
   selected,
   onSelect,
   heading = 'Show restaurant',
+  size = 'large',
 }: {
   restaurants: Restaurant[]
   selected: Restaurant
   onSelect: (id: string) => void
   heading?: string
+  /** 28px as the board draws it, or 22px where a long name sits on a phone (leadership, from feedback Nov 24, 2026). */
+  size?: 'large' | 'medium'
 }) {
+  const large = size === 'large'
   const title = (
     <>
-      <RestaurantSquare color={selected.color} size={14} className="mt-[11px]" />
+      <RestaurantSquare color={selected.color} size={large ? 14 : 12} className={large ? 'mt-[11px]' : 'mt-[8px]'} />
       <span className="min-w-0 flex-1">{selected.name}</span>
     </>
   )
-  const cls =
-    'flex min-h-tap w-full items-start gap-2.5 text-left font-display text-28 font-bold leading-[1.2] tracking-[-0.02em] text-text'
+  const cls = `flex min-h-tap w-full items-start gap-2.5 text-left font-display ${large ? 'text-28' : 'text-22'} font-bold leading-[1.2] tracking-[-0.02em] text-text`
   if (restaurants.length < 2) return <h1 className={cls}>{title}</h1>
   return (
     <DropdownMenu.Root modal={false}>
       <h1>
         <DropdownMenu.Trigger className={`${cls} outline-none`}>
           {title}
-          <IconChevronDown size={22} className="mt-[7px] flex-none" />
+          <IconChevronDown size={large ? 22 : 20} className={`${large ? 'mt-[7px]' : 'mt-[4px]'} flex-none`} />
         </DropdownMenu.Trigger>
       </h1>
       <DropdownMenu.Portal>

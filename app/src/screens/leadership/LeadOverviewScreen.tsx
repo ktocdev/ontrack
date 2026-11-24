@@ -34,6 +34,9 @@ import { useOverview } from './useOverview'
  * Create ticket, and Filed by you under the restaurants, their open tickets, each opening
  * beside the Overview on a laptop. No board draws either; where Filed by you sits is a first
  * try. Under View as there is no New ticket and the cards open nothing.
+ *
+ * From feedback (Nov 24, 2026): Open tickets and Urgent open those tickets, every restaurant's
+ * in its own panel (LeadTicketsScreen), as the Ops dashboard shows them.
  */
 export function LeadOverviewScreen() {
   const { user, restaurants, viewingAs } = useUser()
@@ -96,8 +99,20 @@ export function LeadOverviewScreen() {
       {header}
       <ScreenBody className="gap-3 pb-6 pt-1">
         <div className="grid flex-none grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2">
-          <Kpi size="large" value={String(o.open)} label="Open tickets" tone={o.open ? 'default' : 'muted'} />
-          <Kpi size="large" value={String(o.urgent)} label="Urgent" tone={o.urgent ? 'urgent' : 'muted'} />
+          <Kpi
+            size="large"
+            value={String(o.open)}
+            label="Open tickets"
+            tone={o.open ? 'default' : 'muted'}
+            to={viewingAs ? undefined : '/lead/tickets'}
+          />
+          <Kpi
+            size="large"
+            value={String(o.urgent)}
+            label="Urgent"
+            tone={o.urgent ? 'urgent' : 'muted'}
+            to={viewingAs ? undefined : '/lead/tickets?show=urgent'}
+          />
           <Kpi
             size="large"
             value={o.spendCents === null ? '—' : money(o.spendCents)}

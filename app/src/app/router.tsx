@@ -666,6 +666,12 @@ export const router = createBrowserRouter([
                         },
                       },
                       {
+                        path: '/lead/tickets',
+                        lazy: async () => ({
+                          Component: (await import('../screens/leadership/LeadTicketsScreen')).LeadTicketsScreen,
+                        }),
+                      },
+                      {
                         path: '/lead/tickets/:id',
                         lazy: async () => {
                           const { ReadOnlyTicketScreen } = await import('../screens/leadership/ReadOnlyTicketScreen')

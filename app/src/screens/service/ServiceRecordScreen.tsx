@@ -4,7 +4,6 @@ import { useUser } from '../../auth/context'
 import { useRight } from '../../auth/rights'
 import { Button } from '../../components/Button'
 import { RestaurantSquare } from '../../components/RestaurantName'
-import { ReadOnlyBanner } from '../../components/ReadOnlyBanner'
 import { BackBar, Screen, ScreenBody, SectionLabel } from '../../components/Screen'
 import { DetailSkeleton } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
@@ -27,7 +26,7 @@ import { useReplaceInvoice, useServiceRecord, type ServiceRecordData } from './u
  * replaced invoice file stays in Storage beside the new one.
  * The file's page count on the board isn't known without opening it, so the line gives
  * its number and size. Leadership's (Exec-Service-Record, OT-145) is the same record at
- * /lead/service/<id>, read-only under READ-ONLY VIEW: no Edit, Replace or Attach, the
+ * /lead/service/<id>, read-only: no Edit, Replace or Attach, the
  * contractor to leadership's contractor page, the ticket to leadership's ticket, the unit as text.
  */
 export function ServiceRecordScreen({ base = '/ops' }: { base?: '/ops' | '/lead' }) {
@@ -53,8 +52,7 @@ export function ServiceRecordScreen({ base = '/ops' }: { base?: '/ops' | '/lead'
   if (isPending || isError)
     return (
       <Screen>
-        {lead && <ReadOnlyBanner />}
-        <BackBar to={back} label="Back" roomy underBanner={lead}>
+        <BackBar to={back} label="Back" roomy>
           <span className="font-display text-20 font-bold text-text">Service record</span>
         </BackBar>
         {isError ? (
@@ -86,12 +84,11 @@ function Record({ data, back, lead }: { data: ServiceRecordData; back: string; l
 
   return (
     <Screen>
-      {lead && <ReadOnlyBanner />}
       <BackBar
         to={back}
         label={backLabel}
         roomy
-        underBanner={lead}
+
         action={
           canLog ? (
             <Link
