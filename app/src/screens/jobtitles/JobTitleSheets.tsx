@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
-import { AREAS, AREA_LABEL } from '../../app/areas'
+import { AREAS, AREA_LABEL, AREA_SEGMENTS_SHORT, type Area } from '../../app/areas'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Field'
+import { Segmented } from '../../components/Segmented'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { DEFAULT_VIEW, ViewSettingFields } from '../../components/ViewSetting'
@@ -25,18 +26,22 @@ function Failed({ error }: { error: unknown }) {
 
 const EVERYTHING_ON = Object.fromEntries(AREAS.map((a) => [a, DEFAULT_VIEW])) as StartingView
 
-/** The name and each area's starting view, shared by Add and Edit. */
+/** The name, each area's starting view and Show first, shared by Add and Edit. */
 function TitleFields({
   name,
   onName,
   view,
   onView,
+  firstArea,
+  onFirstArea,
   missing,
 }: {
   name: string
   onName: (name: string) => void
   view: StartingView
   onView: (view: StartingView) => void
+  firstArea: Area
+  onFirstArea: (area: Area) => void
   missing: boolean
 }) {
   return (
@@ -65,6 +70,14 @@ function TitleFields({
           />
         </div>
       ))}
+      <div className="flex flex-col gap-1.5 pt-1">
+        <span className="text-13 font-semibold text-text-body">Show first</span>
+        <span className="text-12 leading-[1.45] text-text-secondary">
+          Which area’s tickets come first in each restaurant, after the urgent ones, until someone picks their own on
+          Sort restaurants.
+        </span>
+        <Segmented label="Show first" value={firstArea} onChange={onFirstArea} options={AREA_SEGMENTS_SHORT} />
+      </div>
     </>
   )
 }
@@ -75,12 +88,14 @@ export function AddJobTitleSheet({ open, onOpenChange }: { open: boolean; onOpen
   const toast = useToast()
   const [name, setName] = useState('')
   const [view, setView] = useState(EVERYTHING_ON)
+  const [firstArea, setFirstArea] = useState<Area>('foh')
   const [missing, setMissing] = useState(false)
 
   const close = (isOpen: boolean) => {
     if (!isOpen) {
       setName('')
       setView(EVERYTHING_ON)
+      setFirstArea('foh')
       setMissing(false)
       add.reset()
     }
@@ -90,7 +105,7 @@ export function AddJobTitleSheet({ open, onOpenChange }: { open: boolean; onOpen
     e.preventDefault()
     if (!name.trim()) return setMissing(true)
     add.mutate(
-      { name, view },
+      { name, view, firstArea },
       {
         onSuccess: () => {
           toast.show(`${name.trim()} added.`)
@@ -117,6 +132,8 @@ export function AddJobTitleSheet({ open, onOpenChange }: { open: boolean; onOpen
           }}
           view={view}
           onView={setView}
+          firstArea={firstArea}
+          onFirstArea={setFirstArea}
           missing={missing}
         />
         {add.isError && <Failed error={add.error} />}
@@ -141,6 +158,7 @@ export function JobTitleSheet({ title: t, onClose }: { title: ManagedJobTitle; o
   const [step, setStep] = useState<Step>('menu')
   const [name, setName] = useState(t.name)
   const [view, setView] = useState(t.view)
+  const [firstArea, setFirstArea] = useState(t.firstArea)
   const save = useSaveJobTitle()
   const setActive = useSetJobTitleActive()
   const remove = useDeleteJobTitle()
@@ -167,7 +185,7 @@ export function JobTitleSheet({ title: t, onClose }: { title: ManagedJobTitle; o
         onSubmit={(e) => {
           e.preventDefault()
           if (!name.trim()) return
-          save.mutate({ id: t.id, name, view }, { onSuccess: done(`${name.trim()} saved.`) })
+          save.mutate({ id: t.id, name, view, firstArea }, { onSuccess: done(`${name.trim()} saved.`) })
         }}
       >
         <TitleFields
@@ -178,6 +196,8 @@ export function JobTitleSheet({ title: t, onClose }: { title: ManagedJobTitle; o
           }}
           view={view}
           onView={setView}
+          firstArea={firstArea}
+          onFirstArea={setFirstArea}
           missing={!name.trim()}
         />
         <Button type="submit" loading={save.isPending} disabled={!name.trim()}>

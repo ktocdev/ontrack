@@ -16,6 +16,8 @@ export type JobTitle = {
   name: string
   active: boolean
   view: StartingView
+  /** The area its people see first inside each restaurant, until they pick their own (OT-174). */
+  firstArea: Area
 }
 
 export type ManagedJobTitle = JobTitle & {
@@ -34,17 +36,17 @@ export function useJobTitles() {
     queryFn: async (): Promise<JobTitle[]> => {
       const sb = requireSupabase()
       const [titles, areas] = await Promise.all([
-        sb.from('job_titles').select('id, name, active').order('sort_order'),
+        sb.from('job_titles').select('id, name, active, first_area').order('sort_order'),
         sb.from('job_title_areas').select('job_title_id, area, notify, shown'),
       ])
       if (titles.error) throw titles.error
       if (areas.error) throw areas.error
-      return titles.data.map((t) => {
+      return titles.data.map(({ first_area, ...t }) => {
         const view = Object.fromEntries(AREAS.map((a) => [a, DEFAULT_VIEW])) as StartingView
         for (const row of areas.data) {
           if (row.job_title_id === t.id) view[row.area] = { notify: row.notify, shown: row.shown }
         }
-        return { ...t, view }
+        return { ...t, view, firstArea: first_area }
       })
     },
   })
@@ -102,8 +104,12 @@ function useRefresh() {
 export function useAddJobTitle() {
   const refresh = useRefresh()
   return useMutation({
-    mutationFn: async ({ name, view }: { name: string; view: StartingView }) => {
-      const { error } = await requireSupabase().rpc('add_job_title', { p_name: name.trim(), p_view: viewPayload(view) })
+    mutationFn: async ({ name, view, firstArea }: { name: string; view: StartingView; firstArea: Area }) => {
+      const { error } = await requireSupabase().rpc('add_job_title', {
+        p_name: name.trim(),
+        p_view: viewPayload(view),
+        p_first_area: firstArea,
+      })
       if (error) throw error
     },
     onSuccess: refresh,
@@ -113,11 +119,22 @@ export function useAddJobTitle() {
 export function useSaveJobTitle() {
   const refresh = useRefresh()
   return useMutation({
-    mutationFn: async ({ id, name, view }: { id: string; name: string; view: StartingView }) => {
+    mutationFn: async ({
+      id,
+      name,
+      view,
+      firstArea,
+    }: {
+      id: string
+      name: string
+      view: StartingView
+      firstArea: Area
+    }) => {
       const { error } = await requireSupabase().rpc('save_job_title', {
         p_id: id,
         p_name: name.trim(),
         p_view: viewPayload(view),
+        p_first_area: firstArea,
       })
       if (error) throw error
     },

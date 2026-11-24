@@ -289,6 +289,32 @@ isOneToOne: false
       referencedColumns: ["user_id"]
     }
                   ]
+                },"first_area_prefs": {
+                  Row: {
+                    "area": Database["public"]['Enums']["area"],"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "area": Database["public"]['Enums']["area"],"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "area"?: Database["public"]['Enums']["area"],"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "first_area_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "first_area_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "v_person_history"
+      referencedColumns: ["user_id"]
+    }
+                  ]
                 },"group_settings": {
                   Row: {
                     "id": boolean,"name": string,"profile_photos": boolean,"role_names": NonNullable<Json>,"short_name": string | null,"time_zone": string,"updated_at": string
@@ -591,14 +617,14 @@ isOneToOne: false
                   ]
                 },"job_titles": {
                   Row: {
-                    "active": boolean,"created_at": string,"id": string,"name": string,"sort_order": number
+                    "active": boolean,"created_at": string,"first_area": Database["public"]['Enums']["area"],"id": string,"name": string,"sort_order": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"created_at"?: string,"id"?: string,"name": string,"sort_order": number
+                    "active"?: boolean,"created_at"?: string,"first_area"?: Database["public"]['Enums']["area"],"id"?: string,"name": string,"sort_order": number
                   }
                   Update: {
-                    "active"?: boolean,"created_at"?: string,"id"?: string,"name"?: string,"sort_order"?: number
+                    "active"?: boolean,"created_at"?: string,"first_area"?: Database["public"]['Enums']["area"],"id"?: string,"name"?: string,"sort_order"?: number
                   }
                   Relationships: [
                     
@@ -2251,7 +2277,7 @@ isOneToOne: false
 { Args: { "p_area"?: Database["public"]['Enums']["area"],"p_equipment_id"?: string,"p_note"?: string,"p_restaurant": string,"p_title": string }; Returns: string
                            },
 "add_job_title":
-{ Args: { "p_name": string,"p_view": Json }; Returns: string
+{ Args: { "p_first_area"?: Database["public"]['Enums']["area"],"p_name": string,"p_view": Json }; Returns: string
                            },
 "add_restaurant":
 { Args: { "p_address": string,"p_color": string,"p_manager_id"?: string,"p_name": string,"p_phone": string }; Returns: string
@@ -2570,7 +2596,7 @@ isOneToOne: false
 { Args: { "p_name": string,"p_short_name": string }; Returns: undefined
                            },
 "save_job_title":
-{ Args: { "p_id": string,"p_name": string,"p_view": Json }; Returns: undefined
+{ Args: { "p_first_area"?: Database["public"]['Enums']["area"],"p_id": string,"p_name": string,"p_view": Json }; Returns: undefined
                            },
 "save_push_subscription":
 { Args: { "p_auth": string,"p_endpoint": string,"p_p256dh": string }; Returns: undefined

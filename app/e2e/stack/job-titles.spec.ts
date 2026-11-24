@@ -43,6 +43,10 @@ test('an admin adds a job title with a starting view, turns it off and deletes i
   await add.getByLabel('Name').fill(name)
   await add.getByRole('radiogroup', { name: 'IT: notify me' }).getByRole('radio', { name: 'Off' }).click()
   await add.getByRole('radiogroup', { name: 'IT: show on my lists' }).getByRole('radio', { name: 'Hidden' }).click()
+  // Show first (OT-174): Front of House unless picked.
+  const showFirst = add.getByRole('radiogroup', { name: 'Show first' })
+  await expect(showFirst.getByRole('radio', { name: 'Front' })).toHaveAttribute('aria-checked', 'true')
+  await showFirst.getByRole('radio', { name: 'Back' }).click()
   await testInfo.attach('add-job-title', { body: await page.screenshot(), contentType: 'image/png' })
   await add.getByRole('button', { name: 'Add job title' }).click()
   await expect(page.getByRole('status').filter({ hasText: `${name} added.` })).toBeVisible()
@@ -51,6 +55,11 @@ test('an admin adds a job title with a starting view, turns it off and deletes i
 
   await row.click()
   const sheet = page.getByRole('dialog', { name })
+  await sheet.getByRole('button', { name: 'Edit job title' }).click()
+  await expect(
+    page.getByRole('dialog').getByRole('radiogroup', { name: 'Show first' }).getByRole('radio', { name: 'Back' }),
+  ).toHaveAttribute('aria-checked', 'true')
+  await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click()
   await expect(sheet.getByText('Nobody has it yet.')).toBeVisible()
   await sheet.getByRole('button', { name: 'Turn off job title' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Turn off job title' }).click()
