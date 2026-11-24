@@ -16,17 +16,22 @@ test('Ops sees the open work under each restaurant, with the details on each car
   await expect(page.getByText(/All restaurants \(\d+\)/)).toBeVisible()
   await openRestaurants(page)
 
-  // In the restaurants' order, each a row with how many are open and how many urgent (OT-168).
+  // Each restaurant a row with how many are open and how many urgent (OT-168), the most
+  // urgent first and then the most open, Sort restaurants' default (OT-173).
   await expect(group(page, 'Federale’s Logan Square')).toBeVisible()
-  const labels = await page
-    .locator('section > h2 > button')
-    .evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')))
-  expect(labels.map((l) => l!.split(', ')[0])).toEqual([
+  const labels = (
+    await page.locator('section > h2 > button').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')))
+  ).map((l) => l!)
+  expect(labels.map((l) => l.split(', ')[0]).sort()).toEqual([
     'Federale’s Logan Square',
     'Federale’s West Loop',
     'Porter',
     'Ranalli’s Logan Square',
   ])
+  const weight = (l: string) =>
+    Number(l.match(/, (\d+) urgent/)?.[1] ?? 0) * 1000 + Number(l.match(/, (\d+) open/)?.[1] ?? 0)
+  const weights = labels.map(weight)
+  expect(weights).toEqual([...weights].sort((x, y) => y - x))
   await expect(page.getByRole('button', { name: /^Porter, \d+ open/ })).toBeVisible()
   await expect(group(page, 'Porter').getByRole('link', { name: /OT-1044/ })).toBeVisible()
   await expect(group(page, 'Porter').getByRole('link', { name: /OT-1042/ })).toHaveCount(0)

@@ -17,11 +17,12 @@ import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
 import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { listed, useListView } from '../mycategories/useMyCategories'
-import { groupByRestaurant } from './dashboard'
+import { groupByRestaurant, sortGroups } from './dashboard'
 import { useDashboardOpen } from './useDashboardOpen'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantOrder } from './useRestaurantOrder'
 import { useRestaurantScope } from './useRestaurantScope'
+import { useRestaurantSort } from './useRestaurantSort'
 
 /**
  * Ops · Dashboard (from design/screens/Ops-Dashboard, Empty-Ops-Dashboard, simplified
@@ -40,9 +41,12 @@ import { useRestaurantScope } from './useRestaurantScope'
  * still showing its urgent tickets (and the one open beside the list on a laptop); one
  * opened stays open on this device until the next day (useDashboardOpen). With one
  * restaurant picked, its row is simply open.
+ *
+ * From feedback (Nov 24, 2026): the restaurants come in the order picked on Sort
+ * restaurants (Most urgent, Ticket count, or the person's own), counting what each lists.
  */
 
-const RestaurantOrderSheet = lazy(() => import('./RestaurantOrderSheet'))
+const RestaurantSortSheet = lazy(() => import('./RestaurantSortSheet'))
 
 export function OpsDashboardScreen() {
   const { user, restaurants, viewingAs } = useUser()
@@ -54,16 +58,20 @@ export function OpsDashboardScreen() {
   }
   const scope = useRestaurantScope()
   const { ordered, reorder } = useRestaurantOrder()
-  const [reordering, setReordering] = useState(false)
+  const { sort, choose } = useRestaurantSort()
+  const [sorting, setSorting] = useState(false)
   const rows = useDashboardOpen(!viewingAs)
   const openInPane = useIsOpenInPane()
   const { data, isPending, isError, refetch } = useOpsDashboard(scope.ids)
 
   const view = useListView()
   const inScope = scope.selected ? [scope.selected] : ordered
-  const groups = groupByRestaurant(
-    (data ?? []).filter((t) => view.shows(listed(t))),
-    inScope,
+  const groups = sortGroups(
+    groupByRestaurant(
+      (data ?? []).filter((t) => view.shows(listed(t))),
+      inScope,
+    ),
+    sort,
   )
 
   return (
@@ -81,9 +89,7 @@ export function OpsDashboardScreen() {
               items={[
                 { to: '/ops/closed', label: 'View Closed Tickets' },
                 { to: '/ops/in-house', label: 'In-house tasks' },
-                ...(restaurants.length > 1
-                  ? [{ onSelect: () => setReordering(true), label: 'Reorder restaurants' }]
-                  : []),
+                ...(restaurants.length > 1 ? [{ onSelect: () => setSorting(true), label: 'Sort restaurants' }] : []),
               ]}
             />
           )
@@ -176,9 +182,16 @@ export function OpsDashboardScreen() {
           )}
         </ScreenBody>
       )}
-      {reordering && (
+      {sorting && (
         <Suspense fallback={null}>
-          <RestaurantOrderSheet open onOpenChange={setReordering} restaurants={ordered} onChange={reorder} />
+          <RestaurantSortSheet
+            open
+            onOpenChange={setSorting}
+            sort={sort}
+            onSort={choose}
+            restaurants={ordered}
+            onReorder={reorder}
+          />
         </Suspense>
       )}
     </Screen>
