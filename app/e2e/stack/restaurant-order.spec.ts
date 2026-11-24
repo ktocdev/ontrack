@@ -143,7 +143,7 @@ test('a person’s sort and order don’t reach anyone else on the device', asyn
   await expect(sheet.getByRole('radio', { name: /Most urgent/ })).toHaveAttribute('aria-checked', 'true')
 })
 
-test('someone with one restaurant has nothing to sort', async ({ page }) => {
+test('someone with one restaurant has only Show first', async ({ page }) => {
   await page.route('**/rest/v1/restaurants*', async (route) => {
     const response = await route.fetch()
     const rows = (await response.json()) as unknown[]
@@ -153,4 +153,8 @@ test('someone with one restaurant has nothing to sort', async ({ page }) => {
   await page.getByRole('button', { name: 'More ticket options' }).click()
   await expect(page.getByRole('menuitem', { name: 'View Closed Tickets' })).toBeVisible()
   await expect(page.getByRole('menuitem', { name: 'Sort restaurants' })).toHaveCount(0)
+  await page.getByRole('menuitem', { name: 'Show first' }).click()
+  const sheet = page.getByRole('dialog', { name: 'Show first' })
+  await expect(sheet.getByRole('radiogroup', { name: 'Show first' })).toBeVisible()
+  await expect(sheet.getByRole('radio', { name: /Most urgent/ })).toHaveCount(0)
 })

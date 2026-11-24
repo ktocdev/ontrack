@@ -16,8 +16,9 @@ import { TaskListEmpty } from '../../components/TaskRow'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
 import { ago, scheduledLabel } from '../tickets/tickets'
 import { useJobTitleName } from '../jobtitles/useJobTitles'
+import { useFirstArea } from '../mycategories/useFirstArea'
 import { listed, useListView } from '../mycategories/useMyCategories'
-import { groupByRestaurant, sortGroups } from './dashboard'
+import { byPriorityFrom, groupByRestaurant, sortGroups } from './dashboard'
 import { useDashboardOpen } from './useDashboardOpen'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantOrder } from './useRestaurantOrder'
@@ -44,6 +45,7 @@ import { useRestaurantSort } from './useRestaurantSort'
  *
  * From feedback (Nov 24, 2026): the restaurants come in the order picked on Sort
  * restaurants (Most urgent, Ticket count, or the person's own), counting what each lists.
+ * Inside each, the area picked as Show first comes after the urgent tickets (useFirstArea).
  */
 
 const RestaurantSortSheet = lazy(() => import('./RestaurantSortSheet'))
@@ -59,6 +61,7 @@ export function OpsDashboardScreen() {
   const scope = useRestaurantScope()
   const { ordered, reorder } = useRestaurantOrder()
   const { sort, choose } = useRestaurantSort()
+  const first = useFirstArea()
   const [sorting, setSorting] = useState(false)
   const rows = useDashboardOpen(!viewingAs)
   const openInPane = useIsOpenInPane()
@@ -67,10 +70,7 @@ export function OpsDashboardScreen() {
   const view = useListView()
   const inScope = scope.selected ? [scope.selected] : ordered
   const groups = sortGroups(
-    groupByRestaurant(
-      (data ?? []).filter((t) => view.shows(listed(t))),
-      inScope,
-    ),
+    groupByRestaurant((data ?? []).filter((t) => view.shows(listed(t))).sort(byPriorityFrom(first.area)), inScope),
     sort,
   )
 
@@ -89,7 +89,7 @@ export function OpsDashboardScreen() {
               items={[
                 { to: '/ops/closed', label: 'View Closed Tickets' },
                 { to: '/ops/in-house', label: 'In-house tasks' },
-                ...(restaurants.length > 1 ? [{ onSelect: () => setSorting(true), label: 'Sort restaurants' }] : []),
+                { onSelect: () => setSorting(true), label: restaurants.length > 1 ? 'Sort restaurants' : 'Show first' },
               ]}
             />
           )
@@ -191,6 +191,9 @@ export function OpsDashboardScreen() {
             onSort={choose}
             restaurants={ordered}
             onReorder={reorder}
+            firstArea={first.area}
+            onFirstArea={first.choose}
+            firstAreaFailed={first.failed}
           />
         </Suspense>
       )}

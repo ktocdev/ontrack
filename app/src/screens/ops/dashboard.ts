@@ -1,22 +1,30 @@
-import { AREAS } from '../../app/areas'
+import { AREAS, type Area } from '../../app/areas'
 /** How the Ops dashboard orders and groups its tickets. */
 
-const AREA_ORDER: string[] = AREAS
-/** Front, Back, IT, and a ticket with no area after them all. */
-const areaRank = (t: Sortable) => {
-  const i = AREA_ORDER.indexOf(t.category?.area ?? t.area ?? '')
-  return i < 0 ? AREA_ORDER.length : i
-}
+/** The areas in order with one first (Show first, OT-174), the others keeping theirs. */
+export const areasFrom = (first: Area): Area[] => [first, ...AREAS.filter((a) => a !== first)]
 
 // A walkthrough ticket with no category carries its own area (OT-141).
 type Sortable = { urgency: string; created_at: string; category: { area: string } | null; area?: string | null }
 
-/** Urgent always on top, then Front of House, Back of House and IT, then whatever has waited longest. */
-export function byPriority(a: Sortable, b: Sortable) {
-  const urgent = Number(b.urgency === 'urgent') - Number(a.urgency === 'urgent')
-  const area = areaRank(a) - areaRank(b)
-  return urgent || area || new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+/**
+ * Urgent always on top, then the area shown first and the other areas in their usual order
+ * (a ticket with no area after them all), then whatever has waited longest.
+ */
+export function byPriorityFrom(first: Area) {
+  const order: string[] = areasFrom(first)
+  const rank = (t: Sortable) => {
+    const i = order.indexOf(t.category?.area ?? t.area ?? '')
+    return i < 0 ? order.length : i
+  }
+  return (a: Sortable, b: Sortable) => {
+    const urgent = Number(b.urgency === 'urgent') - Number(a.urgency === 'urgent')
+    return urgent || rank(a) - rank(b) || new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  }
 }
+
+/** Front of House first: lists that have no Show first of their own (Admin tickets, a unit's). */
+export const byPriority = byPriorityFrom('foh')
 
 /**
  * The tickets under each restaurant, in the order the restaurants come in. Each list

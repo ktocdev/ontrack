@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { byPriority, groupByRestaurant, inChosenOrder, sortGroups } from './dashboard'
+import { byPriority, byPriorityFrom, groupByRestaurant, inChosenOrder, sortGroups } from './dashboard'
 
 describe('byPriority', () => {
   const ticket = (id: string, urgency: string, area: string | null, created_at: string) => ({
@@ -44,6 +44,30 @@ describe('byPriority', () => {
       ticket('urgent-it', 'urgent', 'it', '2026-10-04T10:00:00Z'),
     ]
     expect([...list].sort(byPriority).map((t) => t.id)).toEqual(['urgent-it', 'back', 'it', 'none'])
+  })
+
+  it('shows the area picked first, then the others in their usual order, urgent still on top', () => {
+    const list = [
+      ticket('front', 'normal', 'foh', '2026-10-01T10:00:00Z'),
+      ticket('back', 'normal', 'boh', '2026-10-02T10:00:00Z'),
+      ticket('it', 'normal', 'it', '2026-10-03T10:00:00Z'),
+      ticket('urgent-front', 'urgent', 'foh', '2026-10-04T10:00:00Z'),
+      ticket('none', 'normal', null, '2026-10-05T10:00:00Z'),
+    ]
+    expect([...list].sort(byPriorityFrom('it')).map((t) => t.id)).toEqual([
+      'urgent-front',
+      'it',
+      'front',
+      'back',
+      'none',
+    ])
+    expect([...list].sort(byPriorityFrom('boh')).map((t) => t.id)).toEqual([
+      'urgent-front',
+      'back',
+      'front',
+      'it',
+      'none',
+    ])
   })
 })
 
