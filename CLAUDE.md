@@ -186,6 +186,7 @@ The plan's After Phase 8 section (Nov 24, 2026) says what ships, one PR each; th
 | OT-176 | Small fixes: sign-in text, hidden categories, Profile Back, job title Cancel, Support Team by default |
 | OT-177 | Chef starts with IT off; pgTAP |
 | OT-178 | Leadership's Spend: by restaurant, contractor and category, every visit; a stack flow |
+| OT-179 | Security pass since OT-154 (OT-155 to OT-178) and code quality pass since OT-162 (OT-163 to OT-178) |
 
 ## First round of feedback after Phase 8, for the record
 
