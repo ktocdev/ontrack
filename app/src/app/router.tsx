@@ -718,6 +718,12 @@ export const router = createBrowserRouter([
                         },
                       },
                       {
+                        path: '/lead/spend',
+                        lazy: async () => ({
+                          Component: (await import('../screens/leadership/LeadSpendScreen')).LeadSpendScreen,
+                        }),
+                      },
+                      {
                         path: '/lead/service/:id',
                         lazy: async () => {
                           const { ServiceRecordScreen } = await import('../screens/service/ServiceRecordScreen')

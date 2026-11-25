@@ -47,6 +47,9 @@ const Invoices = lazy(async () => {
   const { InvoicesScreen } = await import('../screens/contractors/InvoicesScreen')
   return { default: ({ base }: { base?: '/lead' }) => <InvoicesScreen base={base} /> }
 })
+const LeadSpend = lazy(async () => ({
+  default: (await import('../screens/leadership/LeadSpendScreen')).LeadSpendScreen,
+}))
 const Users = lazy(async () => ({ default: (await import('../screens/admin/UsersScreen')).UsersScreen }))
 
 export const MANAGER_TICKET_LISTS: SplitList[] = [
@@ -78,6 +81,8 @@ export const OPS_CONTRACTOR_LISTS: SplitList[] = [
 export const LEAD_CONTRACTOR_LISTS: SplitList[] = [
   { path: '/lead/contractors', element: <Contractors base="/lead" /> },
   { path: '/lead/contractors/invoices', element: <Invoices base="/lead" /> },
+  // The Overview's Spend: a visit opens beside it as it does beside Invoices.
+  { path: '/lead/spend', element: <LeadSpend /> },
 ]
 
 export const ADMIN_USER_LISTS: SplitList[] = [{ path: '/admin/users', element: <Users /> }]
