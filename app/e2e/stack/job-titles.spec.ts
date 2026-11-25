@@ -59,7 +59,10 @@ test('an admin adds a job title with a starting view, turns it off and deletes i
   await expect(
     page.getByRole('dialog').getByRole('radiogroup', { name: 'Show first' }).getByRole('radio', { name: 'Back' }),
   ).toHaveAttribute('aria-checked', 'true')
+  // Cancel leaves the sheet for Job titles (OT-176).
   await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await row.click()
   await expect(sheet.getByText('Nobody has it yet.')).toBeVisible()
   await sheet.getByRole('button', { name: 'Turn off job title' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Turn off job title' }).click()

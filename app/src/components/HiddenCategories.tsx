@@ -1,6 +1,6 @@
 /**
- * The line at the top of a list that leaves categories off (OT-118; no board draws it):
- * "3 categories hidden · Show all". Show all lasts until the person leaves the screen, and
+ * The line under a list that leaves categories off (OT-118; no board draws it; below the
+ * list since OT-176): "3 categories hidden · Show all". Show all lasts until the person leaves the screen, and
  * the line then offers the way back. It names categories, not tickets, so it says the same
  * on every list; My categories on Profile is where they change.
  */

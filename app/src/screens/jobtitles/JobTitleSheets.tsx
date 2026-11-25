@@ -203,7 +203,8 @@ export function JobTitleSheet({ title: t, onClose }: { title: ManagedJobTitle; o
         <Button type="submit" loading={save.isPending} disabled={!name.trim()}>
           Save job title
         </Button>
-        <Button type="button" variant="secondary" onClick={() => setStep('menu')}>
+        {/* Cancel leaves the sheet for Job titles, from feedback (OT-176). */}
+        <Button type="button" variant="secondary" onClick={close}>
           Cancel
         </Button>
       </form>

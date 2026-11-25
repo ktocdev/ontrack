@@ -70,12 +70,6 @@ export function ClosedTicketsScreen() {
             <CardFeedSkeleton label="Loading closed tickets" />
           ) : (
             <>
-              <HiddenCategories
-                count={view.hidden}
-                showAll={view.showAll}
-                onShowAll={view.setShowAll}
-                className="-my-1"
-              />
               {shown.length === 0 && (
                 <TaskListEmpty>Nothing closed in the categories you show. Show all lists the rest.</TaskListEmpty>
               )}
@@ -93,6 +87,7 @@ export function ClosedTicketsScreen() {
                   when={t.closed_at ? longDate(new Date(t.closed_at)) : ''}
                 />
               ))}
+              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
               {data.length === CLOSED_LIST_LIMIT && (
                 <p className="text-center text-12 text-text-muted">Showing the latest {CLOSED_LIST_LIMIT}.</p>
               )}

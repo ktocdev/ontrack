@@ -105,8 +105,11 @@ export function SidebarProfile({
   subtitle,
   src,
   inert = false,
+  state,
 }: {
   to: string
+  /** Carried to Profile, so its Back returns here (OT-176). */
+  state?: unknown
   name: string
   role: AppRole
   subtitle?: string
@@ -127,6 +130,7 @@ export function SidebarProfile({
   return (
     <Link
       to={to}
+      state={state}
       aria-label="Your profile"
       className={`${row} no-underline transition-colors hover:bg-surface-hover active:bg-surface-muted active:duration-0`}
     >

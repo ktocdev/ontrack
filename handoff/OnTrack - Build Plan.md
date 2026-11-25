@@ -849,6 +849,7 @@ Notes from trying OT-165 to OT-170 with the ops manager. The pictures are in `ha
 - **Small fixes.** Sign in loses "OnTrack is invite-only…". "N categories hidden · Show all" moves below the list wherever it shows (the dashboard, a Reporter's Open tickets and In-house, Ops In-house, both Closed lists). Profile's Back returns to the screen it was opened from, and home only when Profile was opened on its own. Cancel at the foot of Edit job title closes the sheet on Job titles. A new group starts with Support Team as the Ops role's name, so Admin tickets reads "View only · Support Team manages tickets" without anyone setting it; this group's live app had no names saved
 - **Leadership's Spend.** The Overview's Spend card opens what it adds up, for the same month (`/lead/spend?month=2026-10`): the total, the visits (with any missing invoices), contractor and in-house spend, then the month by restaurant, by contractor (in-house work as one line, a contractor opening their page) and by category (the unit's, else the ticket's), each with a bar against the most, and every visit, opening its service record beside the list on a laptop. Every figure adds up to the card's, from the same records `v_overview_by_month` counts; no new view. Only with See costs, and under View as the card opens nothing. No board draws it; it is built from the Overview's parts (added Nov 24, 2026)
 - **Chefs start with IT off.** The Chef job title starts with IT off on Notify and Show, as well as Front of House. Editing a title changes nobody who already has it, and there are no chefs on the live app yet, so nobody needs moving
+- **Security and code quality pass.** Last in the round. Security over everything since OT-154 (OT-155 to OT-178: Phase 8, the Nov 23 round and this one), probed on the local stack as each seeded role, signed out, deactivated and as an admin who owes a second step; code quality over everything since OT-162 (OT-163 to OT-178). Fixes in their own migration with pgTAP, and a note here, as in earlier passes
 
 **Pull requests**
 
@@ -862,6 +863,7 @@ Notes from trying OT-165 to OT-170 with the ops manager. The pictures are in `ha
 | OT-176 | Small fixes: sign-in text, hidden categories below the list, Profile's Back, Edit job title's Cancel, Support Team as a new group's Ops role name |
 | OT-177 | Chef starts with IT off: migration and pgTAP |
 | OT-178 | Leadership's Spend: the Overview's Spend card opens the month by restaurant, contractor and category and every visit; Vitest; a stack flow |
+| OT-179 | Security pass over OT-155 to OT-178 and code quality pass over OT-163 to OT-178; fixes with pgTAP; the note |
 
 ## Later
 
@@ -871,6 +873,7 @@ These come after the group is using the app daily, in whatever order the feedbac
 - **Reports.** Monthly spend per restaurant and per category as a PDF or CSV for leadership; repeat-repair flags on a unit
 - **Microsoft 365 sign-on,** if another group needs it; Google sign-in moved up to OT-59, now deferred until the group's IT person is involved
 - **App Store wrapper** with Capacitor only if someone asks for it; the PWA covers the need
+- **Security audits again, if funding allows.** The security passes so far were run with Claude Opus 5.5; redo them with Claude Fable 5.2: Phase 6's (OT-110 over 6a, OT-124 over Admin held on top of a role, OT-138 over 6b), Phase 7's (OT-154), and OT-179, which covers Phase 8 and the Nov 23 and Nov 24 feedback rounds (added Nov 24, 2026)
 - **Second restaurant group.** Each group gets its own deployment from the same repo: its own Supabase project, its own Cloudflare Worker on `<group>.ontrack-app.app`, and its own `group_settings` row. No policy changes, and one group's data cannot reach another's, because they share no database. The deploy workflow pushes migrations to each project. The cost is one more Supabase project per group. A shared database with a `group_id` on every table is cheaper to run, but it changes every policy and makes a cross-group leak possible, so it waits until there are enough groups to justify it
 
 ## Working method

@@ -14,7 +14,8 @@ import { ROLE_HOME, ROLE_LABEL } from '../../app/roles'
  * Sign in (design/screens/Sign-In): a brand cover with the mark, 40px
  * wordmark and tagline, then a panel with 24px top corners rising over it.
  * The button stays disabled until the email has a valid shape and the
- * password has 12 characters. In the e2e build the panel is a role picker.
+ * password has 12 characters. In the e2e build the panel is a role picker. The board's
+ * "OnTrack is invite-only" line came off from feedback (OT-176).
  */
 export function SignInScreen() {
   const auth = useAuth()
@@ -99,11 +100,6 @@ export function SignInScreen() {
             </Button>
           </form>
         )}
-
-        <div className="flex-1" />
-        <p className="text-center text-13 leading-normal text-text-secondary">
-          OnTrack is invite-only. Ask your IT admin for an invite.
-        </p>
       </main>
     </div>
   )

@@ -490,7 +490,7 @@ export function FeedbackPage() {
       </Section>
       <Section
         title="Hidden categories"
-        intro="The line at the top of a list that leaves off the categories someone hides in My categories. Show all lasts until they leave the screen."
+        intro="The line under a list that leaves off the categories someone hides in My categories. Show all lasts until they leave the screen."
       >
         <Example code={`<HiddenCategories count={3} showAll={showAll} onShowAll={setShowAll} />`}>
           <HiddenCategoriesDemo />

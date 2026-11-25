@@ -5,6 +5,7 @@ import { Sidebar, SidebarBrand, SidebarLink, SidebarProfile } from '../component
 import { IconShieldCheck } from '../components/icons'
 import { useJobTitleName } from '../screens/jobtitles/useJobTitles'
 import { useAvatarUrl } from '../screens/profile/useProfile'
+import { profileFrom } from './profileReturn'
 import { useWide } from '../lib/useWide'
 import { adminOnTop, inAdminView, ROLE_HOME, tabsFor } from './roles'
 
@@ -23,7 +24,7 @@ export function AppSidebar() {
 
 function WideSidebar() {
   const { user, viewingAs } = useUser()
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const group = useGroupLabel()
   const roleNames = useRoleNames()
   const jobTitle = useJobTitleName()(user.job_title_id)
@@ -39,6 +40,7 @@ function WideSidebar() {
       footer={
         <SidebarProfile
           to="/profile"
+          state={profileFrom(pathname, search)}
           name={user.full_name}
           role={user.role}
           subtitle={jobTitle ?? roleNames.name(user.role)}
