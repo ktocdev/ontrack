@@ -4,7 +4,7 @@ import { AREAS, type Area } from '../../app/areas'
 import { useUser } from '../../auth/context'
 import type { ViewSetting } from '../../components/ViewSetting'
 import { requireSupabase } from '../../lib/supabase'
-import { categoryRow, hiddenCount, isDefault, isShown, NO_PREFS, toPrefs, type Listed, type Prefs } from './view'
+import { categoryRow, hiddenCategories, isDefault, isShown, NO_PREFS, toPrefs, type Listed, type Prefs } from './view'
 
 /**
  * My categories (OT-118): the person's own settings per area and category, and the
@@ -61,10 +61,12 @@ export function useListView() {
   const prefs = useMyPrefs().data ?? NO_PREFS
   const categories = useAllCategories().data ?? []
   const [showAll, setShowAll] = useState(false)
-  const hidden = hiddenCount(prefs, categories)
+  const { count: hidden, names: hiddenNames } = hiddenCategories(prefs, categories)
   return {
     /** How many categories this person hides; the line shows while it is more than none. */
     hidden,
+    /** What they hide, by name: an area hidden whole by the area's name. */
+    hiddenNames,
     /** Whether a whole area is hidden, which is all an in-house task, with no category, goes by. */
     areaHidden: AREAS.some((a) => !prefs.areas[a].shown),
     showAll,

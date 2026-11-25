@@ -1475,7 +1475,7 @@ export function KitPage() {
 /** A list's "N hidden · Show all" line (OT-118), both ways. */
 function HiddenCategoriesDemo() {
   const [showAll, setShowAll] = useState(false)
-  return <HiddenCategories count={3} showAll={showAll} onShowAll={setShowAll} />
+  return <HiddenCategories count={3} names={['Plumbing', 'Bar', 'IT']} showAll={showAll} onShowAll={setShowAll} />
 }
 
 function ViewSettingDemo() {

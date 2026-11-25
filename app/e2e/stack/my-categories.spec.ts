@@ -84,7 +84,7 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   await expect(page.getByText(/\d+ categories hidden/)).toBeVisible()
   await testInfo.attach('dashboard-hidden', { body: await page.screenshot(), contentType: 'image/png' })
 
-  await page.getByRole('button', { name: 'Show all' }).click()
+  await page.getByRole('button', { name: 'Show all: Front of House and Back of House' }).click()
   await openRestaurants(page)
   await expect(fridge).toBeVisible()
   await page.getByRole('button', { name: 'Hide them' }).click()
