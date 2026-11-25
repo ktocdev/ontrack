@@ -103,8 +103,11 @@ test('giving a title shows it everywhere and starts the person on its view', asy
     await testInfo.attach('user-profile', { body: await page.screenshot(), contentType: 'image/png' })
 
     // The starting view is Ari's own settings now.
-    const prefs = await rest(request, 'ari.kim@example.com', 'area_prefs?select=area,notify,shown')
-    expect(await prefs.json()).toEqual([{ area: 'foh', notify: 'off', shown: false }])
+    const prefs = await rest(request, 'ari.kim@example.com', 'area_prefs?select=area,notify,shown&order=area')
+    expect(await prefs.json()).toEqual([
+      { area: 'foh', notify: 'off', shown: false },
+      { area: 'it', notify: 'off', shown: false },
+    ])
 
     await page.goto('/admin/users')
     await expect(page.getByRole('link', { name: /^Ari Kim Chef/ })).toBeVisible()

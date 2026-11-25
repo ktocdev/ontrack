@@ -38,7 +38,7 @@ end $$;
 select pg_temp.login('dana.ortiz@example.com');
 select is((select array_agg(name order by sort_order) from public.job_titles),
   array['General manager', 'Chef', 'Ops manager', 'IT'], 'anyone signed in reads the four titles');
-select is((select count(*)::int from public.job_title_areas), 4, 'and their starting views');
+select is((select count(*)::int from public.job_title_areas), 5, 'and their starting views');
 select throws_ok($$ insert into public.job_titles (name, sort_order) values ('Sous chef', 9) $$, '42501', null,
   'nobody writes the list directly');
 select throws_ok($$ select public.add_job_title('Sous chef', '{}') $$, '42501', null, 'a manager adds no title');

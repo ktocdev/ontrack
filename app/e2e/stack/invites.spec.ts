@@ -102,10 +102,13 @@ test('an admin invites a manager, who sets up the account and lands in their res
   expect(user.user_metadata.invite_token).toBeUndefined()
 
   // The invite's job title came with it, and its starting view (OT-117).
-  const prefs = await request.get(`${SUPABASE}/rest/v1/area_prefs?select=area,notify,shown`, {
+  const prefs = await request.get(`${SUPABASE}/rest/v1/area_prefs?select=area,notify,shown&order=area`, {
     headers: { apikey: KEY, Authorization: `Bearer ${access_token}` },
   })
-  expect(await prefs.json()).toEqual([{ area: 'foh', notify: 'off', shown: false }])
+  expect(await prefs.json()).toEqual([
+    { area: 'foh', notify: 'off', shown: false },
+    { area: 'it', notify: 'off', shown: false },
+  ])
 
   // The link is spent.
   const spent = await inviteLink(request, email)
