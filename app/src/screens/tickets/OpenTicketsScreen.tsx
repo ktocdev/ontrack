@@ -132,12 +132,6 @@ export function OpenTicketsScreen() {
             <CardFeedSkeleton />
           ) : (
             <>
-              <HiddenCategories
-                count={view.hidden}
-                showAll={view.showAll}
-                onShowAll={view.setShowAll}
-                className="-my-1"
-              />
               {shown.length === 0 && (
                 <TaskListEmpty>Nothing open in the categories you show. Show all lists the rest.</TaskListEmpty>
               )}
@@ -162,6 +156,7 @@ export function OpenTicketsScreen() {
                   />
                 )
               })}
+              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
             </>
           )}
         </ScreenBody>

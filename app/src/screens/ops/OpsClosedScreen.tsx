@@ -87,12 +87,6 @@ export function OpsClosedScreen() {
         </ScreenBody>
       ) : (
         <ScreenBody className="gap-2.5 pb-4">
-          <HiddenCategories
-            count={view.hidden}
-            showAll={view.showAll}
-            onShowAll={view.setShowAll}
-            className="-mb-2.5 mt-1.5"
-          />
           {!emptyMonth && (
             <Notice tone="info" className="mt-3.5">
               Closed tickets also appear on each piece of equipment{seeCosts ? ', with their costs' : ''}.
@@ -111,6 +105,7 @@ export function OpsClosedScreen() {
             </Month>
           ))}
           {!emptyMonth && seeNext}
+          <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
         </ScreenBody>
       )}
     </Screen>

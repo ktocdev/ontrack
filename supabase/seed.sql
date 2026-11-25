@@ -14,7 +14,9 @@
 
 begin;
 
-update public.group_settings set name = 'Four Corners', short_name = '4C';
+-- No role names stored (OT-176 gives a new group Support Team for Ops), so the flows read
+-- the roles as the boards draw them; group-settings.spec names them and puts this back.
+update public.group_settings set name = 'Four Corners', short_name = '4C', role_names = '{}';
 
 -- ---------------------------------------------------------------------------
 -- Restaurants

@@ -3,6 +3,7 @@ import { AdminShield } from '../components/AdminShield'
 import { Avatar } from '../components/Avatar'
 import { useUser } from '../auth/context'
 import { useAvatarUrl } from '../screens/profile/useProfile'
+import { profileFrom } from './profileReturn'
 import { adminOnTop, inAdminView, ROLE_HOME } from './roles'
 
 /**
@@ -15,7 +16,7 @@ import { adminOnTop, inAdminView, ROLE_HOME } from './roles'
  */
 export function ProfileLink({ shield = true }: { shield?: boolean }) {
   const { user, viewingAs } = useUser()
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const photo = useAvatarUrl(user.avatar_path)
   // From 768 px the sidebar has the avatar and the shield (OT-157), so the header doesn't.
   if (viewingAs) return <Avatar name={user.full_name} role={user.role} src={photo.data} className="md:hidden" />
@@ -23,7 +24,7 @@ export function ProfileLink({ shield = true }: { shield?: boolean }) {
   return (
     <span className="flex items-center gap-1.5 md:hidden">
       {shield && adminOnTop(user) && <AdminShield to={admin ? ROLE_HOME[user.role] : '/admin/users'} active={admin} />}
-      <Link to="/profile" aria-label="Your profile" className="rounded-full">
+      <Link to="/profile" state={profileFrom(pathname, search)} aria-label="Your profile" className="rounded-full">
         <Avatar name={user.full_name} role={user.role} src={photo.data} />
       </Link>
     </span>

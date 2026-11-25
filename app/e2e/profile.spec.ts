@@ -80,6 +80,32 @@ test('help searches the questions and opens one answer at a time', async ({ page
   await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
 })
 
+test('Back returns to the screen Profile was opened from, after Help too, and home when opened on its own', async ({
+  page,
+}) => {
+  await page.goto('/sign-in')
+  await page.getByTestId('mock-manager').click()
+  await page.getByRole('navigation').getByRole('link', { name: 'Equipment' }).click()
+  await expect(page).toHaveURL(/\/equipment$/)
+  await page.getByRole('link', { name: 'Your profile' }).click()
+  await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
+
+  // Into Help and back keeps where Profile came from (OT-176).
+  await page.getByRole('link', { name: /Help center/ }).click()
+  await page.getByRole('link', { name: 'Back to profile' }).click()
+  await page.getByRole('link', { name: 'Back', exact: true }).click()
+  await expect(page).toHaveURL(/\/equipment$/)
+
+  // A reload of Profile still knows; opened on its own, Back goes home.
+  await page.getByRole('link', { name: 'Your profile' }).click()
+  await page.reload()
+  await page.getByRole('link', { name: 'Back', exact: true }).click()
+  await expect(page).toHaveURL(/\/equipment$/)
+  await page.goto('/profile')
+  await page.getByRole('link', { name: 'Back', exact: true }).click()
+  await expect(page).toHaveURL(/\/tickets$/)
+})
+
 test('sign out returns to sign in, and signing back in goes home', async ({ page }) => {
   await openProfile(page)
   await page.getByRole('button', { name: 'Sign out' }).click()

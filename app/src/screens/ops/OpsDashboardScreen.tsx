@@ -138,7 +138,6 @@ export function OpsDashboardScreen() {
             <CardFeedSkeleton />
           ) : (
             <>
-              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
               {groups.length === 0 && (
                 <TaskListEmpty>Nothing open in the categories you show. Show all lists the rest.</TaskListEmpty>
               )}
@@ -178,6 +177,7 @@ export function OpsDashboardScreen() {
                   })}
                 />
               ))}
+              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
             </>
           )}
         </ScreenBody>

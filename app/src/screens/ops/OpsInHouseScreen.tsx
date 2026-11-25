@@ -177,12 +177,6 @@ export function OpsInHouseScreen() {
             <CardFeedSkeleton label="Loading in-house tasks" />
           ) : (
             <>
-              <HiddenCategories
-                count={view.areaHidden || tasks.some((t) => t.category_id) ? view.hidden : 0}
-                showAll={view.showAll}
-                onShowAll={view.setShowAll}
-                className="-my-1"
-              />
               <p className="flex flex-none items-start gap-2 text-13 leading-[1.4] text-text-secondary">
                 <IconEye size={15} strokeWidth={2.2} className="mt-0.5 flex-none" />
                 <span>
@@ -224,6 +218,11 @@ export function OpsInHouseScreen() {
                     ))}
                 </details>
               )}
+              <HiddenCategories
+                count={view.areaHidden || tasks.some((t) => t.category_id) ? view.hidden : 0}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+              />
               {notice && <Notice>{notice}</Notice>}
             </>
           )}

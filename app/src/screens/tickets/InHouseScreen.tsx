@@ -164,12 +164,6 @@ export function InHouseScreen() {
             <CardFeedSkeleton label="Loading in-house tasks" />
           ) : (
             <>
-              <HiddenCategories
-                count={view.areaHidden || tasks.some((t) => t.category_id) ? view.hidden : 0}
-                showAll={view.showAll}
-                onShowAll={view.setShowAll}
-                className="-my-1"
-              />
               <div className="flex flex-none items-baseline justify-between">
                 <span className="eyebrow">To fix · {open.length}</span>
                 {!viewingAs && <span className="text-12 text-text-secondary">Check off when fixed</span>}
@@ -209,6 +203,11 @@ export function InHouseScreen() {
                     ))}
                 </details>
               )}
+              <HiddenCategories
+                count={view.areaHidden || tasks.some((t) => t.category_id) ? view.hidden : 0}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+              />
               {deleted && <Notice>In-house task deleted.</Notice>}
             </>
           )}

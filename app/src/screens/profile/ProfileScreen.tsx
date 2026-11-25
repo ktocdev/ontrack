@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { Avatar } from '../../components/Avatar'
 import { Button, buttonClasses } from '../../components/Button'
 import { ListCard, ListRow, ListRowButton, ListRowLink, RowIcon, StackedRow } from '../../components/Card'
@@ -10,6 +10,7 @@ import { Screen, ScreenBody, ScreenFooter, SectionLabel, TitleBar } from '../../
 import { ThemeControl } from '../../components/ThemeControl'
 import { useToast } from '../../components/Toast'
 import { IconCheck, IconChevronRight, IconHelpCircle, IconReport, IconSignOut } from '../../components/icons'
+import { profileBack } from '../../app/profileReturn'
 import { ROLE_HOME } from '../../app/roles'
 import { useJobTitleName } from '../jobtitles/useJobTitles'
 import { useRoleNames } from '../../auth/group'
@@ -31,6 +32,8 @@ import { useAvatarUrl, usePhoto, useSaveProfile } from './useProfile'
  */
 export function ProfileScreen() {
   const { user, restaurants, allRestaurants, twoStep, signOut } = useUser()
+  // Back returns to the screen Profile was opened from (OT-176), home when opened on its own.
+  const back = profileBack(useLocation().state, ROLE_HOME[user.role], user.id)
   const roleNames = useRoleNames()
   const jobTitle = useJobTitleName()(user.job_title_id)
   const [name, setName] = useState(user.full_name)
@@ -78,7 +81,7 @@ export function ProfileScreen() {
 
   return (
     <Screen>
-      <TitleBar to={ROLE_HOME[user.role]} label="Back" title="Profile" />
+      <TitleBar to={back} label="Back" title="Profile" />
 
       <ScreenBody className="gap-3 pb-5 pt-5">
         <div className="flex flex-col items-center gap-2.5">

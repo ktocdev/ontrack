@@ -206,7 +206,7 @@ test('an admin names the roles, and the grid, the users list and the access pick
   } finally {
     const res = await request.patch(`${SUPABASE}/rest/v1/group_settings?id=eq.true`, {
       headers: { apikey: secret, 'Content-Type': 'application/json' },
-      data: { role_names: {} },
+      data: { role_names: {} }, // as the seed stores them
     })
     expect(res.ok(), await res.text()).toBe(true)
   }
