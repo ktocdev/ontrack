@@ -36,7 +36,8 @@ import { useOverview } from './useOverview'
  * try. Under View as there is no New ticket and the cards open nothing.
  *
  * From feedback (Nov 24, 2026): Open tickets and Urgent open those tickets, every restaurant's
- * in its own panel (LeadTicketsScreen), as the Ops dashboard shows them.
+ * in its own panel (LeadTicketsScreen), as the Ops dashboard shows them, and Spend opens what
+ * it adds up for the same month (LeadSpendScreen, OT-178), for a reader who sees costs.
  */
 export function LeadOverviewScreen() {
   const { user, restaurants, viewingAs } = useUser()
@@ -53,6 +54,7 @@ export function LeadOverviewScreen() {
   const newer = month < latest ? addMonths(month, 1) : undefined
   const go = (m: string) => setParams(m === current ? {} : { month: m.slice(0, 7) }, { replace: true })
   const name = monthName(month)
+  const spendPath = month === current ? '/lead/spend' : `/lead/spend?month=${month.slice(0, 7)}`
 
   const header = (
     <LeadershipHeader title="Overview" action={<NewTicketButton back="/lead" />}>
@@ -118,6 +120,7 @@ export function LeadOverviewScreen() {
             value={o.spendCents === null ? '—' : money(o.spendCents)}
             label={`Spend · ${name}`}
             tone={o.spendCents ? 'default' : 'muted'}
+            to={viewingAs || o.spendCents === null ? undefined : spendPath}
           />
           <Kpi
             size="large"
