@@ -55,3 +55,7 @@ Set up once, in the Cloudflare dashboard (Workers & Pages, Create, Import a repo
 - It needs no build variables: the docs talk to no backend.
 
 To deploy by hand instead: `npm run build && npx wrangler deploy` from this folder.
+
+## The Claude design system artifact
+
+`artifact-export/` builds the files of the OnTrack Design System artifact on claude.ai (tokens, the bundled components on React 19, one preview per card, fonts) from the same sources as these docs. `node artifact-export/build.mjs artifact-export/out/project`, then `node artifact-export/readmes.mjs artifact-export/out/project`, from this folder. The build type-checks every preview against the components first. Each card's preview is `artifact-export/previews/<Name>.tsx`, starting `// @card <Name> <group> <height>`; `static/` holds the brand book, the Logos note and the cover. Publish `out/project` to the artifact with Claude; the index (`design-system.json`) is written then, since it names the uploaded logos.

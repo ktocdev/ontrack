@@ -1,3 +1,5 @@
 dist
 node_modules
 .wrangler
+artifact-export/out
+artifact-export/.tmp

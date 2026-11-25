@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": ".tmp/dts",
+    "rootDir": "../../app/src",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["../../app/src/components/*.tsx", "../../app/src/vite-env.d.ts"],
+  "exclude": ["../../app/src/**/*.test.ts"]
+}

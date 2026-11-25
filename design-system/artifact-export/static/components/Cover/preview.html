@@ -1,0 +1,119 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>OnTrack</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        min-height: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        overflow: hidden;
+      }
+      #root {
+        min-height: 0;
+      }
+      .cover {
+        position: relative;
+        width: 960px;
+        height: 288px;
+        overflow: hidden;
+      }
+      .art {
+        position: absolute;
+        top: 0;
+        left: 480px;
+        width: 480px;
+        height: 288px;
+        overflow: hidden;
+      }
+      .art svg {
+        display: block;
+      }
+      .fill {
+        fill: var(--brand-fill);
+      }
+      .strong {
+        fill: var(--brand-strong);
+      }
+      .tint {
+        fill: var(--brand-tint);
+      }
+      .urgent {
+        fill: var(--urgent);
+      }
+      .gold {
+        fill: var(--progress-inhouse);
+      }
+      .card {
+        rx: var(--radius-card);
+      }
+      .tile {
+        rx: var(--radius-input);
+      }
+      .words {
+        position: absolute;
+        left: 40px;
+        bottom: 36px;
+        max-width: 440px;
+      }
+      .name {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 100px;
+        line-height: 0.92;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .tag {
+        margin: 12px 0 0 4px;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <div class="art" aria-hidden="true">
+        <svg viewBox="0 0 480 288" width="480" height="288">
+          <!--
+        blocks      brand-fill 100x212 slab (the primary button green, largest) · brand-strong 156x172 bleeding off the bottom · brand-tint tiles as relief · urgent and progress-inhouse one 44px tile each (states stay small)
+        arrangement a modular grid like a phone screen: 44px tiles (tap-min) at a 56px pitch (tap-min + 12px card gap), some merged two-wide like cards, the last column bleeding off the right edge
+        pattern     tiles cut by the radius tokens, from "Tap targets are at least 44px" and "cards, 12 to 16px apart": the dense, modular row
+        scales      tile tap-min 44, gap 12 (between cards), corners radius-input on tiles and radius-card on the slab and block
+      -->
+          <rect class="tint tile" x="16" y="16" width="44" height="44" rx="12" />
+          <rect class="tint tile" x="16" y="72" width="44" height="100" rx="12" />
+          <rect class="fill card" x="72" y="16" width="100" height="212" rx="14" />
+          <rect class="tint tile" x="184" y="16" width="100" height="44" rx="12" />
+          <rect class="tint tile" x="184" y="72" width="44" height="44" rx="12" />
+          <rect class="strong card" x="184" y="128" width="156" height="172" rx="14" />
+          <rect class="tint tile" x="296" y="16" width="44" height="44" rx="12" />
+          <rect class="tint tile" x="240" y="72" width="100" height="44" rx="12" />
+          <rect class="tint tile" x="352" y="16" width="100" height="44" rx="12" />
+          <rect class="urgent tile" x="352" y="72" width="44" height="44" rx="12" />
+          <rect class="tint tile" x="408" y="72" width="100" height="44" rx="12" />
+          <rect class="tint tile" x="352" y="128" width="44" height="100" rx="12" />
+          <rect class="gold tile" x="408" y="128" width="44" height="44" rx="12" />
+          <rect class="tint tile" x="408" y="184" width="100" height="44" rx="12" />
+          <rect class="tint tile" x="16" y="184" width="44" height="44" rx="12" />
+          <rect class="tint tile" x="72" y="240" width="100" height="44" rx="12" />
+          <rect class="tint tile" x="352" y="240" width="100" height="44" rx="12" />
+        </svg>
+      </div>
+      <div class="words">
+        <h1 class="name">OnTrack</h1>
+        <p class="tag">Equipment and repair tickets, built for a phone.</p>
+      </div>
+    </div>
+  </body>
+</html>
