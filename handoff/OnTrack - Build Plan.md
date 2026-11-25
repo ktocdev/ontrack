@@ -873,7 +873,7 @@ These come after the group is using the app daily, in whatever order the feedbac
 - **Reports.** Monthly spend per restaurant and per category as a PDF or CSV for leadership; repeat-repair flags on a unit
 - **Microsoft 365 sign-on,** if another group needs it; Google sign-in moved up to OT-59, now deferred until the group's IT person is involved
 - **App Store wrapper** with Capacitor only if someone asks for it; the PWA covers the need
-- **Security audits again, if funding allows.** The security passes so far were run with Claude Opus 5.5; redo them with Claude Fable 5.2: Phase 6's (OT-110 over 6a, OT-138 over 6b), and OT-179, which covers Phase 8 and the Nov 23 and Nov 24 feedback rounds (added Nov 24, 2026)
+- **Security audits again, if funding allows.** The security passes so far were run with Claude Opus 5.5; redo them with Claude Fable 5.2: Phase 6's (OT-110 over 6a, OT-124 over Admin held on top of a role, OT-138 over 6b), Phase 7's (OT-154), and OT-179, which covers Phase 8 and the Nov 23 and Nov 24 feedback rounds (added Nov 24, 2026)
 - **Second restaurant group.** Each group gets its own deployment from the same repo: its own Supabase project, its own Cloudflare Worker on `<group>.ontrack-app.app`, and its own `group_settings` row. No policy changes, and one group's data cannot reach another's, because they share no database. The deploy workflow pushes migrations to each project. The cost is one more Supabase project per group. A shared database with a `group_id` on every table is cheaper to run, but it changes every policy and makes a cross-group leak possible, so it waits until there are enough groups to justify it
 
 ## Working method
