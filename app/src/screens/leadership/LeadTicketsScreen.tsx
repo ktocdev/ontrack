@@ -1,25 +1,23 @@
 import { lazy, Suspense, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { ticketPlace } from '../../app/areas'
 import { ticketPath } from '../../app/roles'
 import { useIsOpenInPane } from '../../app/SplitView'
 import { useUser } from '../../auth/context'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { OverflowMenu } from '../../components/Menu'
-import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { RestaurantGroup } from '../../components/RestaurantGroup'
 import { Screen, ScreenBody, ScreenEmpty, TitleBar } from '../../components/Screen'
 import { Segmented } from '../../components/Segmented'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
-import { useJobTitleName } from '../jobtitles/useJobTitles'
+import { useWorkerName } from '../jobtitles/useJobTitles'
 import { useFirstArea } from '../mycategories/useFirstArea'
 import { byPriorityFrom, groupByRestaurant, sortGroups } from '../ops/dashboard'
+import { ticketItems } from '../ops/dashboardCards'
 import { useOpsDashboard } from '../ops/useOpsDashboard'
 import { useRestaurantOrder } from '../ops/useRestaurantOrder'
 import { useRestaurantSort } from '../ops/useRestaurantSort'
-import { ago, scheduledLabel } from '../tickets/tickets'
 
 const RestaurantSortSheet = lazy(() => import('../ops/RestaurantSortSheet'))
 
@@ -39,11 +37,7 @@ export function LeadTicketsScreen() {
   const { restaurants } = useUser()
   const [params, setParams] = useSearchParams()
   const show: Show = params.get('show') === 'urgent' ? 'urgent' : 'open'
-  const titleName = useJobTitleName()
-  const workerName = (p: { full_name: string; job_title_id: string | null }) => {
-    const title = titleName(p.job_title_id)
-    return title ? `${p.full_name} · ${title}` : p.full_name
-  }
+  const workerName = useWorkerName()
   const { ordered, reorder } = useRestaurantOrder()
   const { sort, choose } = useRestaurantSort()
   const first = useFirstArea()
@@ -126,28 +120,10 @@ export function LeadTicketsScreen() {
                 onToggle={() => toggle(restaurant.id)}
                 openCount={tickets.length}
                 urgentCount={tickets.filter((t) => t.urgency === 'urgent').length}
-                items={tickets.map((t) => {
-                  const to = ticketPath('leadership', t.id)
-                  return {
-                    key: t.id,
-                    pinned: t.urgency === 'urgent' || openInPane(to),
-                    node: (
-                      <OpsTicketCard
-                        to={to}
-                        displayId={t.display_id ?? ''}
-                        title={t.title}
-                        status={t.status}
-                        statusLabel={
-                          t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
-                        }
-                        urgent={t.urgency === 'urgent'}
-                        walkthrough={t.source === 'walkthrough'}
-                        createdAt={t.created_at}
-                        meta={[...ticketPlace(t), ago(new Date(t.created_at), new Date())].filter(Boolean).join(' · ')}
-                        worker={t.assignee ? workerName(t.assignee) : null}
-                      />
-                    ),
-                  }
+                items={ticketItems(tickets, {
+                  to: (t) => ticketPath('leadership', t.id),
+                  worker: (t) => (t.assignee ? workerName(t.assignee) : null),
+                  openInPane,
                 })}
               />
             ))

@@ -58,6 +58,15 @@ export function useJobTitleName() {
   return (id: string | null | undefined) => (id ? (data?.find((t) => t.id === id)?.name ?? null) : null)
 }
 
+/** "Bert Velilla · Ops manager", or the name alone for someone with no title (OT-117). */
+export function useWorkerName() {
+  const titleName = useJobTitleName()
+  return (p: { full_name: string; job_title_id: string | null }) => {
+    const title = titleName(p.job_title_id)
+    return title ? `${p.full_name} · ${title}` : p.full_name
+  }
+}
+
 /** Every title with whether it is in use, for the Job titles screen. */
 export function useManagedJobTitles() {
   const titles = useJobTitles()

@@ -40,7 +40,6 @@ function Spend() {
   const { restaurants, viewingAs } = useUser()
   const ids = useMemo(() => restaurants.map((r) => r.id), [restaurants])
   const overview = useOverview(ids)
-  const spend = useLeadSpend(ids.length > 0)
   const [params, setParams] = useSearchParams()
   // This month, once per visit, so a render reads no clock.
   const [current] = useState(() => monthKey(new Date()))
@@ -49,6 +48,7 @@ function Spend() {
   const wanted = asked && /^\d{4}-\d{2}$/.test(asked) ? `${asked}-01` : null
   // Until the months load, the month asked for stands, so Back keeps it however soon it is tapped.
   const month = wanted && wanted <= latest && (!overview.data || wanted >= earliest) ? wanted : current
+  const spend = useLeadSpend(month, ids.length > 0)
   const older = month > earliest ? addMonths(month, -1) : undefined
   const newer = month < latest ? addMonths(month, 1) : undefined
   const go = (m: string) => setParams(m === current ? {} : { month: m.slice(0, 7) }, { replace: true })

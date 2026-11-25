@@ -1,4 +1,3 @@
-import { ticketPlace } from '../../app/areas'
 import { lazy, Suspense, useState } from 'react'
 import { ProfileLink } from '../../app/ProfileLink'
 import { useIsOpenInPane } from '../../app/SplitView'
@@ -7,18 +6,17 @@ import { Button, ButtonLink } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { HiddenCategories } from '../../components/HiddenCategories'
 import { OverflowMenu } from '../../components/Menu'
-import { OpsTicketCard } from '../../components/OpsTicketCard'
 import { RestaurantGroup } from '../../components/RestaurantGroup'
 import { RestaurantPicker } from '../../components/RestaurantPicker'
 import { Screen, ScreenBody, ScreenEmpty, ScreenHeader } from '../../components/Screen'
 import { CardFeedSkeleton } from '../../components/Skeleton'
 import { TaskListEmpty } from '../../components/TaskRow'
 import { IconCheckCircle, IconWarning } from '../../components/icons'
-import { ago, scheduledLabel } from '../tickets/tickets'
-import { useJobTitleName } from '../jobtitles/useJobTitles'
+import { useWorkerName } from '../jobtitles/useJobTitles'
 import { useFirstArea } from '../mycategories/useFirstArea'
 import { listed, useListView } from '../mycategories/useMyCategories'
 import { byPriorityFrom, groupByRestaurant, sortGroups } from './dashboard'
+import { ticketItems } from './dashboardCards'
 import { useDashboardOpen } from './useDashboardOpen'
 import { useOpsDashboard } from './useOpsDashboard'
 import { useRestaurantOrder } from './useRestaurantOrder'
@@ -52,12 +50,8 @@ const RestaurantSortSheet = lazy(() => import('./RestaurantSortSheet'))
 
 export function OpsDashboardScreen() {
   const { user, restaurants, viewingAs } = useUser()
-  const titleName = useJobTitleName()
   // The badge names who is on a ticket, with their job title when they have one (OT-117).
-  const workerName = (p: { full_name: string; job_title_id: string | null }) => {
-    const title = titleName(p.job_title_id)
-    return title ? `${p.full_name} · ${title}` : p.full_name
-  }
+  const workerName = useWorkerName()
   const scope = useRestaurantScope()
   const { ordered, reorder } = useRestaurantOrder()
   const { sort, choose } = useRestaurantSort()
@@ -150,30 +144,10 @@ export function OpsDashboardScreen() {
                   onToggle={scope.selected ? undefined : () => rows.toggle(restaurant.id)}
                   openCount={tickets.length}
                   urgentCount={tickets.filter((t) => t.urgency === 'urgent').length}
-                  items={tickets.map((t) => {
-                    const to = viewingAs ? undefined : `/ops/tickets/${t.id}`
-                    return {
-                      key: t.id,
-                      pinned: t.urgency === 'urgent' || openInPane(to),
-                      node: (
-                        <OpsTicketCard
-                          to={to}
-                          displayId={t.display_id ?? ''}
-                          title={t.title}
-                          status={t.status}
-                          statusLabel={
-                            t.status === 'scheduled' && t.scheduled_for ? scheduledLabel(t.scheduled_for) : undefined
-                          }
-                          urgent={t.urgency === 'urgent'}
-                          walkthrough={t.source === 'walkthrough'}
-                          createdAt={t.created_at}
-                          meta={[...ticketPlace(t), ago(new Date(t.created_at), new Date())]
-                            .filter(Boolean)
-                            .join(' · ')}
-                          worker={t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)}
-                        />
-                      ),
-                    }
+                  items={ticketItems(tickets, {
+                    to: (t) => (viewingAs ? undefined : `/ops/tickets/${t.id}`),
+                    worker: (t) => (t.assignee_id === user.id || !t.assignee ? null : workerName(t.assignee)),
+                    openInPane,
                   })}
                 />
               ))}

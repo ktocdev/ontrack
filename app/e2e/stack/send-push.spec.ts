@@ -235,3 +235,46 @@ test('tasks from Ops reach the restaurant’s Reporter: one added, a ticket hand
   expect(converted.subject).toContain(`Cooler rattles ${stamp} ·`)
   expect(converted.text).toContain('Bert Velilla made it a ticket')
 })
+
+test('a title cannot add a header or markup to the email', async ({ request }, testInfo) => {
+  const PORTER = '11111111-1111-4111-8111-000000000003'
+  const DANA_ID = '22222222-2222-4222-8222-000000000007'
+  const REFRIGERATION = '33333333-3333-4333-8333-000000000012'
+  const stamp = `inj${Date.now() % 100000}${testInfo.project.name}`
+  const injected = `${stamp}@example.com`
+  // A line break followed by a header, then markup: what someone filing a ticket could type.
+  const title = `Leak ${stamp}\r\nBcc: ${injected}\r\n\r\n<b>bold</b>`
+  const filed = await request.post(`${SUPABASE}/rest/v1/tickets`, {
+    headers: { ...(await headers(request, DANA)), Prefer: 'return=representation' },
+    data: { restaurant_id: PORTER, title, category_id: REFRIGERATION, area: 'boh', created_by: DANA_ID },
+  })
+  expect(filed.ok(), await filed.text()).toBe(true)
+
+  const find = async () => {
+    const res = await request.get(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${BERT} ${stamp}`)}`)
+    return ((await res.json()) as { messages: { ID: string }[] }).messages[0]
+  }
+  await expect.poll(find, { timeout: 20_000, intervals: [500] }).toBeTruthy()
+  const res = await request.get(`${MAILPIT}/api/v1/message/${(await find())!.ID}`)
+  const message = (await res.json()) as {
+    Subject: string
+    To: { Address: string }[]
+    Cc: { Address: string }[] | null
+    Bcc: { Address: string }[] | null
+    HTML: string
+  }
+
+  // One line, the break folded to a space; only Bert, and no Cc or Bcc.
+  expect(message.Subject.replace(/^\[OT-\d+\] /, '')).toBe(`Leak ${stamp} Bcc: ${injected} <b>bold</b> · New · Porter`)
+  expect(message.Subject).not.toMatch(/[\r\n]/)
+  expect(message.To.map((t) => t.Address)).toEqual([BERT])
+  expect(message.Cc ?? []).toEqual([])
+  expect(message.Bcc ?? []).toEqual([])
+  // The markup reads as text in the body.
+  expect(message.HTML).toContain('&#60;b&#62;bold&#60;/b&#62;')
+  expect(message.HTML).not.toContain('<b>bold</b>')
+
+  // Nothing went to the address in the title.
+  const leaked = await request.get(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${injected}`)}`)
+  expect(((await leaked.json()) as { messages: unknown[] }).messages).toEqual([])
+})
