@@ -220,6 +220,7 @@ export function OpsInHouseScreen() {
               )}
               <HiddenCategories
                 count={view.areaHidden || tasks.some((t) => t.category_id) ? view.hidden : 0}
+                names={view.hiddenNames}
                 showAll={view.showAll}
                 onShowAll={view.setShowAll}
               />

@@ -22,3 +22,11 @@ export function shortDayOrToday(at: string | Date, now = new Date()) {
 export function isVideoUrl(url: string) {
   return /^https?:\/\/\S+$/i.test(url) && url.length <= 500
 }
+
+/** "Plumbing, Bar and IT"; past three, "Plumbing, Bar, Ice and 4 more". */
+export function listNames(names: string[]) {
+  if (names.length <= 3) {
+    return names.length < 2 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
+  }
+  return `${names.slice(0, 3).join(', ')} and ${names.length - 3} more`
+}

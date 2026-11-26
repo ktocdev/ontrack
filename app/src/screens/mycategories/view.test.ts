@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { categoryRow, categoryView, hiddenCount, isOn, isShown, NO_PREFS, switched, toPrefs } from './view'
+import { categoryRow, categoryView, hiddenCategories, isOn, isShown, NO_PREFS, switched, toPrefs } from './view'
 
 const ME = 'me'
 const POS = 'pos'
@@ -73,17 +73,31 @@ describe('isShown', () => {
   })
 })
 
-describe('hiddenCount', () => {
+describe('hiddenCategories', () => {
   const categories = [
-    { id: PLUMBING, area: 'boh' as const, active: true },
-    { id: 'bar', area: 'foh' as const, active: true },
-    { id: 'old', area: 'foh' as const, active: false },
-    { id: POS, area: 'it' as const, active: true },
+    { id: PLUMBING, name: 'Plumbing', area: 'boh' as const, active: true },
+    { id: 'bar', name: 'Bar', area: 'foh' as const, active: true },
+    { id: 'old', name: 'Old', area: 'foh' as const, active: false },
+    { id: POS, name: 'POS & network', area: 'it' as const, active: true },
+    { id: 'web', name: 'Website', area: 'it' as const, active: true },
   ]
 
-  it('counts the categories that are hidden, leaving out turned-off ones', () => {
-    expect(hiddenCount(itView, categories)).toBe(2)
-    expect(hiddenCount(NO_PREFS, categories)).toBe(0)
+  it('counts the hidden categories, leaving out turned-off ones, and names an area hidden whole', () => {
+    expect(hiddenCategories(itView, categories)).toEqual({ count: 2, names: ['Front of House', 'Back of House'] })
+    expect(hiddenCategories(NO_PREFS, categories)).toEqual({ count: 0, names: [] })
+  })
+
+  it('names each category where only some of an area are hidden', () => {
+    const prefs = toPrefs([], [{ category_id: POS, notify: null, shown: false }])
+    expect(hiddenCategories(prefs, categories)).toEqual({ count: 1, names: ['POS & network'] })
+  })
+
+  it('names the categories when an area is hidden but one of its own is shown', () => {
+    const prefs = toPrefs(
+      [{ area: 'it', notify: 'off', shown: false }],
+      [{ category_id: 'web', notify: null, shown: true }],
+    )
+    expect(hiddenCategories(prefs, categories)).toEqual({ count: 1, names: ['POS & network'] })
   })
 })
 

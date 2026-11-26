@@ -151,7 +151,12 @@ export function OpsDashboardScreen() {
                   })}
                 />
               ))}
-              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
+              <HiddenCategories
+                count={view.hidden}
+                names={view.hiddenNames}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+              />
             </>
           )}
         </ScreenBody>

@@ -87,7 +87,12 @@ export function ClosedTicketsScreen() {
                   when={t.closed_at ? longDate(new Date(t.closed_at)) : ''}
                 />
               ))}
-              <HiddenCategories count={view.hidden} showAll={view.showAll} onShowAll={view.setShowAll} />
+              <HiddenCategories
+                count={view.hidden}
+                names={view.hiddenNames}
+                showAll={view.showAll}
+                onShowAll={view.setShowAll}
+              />
               {data.length === CLOSED_LIST_LIMIT && (
                 <p className="text-center text-12 text-text-muted">Showing the latest {CLOSED_LIST_LIMIT}.</p>
               )}

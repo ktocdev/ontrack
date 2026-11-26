@@ -1,4 +1,4 @@
-import { AREAS, type Area } from '../../app/areas'
+import { AREA_LABEL, AREAS, type Area } from '../../app/areas'
 import { DEFAULT_VIEW, type NotifyLevel, type ViewSetting } from '../../components/ViewSetting'
 
 /**
@@ -76,9 +76,24 @@ export function isShown(prefs: Prefs, userId: string, item: Listed) {
   return true
 }
 
-/** How many of the group's categories this person has hidden: the number on the lists' line. */
-export function hiddenCount(prefs: Prefs, categories: { id: string; area: Area; active: boolean }[]) {
-  return categories.filter((c) => c.active && !categoryView(prefs, c.id, c.area).shown).length
+/** A category as the lists' line reads it: only the active ones count. */
+type Named = { id: string; name: string; area: Area; active: boolean }
+
+/**
+ * What this person hides, for the lists' line: how many of the group's categories, and
+ * their names in the group's order, an area hidden whole named once by the area.
+ */
+export function hiddenCategories(prefs: Prefs, categories: Named[]) {
+  const hidden = categories.filter((c) => c.active && !categoryView(prefs, c.id, c.area).shown)
+  const names: string[] = []
+  for (const area of AREAS) {
+    const inArea = categories.filter((c) => c.active && c.area === area)
+    const off = hidden.filter((c) => c.area === area)
+    if (off.length === 0) continue
+    if (off.length === inArea.length && !prefs.areas[area].shown) names.push(AREA_LABEL[area])
+    else names.push(...off.map((c) => c.name))
+  }
+  return { count: hidden.length, names }
 }
 
 /**
