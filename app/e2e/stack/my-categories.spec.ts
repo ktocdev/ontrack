@@ -81,11 +81,12 @@ test('hidden categories stay off the dashboard until Show all, and My categories
   const fridge = page.getByRole('link', { name: new RegExp(FRIDGE) })
   await expect(pos).toBeVisible()
   await expect(fridge).toHaveCount(0)
-  await expect(page.getByText(/\d+ categories hidden/)).toBeVisible()
+  await expect(page.getByText('2 areas hidden')).toBeVisible()
   await testInfo.attach('dashboard-hidden', { body: await page.screenshot(), contentType: 'image/png' })
 
-  await page.getByRole('button', { name: 'Show all: Front of House and Back of House' }).click()
+  await page.getByRole('button', { name: 'Show all' }).click()
   await openRestaurants(page)
+  await expect(page.getByText('Showing Front of House and Back of House, which you hide')).toBeVisible()
   await expect(fridge).toBeVisible()
   await page.getByRole('button', { name: 'Hide them' }).click()
   await expect(fridge).toHaveCount(0)
@@ -182,7 +183,7 @@ test('IT hears of a POS ticket and not a Back of House one; the Ops manager titl
     await signIn(page, CHRIS)
     await openRestaurants(page)
     await expect(page.getByRole('link', { name: new RegExp(pos.title) })).toBeVisible()
-    await expect(page.getByText(/categories hidden/)).toHaveCount(0)
+    await expect(page.getByText(/(areas?|categor(y|ies)) hidden/)).toHaveCount(0)
   } finally {
     // Taking the title off leaves his settings, so he puts IT back himself.
     await request.post(`${SUPABASE}/rest/v1/rpc/set_person_access`, {

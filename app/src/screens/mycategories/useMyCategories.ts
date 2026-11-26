@@ -65,7 +65,7 @@ export function useListView() {
   return {
     /** How many categories this person hides; the line shows while it is more than none. */
     hidden,
-    /** What they hide, by name: an area hidden whole by the area's name. */
+    /** What they hide, by name: the areas hidden whole, and the categories hidden elsewhere. */
     hiddenNames,
     /** Whether a whole area is hidden, which is all an in-house task, with no category, goes by. */
     areaHidden: AREAS.some((a) => !prefs.areas[a].shown),

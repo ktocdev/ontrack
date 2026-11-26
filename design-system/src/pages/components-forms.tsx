@@ -493,7 +493,7 @@ export function FeedbackPage() {
         intro="The line under a list that leaves off the categories someone hides in My categories. Show all lasts until they leave the screen."
       >
         <Example
-          code={`<HiddenCategories count={3} names={['Plumbing', 'Bar', 'IT']} showAll={showAll} onShowAll={setShowAll} />`}
+          code={`<HiddenCategories count={3} names={{ areas: ['IT'], categories: ['Plumbing', 'Bar'] }} showAll={showAll} onShowAll={setShowAll} />`}
         >
           <HiddenCategoriesDemo />
         </Example>
@@ -676,7 +676,14 @@ export function SheetsPage() {
 /** Notify me and Show on my lists, for an area or a category (OT-116, OT-117). */
 function HiddenCategoriesDemo() {
   const [showAll, setShowAll] = useState(false)
-  return <HiddenCategories count={3} names={['Plumbing', 'Bar', 'IT']} showAll={showAll} onShowAll={setShowAll} />
+  return (
+    <HiddenCategories
+      count={3}
+      names={{ areas: ['IT'], categories: ['Plumbing', 'Bar'] }}
+      showAll={showAll}
+      onShowAll={setShowAll}
+    />
+  )
 }
 
 function ViewSettingDemo() {

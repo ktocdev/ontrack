@@ -83,13 +83,19 @@ describe('hiddenCategories', () => {
   ]
 
   it('counts the hidden categories, leaving out turned-off ones, and names an area hidden whole', () => {
-    expect(hiddenCategories(itView, categories)).toEqual({ count: 2, names: ['Front of House', 'Back of House'] })
-    expect(hiddenCategories(NO_PREFS, categories)).toEqual({ count: 0, names: [] })
+    expect(hiddenCategories(itView, categories)).toEqual({
+      count: 2,
+      names: { areas: ['Front of House', 'Back of House'], categories: [] },
+    })
+    expect(hiddenCategories(NO_PREFS, categories)).toEqual({ count: 0, names: { areas: [], categories: [] } })
   })
 
   it('names each category where only some of an area are hidden', () => {
     const prefs = toPrefs([], [{ category_id: POS, notify: null, shown: false }])
-    expect(hiddenCategories(prefs, categories)).toEqual({ count: 1, names: ['POS & network'] })
+    expect(hiddenCategories(prefs, categories)).toEqual({
+      count: 1,
+      names: { areas: [], categories: ['POS & network'] },
+    })
   })
 
   it('names the categories when an area is hidden but one of its own is shown', () => {
@@ -97,7 +103,10 @@ describe('hiddenCategories', () => {
       [{ area: 'it', notify: 'off', shown: false }],
       [{ category_id: 'web', notify: null, shown: true }],
     )
-    expect(hiddenCategories(prefs, categories)).toEqual({ count: 1, names: ['POS & network'] })
+    expect(hiddenCategories(prefs, categories)).toEqual({
+      count: 1,
+      names: { areas: [], categories: ['POS & network'] },
+    })
   })
 })
 

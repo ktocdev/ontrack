@@ -81,17 +81,18 @@ type Named = { id: string; name: string; area: Area; active: boolean }
 
 /**
  * What this person hides, for the lists' line: how many of the group's categories, and
- * their names in the group's order, an area hidden whole named once by the area.
+ * by name in the group's order, the areas hidden whole and the categories hidden on their
+ * own elsewhere.
  */
 export function hiddenCategories(prefs: Prefs, categories: Named[]) {
   const hidden = categories.filter((c) => c.active && !categoryView(prefs, c.id, c.area).shown)
-  const names: string[] = []
+  const names = { areas: [] as string[], categories: [] as string[] }
   for (const area of AREAS) {
     const inArea = categories.filter((c) => c.active && c.area === area)
     const off = hidden.filter((c) => c.area === area)
     if (off.length === 0) continue
-    if (off.length === inArea.length && !prefs.areas[area].shown) names.push(AREA_LABEL[area])
-    else names.push(...off.map((c) => c.name))
+    if (off.length === inArea.length && !prefs.areas[area].shown) names.areas.push(AREA_LABEL[area])
+    else names.categories.push(...off.map((c) => c.name))
   }
   return { count: hidden.length, names }
 }
